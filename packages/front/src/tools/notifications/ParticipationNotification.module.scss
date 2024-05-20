@@ -1,0 +1,17 @@
+.name {
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+        color: #666;
+    }
+}
+
+.access {
+    font-weight: bold;
+    cursor: pointer;
+
+    &:hover {
+        color: #666;
+    }
+}

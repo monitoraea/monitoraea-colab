@@ -1,0 +1,11 @@
+.estimation_hours {
+  margin-left: 0.25rem;
+
+  &::before {
+    content: "(";
+  }
+
+  &::after {
+    content: ")";
+  }
+}

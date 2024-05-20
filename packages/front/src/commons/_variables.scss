@@ -1,0 +1,62 @@
+//REVIEW: esse não deve ser o padrão, devemos usar o /sass/themes/dorothy_variables.scss. Mais info: https://sass-lang.com/documentation/breaking-changes/css-vars
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+
+:root {
+    --font-family: 'Raleway', sans-serif;
+
+    // COLORS
+    // Primary palette
+    --primary: #009bdc;
+    --primaryhover: #0089c2;
+    --secondary: #DBD80C;
+    --secondaryhover: #C2BF0B;
+    --gradient: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    --black: #222222;
+    --gray-1: #666666;
+    --gray-2: #cccccc;
+    --gray-3: #f2f2f2;
+    --gray-4: #fcfcfc;
+    --white: #ffffff;
+
+    // Secondary palette
+    --yellow-1: #f9c623;
+    --red-1: #db3e0b;
+    --green-1: #1bb53a;
+
+
+    // BORDER RADIUS 
+    --border-radius-1: 8px;
+    --border-radius-2: 16px;
+    --border-radius-3: 50%;
+
+
+    // SHADOW 
+    --shadow-1: 0 0 8px rgba(0, 0, 0, 0.15);
+
+    // SPACING 
+    --spacing-0: 0;
+    --spacing-1: 2px;
+    --spacing-2: 4px;
+    --spacing-3: 8px;
+    --spacing-4: 12px;
+    --spacing-5: 16px;
+    --spacing-6: 24px;
+    --spacing-7: 32px;
+    --spacing-8: 40px;
+    --spacing-9: 48px;
+    --spacing-10: 64px;
+    --spacing-11: 80px;
+    --spacing-12: 96px;
+    --spacing-13: 160px;
+
+    // BREAKPOINTS 
+    --x-small: 564px;
+    --small: 767px;
+    --medium: 991px;
+    --large: 1199px;
+    --x-large: 1399px;
+
+    //ANIMATIONS
+    --transition-1: .25s ease;
+}

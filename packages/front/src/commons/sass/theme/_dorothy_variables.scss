@@ -1,0 +1,59 @@
+@use '../../variables' as *;
+
+$font-family: 'Raleway',
+  sans-serif !important !default;
+
+// primary palette
+$primary: #009BDC !default;
+$primary-hover: #0089C2 !default; //review
+$secondary: #F9C623 !default;
+$secondary-hover: #C2BF0B !default;
+$gradient: linear-gradient(180deg, $primary 0%, $secondary 100%) !default;
+$gray: #666666 !default;
+$light-gray: #F1F1F1 !default; // gray-2
+$lighter-gray: #FCFCFC !default; // gray-3
+$white: #FFFFFF !default;
+$black: #222222 !default;
+
+// secondary palette
+$yellow: #F9C623 !default;
+$red: #DB3E0B !default;
+$green: #1BB53A !default;
+
+// Border-Radius
+$border-radius-1: .5rem;
+$border-radius-2: 1rem;
+$border-rounded: 50%;
+
+// Shadow
+$shadow-1: 0 0 5px rgba(0, 0, 0, .15) !default;
+$shadow-2: 0 3px 6px rgba(0, 0, 0, .15) !default;
+
+// Spacing
+$spacing-1: .125rem;
+$spacing-2: .25rem;
+$spacing-3: .5rem;
+$spacing-4: .75rem;
+$spacing-5: 1rem;
+$spacing-6: 1.5rem;
+$spacing-7: 2rem;
+$spacing-8: 2.5rem;
+$spacing-9: 3rem;
+$spacing-10: 4rem;
+$spacing-11: 5rem;
+$spacing-12: 6rem;
+$spacing-13: 10rem;
+
+//Charts
+$chart1: #F9C623 !default;
+$chart2: #E46F2A !default;
+$chart3: #58394e !default;
+$chart4: #00664a !default;
+$chart5: #009164 !default;
+
+//screen sizes
+$mobileS: '320px' !default;
+$mobileM: '375px' !default;
+$mobileL: '425px' !default;
+$tablet: '768px' !default;
+$wide: '1024px' !default;

@@ -1,0 +1,39 @@
+@import '~leaflet/dist/leaflet.css';
+@import '~leaflet-draw/dist/leaflet.draw.css';
+
+#map-container {
+  height: 80vh;
+  z-index: 10;
+}
+
+.sr-only {
+  display: none;
+}
+
+button.action {
+  padding: 10px 20px;
+  font-size: 1.5em;
+  border-radius: 50px;
+  background-color: #fff;
+  border-color: rgb(115, 191, 72);
+  font-weight: bold;
+  color: rgb(115, 191, 72);
+  min-width: 200px;
+}
+
+button.action.cancel {
+  border-color: #d92c2c;
+  color: #d92c2c;
+}
+
+button.action.save {
+  border-color: #2c9ad9;
+  color: #d92c2c;
+}
+
+button.action:disabled {
+  border-color: #999;
+  color: #999;
+  background-color: #ddd;
+  opacity: 0.9;
+}

@@ -1,0 +1,149 @@
+@use '../../../sass/theme/app_variables' as *;
+
+.nav-menu {
+    display: flex;
+    height: 100%;
+    width: 100%;
+
+    @media (max-width: $tablet) {
+        justify-content: center;
+        flex-wrap: nowrap;
+        order: 0;
+        flex: 1 1;
+        box-shadow: $shadow-2;
+    }
+
+    &:hover {
+        .nav-menu-item {
+            &.active {
+                .nav-menu-title {
+                    opacity: 0;
+                }
+            }
+        }
+    }
+}
+
+
+.nav-menu-item {
+    position: relative;
+    padding: .75rem 1rem;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+
+    @media (max-width: $tablet) {
+        width: calc(100% / 6);
+    }
+
+    .nav-menu-icon {
+        display: flex;
+        align-items: center;
+
+        svg {
+            height: 1.25rem;
+            width: unset;
+            transition: .25s ease;
+            stroke: $gray;
+
+            @media (max-width: $tablet) {
+                height: 1.5rem;
+            }
+        }
+    }
+
+    .nav-menu-title {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, .5rem);
+        opacity: 0;
+        white-space: nowrap;
+        font-size: .875rem;
+        font-weight: 600;
+        color: $gray;
+        transition: .25s ease;
+        pointer-events: none;
+    }
+
+    &:hover {
+        .nav-menu-title {
+            opacity: 1 !important;
+        }
+    }
+
+    &.active {
+
+        @media (max-width: $tablet) {
+            border-bottom: 2px solid $primary;
+        }
+
+        .nav-menu-icon {
+            svg {
+                stroke: $primary;
+            }
+        }
+
+        .nav-menu-title {
+            opacity: 1;
+            color: $primary;
+            font-weight: 700;
+        }
+
+        &:hover {
+            cursor: default;
+        }
+    }
+}
+
+@media (max-width: $tablet) {
+    .hidden-menu {
+        width: 100%;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+
+        &.show {
+            height: calc(100vh * 0.85);
+            opacity: 1;
+            transition: height 0.25s ease-in, opacity 0.5s ease-in;
+        }
+
+        &.hide {
+            height: 0;
+            opacity: 0;
+            transition: height 0.25s ease-out, opacity 0.25s ease-out;
+        }
+
+        .nav-menu-item {
+            height: auto;
+
+            .nav-menu-title {
+                opacity: 1;
+            }
+
+            &.active {
+                border-bottom: 0;
+
+                .nav-menu-icon {
+                    svg {
+                        stroke: $primary;
+                    }
+                }
+
+                .nav-menu-title {
+                    color: $primary;
+                    font-weight: 700;
+                }
+
+                &:hover {
+                    cursor: default;
+                }
+            }
+
+        }
+    }
+}

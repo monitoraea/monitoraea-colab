@@ -1,0 +1,18 @@
+@use './../commons/sass';
+@use 'theme/app_variables';
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  .section-title {
+    font-size: 1.1rem;
+  }
+
+  .section-actions {
+    display: flex;
+    align-items: flex-end;
+    float: right;
+  }
+}

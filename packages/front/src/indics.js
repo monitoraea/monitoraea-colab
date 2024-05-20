@@ -1,0 +1,775 @@
+export const TYPES = {
+    INT: 1,
+    TEXT: 2,
+    TEXT_M: 3,
+    TEXT_FILE: 4,
+    SEL_S: 5,
+    SEL_M: 6,
+    SEL_SO: 7,
+    SEL_MO: 8,
+    ITEMS: 9,
+    SN: 10,
+}
+
+export const LAEs = [
+    { id:  1, title: 'Articulação institucional e/ou comunitária' },
+    { id:  2, title: 'Comunicação e Educomunicação' },
+    { id:  3, title: 'Diagnóstico' },
+    { id:  4, title: 'Evento' },
+    { id:  5, title: 'Formação' },
+    { id:  6, title: 'Instalações pedagógicas' },
+    { id:  7, title: 'Material pedagógico' },
+    { id:  8, title: 'Manejo sustentável' },
+    { id:  9, title: 'Monitoramento' },
+    { id: 10, title: 'Pesquisa' },
+    { id: 11, title: 'Planos e /ou Projeto político pedagógico' },
+    { id: 12, title: 'Sensibilização' },
+];
+
+const alphaSort = (a, b) => a.title > b.title ? 1 : -1;
+
+export const INDICs = [
+    /* 1. Articulação institucional e/ou comunitária */
+    {
+        id: 1,
+        lae_id: 1,
+        name: 'Número de ações realizadas conjuntamente',
+        base_question: 'O projeto promoveu alguma ação conjunta?',
+        questions: [
+            {
+                id: 1,
+                title: 'Quantas ações foram realizadas conjuntamente?',
+                type: TYPES.INT,                
+            },            
+        ],
+    },
+    {
+        id: 2,
+        lae_id: 1,
+        name: 'Atuação em Redes',
+        base_question: 'O projeto desenvolveu alguma ação em rede?',
+        questions: [
+            {
+                id: 1,
+                title: 'Cite a ação e o nome da rede',
+                type: TYPES.TEXT,                
+            },            
+        ],
+    },
+    {
+        id: 3,
+        lae_id: 1,
+        name: 'Fortalecimento de Redes, Coletivos Educadores',
+        base_question: 'O projeto fortaleceu alguma rede, Coletivo Educador ou outro grupo?',
+        questions: [
+            {
+                id: 1,
+                title: 'Cite uma ação realizada para o fortalecimento',
+                type: TYPES.TEXT,                
+            },            
+        ],
+    },
+    {
+        id: 4,
+        lae_id: 1,
+        name: 'Número de comunidades envolvidas',
+        base_question: 'O projeto envolveu alguma comunidade?',
+        questions: [
+            {
+                id: 1,
+                title: 'Quantas foram envolvidas?',
+                type: TYPES.INT,                
+            }, 
+            {
+                id: 2,
+                title: 'Cite o nome e localização da comunidade envolvida',
+                type: TYPES.TEXT,                
+            },             
+        ],
+    },
+    {
+        id: 5,
+        lae_id: 1,
+        name: 'Número de parcerias estabelecidas',
+        base_question: 'O projeto estabeleceu alguma parceria formal?',
+        questions: [
+            {
+                id: 1,
+                title: 'Quantas parcerias foram formalmente estabelecidas?',
+                type: TYPES.INT,                
+            },            
+        ],
+    },
+    {
+        id: 6,
+        lae_id: 1,
+        name: 'Produtos coletivos gerados',
+        base_question: 'O projeto gerou algum produto coletivo?',
+        questions: [
+            {
+                id: 1,
+                title: 'Quantos produtos coletivos foram gerados?',
+                type: TYPES.INT,                
+            }, 
+            {
+                id: 2,
+                title: 'Cite quais foram',
+                type: TYPES.ITEMS,                
+            },             
+        ],
+    },
+    /* 2. Comunicação e Educomunicação */
+    {
+        id: 1,
+        lae_id: 2,
+        name: 'Planos de comunicação elaborados',
+        base_question: 'O projeto elaborou um Plano de Comunicação?',
+        questions: [
+            {
+                id: 1,
+                title: 'Como foi elaborado? ',
+                type: TYPES.TEXT_M,                
+            }, 
+            {
+                id: 2,
+                title: 'Quem elaborou?',
+                type: TYPES.TEXT,                
+            },             
+        ],
+    },
+    {
+        id: 2,
+        lae_id: 2,
+        name: 'Visibilidade institucional, comunitária e temática',
+        base_question: 'O Projeto foi noticiado/divulgado?',
+        questions: [
+            {
+                id: 1,
+                title: 'O Projeto foi noticiado em alguma mídia local (TV, rádio, jornal impresso ou digital)',
+                type: TYPES.SN,                
+            }, 
+            {
+                id: 2,
+                title: 'O projeto foi divulgado em redes sociais?',
+                type: TYPES.SN,                
+            }, 
+            {
+                id: 3,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },             
+        ],
+    },
+    {
+        id: 3,
+        lae_id: 2,
+        name: 'Quantidade de sugestões incorporadas aos processos',
+        base_question: 'O Projeto desenvolveu algum processo de educomunicação?',
+        questions: [
+            {
+                id: 1,
+                title: 'Quais foram os públicos envolvidos?',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Comunidades locais' },
+                    { value: 2, title: 'População em geral' },
+                    { value: 3, title: 'Segmentos do poder público' },
+                    { value: 4, title: 'Colegiados (conselhos, comissões, câmaras técnicas, CIEAS, etc)' },
+                    { value: 5, title: 'Instituições de Ensino Superior' },
+                    { value: 6, title: 'Escolas' },
+                    { value: 7, title: 'Segmentos do setor privado' },
+                    { value: 8, title: 'Organizações da sociedade civil' },
+                    { value: 9, title: 'Movimentos sociais' },
+                ].sort(alphaSort)                
+            }, 
+            {
+                id: 2,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },             
+        ],
+    },
+    {
+        id: 4,
+        lae_id: 2,
+        name: 'Ações e/ou produtos comunicativos/ educomunicativas',
+        base_question: 'Foram gerados ações e/ou produtos comunicativos/ educomunicativas?',
+        questions: [
+            {
+                id: 1,
+                title: 'Quais foram os produtos construídos coletivamente no processo de educomunicação?',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Jornais impressos ou digitais' },
+                    { value: 2, title: 'Vídeos' },
+                    { value: 3, title: 'Podcasts' },
+                    { value: 4, title: 'Teatro, poesias, cordel' },
+                ].sort(alphaSort)                
+            }, 
+            {
+                id: 2,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },             
+        ],
+    },
+    {
+        id: 5,
+        lae_id: 2,
+        name: 'Realização de campanhas',
+        base_question: 'O Projeto realizou alguma campanha temática?',
+        questions: [
+            {
+                id: 1,
+                title: 'Qual(s) tema (s)?',
+                type: TYPES.ITEMS,                
+            }, 
+            {
+                id: 2,
+                title: 'Quantidade de campanhas',
+                type: TYPES.INT,                
+            }, 
+            {
+                id: 3,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },             
+        ],
+    },
+    /* 3. Diagnóstico */
+    {
+        id: 1,
+        lae_id: 3,
+        name: 'Metodologia utilizada no diagnóstico',
+        base_question: 'O Projeto realizou algum tipo de diagnóstico participativo para subsidiar a ação educativa?',
+        questions: [
+            {
+                id: 1,
+                title: 'Qual(is) as técnica (s) e estratégia(s) utilizada(s) no diagnóstico?',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Dados secundários / levantamento bibliográfico' },
+                    { value: 2, title: 'Questionário e entrevistas' },
+                    { value: 3, title: 'Oficinas' },
+                    { value: 4, title: 'Conjunto de técnicas participativas (várias técnicas usadas no diagnóstico)' },
+                ].sort(alphaSort)                
+            }, 
+            {
+                id: 2,
+                title: 'Qual o número de pessoas envolvidas no diagnóstico?',
+                type: TYPES.INT,                
+            },             
+        ],
+    },
+    {
+        id: 2,
+        lae_id: 3,
+        name: 'Produtos gerados no diagnóstico/mapeamento',
+        base_question: 'O diagnóstico gerou produtos?',
+        questions: [
+            {
+                id: 1,
+                title: 'Se sim, qual(is) produto(s) o diagnóstico gerou:',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Relatório técnico' },
+                    { value: 2, title: 'Mapas participativos' },
+                    { value: 3, title: 'Rodas de Diálogos, oficina ou curso para socialização dos resultados do diagnóstico' },
+                ].sort(alphaSort)                
+            }, 
+            {
+                id: 2,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },             
+        ],
+    },
+    /* 4. Evento */
+    {
+        id: 1,
+        lae_id: 4,
+        name: 'Eventos realizados',
+        base_question: 'O Projeto realizou algum evento?',
+        questions: [
+            {
+                id: 1,
+                title: 'Quantos eventos foram realizados pelo projeto',
+                type: TYPES.SEL_S,
+                options: [
+                    { value: 1, title: '1 a 2' },
+                    { value: 2, title: '3 a 5' },
+                    { value: 3, title: 'Mais de 5 eventos' },
+                ].sort(alphaSort)                
+            }, 
+            {
+                id: 2,
+                title: 'Número de pessoas envolvidas no evento',
+                type: TYPES.SEL_S,
+                options: [
+                    { value: 1, title: 'Até 50 pessoas' },
+                    { value: 2, title: '51 a 100 pessoas' },
+                    { value: 3, title: '101 a 300 pessoas' },
+                    { value: 4, title: '301 a 600 pessoas' },
+                    { value: 5, title: 'Mais de 600 pessoas' },
+                ]/* .sort(alphaSort)  */               
+            },
+            {
+                id: 3,
+                title: 'Cite quais foram o (s) tema(s) abordado(s) no evento',
+                type: TYPES.ITEMS,                
+            },             
+        ],
+    },
+    {
+        id: 2,
+        lae_id: 4,
+        name: 'Metodologia e avaliação do evento pela organização e participantes',
+        base_question: 'Foi realizada alguma forma de avaliação do evento pela organização e pelos participantes?',
+        questions: [
+            {
+                id: 1,
+                title: 'Que tipo de avaliação foi feita sobre o evento?',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Avaliação pós-evento por meio de questionário' },
+                    { value: 2, title: 'Avaliação ao final do evento por meio de roda de diálogo aberta' },
+                    { value: 3, title: 'Avaliação ao final do evento por meio de aplicação de questionário' },
+                ].sort(alphaSort)                
+            },             
+        ],
+    },
+    {
+        id: 3,
+        lae_id: 4,
+        name: 'Resultados do evento',
+        base_question: 'O evento gerou algum resultado?',
+        questions: [
+            {
+                id: 1,
+                title: 'Quais resultados foram gerados?',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Parceria estabelecida para ações pós evento' },
+                    { value: 2, title: 'Notícias na imprensa e/ou  redes sociais' },
+                ].sort(alphaSort)                
+            },             
+        ],
+    },
+    /* 5. Formação */
+    {
+        id: 1,
+        lae_id: 5,
+        name: 'Processos formativos',
+        base_question: 'O Projeto realizou algum Curso/Processo Formativo?',
+        questions: [
+            {
+                id: 1,
+                title: 'Qual a carga horária?',
+                type: TYPES.SEL_S,
+                options: [
+                    { value: 1, title: '2h a 10h' },
+                    { value: 2, title: '11h a 20h' },
+                    { value: 3, title: '21h a 40h' },
+                    { value: 4, title: '41h a 80h' },
+                    { value: 5, title: '81h a 100h' },
+                    { value: 6, title: '101h a 200h' },
+                    { value: 7, title: 'Acimade de 200h' },
+                ]/* .sort(alphaSort) */                
+            }, 
+            {
+                id: 2,
+                title: 'Quantas turmas foram realizadas?',
+                type: TYPES.SEL_S,
+                options: [
+                    { value: 1, title: '1' },
+                    { value: 2, title: '2' },
+                    { value: 3, title: '3 a 5' },
+                    { value: 4, title: '6 a 10' },
+                    { value: 5, title: 'Acimade de 11' },
+                ]/* .sort(alphaSort)   */              
+            }, 
+            {
+                id: 3,
+                title: 'O curso/processo formativo foi realizado com',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Realização de palestras e seminários' },
+                    { value: 2, title: 'Estudos de caso' },
+                    { value: 3, title: 'Grupos de trabalho' },
+                    { value: 4, title: 'Intervenções práticas educadoras' },
+                    { value: 5, title: 'Diálogos e releituras de textos' },
+                    { value: 6, title: 'Jogos e atividades lúdicas' },
+                ].sort(alphaSort)                
+            },            
+        ],
+    },
+    {
+        id: 2,
+        lae_id: 5,
+        name: 'Produtos gerados pelas formações',
+        base_question: 'O curso gerou algum produto coletivo?',
+        questions: [
+            {
+                id: 1,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },             
+        ],
+    },
+    {
+        id: 3,
+        lae_id: 5,
+        name: 'Continuidade do Processo Formativo',
+        base_question: 'O curso/processo formativo tem previsto algum tipo de continuidade?',
+        questions: [
+            {
+                id: 1,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },             
+        ],
+    },
+    /* 6. Instalações pedagógicas */
+    {
+        id: 1,
+        lae_id: 6,
+        name: 'Instalações pedagógicas',
+        base_question: 'O projeto desenvolveu alguma Instalação Pedagógica (Exposição, Painel, etc)?',
+        questions: [
+            {
+                id: 1,
+                title: 'Cite o nome/tipo da Instalação',
+                type: TYPES.TEXT,                
+            }, 
+            {
+                id: 2,
+                title: 'Qual tipo de interação propicia a Instalação Pedagógica?',
+                type: TYPES.SEL_S,
+                options: [
+                    { value: 1, title: 'Virtual' },
+                    { value: 2, title: 'Presencial' },
+                    { value: 3, title: 'Mista' },
+                ]/* .sort(alphaSort)   */              
+            },   
+            {
+                id: 3,
+                title: 'Qual o período/tempo de interação que a pessoa participante tem com a instalação?',
+                type: TYPES.SEL_SO,
+                options: [
+                    { value: 1, title: 'Menos de 1h' },
+                    { value: 2, title: '1h' },
+                    { value: 3, title: '2h' },
+                    { value: 4, title: '4h' },
+                    { value: 5, title: '8h' },
+                ]/* .sort(alphaSort)   */              
+            },   
+            {
+                id: 4,
+                title: 'A instalação propicia',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Diálogos e reflexões em grupo' },
+                    { value: 2, title: 'Leitura e acesso a palestra/vídeo' },
+                    { value: 3, title: 'Contato com algo físico' },
+                ]/* .sort(alphaSort)   */              
+            },  
+            {
+                id: 5,
+                title: 'Existe algum desdobramento da instalação?',
+                type: TYPES.SN,                
+            },      
+        ],
+    },
+    {
+        id: 2,
+        lae_id: 6,
+        name: 'Produtos gerados pelas instalações',
+        base_question: 'A instalação gerou algum produto coletivo?',
+        questions: [
+            {
+                id: 1,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },    
+        ],
+    },
+    /* 7. Material pedagógico */
+    {
+        id: 1,
+        lae_id: 7,
+        name: 'Produção de material didático-pedagógico',
+        base_question: 'O projeto produziu algum material didático-pedagógico?',
+        questions: [
+            {
+                id: 1,
+                title: 'Qual o tipo de material didático-pedagógico foi produzido?',
+                type: TYPES.SEL_M,
+                options: [
+                    { value: 1, title: 'Material impresso (livro, cartilha, guia, álbum, etc)' },
+                    { value: 2, title: 'Material audiovisual para rádio, computadores, TV (vídeo, podcast, etc)' },
+                ].sort(alphaSort)               
+            },
+            {
+                id: 2,
+                title: 'O material didático-pedagógico produzido está vinculado a outro processo educativo?',
+                type: TYPES.SN,                
+            },   
+            {
+                id: 3,
+                title: 'O material didático-pedagógico foi construído com a participação',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Equipe técnica responsável pela elaboração do material' },
+                    { value: 2, title: 'Público destinatário do material didático-pedagógico' },
+                ].sort(alphaSort)               
+            }, 
+            {
+                id: 4,
+                title: 'Como o material foi distribuído?',
+                type: TYPES.SEL_S,
+                options: [
+                    { value: 1, title: 'Aleatoriamente' },
+                    { value: 2, title: 'Para um público específico envolvido em outra ação educativa a qual está vinculada a produção do material didático-pedagógico' },
+                ].sort(alphaSort)               
+            },
+        ],
+    },
+    /* 8. Manejo sustentável */
+    {
+        id: 1,
+        lae_id: 8,
+        name: 'Atividades de diálogo e reflexão sobre a prática do manejo',
+        base_question: 'O projeto desenvolvido gerou alguma ação de manejo sustentável?',
+        questions: [
+            {
+                id: 1,
+                title: 'Indique o tema do projeto',
+                type: TYPES.TEXT,             
+            },
+            {
+                id: 2,
+                title: 'Existem dados/informações sobre a redução do problema a partir/depois do manejo sustentável?',
+                type: TYPES.SN,                
+            },
+            {
+                id: 3,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },
+        ],
+    },
+    {
+        id: 2,
+        lae_id: 8,
+        name: 'Processos formativos vinculados',
+        base_question: 'Desenvolveu algum processo formativo vinculado ao manejo sustentável? ',
+        questions: [
+            {
+                id: 1,
+                title: 'Número de pessoas envolvidas no(s) processo(s)',
+                type: TYPES.SEL_S,
+                options: [
+                    { value: 1, title: 'Até 50 pessoas' },
+                    { value: 2, title: '51 a 100 pessoas' },
+                    { value: 3, title: '101 a 300 pessoas' },
+                    { value: 4, title: '301 a 600 pessoas' },
+                    { value: 5, title: 'Acima de 600 pessoas' },
+                ]/* .sort(alphaSort)  */               
+            },
+        ],
+    },
+    /* 9. Monitoramento */
+    {
+        id: 1,
+        lae_id: 9,
+        name: 'Estratégias participativas de monitoramento',
+        base_question: 'O projeto desenvolvido promoveu o monitoramento participativo?',
+        questions: [
+            {
+                id: 1,
+                title: 'Quais estratégias foram/são utilizadas para o desenvolvimento do monitoramento participativo?',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Reuniões' },
+                    { value: 2, title: 'Oficinas' },
+                    { value: 3, title: 'Plataformas digitais interativas' },
+                    { value: 4, title: 'Visitas em campo' },
+                ].sort(alphaSort)                
+            }, 
+            {
+                id: 2,
+                title: 'Número de pessoas envolvidas no(s) processo(s) de monitoramento participativo',
+                type: TYPES.SEL_S,
+                options: [
+                    { value: 1, title: 'Até 50 pessoas' },
+                    { value: 2, title: '51 a 100 pessoas' },
+                    { value: 3, title: '101 a 300 pessoas' },
+                    { value: 4, title: '301 a 600 pessoas' },
+                    { value: 5, title: 'Acima de 600 pessoas' },
+                ]/* .sort(alphaSort)  */               
+            },
+        ],
+    },
+    {
+        id: 2,
+        lae_id: 9,
+        name: 'Processos formativos em monitoramento e avaliação',
+        base_question: 'O monitoramento participativo estava/está vinculado ou promove alguma ação de capacitação?',
+        questions: [
+            {
+                id: 1,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },
+        ],
+    },
+    {
+        id: 3,
+        lae_id: 9,
+        name: 'Disponibilização/transparência de dados',
+        base_question: 'Os dados de monitoramento participativo são disponibilizados ao público?',
+        questions: [
+            {
+                id: 1,
+                title: 'Onde são armazenados e disponibilizados os dados do monitoramento participativo?',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Relatórios técnicos' },
+                    { value: 2, title: 'Site da instituição responsável pela ação' },
+                    { value: 3, title: 'Plataformas digitais com dados abertos' },
+                ].sort(alphaSort)                
+            },
+        ],
+    },
+    /* 10. Pesquisa */
+    {
+        id: 1,
+        lae_id: 10,
+        name: 'Pesquisas realizadas',
+        base_question: 'O projeto desenvolveu alguma pesquisa científica vinculado ao escopo do PPPZCM',
+        questions: [
+            {
+                id: 1,
+                title: 'A pesquisa foi publicada?',
+                type: TYPES.SN,                
+            },
+            {
+                id: 2,
+                title: 'A pesquisa teve seus resultados socializados em',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Congressos e outros eventos científicos' },
+                    { value: 2, title: 'Reunião/ encontros junto aos envolvidos na pesquisa' },
+                    { value: 3, title: 'Reuniões com as comunidades e/ou públicos não-acadêmicos' },
+                ].sort(alphaSort)                
+            },
+        ],
+    },
+    /* 11. Planos e /ou Projeto político pedagógico */
+    {
+        id: 1,
+        lae_id: 11,
+        name: 'Construção de instrumentos',
+        base_question: 'O Projeto envolveu a construção e/ou implementação de algum instrumento de política pública?',
+        questions: [
+            {
+                id: 1,
+                title: 'Qual(is)',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Planejamento Estratégico' },
+                    { value: 2, title: 'Programa de Educação Ambiental' },
+                    { value: 3, title: 'Projeto Político Pedagógico' },
+                ].sort(alphaSort)                
+            },
+            {
+                id: 2,
+                title: 'O instrumento construído e/ou em implementação realizou ou realiza',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Diagnóstico participativo' },
+                    { value: 2, title: 'Mobilização Social' },
+                    { value: 3, title: 'Processo Formativo/ Capacitação' },
+                    { value: 4, title: 'Educomunicação' },
+                ].sort(alphaSort)                
+            },
+            {
+                id: 3,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },
+        ],
+    },
+    {
+        id: 2,
+        lae_id: 11,
+        name: 'Resultados do instrumento',
+        base_question: 'O instrumento construído e ou implementado gerou algum produto coletivo?',
+        questions: [
+            {
+                id: 1,
+                title: 'Qual(is)',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Relatório' },
+                    { value: 2, title: 'Peças de comunicação/educomunicação' },
+                    { value: 3, title: 'Plano de Ação coletivo' },
+                ].sort(alphaSort)                
+            },
+            {
+                id: 2,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },
+        ],
+    },
+    {
+        id: 1,
+        lae_id: 12,
+        name: 'Ações de sensibilização',
+        base_question: 'O projeto desenvolveu alguma ação de sensibilização socioambiental?',
+        questions: [
+            {
+                id: 1,
+                title: 'A sensibilização socioambiental foi realizada por meio de',
+                type: TYPES.SEL_MO,
+                options: [
+                    { value: 1, title: 'Campanhas educativas' },
+                    { value: 2, title: 'Eventos' },
+                    { value: 3, title: 'Produção de material didático-pedagógico' },
+                ].sort(alphaSort)                
+            },
+            {
+                id: 2,
+                title: 'Qual foi o número de pessoas envolvidas nas ações de sensibilização?',
+                type: TYPES.SEL_S,
+                options: [
+                    { value: 1, title: 'Até 50 pessoas' },
+                    { value: 2, title: '51 a 100 pessoas' },
+                    { value: 3, title: '101 a 300 pessoas' },
+                    { value: 4, title: '301 a 600 pessoas' },
+                    { value: 5, title: 'Acima de 600 pessoas' },
+                ]/* .sort(alphaSort)  */               
+            },
+        ],
+    },
+    {
+        id: 2,
+        lae_id: 12,
+        name: 'Percepção socioambiental',
+        base_question: 'Foi realizada alguma investigação, pesquisa sobre a percepção socioambiental do público envolvido na sensibilização para verificar se houve mudança?',
+        questions: [
+            {
+                id: 1,
+                title: 'Comente ou insira arquivos',
+                type: TYPES.TEXT,                
+            },
+        ],
+    },
+    /* 12. Sensibilização */
+
+];
+
+export function getIndics(lae) {
+    return INDICs.filter(i => String(i.lae_id) === String(lae));
+}

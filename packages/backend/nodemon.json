@@ -1,0 +1,9 @@
+{
+  "watch": [
+    ".",
+    "/home/ricardo/projects/dorothy/DEV/dorothy-dna/packages/dorothy-dna-services/"
+  ],
+  "execMap": {
+    "js": "node --inspect"
+  }
+}

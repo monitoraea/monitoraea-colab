@@ -1,0 +1,1 @@
+ALTER TABLE public.helpboxes ALTER COLUMN "type" DROP NOT NULL;

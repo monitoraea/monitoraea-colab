@@ -1,0 +1,738 @@
+const Sequelize = require('sequelize');
+const db = require('../database');
+
+const { Messagery } = require('dorothy-dna-services');
+
+const { applyJoins, applyWhere, protect } = require('../../utils');
+
+const crypto = require('crypto');
+
+const { v4: uuidv4 } = require('uuid');
+
+const config = require('../../config');
+
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+const baseURL = process.env.BASE_URL || 'https://pppzcm.monitoraea.com.br';
+
+class Service {
+  async getPerspectives() {
+    return await db.instance().query(
+      `
+    select * 
+    from perspectives
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+  }
+
+  async list(communityId, config) {
+    // what type of community is this?
+    const community = await db.instance().query(
+      `
+    select type 
+    from ${process.env.DB_PREFIX}communities c
+    where c.id = :communityId
+    `,
+      {
+        replacements: { communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!community.length) throw new Error('Unknown community!');
+    const type = community[0].type.trim();
+
+    if (!['adm', 'facilitador'].includes(type)) throw new Error('Permission denied!');
+
+    if (type === 'adm') return this.list4Adm(communityId, config);
+    else return this.list4Facilit(communityId, config);
+  }
+
+  async list4Adm(communityId, config) {
+    let entities = await db.instance().query(
+      `
+        select 
+          id, 
+          alias, 
+          TRIM(type) as "type", 
+          case
+            when TRIM(type) = 'project' then 'Projeto'
+            else 'Facilitador'
+          end as "typeName",
+          descriptor_json->'title' as "name",
+          count(*) OVER() AS total_count 
+        from dorothy_communities
+        where type not in ('network','adm')
+        order by "${config.order}" ${config.direction}
+      `,
+      {
+        replacements: { communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return {
+      entities,
+      total: entities.length ? parseInt(entities[0].total_count) : 0,
+    };
+  }
+
+  async list4Facilit(communityId, config) {
+    // verifica se nacional esta entre areas deste facilitador
+
+    const result = await db.instance().query(
+      `
+    select count(*) as qtd
+    from facilitadores f
+    where f."communityId" = :communityId
+    and 'NACIONAL' = ANY(f.atuacao)
+    `,
+      {
+        replacements: { communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const whereNacional = result[0].qtd > 0 ? "OR pa.nm_regiao = 'NACIONAL'" : '';
+
+    let query1 = `
+    select p."community_id"
+    from projetos p
+    left join projetos_atuacao pa on pa.projeto_id = p.id
+    left join municipios m on m.cd_mun = pa.cd_mun
+    where m.nm_uf in (select unnest(atuacao) from facilitadores f where f."communityId" = :communityId)
+    ${whereNacional}
+    or p.facilitador_community_id = :communityId
+    group by p.id
+    order by p.nome
+    `;
+
+    const entities = await db.instance().query(
+      `
+    select 
+      id, 
+      alias, 
+      TRIM(type) as "type", 
+      case
+        when TRIM(type) = 'project' then 'Projeto'
+        else 'Facilitador'
+      end as "typeName",
+      descriptor_json->'title' as "name",
+      count(*) OVER() AS total_count
+    from dorothy_communities 
+    where type not in ('network','adm')
+    and id in (${query1})
+    order by "${config.order}" ${config.direction}
+    `,
+      {
+        replacements: { communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return {
+      entities,
+      total: entities.length ? parseInt(entities[0].total_count) : 0,
+    };
+  }
+
+  async members(communityId, config) {
+    let where = ['dm."communityId" = :communityId'];
+
+    let replacements = {
+      communityId,
+      limit: config.limit,
+      offset: (config.page - 1) * config.limit,
+    };
+
+    const entities = await db.instance().query(
+      `
+        select 
+            du.id, 
+            du.email, 
+            du."name",
+
+            count(*) OVER() AS total_count 
+        from dorothy_users du
+        inner join dorothy_members dm on dm."userId" = du.id
+        ${applyWhere(where)}
+        order by ${!config.last
+        ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}`
+        : 'i."updatedAt" desc'
+      }
+        LIMIT :limit 
+        OFFSET :offset
+        `,
+      {
+        replacements,
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const total = entities.length ? parseFloat(entities[0]['total_count']) : 0;
+    const rawPages = entities.length ? parseInt(total) / config.limit : 0;
+    let pages = rawPages === Math.trunc(rawPages) ? rawPages : Math.trunc(rawPages) + 1;
+    let hasPrevious = config.page > 1;
+    let hasNext = config.page !== pages;
+
+    return {
+      entities,
+      pages,
+      total,
+      hasPrevious,
+      hasNext,
+    };
+  }
+
+  async invites(communityId, config) {
+    let where = ['i."confirmedAt" is null and i."communityId" = :communityId'];
+
+    let replacements = {
+      communityId,
+      limit: config.limit,
+      offset: (config.page - 1) * config.limit,
+    };
+
+    const entities = await db.instance().query(
+      `
+    select 
+        i.id, 
+        i.email, 
+        i."name",
+        count(*) OVER() AS total_count 
+    from invites i 
+    ${applyWhere(where)}
+    order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'i."updatedAt" desc'
+      }
+    LIMIT :limit 
+    OFFSET :offset
+    `,
+      {
+        replacements,
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const total = entities.length ? parseFloat(entities[0]['total_count']) : 0;
+    const rawPages = entities.length ? parseInt(total) / config.limit : 0;
+    let pages = rawPages === Math.trunc(rawPages) ? rawPages : Math.trunc(rawPages) + 1;
+    let hasPrevious = config.page > 1;
+    let hasNext = config.page !== pages;
+
+    return {
+      entities,
+      pages,
+      total,
+      hasPrevious,
+      hasNext,
+    };
+  }
+
+  async participation(communityId, config) {
+    let where = ['p."resolvedAt" is null'];
+
+    // what type of community is this?
+    const community = await db.instance().query(
+      `
+    select type 
+    from ${process.env.DB_PREFIX}communities c
+    where c.id = :communityId
+    `,
+      {
+        replacements: { communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!community.length) throw new Error('Unknown community!');
+    const type = community[0].type.trim();
+
+    if (type !== 'adm') where.push('p."communityId" = :communityId');
+
+    let replacements = {
+      communityId,
+      limit: config.limit,
+      offset: (config.page - 1) * config.limit,
+    };
+
+    if (config.ini_date && config.end_date) {
+      where.push('p."createdAt" between :iniDate and :endDate');
+      replacements.iniDate = config.ini_date;
+      replacements.endDate = config.end_date;
+    } else if (config.ini_date) {
+      where.push('p."createdAt" >= :iniDate');
+      replacements.iniDate = config.ini_date;
+    } else if (config.end_date) {
+      where.push('p."createdAt" <= :endDate');
+      replacements.endDate = config.end_date;
+    }
+
+    if (config.participation_type) {
+      where.push('p.adm = :p_type');
+      replacements.p_type = config.participation_type === 'adm';
+    }
+
+    const entities = await db.instance().query(
+      `
+    select p.id, p."createdAt", p."communityId", du."name", p.adm, dc.descriptor_json->>'title' as "community_name",
+    count(*) OVER() AS total_count   
+    from participar p 
+    inner join ${process.env.DB_PREFIX}users du on du.id = p."userId"
+    inner join ${process.env.DB_PREFIX}communities dc on dc.id = p."communityId" 
+    ${applyWhere(where)}
+    order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'p."updatedAt" desc'
+      }
+    LIMIT :limit 
+    OFFSET :offset
+    `,
+      {
+        replacements,
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const total = entities.length ? parseFloat(entities[0]['total_count']) : 0;
+    const rawPages = entities.length ? parseInt(total) / config.limit : 0;
+    let pages = rawPages === Math.trunc(rawPages) ? rawPages : Math.trunc(rawPages) + 1;
+    let hasPrevious = config.page > 1;
+    let hasNext = config.page !== pages;
+
+    return {
+      entities,
+      pages,
+      total,
+      hasPrevious,
+      hasNext,
+    };
+  }
+
+  async remove(communityId, userId) {
+    await db.instance().query(
+      `
+    delete from dorothy_members 
+    where "communityId" = :communityId and "userId" = :userId
+    `,
+      {
+        replacements: { communityId, userId },
+        type: Sequelize.QueryTypes.DELETE,
+      },
+    );
+
+    return { success: true };
+  }
+
+  async removeInvite(communityId, id) {
+    await db.instance().query(
+      `
+    delete from invites 
+    where "communityId" = :communityId and id = :id
+    `,
+      {
+        replacements: { communityId, id },
+        type: Sequelize.QueryTypes.DELETE,
+      },
+    );
+
+    return { success: true };
+  }
+
+  async removeParticipation(communityId, id) {
+    let where = ['id = :id'];
+
+    // what type of community is this?
+    const community = await db.instance().query(
+      `
+    select type 
+    from ${process.env.DB_PREFIX}communities c
+    where c.id = :communityId
+    `,
+      {
+        replacements: { communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!community.length) throw new Error('Unknown community!');
+    const type = community[0].type.trim();
+
+    if (type !== 'adm') where.push('"communityId" = :communityId');
+
+    await db.instance().query(
+      `
+    delete from participar 
+    ${applyWhere(where)} 
+    `,
+      {
+        replacements: { communityId, id },
+        type: Sequelize.QueryTypes.DELETE,
+      },
+    );
+
+    return { success: true };
+  }
+
+  async approveParticipacion(id) {
+    /* recupera os dados da participacao e do usuario */
+    const participation = await db.instance().query(
+      `select p.id, "userId", "communityId", p2.nome as project_name, u.id as user_id, u."name" as user_name, u.email as user_email, adm  
+      from participar p 
+      inner join projetos p2 on p2.community_id = p."communityId"
+      inner join dorothy_users u on u.id = p."userId" 
+      where p.id = :id and "resolvedAt" is null`,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!participation) throw new Error('Nothing to approve based on participation ID!');
+
+    const [pData] = participation;
+
+    // console.log(pData.communityId, pData.user_name, pData.user_email, pData.adm ? 'ADM' : 'MEMBER')
+
+    const isADM = pData.adm;
+
+    /* Transforma em membro ou adm */
+    this.addMember(pData.communityId, pData.user_id, isADM ? 'adm' : 'member');
+
+    /* Resolve o pedido de participacao */
+    await db.instance().query(`update participar set "resolvedAt" = NOW() where id = :id`, {
+      replacements: { id },
+      type: Sequelize.QueryTypes.UPDATE,
+    });
+
+    /* NOTIFICACAO */
+    if (isADM) {
+      await Messagery.sendNotification({ id: 0 }, `room_c${pData.communityId}_t1`, {
+        content: {
+          new_adm_name: pData.user_name,
+        },
+        userId: 0,
+        tool: {
+          type: "native",
+          element: "NewGTADMNotification"
+        },
+      });
+    }
+
+    /* Envia email para o requerente  */
+    const subject = isADM ? 'Confirmação de responsabilidade por ação' : 'Confirmação de pedido de participação';
+
+    const pedido = isADM ? 'moderador' : 'membro';
+    const message = `Agora você é ${pedido} do grupo "${pData.project_name}".
+    `;
+
+    const msg = {
+      to: pData.user_email,
+      from: `Plataforma MonitoraEA/PPPZCM <${process.env.FROM_EMAIL}>`,
+      subject: `MonitoraEA/PPPZCM - ${subject}`,
+      text: `${message}\n\n${process.env.BASE_URL}/colabora/projeto/${pData.communityId}`,
+      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/colabora/projeto/${pData.communityId
+        }">Clique aqui para acessar esta ação</a>`,
+    };
+
+    try {
+      await sgMail.send(msg);
+    } catch (err) {
+      console.log('participation confirmation email error', {
+        error: err.toString(),
+      });
+    }
+
+    return { ok: true };
+  }
+
+  async invite(communityId, name, email) {
+    let result;
+
+    result = await db.instance().query(
+      ` 
+        select *
+        from invites i
+        where i."communityId" = :communityId
+        and email = :email`,
+      {
+        replacements: { communityId, email },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (result.length) return { ok: true }; /* Ja tem convite para este email, para esta comunidade */
+
+    result = await db.instance().query(
+      ` 
+      select descriptor_json::json->>'title' as title
+      from dorothy_communities c
+      where c.id = :communityId`,
+      {
+        replacements: { communityId, email },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const communityTitle = result[0].title;
+
+    const uuid = uuidv4();
+
+    result = await db.instance().query(
+      ` 
+        insert into invites("communityId", name, email, uuid, "createdAt", "updatedAt")
+        values(:communityId, :name, :email, :uuid, NOW(), NOW())
+        `,
+      {
+        replacements: { communityId, email, name, uuid },
+        type: Sequelize.QueryTypes.INSERT,
+      },
+    );
+
+    // send email
+    const link = `${baseURL}/colabora/convite/${uuid}`;
+
+    const text = `
+    Olá ${name}!\n
+    Voce foi convidado para participar do grupo de trabalho "${communityTitle}", na plataforma MonitoraEA/PPPZCM.\n
+    Para confirmar a sua participação, utilize o seguinte link: ${link}`;
+
+    const html = `
+    <p>Olá ${name}!</p>
+    <p>Voce foi convidado para participar do grupo de trabalho "${communityTitle}", na plataforma MonitoraEA/PPPZCM.<br/>
+    Para confirmar a sua participação, clique no link a seguir: <a href="${link}">${link}</a></p>`;
+
+    const msg = {
+      to: email,
+      from: config.invite.from,
+      subject: config.invite.subject,
+      text,
+      html,
+    };
+
+    try {
+      await sgMail.send(msg);
+      return { ok: true };
+    } catch (error) {
+      console.error(error);
+      return { ok: false };
+    }
+  }
+
+  async verifyInvitation(uuid, loggedUser) {
+    let result;
+
+    /* verifica se existe o convite */
+    result = await db.instance().query(
+      ` select *
+        from invites i
+        where i.uuid = :uuid
+        and "confirmedAt" is null
+        order by name`,
+      {
+        replacements: { uuid },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!result.length) return { result: 'unknow-invitation' };
+
+    const invitation = result[0];
+
+    /* verifica se usuario ja esta cadastrado */
+    result = await db.instance().query(
+      ` select id
+        from dorothy_users u
+        where u.email = :email`,
+      {
+        replacements: { email: invitation['email'] },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    /* se usuario nao esta cadastrado, confirma que convite existe e nada mais */
+    if (!result.length)
+      return {
+        result: 'new-user',
+        communityId: invitation['communityId'],
+        name: invitation['name'],
+        email: invitation['email'],
+        logout: loggedUser && loggedUser.email !== invitation['email'],
+      };
+
+    const user = result[0];
+
+    /* se usuario esta cadastrado, confirma convite e devolve dados da comunidade */
+
+    // confirma o convite
+    await this.markInvitation(invitation['id']);
+
+    // torna membro
+    await this.addMember(invitation['communityId'], user.id);
+
+    return {
+      result: 'already-user',
+      communityId: invitation['communityId'],
+      logout: loggedUser && loggedUser.email !== invitation['email'],
+    };
+  }
+
+  async broadcasting(type, message) {
+    // types: all, supporters, iniciativas
+    let where = [];
+    if (type === 'supporters') where.push(`dc."type" = 'facilitador'`);
+    else if (type === 'iniciativas') where.push(`dc."type" = 'project'`);
+    else where.push(`dc."type" <> 'adm'`);
+
+    const entities = await db.instance().query(
+      `    
+      select dc.id, dc.descriptor_json->>'title' as "name"
+      from dorothy_communities dc
+      ${applyWhere(where)}
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    let content = {
+      message,
+      tags: ['broadcasting'],
+    }
+
+    // send message to SEC
+    await Messagery.sendNotification({ id: 0 }, `room_c1_t1`, {
+      content: {
+        ...content,
+        total: entities.length,
+        type,
+      },
+      userId: 0,
+      tool: {
+        type: "native",
+        element: "SendingBroadcastNotification"
+      },
+    });
+
+    // send message to target
+    for (let gt of entities) {
+      await Messagery.sendNotification({ id: 0 }, `room_c${gt.id}_t1`, {
+        content,
+        userId: 0,
+        tool: {
+          type: "native",
+          element: "BroadcastNotification"
+        },
+      });
+    };
+
+    return { success: true }
+  }
+
+  async signup(password, uuid) {
+    let result;
+
+    /* verifica se existe o convite */
+    result = await db.instance().query(
+      ` select *
+        from invites i
+        where i.uuid = :uuid
+        and "confirmedAt" is null
+        order by name`,
+      {
+        replacements: { uuid },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!result.length) return { result: 'unknow-invitation' };
+
+    const invitation = result[0];
+
+    /* Cria o novo usuario */
+    result = await db.instance().query(
+      ` insert into dorothy_users(email, password, name, "createdAt", "updatedAt")
+        values(:email, :password, :name, NOW(), NOW())
+        RETURNING id
+        `,
+      {
+        replacements: {
+          email: invitation['email'],
+          name: invitation['name'],
+          password: crypto.createHash('md5').update(password).digest('hex'),
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const newUserId = result[0].id; /* recupera o id recem criado */
+
+    // confirma o convite
+    await this.markInvitation(invitation['id']);
+
+    // torna membro
+    await this.addMember(invitation['communityId'], newUserId);
+    await this.addMember(250, newUserId);
+
+    return { success: true };
+  }
+
+  async markInvitation(id) {
+    await db.instance().query(
+      ` update invites
+        set "confirmedAt" = NOW()
+        where id = :id`,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.UPDATE,
+      },
+    );
+  }
+
+  async addMember(communityId, userId, type = 'adm', order = 0) {
+    /* type: MEMBER */
+
+    await db.instance().query(
+      ` insert into dorothy_members("communityId", "userId", "type", "createdAt", "updatedAt", "order")
+        values(:communityId, :userId, :type, NOW(), NOW(), :order)
+        `,
+      {
+        replacements: { communityId, userId, type, order },
+        type: Sequelize.QueryTypes.INSERT,
+      },
+    );
+
+    /* FOLLOW */
+    const entities = await db.instance().query(
+      `
+        SELECT f.id
+        from dorothy_following f
+        where f."userId" = :userId and f.room = 'room_c${communityId}_t1'
+        `,
+      {
+        replacements: { userId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!entities.length) {
+      /* INSERT */
+
+
+      await db.instance().query(
+        `
+        INSERT INTO dorothy_following("userId", room, "communityId")
+        VALUES(:userId, 'room_c${communityId}_t1', :communityId )
+        `,
+        {
+          replacements: { userId, communityId },
+          type: Sequelize.QueryTypes.INSERT,
+        },
+      );
+    }
+  }
+}
+
+const singletonInstance = new Service();
+module.exports = singletonInstance;

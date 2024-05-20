@@ -1,0 +1,22 @@
+@use '../../../../sass/theme/app_variables' as *;
+
+.text1 {
+  font-family: $font-family;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 125%;
+}
+
+.text2 {
+  font-family: $font-family;
+  font-size: .875rem;
+  font-weight: 400;
+  line-height: 125%;
+}
+
+.text3 {
+  font-family: $font-family;
+  font-size: .75rem;
+  font-weight: 400;
+  line-height: 125%;
+}

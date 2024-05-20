@@ -1,0 +1,53 @@
+@use '../../sass/theme/app_variables' as *;
+
+.card {
+  background: $white;
+  border-radius: .25rem;
+  box-shadow: $shadow-1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &.headerless {
+    .card_header {
+      display: none;
+    }
+  }
+
+  .card_header {
+    padding: .75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+
+    .card_title {
+      font-size: .875rem;
+      color: $gray;
+
+      svg {
+        height: .875rem;
+        stroke: $gray;
+        margin-right: .5rem;
+      }
+    }
+  }
+
+  &.align_middle {
+    .card_body {
+      justify-content: space-around;
+    }
+  }
+
+  &.align_bottom {
+    .card_body {
+      justify-content: flex-end;
+    }
+  }
+
+  .card_body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+}

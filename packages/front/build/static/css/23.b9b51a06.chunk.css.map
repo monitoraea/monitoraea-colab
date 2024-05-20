@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/tools/notifications/NewContactFromSite/styles.module.scss"],"names":[],"mappings":"AAAA,uBACI,cAAA,CACA,6BACI,yBAAA","file":"23.b9b51a06.chunk.css","sourcesContent":[".goto-gt {\n    cursor: pointer;\n    &:hover {\n        text-decoration: underline;\n    }\n}"]}

@@ -1,0 +1,96 @@
+@use '../../../sass/theme/app_variables' as *;
+
+.nav-notifications {
+    margin-right: 1rem;
+
+    @media (max-width: $tablet) {
+        margin-right: 0;
+    }
+
+    .nav-notifications-btn {
+        position: relative;
+        display: flex;
+        cursor: pointer;
+        height: 1.5rem;
+        align-items: center;
+
+        svg {
+            height: 1.25rem;
+            width: unset;
+            transition: .25s ease;
+            stroke: $gray;
+        }
+
+        .nav-notifications-badge {
+            text-align: center;
+            color: $primary;
+            font-size: .875rem;
+            font-weight: 500;
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform: translate(50%, -50%);
+            opacity: 0;
+        }
+
+        &.active {
+
+            .nav-notifications-badge {
+                opacity: 1;
+            }
+
+            svg {
+                stroke: $primary;
+            }
+        }
+    }
+}
+
+.nav-notifications-menu {
+    user-select: none;
+
+    :global(.MuiPaper-elevation) {
+        transform: translate(calc(-50% + .75rem), .5rem) !important;
+        min-width: 200px;
+
+        ul {
+            padding: 0;
+
+            .nav-notifications-menutitle {
+                background-color: rgba($primary, .75);
+                color: $white;
+                padding: .5rem 1rem;
+                font-size: .875rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                svg {
+                    height: .875rem;
+                    width: unset;
+                    stroke: $white;
+                    margin-right: .25rem;
+                }
+            }
+
+            li {
+                padding: .5rem 1rem;
+                font-size: .875rem;
+
+                &:focus {
+                    background: unset;
+                }
+
+                &:hover {
+                    background: $light-gray;
+                }
+
+                &.empty {
+                    justify-content: center;
+                    pointer-events: none;
+                }
+            }
+        }
+
+    }
+}

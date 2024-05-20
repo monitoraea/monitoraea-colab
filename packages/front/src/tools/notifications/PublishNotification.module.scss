@@ -1,0 +1,8 @@
+.name {
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+        color: #666;
+    }
+}

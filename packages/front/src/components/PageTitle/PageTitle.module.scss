@@ -1,0 +1,7 @@
+@use '../../sass/theme/app_variables' as *;
+
+.page-title {
+  font-size: 1.25rem;
+  color: $gray;
+  line-height: 2rem;
+}

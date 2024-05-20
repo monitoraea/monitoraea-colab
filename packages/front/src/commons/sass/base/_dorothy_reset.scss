@@ -1,0 +1,41 @@
+@use '../../../sass/theme/app_variables' as *;
+
+::-webkit-scrollbar {
+  width: .375rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba($primary, 0.375);
+  border-radius: .125rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba($primary, 0.75);
+}
+
+::-webkit-scrollbar-track {
+  background: rgba($primary, 0.05);
+}
+
+body {
+  overflow: hidden;
+  margin: 0;
+  font-family: $font-family;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: unset;
+}

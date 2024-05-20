@@ -1,0 +1,147 @@
+@use '../../../sass/theme/app_variables' as *;
+;
+
+.mainDiv {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .error {
+        font-size: 0.8em;
+    }
+
+    .actions {
+        display: flex;
+        flex-direction: column;
+
+        button {
+            margin-bottom: 5px;
+        }
+    }
+}
+
+
+.community {
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.maxh {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.ptabs-content {
+    background: $white;
+    border-radius: .5rem;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: $shadow-1;
+
+
+    .ptabs-tabs {
+        :global(.MuiTab-root) {
+            font-size: .875rem;
+            color: $gray;
+            text-transform: unset;
+            flex-flow: row nowrap;
+
+            &.indicator {
+
+                &.fixed-size {
+                    &::after {
+                        width: 1.25rem;
+                        height: 1.25rem;
+                    }
+                }
+
+                &::after {
+                    background-color: gray;
+                    content: attr(data-problems);
+                    margin-left: .25rem;
+                    border-radius: 50%;
+                    color: white;
+                    display: flex;
+                    justify-content: center;
+                    align-content: center;
+                    align-items: center;
+                    font-size: .875rem;
+                    padding: .1rem;
+                    min-width: 1.5rem;
+                    min-height: 1.5rem;
+                }
+
+            }
+
+            &:global(.Mui-selected) {
+                font-weight: 700;
+            }
+
+        }
+
+        :global(.MuiTabs-indicator) {
+            background: $secondary;
+            height: .125rem;
+        }
+    }
+
+    .ptabs-actions {
+        display: flex;
+        padding: .5rem 1rem;
+        align-items: center;
+
+        .ptabs-datefilter {
+            font-size: .875rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+
+            label {
+                margin-right: .5rem;
+                font-weight: 600;
+            }
+
+            .ptabs-datefilter-button {
+                display: flex;
+                background: rgba($primary, .05);
+                padding: .5rem 1rem;
+                align-items: center;
+                line-height: 1rem;
+
+                svg {
+                    height: .875rem;
+                    margin-right: .25rem;
+                    stroke: $gray;
+                }
+            }
+        }
+
+        .divisor {
+            height: 100%;
+            width: 1px;
+            background-color: $light-gray;
+            margin: 0 1rem;
+        }
+
+        .cleanfilters {
+            cursor: pointer;
+            background: transparent;
+            display: flex;
+            color: $gray;
+            border: 0;
+            font-size: .875rem;
+            align-items: center;
+            transition: .25s ease;
+
+            svg {
+                height: .875rem;
+                margin-right: .25rem;
+            }
+
+            &:hover {
+                opacity: .5;
+            }
+        }
+    }
+}

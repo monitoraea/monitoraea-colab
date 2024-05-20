@@ -1,0 +1,122 @@
+@use '../../../sass/theme/app_variables' as *;
+;
+
+.tool-tabs {
+  height: 3rem;
+  margin-bottom: 1rem;
+  position: sticky;
+  top: 1rem;
+  z-index: 99;
+
+  .backdrop {
+    content: "";
+    position: absolute;
+    width: calc(100vw - .75rem);
+    height: 5rem;
+    top: -1rem;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: $white;
+    z-index: -1;
+
+    &:after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: $gradient;
+    }
+  }
+
+  .ptabs-content {
+    background: $white;
+    border-radius: .5rem;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: $shadow-1;
+
+
+    .ptabs-tabs {
+      :global(.MuiTab-root) {
+        font-size: .875rem;
+        color: $gray;
+        text-transform: unset;
+
+        &:global(.Mui-selected) {
+          font-weight: bold;
+        }
+      }
+
+      :global(.MuiTabs-indicator) {
+        background: $secondary;
+        height: .125rem;
+      }
+    }
+
+    .ptabs-actions {
+      display: flex;
+      padding: .5rem 1rem;
+      align-items: center;
+
+      .ptabs-datefilter {
+        font-size: .875rem;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        label {
+          margin-right: .5rem;
+          font-weight: 600;
+        }
+
+        .ptabs-datefilter-button {
+          display: flex;
+          background: rgba($primary, .05);
+          padding: .5rem 1rem;
+          align-items: center;
+          line-height: 1rem;
+
+          svg {
+            height: .875rem;
+            margin-right: .25rem;
+            stroke: $gray;
+          }
+        }
+      }
+
+      .divisor {
+        height: 100%;
+        width: 1px;
+        background-color: $light-gray;
+        margin: 0 1rem;
+      }
+
+      .cleanfilters {
+        cursor: pointer;
+        background: transparent;
+        display: flex;
+        color: $gray;
+        border: 0;
+        font-size: .875rem;
+        align-items: center;
+        transition: .25s ease;
+
+        svg {
+          height: .875rem;
+          margin-right: .25rem;
+        }
+
+        &:hover {
+          opacity: .5;
+        }
+      }
+    }
+  }
+
+  svg {
+    height: 1.25rem;
+    width: unset;
+  }
+}

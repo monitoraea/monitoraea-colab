@@ -1,0 +1,82 @@
+@use '../../sass/theme/app_variables' as *;
+
+.sidebar_filters {
+
+  .filter_group {
+    margin-bottom: 1.5rem;
+
+    .group_title {
+      font-weight: 600;
+      color: $gray;
+      margin-bottom: .5rem;
+      text-align: center;
+      text-transform: lowercase;
+    }
+
+    .add_filter {
+      background: rgba($primary, .05);
+      display: flex;
+      justify-content: space-between;
+      padding: .5rem 1rem;
+      align-items: center;
+      cursor: pointer;
+      transition: .25s ease;
+      font-weight: 500;
+      border-radius: .5rem;
+
+      svg {
+        height: 1rem;
+
+        * {
+          fill: $gray;
+        }
+      }
+
+      &:hover {
+        background: rgba($primary, .1);
+        color: $primary;
+
+        svg {
+          * {
+            fill: $primary;
+          }
+        }
+      }
+    }
+
+    .choose_filter {
+      .filter {
+        margin-bottom: .5rem;
+        display: flex;
+
+        .input-select {
+          width: calc(100% - 3rem);
+        }
+
+        .remove {
+          margin-left: .5rem;
+          width: 2.5rem;
+          height: 2.5rem;
+          background-color: rgba($primary, .05);
+          padding: .5rem;
+          cursor: pointer;
+          border-radius: .5rem;
+          transition: .25s ease;
+
+          &:hover {
+            background-color: rgba($primary, .1);
+
+            svg * {
+              stroke: $primary;
+              transition: .25s ease;
+
+            }
+          }
+        }
+
+      }
+
+      .filter_option {}
+    }
+  }
+}

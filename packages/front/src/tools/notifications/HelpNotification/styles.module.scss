@@ -1,0 +1,56 @@
+@use '../../../sass/theme/app_variables' as *;
+$delete: #A70D11;
+
+.mainDiv {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .error {
+        font-size: 0.8em;
+    }
+
+    .actions {
+        display: flex;
+        flex-direction: column;
+        margin-left: 10px;
+
+        button {
+            margin-bottom: 5px;
+        }
+    }
+}
+
+
+.community {
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.maxh {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+
+    .status {
+        font-size: 0.80em;
+        color: white;
+        background-color: $delete;
+        border-radius: 6px;
+        padding: 0 4px;
+        margin-left: 5px;
+
+        &.closed {
+            background-color: $primary;
+        }
+    }
+}
+
+.text {
+    font-style: italic;
+}

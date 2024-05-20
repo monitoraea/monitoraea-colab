@@ -1,0 +1,19 @@
+@forward '../../commons/sass/theme/dorothy_variables';
+
+// Theme  
+$primary: #73bf48;
+$secondary: #5d9f38;
+
+/* Custom */
+$chart1: #326AB8;
+$chart2: #4A944C;
+$chart3: #F8801F;
+$chart4: #CD852B;
+$chart5: #A18A36;
+$chart6: #95756C;
+$chart7: #77A439;
+$chart8: #A3B426;
+$chart9: #CDAD29;
+$chart10: #F7A52C;
+
+$gradient: linear-gradient(90deg, rgba($primary, 0) 0%, rgba($primary, 0.05) 100%);

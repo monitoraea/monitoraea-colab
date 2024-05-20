@@ -1,0 +1,101 @@
+.button {
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    transition: var(--transition-1);
+
+    .icon {
+        // margin-left: calc(var(--spacing-2) * -1);
+        margin-left: calc( -1 * var(--spacing-2));
+        margin-right: var(--spacing-2);
+
+        svg {
+            height: var(--spacing-5);
+            width: var(--spacing-5);
+
+            * {
+                stroke-width: var(--spacing-1);
+                transition: var(--transition-1);
+            }
+        }
+    }
+
+    &.primary {
+        background-color: var(--primary);
+        color: var(--white);
+        height: var(--spacing-7);
+        padding: 0 var(--spacing-5);
+        border-radius: var(--border-radius-2);
+        border: 0;
+
+        .icon {
+            svg {
+                * {
+                    stroke: var(--white);
+                }
+            }
+        }
+
+        &:hover {
+            background-color: var(--primaryhover);
+        }
+    }
+
+    &.outline {
+        background-color: transparent;
+        color: var(--gray-1);
+        height: var(--spacing-7);
+        padding: 0 var(--spacing-5);
+        border-radius: var(--border-radius-2);
+        border: 1px solid var(--gray-1);
+        box-sizing: border-box;
+
+        .icon {
+            svg {
+                * {
+                    stroke: var(--gray-1);
+                }
+            }
+        }
+
+        &:hover {
+            border: 1px solid var(--gray-2);
+            color: var(--gray-2);
+
+            .icon {
+                svg {
+                    * {
+                        stroke: var(--gray-2);
+                    }
+                }
+            }
+        }
+    }
+
+    &.link {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--gray-1);
+
+        .icon {
+            svg {
+                * {
+                    stroke: var(--gray-1);
+                }
+            }
+        }
+
+        &:hover {
+            color: var(--gray-2);
+
+            .icon {
+                svg {
+                    * {
+                        stroke: var(--gray-2);
+                    }
+                }
+            }
+        }
+    }
+}

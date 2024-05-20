@@ -1,0 +1,46 @@
+@use '../../../sass/theme/app_variables' as *;
+
+@media (max-width: $tablet) {
+
+
+    .login_page {
+        padding: 0 !important;
+        height: 100%;
+
+        .login_page-content {
+            height: 100% !important;
+
+            .login_col {
+                flex-grow: 3;
+                padding: 0 !important;
+
+                &:last-child {
+                    flex-grow: 1;
+                }
+            }
+        }
+    }
+
+    .login_signin {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+
+        div[class*=card__] div[class*=card_body] {
+            padding: 0;
+        }
+    }
+
+    .login_logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 2rem;
+
+        .centered {
+            margin: auto;
+        }
+    }
+}

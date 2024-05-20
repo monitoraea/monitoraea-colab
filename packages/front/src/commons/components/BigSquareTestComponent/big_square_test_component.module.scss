@@ -1,0 +1,35 @@
+.center {
+  height: calc(100vh - 8rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+
+  .big_square {
+    width: 25rem;
+    height: 25rem;
+    background-color: gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+
+    .half_color_1 {
+      align-self: stretch;
+      flex-shrink: 1;
+      flex-grow: 2;
+      flex-basis: 50%;
+      background-color: blue;
+      opacity: 0.5;
+    }
+
+    .half_color_2 {
+      align-self: stretch;
+      flex-shrink: 1;
+      flex-grow: 2;
+      flex-basis: 50%;
+      background-color: red;
+      opacity: 0.5;
+    }
+  }
+}

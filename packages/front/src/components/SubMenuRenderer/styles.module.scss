@@ -1,0 +1,12 @@
+.item {
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:disabled {
+        color: #73bf48;
+    }
+    &:not(:disabled) {
+        color: #ccc;
+    }
+}

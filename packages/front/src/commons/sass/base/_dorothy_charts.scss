@@ -1,0 +1,187 @@
+@use '../../../sass/theme/app_variables' as *;
+
+.chart {
+  display: flex;
+  align-items: center;
+
+  .chart-render {
+    width: 60%;
+
+    .apexcharts-canvas {
+      width: 100% !important;
+      max-width: 20rem;
+    }
+  }
+
+  .chart-legend {
+    width: 40%;
+    padding: 0;
+
+    li {
+      display: flex;
+      margin-bottom: 1rem;
+      flex-direction: column;
+
+      ul {
+        max-height: 10rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin: 1rem 0;
+        padding: 0 0 0 2.75rem;
+
+        &:empty {
+          display: none;
+        }
+
+        li {
+          margin-bottom: 0.25rem;
+
+          .list-item {
+            .value {
+              width: unset;
+              height: unset;
+              line-height: unset;
+              border-radius: unset;
+              background-color: unset;
+              text-align: unset;
+              font-weight: 700;
+              color: $gray;
+              margin-right: 0.25rem;
+              font-size: 0.875rem;
+
+              &:after {
+                content: "-";
+                margin-left: 0.25rem;
+              }
+            }
+
+            .label {
+              font-weight: 500;
+              line-height: unset;
+              font-size: 0.875rem;
+            }
+          }
+        }
+      }
+
+      &:nth-child(1) {
+        .value {
+          background-color: $chart1;
+        }
+      }
+
+      &:nth-child(2) {
+        .value {
+          background-color: $chart2;
+        }
+      }
+
+      &:nth-child(3) {
+        .value {
+          background-color: $chart3;
+        }
+      }
+
+      &:nth-child(4) {
+        .value {
+          background-color: $chart4;
+        }
+      }
+
+      &:nth-child(5) {
+        .value {
+          background-color: $chart5;
+        }
+      }
+
+      &:nth-child(6) {
+        .value {
+          background-color: $chart6;
+        }
+      }
+
+      &:nth-child(7) {
+        .value {
+          background-color: $chart7;
+        }
+      }
+
+      &:nth-child(8) {
+        .value {
+          background-color: $chart8;
+        }
+      }
+
+      &:nth-child(9) {
+        .value {
+          background-color: $chart9;
+        }
+      }
+
+      &:nth-child(10) {
+        .value {
+          background-color: $chart10;
+        }
+      }
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+
+      .value {
+        width: 2rem;
+        height: 2rem;
+        line-height: 2rem;
+        border-radius: 0.25rem;
+        background-color: $gray;
+        text-align: center;
+        font-weight: 700;
+        color: $white;
+        margin-right: 0.75rem;
+        padding: 0px 4px;
+
+        .legend-percentage {
+          font-size: 0.575rem;
+        }
+      }
+
+      .label {
+        font-weight: 700;
+        line-height: 1.5rem;
+      }
+    }
+  }
+
+  &.vertical {
+    flex-direction: column;
+
+    @media (max-width: 425px) {
+      .chart-render {
+        width: 100%;
+      }
+    }
+
+    .chart-legend {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      list-style: none;
+      justify-content: center;
+
+      @media (max-width: 425px) {
+        justify-content: flex-start;
+
+      }
+
+      li {
+        margin-bottom: .5rem;
+        flex-direction: column;
+
+        &:not(:last-child) {
+          margin-right: 1rem;
+        }
+      }
+    }
+  }
+}

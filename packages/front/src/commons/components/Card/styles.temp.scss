@@ -1,0 +1,257 @@
+@use '../../../sass/theme/app_variables' as *;
+
+div[class*="card__"] {
+  div[class*="card_body"] {
+    .vis-chart {
+      user-select: none;
+    }
+
+    .vis-itemsdetails {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .itemsdetails-filter {
+        display: inline-block;
+        padding-bottom: 1rem;
+
+        .year {
+          .button {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 700;
+            margin-left: .375rem;
+            transition: .25s ease;
+
+            &:hover {
+              opacity: .5;
+            }
+
+            svg {
+              height: 1rem;
+            }
+          }
+        }
+      }
+
+      .itemsdetails-wrapper {
+        display: flex;
+        margin: auto 0;
+        align-items: center;
+
+        .itemsdetails-item {
+          text-align: center;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          .itemsdetails-item-thumb {
+            display: flex;
+
+            svg {
+              height: 5rem;
+              width: 5rem;
+
+              * {
+                stroke-width: 5px !important;
+                stroke: $primary;
+              }
+            }
+          }
+
+          .itemsdetails-item-value {
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: $primary;
+
+            &.big {
+              font-size: 2.5rem;
+            }
+          }
+
+          .itemsdetails-item-label {
+            font-weight: 600;
+            font-size: 1rem;
+          }
+
+          .itemsdetails-item-desc {
+            font-size: .875rem;
+          }
+
+          .itemsdetails-item-more {
+            margin-top: .5rem;
+            display: flex;
+            align-items: center;
+            font-size: .875rem;
+            cursor: pointer;
+            transition: .25s ease;
+
+            &:hover {
+              opacity: .5;
+            }
+
+            svg {
+              height: 1.25rem;
+              margin-right: .25rem;
+              stroke-width: 1px;
+            }
+          }
+        }
+      }
+
+      .itemsdetails-details {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .itemsdetails-details-back {
+          display: flex;
+          align-items: center;
+          font-size: .875rem;
+          cursor: pointer;
+          transition: .25s ease;
+          padding-bottom: 1rem;
+
+          &:hover {
+            opacity: .5;
+          }
+
+          svg {
+            height: 1.25rem;
+            margin-right: .25rem;
+            stroke-width: 1px;
+          }
+        }
+
+        .itemsdetails-item {
+          width: 33.3%;
+        }
+
+        .itemsdetails-details-list {
+          list-style: none;
+          max-height: 20rem;
+          overflow: auto;
+          width: 66.6%;
+
+          li {
+            padding: 0.5rem;
+            font-size: 0.875rem;
+
+            &:nth-child(odd) {
+              background-color: rgba($primary, .05);
+            }
+          }
+        }
+      }
+    }
+
+    .vis-table {
+      max-height: 20rem;
+      overflow: auto;
+
+      .table-render {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead {
+          position: sticky;
+          top: 0;
+          z-index: 1;
+          background: $white;
+
+          th {
+            padding: .5rem 1rem;
+            color: $gray;
+            font-size: .875rem;
+            text-align: left;
+
+            @media (max-width: $mobileM) {
+              padding: .25rem .5rem;
+              font-size: .750rem;
+            }
+
+            .table-table-sortlabel {
+              width: 100%;
+
+              svg {
+                height: 1rem;
+                stroke: $gray;
+              }
+            }
+
+            &:last-child {
+              text-align: center;
+            }
+          }
+        }
+
+        tbody {
+          tr {
+            td {
+              padding: .5rem 1rem;
+              color: $gray;
+              font-size: .875rem;
+
+              @media (max-width: $mobileM) {
+                padding: .25rem .5rem;
+                font-size: .750rem;
+              }
+
+              &.table-actions {
+                display: flex;
+                justify-content: center;
+
+                div {
+                  display: flex;
+                  margin-right: .5rem;
+                  cursor: pointer;
+                  transition: .25s ease;
+
+                  svg {
+                    height: 1rem;
+                    stroke: $gray;
+                  }
+
+                  &:last-child {
+                    margin-right: 0;
+                  }
+
+                  &:hover {
+                    opacity: .5;
+                  }
+                }
+              }
+
+              &.text-right {
+                text-align: right;
+              }
+            }
+
+            &:nth-child(odd) {
+              background: rgba($primary, 0.05);
+            }
+          }
+        }
+      }
+    }
+
+    .vis-map {
+      height: 100%;
+      width: 100%;
+
+      .leaflet-container {
+        width: 100% !important;
+        min-height: 100% !important;
+      }
+    }
+
+    .vis-resize-svg {
+      >svg {
+        height: 1.25rem;
+        width: unset;
+      }
+    }
+  }
+}
