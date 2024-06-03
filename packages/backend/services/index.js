@@ -4,6 +4,7 @@ module.exports = [
   'dash',
   'news',
   'project',
+  'commission',
   'institution',
   'organization',
   'segmento',

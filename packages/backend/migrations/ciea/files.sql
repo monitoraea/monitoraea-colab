@@ -1,0 +1,1 @@
+ALTER TABLE public.files ADD file_name varchar NOT NULL;

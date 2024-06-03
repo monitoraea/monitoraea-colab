@@ -21,6 +21,12 @@ INSERT INTO public.dorothy_communities
 (id, members_only, descriptor_url, descriptor_json, "createdAt", "updatedAt", alias, "type", config)
 VALUES(604, false, NULL, '{"title": "Guardiões do Portal", "tools": [{"id": 13, "group": "cms"}, {"id": 16, "group": "cms"}, {"id": 4}, {"id": 1}], "groups": [{"id": "cms", "icon": "cms", "title": "conteúdo"}], "includes": [], "perspective": 1}'::jsonb, '2024-05-20 11:56:13.117', '2024-05-20 11:56:13.118', 'adm', 'adm                 ', NULL);
 
+-- DEPOIS DA MIGRACAO
+
+update dorothy_communities 
+set descriptor_json = jsonb_set(descriptor_json,'{"tools"}','[{"id": 18}, {"id": 1}]') 
+where alias = 'comissao'
+
 -- atualiza sequencia
 select max(id)+1 from dorothy_communities dc; 
 
