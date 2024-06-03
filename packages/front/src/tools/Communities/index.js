@@ -42,7 +42,7 @@ const WorkingGroups = () => {
 
   const { data } = useQuery(['communities_list', { currentCommunity: currentCommunity.id, order, direction }], {
     queryFn: async () =>
-      (await axios.get(`${server}gt/${currentCommunity.id}/?order=${order}&direction=${direction}`)).data,
+      (await axios.get(`${server}gt/${currentCommunity.id}/?alias=${currentCommunity.alias.trim()}&order=${order}&direction=${direction}`)).data,
   });
 
   const mutation = {
@@ -203,6 +203,15 @@ const WorkingGroups = () => {
                           onClick={orderBy}
                         />
                       </th>
+                      {currentCommunity.alias.trim() === 'adm' && <th>
+                        <TableSortColumn
+                          text="Perspectiva"
+                          column="perspectiveName"
+                          order={order}
+                          direction={direction}
+                          onClick={orderBy}
+                        />
+                      </th>}
                       <th>
                         <TableSortColumn
                           text="Tipo"
@@ -219,6 +228,7 @@ const WorkingGroups = () => {
                     {workingGroupsList.map(row => (
                       <tr className="tbox-row" key={row.id}>
                         <td>{row.name}</td>
+                        {currentCommunity.alias.trim() === 'adm' && <td>{row.pespectiveName}</td>}
                         <td>{row.typeName}</td>
                         <td className="tbox-table-actions">
                           <div onClick={() => changeRoute({ community: row.id })}>

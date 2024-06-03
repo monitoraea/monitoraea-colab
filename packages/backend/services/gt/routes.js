@@ -13,9 +13,9 @@ router.get('/perspectives', async (req, res) => {
 
 router.get('/:communityId', async (req, res) => {
   const { communityId } = req.params;
-  const { order, direction } = req.query;
+  const { alias, order, direction } = req.query;
 
-  const result = await entity.list(communityId, {
+  const result = await entity.list(communityId, alias, {
     order: order || 'name',
     direction: direction || 'asc',
   });
