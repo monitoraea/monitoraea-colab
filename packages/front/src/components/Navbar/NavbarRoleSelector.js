@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { /* InputBase, */ Menu, MenuItem } from '@mui/material';
 import { useUser, useRouter } from 'dorothy-dna-react';
 
@@ -16,12 +16,18 @@ export default function NavbarRoleSelector({ perspectives }) {
   const { user } = useUser();
   const { currentCommunity, changeRoute } = useRouter();
 
+  const [membership, _membership] = useState(null);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const closeMenu = () => setAnchorEl(null);
 
   const open = Boolean(anchorEl);
 
   /* const [searchField, _searchField] = useState(''); */
+
+  useEffect(()=>{
+    _membership(user.membership.sort((a,b) => a.descriptor_json.perspective > b.descriptor_json.perspective ? 1 : -1));
+  },[user])
 
   const handleCommunityChange = (community) => {
     changeRoute({ community });
@@ -63,7 +69,7 @@ export default function NavbarRoleSelector({ perspectives }) {
             />
           </Box> */}
 
-          {user.membership && user.membership.map(c =>
+          {!!membership && membership.map(c =>
             <OrganizationMenuItem key={c.id} perspectives={perspectives} handleSelect={handleCommunityChange} currentOrganization={currentCommunity ? currentCommunity.title : ''} organization={c} />
           )}
         </Menu>
