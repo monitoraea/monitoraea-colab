@@ -1,6 +1,6 @@
 /* react, libs */
 import { useState, useEffect, useRef } from 'react';
-import Editor from 'ckeditor5-custom-build/build/ckeditor';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import axios from 'axios';
@@ -440,7 +440,7 @@ export default function CMS({ id, onClose, onSave }) {
               <div className="row">
                 <div className="col-md-12">
                   <CKEditor
-                    editor={Editor}
+                    editor={ClassicEditor}
                     config={editorConfiguration}
                     data={entity.text}
                     onChange={(event, editor) => {

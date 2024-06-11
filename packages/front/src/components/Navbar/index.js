@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu, MenuItem, TextField, Card } from '@mui/material';
 import ChevronDown from '../icons/ChevronDown';
-import Logo from './logo.png';
+import Logo from './logo-monitoraea.png';
 import MenuRenderer from './MenuRenderer';
 import NavbarRoleSelector from './NavbarRoleSelector';
 import NavbarRoleShow from './NavbarRoleShow';

@@ -1,0 +1,50 @@
+@import '../../app';
+
+
+.footer {
+  display: flex;
+  padding: 4rem 2rem;
+  justify-content: space-between;
+  background: $green-2;
+  font-family: 'Raleway';
+
+  .brand {
+    img {
+      height: 3rem;
+    }
+  }
+  .menu {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    flex-direction: column;
+
+    .menu-item {
+      position: relative;
+      font-weight: 600;
+      
+      &:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+      
+      a, .contact {
+        text-decoration: none;
+        color: $green-1;
+        cursor: pointer;
+      }
+
+      &:hover {
+        > a {
+          color: $yellow-1;
+        }
+      }
+    }
+
+  }
+}
+@media screen and (max-width: 991px) {
+  .footer {
+    flex-direction: column;
+    row-gap: 3rem;
+  }
+}
