@@ -15,9 +15,9 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, '..', 'portal', 'build')));
-app.use('/colabora', express.static(path.join(__dirname, '..', 'front', 'build')));
-app.use('/colabora/(*)?', express.static(path.join(__dirname, '..', 'front', 'build')));
+app.use(express.static(path.join(__dirname, '..', 'portal', 'dist')));
+app.use('/colabora', express.static(path.join(__dirname, '..', 'front', 'dist')));
+app.use('/colabora/(*)?', express.static(path.join(__dirname, '..', 'front', 'dist')));
 
 const server = http.createServer(app);
 
@@ -31,7 +31,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true })
 
 app.use(require('./services/routes'));
 app.use((req, res, next) => {
-  res.sendFile(path.join(__dirname, '..', 'portal', 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'portal', 'dist', 'index.html'));
 });
 
 server.listen({ port }, () => {
