@@ -1,4 +1,4 @@
-FROM node:18.19-buster
+FROM node:18.19-alpine
 RUN apk --no-cache add git
 
 COPY packages /app/packages
