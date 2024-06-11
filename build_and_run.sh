@@ -1,13 +1,13 @@
 #!/bin/bash
 export ENV_PATH="./packages/backend/.env.production"
 
-CONTAINER_NAME=monitoraea-pppzcm
-IMAGE_NAME=$CONTAINER_NAME-image:2.0.0
+CONTAINER_NAME=monitoraea-colab
+IMAGE_NAME=$CONTAINER_NAME-image:1.0.0
 PORT=4006
-VIRTUAL_HOST=pppzcm.monitoraea.org.br
+VIRTUAL_HOST=www.monitoraea.org.br
 VIRTUAL_PORT=$PORT
 LETSENCRYPT_HOST=$VIRTUAL_HOST
-LETSENCRYPT_EMAIL="ricardo@engajados.com.br"
+LETSENCRYPT_EMAIL="ricardo@digitao.com.br"
 
 docker rm -f $CONTAINER_NAME
 docker image rm $IMAGE_NAME
