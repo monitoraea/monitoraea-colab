@@ -3,6 +3,7 @@ export const portals = {
   'monitoraea': ['MonitoraEA', 'monitoraea'],
   'pp': ['Políticas Públicas', 'ppea'],
   'pppzcm': ['PPPZCM', 'pppzcm'],
+  'ciea': ['CIEA', 'ciea'],
 };
 export const content_types = {
   'news': ['Novidade','Novidades','novidades','Ver todas'],

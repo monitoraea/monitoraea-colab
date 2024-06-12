@@ -16,6 +16,7 @@ import NovidadeSingle from './pages/NovidadeSingle/NovidadeSingle';
 import ProjetoSingle from './pages/ProjetoSingle/ProjetoSingle';
 import PPEA from './pages/PPEA/PPEA';
 import PPPZCM from './pages/PPPZCM/PPPZCM';
+import CIEA from './pages/CIEA/CIEA';
 import ANPPEA from './pages/ANPPEA/';
 import Monitora from './pages/Monitora/Monitora';
 import ScrollToTop from './components/ScrollTop';
@@ -45,6 +46,7 @@ function App() {
         <Route path="/projeto-single/:id" element={<ProjetoSingle />} />
         <Route path="/sobre" element={<Monitora />} />
         <Route path="/sobre/ppea" element={<PPEA />} />
+        <Route path="/sobre/ciea" element={<CIEA />} />        
         <Route path="/sobre/pppzcm" element={<PPPZCM />} />
         <Route path="/sobre/anppea" element={<ANPPEA />} />
         <Route path="/login" element={<Login />} />

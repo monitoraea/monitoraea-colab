@@ -10,6 +10,9 @@ export const dynamicContents = {
     anppea: [
       ['anppea.content','Conteúdo ANPPEA'],
     ],
+    ciea: [
+      ['ciea.intro','Introdução CIEA'],
+    ],
   }
 
   export const portals = {
