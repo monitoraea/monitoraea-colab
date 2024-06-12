@@ -1,6 +1,6 @@
 -- DROP SCHEMA ciea;
 
-CREATE SCHEMA ciea AUTHORIZATION ricardo;
+CREATE SCHEMA ciea AUTHORIZATION postgres;
 -- ciea.comissoes definition
 
 -- Drop table

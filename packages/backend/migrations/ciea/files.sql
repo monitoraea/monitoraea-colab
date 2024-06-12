@@ -1,1 +1,1 @@
-ALTER TABLE public.files ADD file_name varchar NOT NULL;
+ALTER TABLE public.files ALTER COLUMN file_name TYPE varchar USING file_name::varchar;
