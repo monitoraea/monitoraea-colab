@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import './style.scss';
 import logomonitoraea from './logo-monitoraea.png';
 import { Link } from 'react-router-dom';
@@ -18,6 +18,10 @@ function Footer() {
   const [email, _email] = useState('');
   const [message, _message] = useState('');
 
+  const redirectTo = relative_path => {
+    window.location = `/${relative_path || ''}`;
+  };
+
   const { data } = useQuery(
     ['menu_tree'],
     {
@@ -27,16 +31,16 @@ function Footer() {
         ).data,
       staleTime: 3600000 /* 1h */
     },
-  );   
+  );
 
   const mutations = {
     send: useMutation(
       () => axios.post(`${import.meta.env.VITE_SERVER}adm/send_contact`, { email, name, message })
     ),
   };
-  
+
   const handleSend = async () => {
-    if(!name.length || !email.length || !message.length) return;
+    if (!name.length || !email.length || !message.length) return;
 
     await mutations.send.mutateAsync();
 
@@ -70,18 +74,20 @@ function Footer() {
         </div>
         {!!menu && <ul className="menu">
 
-          {menu.map(i => <><MenuItem key={i.id} data={i} />
+          {menu.map(i => <Fragment key={i.id}><MenuItem data={i} />
 
             {!!i.children.length && i.children.map(c => <MenuItem key={c.id} data={c} />)}
 
-          </>)}
+          </Fragment>)}
 
-          <li className="menu-item"><div className="contact" onClick={()=>_showContactDialog(true)}>Contato</div></li>
+          <li className="menu-item"><div className="contact" onClick={() => _showContactDialog(true)}>Contato</div></li>
 
         </ul>}
         <ul className="menu">
           <li className="menu-item">
-            <Link to="/login">Área logada</Link>
+            <button className="btn-link" onClick={() => redirectTo('colabora')}>
+              Área logada
+            </button>
           </li>
         </ul>
         <div></div>
@@ -90,15 +96,15 @@ function Footer() {
         <div className={styles.fields}>
           <div className={styles['field-wrap']}>
             <label>E-mail</label>
-            <input type="text" name="email" value={email} onChange={(e)=>_email(e.target.value)} />
+            <input type="text" name="email" value={email} onChange={(e) => _email(e.target.value)} />
           </div>
           <div className={styles['field-wrap']}>
             <label>Nome</label>
-            <input type="text" name="name" value={name} onChange={(e)=>_name(e.target.value)} />
+            <input type="text" name="name" value={name} onChange={(e) => _name(e.target.value)} />
           </div>
           <div className={styles['field-wrap']}>
             <label>Mensagem</label>
-            <textarea rows={4} name="message" value={message} onChange={(e)=>_message(e.target.value)} />
+            <textarea rows={4} name="message" value={message} onChange={(e) => _message(e.target.value)} />
           </div>
         </div>
       </Modal>
