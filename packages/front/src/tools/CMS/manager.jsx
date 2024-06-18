@@ -379,7 +379,7 @@ export default function CMS({ id, onClose, onSave }) {
           <Card title="" headerless bottom>
             <div className="p-3">
               <div className="row">
-                <div className="col-md-2">
+                <div className="col-md-3">
                   <SimpleSelect
                     label="Portal"
                     value={entity.portal}
@@ -389,9 +389,10 @@ export default function CMS({ id, onClose, onSave }) {
                       { value: 'none', title: ' -- selecione -- ' },
                       { value: 'main', title: 'Principal' },
                       { value: 'monitoraea', title: 'MonitoraEA' },
-                      { value: 'pp', title: 'Políticas públicas' },
-                      { value: 'pppzcm', title: 'ZCM' },
-                      { value: 'ciea', title: 'CIEA' },
+                      { value: 'pp', title: 'MonitoraEA-Políticas públicas' },
+                      { value: 'pppzcm', title: 'MonitoraEA-PPPZCM' },
+                      { value: 'ciea', title: 'MonitoraEA-CIEA' },
+                      { value: 'risco', title: 'MonitoraEA-Risco Climático' },
                       { value: 'anppea', title: 'ANPPEA' },
                     ]}
                     error={errors.portal}
@@ -413,7 +414,7 @@ export default function CMS({ id, onClose, onSave }) {
                     ]}
                   />
                 </div>
-                {entity.type !== 'helpbox' && (<div className="col-md-6">
+                {entity.type !== 'helpbox' && (<div className="col-md-5">
                   <TextField
                     className="input-text"
                     label="Título"
