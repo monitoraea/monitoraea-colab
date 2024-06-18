@@ -55,7 +55,7 @@ export default function Helpbox({ open, onSelected, onClose, manage = false, con
         <DialogTitle id="scroll-dialog-title">Caixa de ajuda </DialogTitle>
         <DialogContent dividers={true}>
           {manage && <>
-            {['main', 'monitoraea','pp', 'anppea', 'ciea'].includes(portal) && <div className="row">
+            {['main', 'monitoraea','pp', 'anppea', 'ciea', 'risco'].includes(portal) && <div className="row">
               <FormLabel>
                 Campos
               </FormLabel>

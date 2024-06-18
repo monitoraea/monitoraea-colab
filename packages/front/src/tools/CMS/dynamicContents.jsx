@@ -11,16 +11,20 @@ export const dynamicContents = {
       ['anppea.content','Conteúdo ANPPEA'],
     ],
     ciea: [
-      ['ciea.intro','Introdução CIEA'],
+      ['ciea.intro','Introdução ao MonitoraEA-CIEA'],
+    ],
+    risco: [
+      ['risco.intro','Introdução ao MonitoraEA-Risco Climático'],
     ],
   }
 
   export const portals = {
     'main': 'Principal',
     'monitoraea': 'MonitoraEA',
-    'pp': 'Políticas Públicas',
-    'pppzcm': 'ZCM',
-    'ciea': 'CIEA',
+    'pp': 'MonitoraEA-Políticas Públicas',
+    'pppzcm': 'MonitoraEA-PPPZCM',
+    'ciea': 'MonitoraEA-CIEA',
+    'risco': 'MonitoraEA-Risco Climático',
     'anppea': 'ANPPEA',
   };
 

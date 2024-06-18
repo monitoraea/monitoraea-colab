@@ -38,5 +38,4 @@ root.render(
       <App />
     </ThemeProvider>
   </QueryClientProvider>,
-  document.getElementById('root'),
 );
