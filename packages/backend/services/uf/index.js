@@ -40,6 +40,18 @@ class Service {
 
     return entities[0];
   }
+
+  async getRegions() {
+    let list = [
+      { id: 'CENTRO-OESTE', name: 'CENTRO-OESTE' },
+      { id: 'NORDESTE', name: 'NORDESTE' },
+      { id: 'NORTE', name: 'NORTE' },
+      { id: 'SUDESTE', name: 'SUDESTE' },
+      { id: 'SUL', name: 'SUL' },
+    ];
+
+    return { list };
+  }
 }
 
 const singletonInstance = new Service();

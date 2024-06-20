@@ -16,6 +16,25 @@ router.get("/related", async (req, res) => {
     }
 });
 
+router.get('/regions/:region', async (req, res) => {
+    const { region } = req.params;
+
+    try {
+        res.json({ id: region, name: region });
+    } catch (ex) {
+        sendError(res, ex);
+    }
+});
+router.get('/regions', async (req, res) => {
+    try {
+        const result = await entity.getRegions();
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex);
+    }
+});
+
 /* TODO */
 router.get("/:id", async (req, res) => {
     const { id } = req.params;
