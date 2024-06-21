@@ -5,6 +5,7 @@ import axios from 'axios';
 /* components */
 import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
+import TimelineTab from './TimelineTab';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
 import CheckCircle from '../../components/icons/CheckCircle';
@@ -160,7 +161,7 @@ const Manager = () => {
           {entityId && (
             <>
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} />}
-              {/* {tabindex === 'conexoes' && <ConectionsTab entityId={entityId} />} */}
+              {tabindex === 'linha_tempo' && <TimelineTab entityId={entityId} />}
             </>
           )}
         </>

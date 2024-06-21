@@ -55,12 +55,11 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} `} /* TODO: <<--${infoProblemCounter < 10 && styles['fixed-size']
             } */
           />
-         {/*  <Tab
+          <Tab
             disableRipple
-            label="Conexões"
-            {...a11yProps('conexoes')}
-            className={`${styles.indicator} ${conectionsIsReady ? styles['ready'] : styles['not-ready']}`}
-          /> */}          
+            label="Linha do tempo"
+            {...a11yProps('linha_tempo')}
+          />          
         </Tabs>
       </div>
     </div>
