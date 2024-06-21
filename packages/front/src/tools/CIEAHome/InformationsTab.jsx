@@ -15,6 +15,7 @@ import AsyncAutocompleteMultiple from '../../components/AsyncAutocompleteMultipl
 import FreeMultiple from '../../components/FreeMultiple';
 import FreeMultipleContacts from '../../components/FreeMultiple/FreeMultipleContacts';
 import DatePicker from '../../components/DatePicker';
+import UploaderField from '../../components/UploaderField';
 import HelpBoxButton from './HelpBoxButton';
 import GetHelpButton from './GetHelpButton';
 
@@ -28,6 +29,7 @@ export default function InformationsTab({ entityId }) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   /* states */
+  const [originalEntity, _originalEntity] = useState([]);
   const [entity, _entity] = useState([]);
   const [editing, _editing] = useState(false);
   const [errors, _errors] = useState({});
@@ -44,6 +46,7 @@ export default function InformationsTab({ entityId }) {
     if (!data) return;
 
     _entity(data);
+    _originalEntity(data);
 
     // console.log(data)
   }, [data]);
@@ -68,14 +71,29 @@ export default function InformationsTab({ entityId }) {
 
     let newEntityInfo = {};
 
-    // olhar em project (ZCM)
+    if ([
+      'documento_criacao_tipo',
+      'regimento_interno_tipo',
+      'ppea_tipo',
+    ].includes(field)) {
+      const doc = field.replace('_tipo', '');
 
-    newEntityInfo = { ...entity, [field]: value };
+      newEntityInfo = {
+        ...entity,
+        [`${doc}_arquivo`]: originalEntity[`${doc}_tipo`] === value ? originalEntity[`${doc}_arquivo`] : '',
+        [field]: value,
+      };
+
+    } else newEntityInfo = { ...entity, [field]: value };
 
     console.log(`changing ${field}:`, value, newEntityInfo);
 
     _entity(newEntityInfo);
   };
+
+  const handleFileChange = type => value => {
+
+  }
 
   const mutationSave = useMutation(
     entity => {
@@ -166,6 +184,13 @@ export default function InformationsTab({ entityId }) {
                       </button>
                     </div>
                   </div>
+
+                  <div className="row">
+                    <div className={style.logo_wrapper}>
+                      <UploaderField onChange={value => handleFieldChange('logo')(value?.file)} url={entity.logo} alt="imagem" title="Logotipo" />
+                    </div>
+                  </div>
+
                   <div className="row">
                     <div className="col-xs-3" style={{ display: 'flex' }}>
                       <div className={style.readonly}>
@@ -179,7 +204,18 @@ export default function InformationsTab({ entityId }) {
                         <div className={style.value}>{entity.regiao}</div>
                       </div>
                     </div>
+                    <div className="col-xs-3" style={{ display: 'flex' }}>
+                      <DatePicker
+                        className="input-datepicker"
+                        label="Data da criação"
+                        value={entity.data_criacao}
+                        onChange={handleFieldChange('data_criacao')}
+                        views={['year']}
+                        inputFormat="yyyy"
+                      />
+                    </div>
                   </div>
+
                   <div className="row">
                     <div className="col-xs-12" style={{ display: 'flex' }}>
                       <TextField
@@ -190,15 +226,58 @@ export default function InformationsTab({ entityId }) {
                       />
                     </div>
                   </div>
+
                 </section>
-                {/* <hr className="hr-spacer my-4" />
-                <section id="contacts">
-                  <FreeMultipleContacts
-                    data={entity.contatos}
-                    onChange={handleFieldChange('contatos')}
-                    sectionTitle={<TitleAndHelpbox title="Contatos" keyRef={['contatos']} openHelpbox={_contentText} />}
-                  />
-                </section> */}
+
+                <hr className="hr-spacer my-4" />
+                <section id="criacao">
+                  <div className="section-header">
+                    <div className="section-title">Documento de criação</div>
+                  </div>
+                  <div className="row">
+                    <div className="col-xs-4" style={{ display: 'flex' }}>
+                      <TextField
+                        className="input-text"
+                        label="Título do documento de criação"
+                        value={entity.documento_criacao || ''}
+                        onChange={e => handleFieldChange('documento_criacao')}
+                      />
+                    </div>
+
+                    <div className="col-xs-2" style={{ display: 'flex' }}>
+                      <TextField
+                        select
+                        id="money-select"
+                        label="Tipo de documento de criação"
+                        className="input-select"
+                        value={entity.documento_criacao_tipo || 'none'}
+                        onChange={e => handleFieldChange('documento_criacao_tipo')(e.target.value)}
+                      >
+                        <MenuItem value="none">Não respondido</MenuItem>
+                        <MenuItem value="link">Link</MenuItem>
+                        <MenuItem value="file">Arquivo</MenuItem>
+                      </TextField>
+                      <HelpBoxButton keyRef={['documento_criacao_tipo']} openHelpbox={_contentText} />
+                    </div>
+
+                    <div className="col-xs-6" style={{ display: 'flex' }}>
+                      {entity.documento_criacao_tipo === 'link' && <TextField
+                        className="input-text"
+                        label="Link do documento de criação"
+                        value={entity.documento_criacao_arquivo || ''}
+                        onChange={e => handleFieldChange('documento_criacao_arquivo')}
+                      />}
+                      {entity.documento_criacao_tipo === 'file' && <UploaderField
+                        onChange={handleFileChange('documento_criacao')}
+                        url={entity.documento_criacao_arquivo}
+                        type="file"
+                        filename={entity.documento_criacao_file_name}
+                        /* accept="application/pdf" */
+                        title="Arquivo de criação"
+                      />}
+                    </div>
+                  </div>
+                </section>
 
               </div>
             </Card>

@@ -1,47 +1,54 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 
-import Lightbox from "react-image-lightbox";
-import "react-image-lightbox/style.css";
-import "./styles.scss";
+import Lightbox from 'react-image-lightbox';
+import 'react-image-lightbox/style.css';
+import './styles.temp.scss';
 
-import deleteIcon from "./delete.png";
-import uploadIcon from "./upload.png";
-import documentIcon from "./document.png";
-import magnifierIcon from "./magnifier.png";
+import deleteIcon from './delete.png';
+import uploadIcon from './upload.png';
+import documentIcon from './document.png';
+import magnifierIcon from './magnifier.png';
 
 export default function UploaderField({
   onChange,
   url,
   preview = true,
   viewer = true,
-  minimal = false,
+  type = 'preview',
   alt = 'photo',
+  filename = '',
+  accept = 'image/*, application/pdf',
+  contentType,
+  className,
+  title,
 }) {
   const fileInput = useRef();
 
   const [previewUrl, _previewUrl] = useState(null);
+  const [tmpIsPDF, _tmpIsPDF] = useState(false);
   const [view, _view] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     _previewUrl(url);
-  },[url])
+  }, [url]);
 
-  const handleFile = (file) => {
+  const handleFile = file => {
     const url = URL.createObjectURL(file);
 
     onChange({
       url,
-      file
+      file,
     });
 
     _previewUrl(url);
+    _tmpIsPDF(file?.name?.includes('.pdf') ? file.name : false);
   };
 
-  const handleDragOver = (event) => {
+  const handleDragOver = event => {
     event.preventDefault();
   };
 
-  const handleOnDrop = (event) => {
+  const handleOnDrop = event => {
     //prevent the browser from opening the image
     event.preventDefault();
     event.stopPropagation();
@@ -52,18 +59,19 @@ export default function UploaderField({
   };
 
   const handleRemove = () => {
-    _previewUrl("");
+    _previewUrl('');
     onChange(null);
     fileInput.current.value = null;
   };
 
   return (
     <>
-      <div className={`uploader-wrapper ${minimal ? "minimal" : ""}`}>
+      <div className={`uploader-wrapper ${type}`}>
+        {!!title && <div className="uploader-title">{title}</div>}
         <div
-          className={`drop_zone ${!previewUrl ? "no-image" : ""}`}
+          className={`drop_zone ${!!className ? `uploader-${className}` : ''} ${!previewUrl ? (type !== 'file' ? 'no-image' : 'file-no-image') : ''}`}
           style={{
-            backgroundImage: !previewUrl ? `url(${uploadIcon})` : "unset"
+            backgroundImage: !previewUrl && type !== 'file' ? `url(${uploadIcon})` : 'unset',
           }}
           onDragOver={handleDragOver}
           onDrop={handleOnDrop}
@@ -71,28 +79,26 @@ export default function UploaderField({
         >
           {previewUrl && (
             <>
-              {preview && !minimal && (
-                <img className="preview" src={previewUrl} alt={alt} />
-              )}
-              {(!preview || minimal) && (
+              {preview && type === 'preview' && <img className="preview" src={previewUrl} alt={alt} />}
+              {type === 'file' && <>{filename}</>}
+              {(!preview || type === 'minimal') && (
                 <>
-                  {!minimal && (
-                    <img
-                      className="preview"
-                      src={documentIcon}
-                      alt="no preview"
-                    />
+                  {!['minimal', 'file'].includes(type) && (
+                    <img className="preview" src={documentIcon} alt="no preview" />
                   )}
                 </>
               )}
             </>
           )}
+
+          {type === 'file' && !previewUrl && <>Clique aqui para inserir um arquivo...</>}
+
           <input
             type="file"
-            accept="image/*"
+            accept={accept}
             ref={fileInput}
             hidden
-            onChange={(e) => {
+            onChange={e => {
               if (e.target.files.length) handleFile(e.target.files[0]);
             }}
           />
@@ -102,18 +108,40 @@ export default function UploaderField({
             <button className="remove" onClick={handleRemove}>
               <img src={deleteIcon} alt="delete" />
             </button>
-            {viewer && (
-              <button className="viewer" onClick={() => _view(true)}>
-                <img src={magnifierIcon} alt="view" />
-              </button>
-            )}
+            {viewer && <>
+              {!tmpIsPDF && (
+                <button
+                  className="viewer"
+                  onClick={() => {
+                    // console.log({ contentType, tmpIsPDF })
+                    type !== 'file' && contentType !== 'application/pdf' ? _view(true) : window.open(url, 'file_preview');
+                  }}
+                >
+                  <img src={magnifierIcon} alt="view" />
+                </button>
+              )}
+              {tmpIsPDF && (
+                <button
+                  className="viewer"
+                  alt="o arquivo só pode ser visualizado após o envio"
+                  disabled
+                  style={{ opacity: '0.3' }}
+                >
+                  <img src={magnifierIcon} alt="view" />
+                </button>
+              )}
+            </>}
           </>
         )}
       </div>
 
       {view && (
-        <Lightbox mainSrc={previewUrl} onCloseRequest={() => _view(false)} reactModalStyle={{ overlay: { zIndex: '2000' } }} />
+        <Lightbox
+          mainSrc={previewUrl}
+          onCloseRequest={() => _view(false)}
+          reactModalStyle={{ overlay: { zIndex: '2000' } }}
+        />
       )}
     </>
   );
-};
+}

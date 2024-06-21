@@ -47,13 +47,13 @@ class Service {
         c.link,
         c.data_criacao,
         c.documento_criacao,
-        (select f.url from files f where f.id = c.documento_criacao_arquivo) as documento_criacao_arquivo,
+        c.documento_criacao_arquivo,
         c.regimento_interno,
-        (select f.url from files f where f.id = c.regimento_interno_arquivo) as regimento_interno_arquivo,
+        c.regimento_interno_arquivo,
         c.ppea_tem = 1 as ppea_tem,
         c.ppea_decreto,
         c.ppea_lei,
-        (select f.url from files f where f.id = c.ppea_arquivo) as ppea_arquivo
+        c.ppea_arquivo
       FROM ciea.comissoes c
       inner join ufs u on u.id = c.uf
       WHERE c.id = :id
@@ -65,7 +65,26 @@ class Service {
       },
     );
 
-    return entity[0];
+    let commission = {
+      ...entity[0],
+      data_criacao: entity[0].data_criacao ? dayjs(`01-01-${entity[0].data_criacao}`, "MM-DD-YYYY") : null,
+    };
+
+    for (let document of ['documento_criacao', 'regimento_interno', 'ppea']) {
+      if (!!entity[0][`${document}_arquivo`]) {
+        const file_entity = await db.instance().query(
+          `select f.url, f.content_type from files f where f.id = :file_id`,
+          { replacements: { file_id: entity[0][`${document}_arquivo`] }, type: Sequelize.QueryTypes.SELECT }
+        );
+
+        if(entity.length) {
+          commission[`${document}_arquivo`] = file_entity[0].url;
+          commission[`${document}_tipo`] = file_entity[0].content_type === 'text/uri-list' ? 'link' : 'file';
+        }
+      }
+    }
+
+    return commission;
   }
 
   /* Retorna o id do projeto relacionado a uma comunidade */
