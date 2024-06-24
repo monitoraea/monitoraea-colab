@@ -19,6 +19,8 @@ import UploaderField from '../../components/UploaderField';
 import HelpBoxButton from './HelpBoxButton';
 import GetHelpButton from './GetHelpButton';
 
+import GenericMultiple from '../../components/GenericMultiple';
+
 /* style */
 import style from './information.module.scss';
 
@@ -69,7 +71,15 @@ export default function InformationsTab({ entityId }) {
   const handleFieldChange = field => value => {
     _editing(true);
 
+
     let newEntityInfo = {};
+
+    if ([
+      'composicao_cadeiras_set_pub',
+      'composicao_cadeiras_soc_civ'
+    ].includes(field)) {
+      value = value.replace(/[^0-9]/g, '');
+    }
 
     if ([
       'documento_criacao_tipo',
@@ -214,6 +224,22 @@ export default function InformationsTab({ entityId }) {
                         inputFormat="yyyy"
                       />
                     </div>
+                    <div className="col-xs-3" style={{ display: 'flex' }}>
+                      <TextField
+                        select
+                        id="money-select"
+                        label="Ativo"
+                        className="input-select"
+                        value={entity.ativo || 'none'}
+                        onChange={e => handleFieldChange('ativo')(e.target.value)}
+                      >
+                        <MenuItem value="none">Não respondido</MenuItem>
+                        <MenuItem value="1">Sim</MenuItem>
+                        <MenuItem value="2">Em reestruturação</MenuItem>
+                        <MenuItem value="3">Não</MenuItem>
+                      </TextField>
+                      <HelpBoxButton keyRef={['documento_criacao_tipo']} openHelpbox={_contentText} />
+                    </div>
                   </div>
 
                   <div className="row">
@@ -222,7 +248,7 @@ export default function InformationsTab({ entityId }) {
                         className="input-text"
                         label="Link para o site"
                         value={entity.link || ''}
-                        onChange={e => handleFieldChange('link')}
+                        onChange={e => handleFieldChange('link')(e.target.value)}
                       />
                     </div>
                   </div>
@@ -240,7 +266,7 @@ export default function InformationsTab({ entityId }) {
                         className="input-text"
                         label="Título do documento de criação"
                         value={entity.documento_criacao || ''}
-                        onChange={e => handleFieldChange('documento_criacao')}
+                        onChange={e => handleFieldChange('documento_criacao')(e.target.value)}
                       />
                     </div>
 
@@ -265,7 +291,7 @@ export default function InformationsTab({ entityId }) {
                         className="input-text"
                         label="Link do documento de criação"
                         value={entity.documento_criacao_arquivo || ''}
-                        onChange={e => handleFieldChange('documento_criacao_arquivo')}
+                        onChange={e => handleFieldChange('documento_criacao_arquivo')(e.target.value)}
                       />}
                       {entity.documento_criacao_tipo === 'file' && <UploaderField
                         onChange={handleFileChange('documento_criacao')}
@@ -279,6 +305,59 @@ export default function InformationsTab({ entityId }) {
                   </div>
                 </section>
 
+                <hr className="hr-spacer my-4" />
+                <section id="composicao">
+                  <div className="section-header">
+                    <div className="section-title">Composição</div>
+                  </div>
+                  <div className="row">
+                    <div className="col-xs-3" style={{ display: 'flex' }}>
+                      <TextField
+                        className="input-text"
+                        label="Núm. cadeiras - setor público"
+                        value={entity.composicao_cadeiras_set_pub || ''}
+                        onChange={e => handleFieldChange('composicao_cadeiras_set_pub')(e.target.value)}
+                      />
+                    </div>
+                    <div className="col-xs-3" style={{ display: 'flex' }}>
+                      <TextField
+                        className="input-text"
+                        label="Núm. cadeiras - sociedade civil"
+                        value={entity.composicao_cadeiras_soc_civ || ''}
+                        onChange={e => handleFieldChange('composicao_cadeiras_soc_civ')(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <GenericMultiple
+                    data={[{
+                      name: 'Nome tal 1',
+                      num: '1',
+                    }, {
+                      name: 'Nome tal 2',
+                      num: '2',
+                    }]}
+                    newData={{
+                      name: '',
+                      num: '',
+                    }}
+                    addtype="bottom"
+                    addtitle="Adicionar setor"
+                  >
+                    <Composicao />
+                  </GenericMultiple>
+
+                </section>
+                <div className="section-header">
+                  <div className="section-title"></div>
+                  <div className="section-actions">
+                    <button className="button-primary" onClick={() => handleSave()}>
+                      <FilePlus></FilePlus>
+                      Gravar
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </Card>
 
@@ -288,6 +367,31 @@ export default function InformationsTab({ entityId }) {
       )}
     </>
   );
+}
+
+function Composicao({ row, DefaultRemove, handleChange, /*, handleRemove, index */ }) {
+  return <div className="row">
+    <div className="col-xs-3" style={{ display: 'flex' }}>
+      <TextField
+        className="input-text"
+        label="Setor"
+        value={row.name || ''}
+        onChange={(e)=>handleChange('name')(e.target.value)}
+      />
+    </div>
+    <div className="col-xs-3" style={{ display: 'flex' }}>
+      <TextField
+        className="input-text"
+        label="Núm. cadeiras"
+        value={row.num || ''}
+        onChange={(e)=>handleChange('num')(e.target.value)}
+      />
+    </div>
+    <div className="col-xs-1" style={{ display: 'flex' }}>
+      {DefaultRemove}
+    </div> 
+   
+  </div>
 }
 
 function TitleAndHelpbox({ title, keyRef, openHelpbox }) {

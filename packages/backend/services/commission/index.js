@@ -46,6 +46,7 @@ class Service {
         u.nm_regiao as regiao,
         c.link,
         c.data_criacao,
+        c.ativo,
         c.documento_criacao,
         c.documento_criacao_arquivo,
         c.regimento_interno,
