@@ -63,7 +63,8 @@ class Service {
         c.ppea_tem,
         c.ppea_decreto,
         c.ppea_lei,
-        c.ppea_arquivo
+        c.ppea_arquivo,
+        c.membros
       FROM ciea.comissoes c
       inner join ufs u on u.id = c.uf
       WHERE c.id = :id

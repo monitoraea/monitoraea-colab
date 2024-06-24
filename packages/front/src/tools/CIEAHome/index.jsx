@@ -6,6 +6,7 @@ import axios from 'axios';
 import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
 import TimelineTab from './TimelineTab';
+import MembersTab from './MembersTab';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
 import CheckCircle from '../../components/icons/CheckCircle';
@@ -162,6 +163,7 @@ const Manager = () => {
             <>
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} />}
               {tabindex === 'linha_tempo' && <TimelineTab entityId={entityId} />}
+              {tabindex === 'membros' && <MembersTab entityId={entityId} />}
             </>
           )}
         </>
@@ -173,10 +175,6 @@ const Manager = () => {
     </div>
   );
 };
-
-function MockTab({ entityId }) {
-  return <div>E.ID {entityId}</div>
-}
 
 function TermDialog({ open, onClose }) {
   return (

@@ -58,7 +58,7 @@ const GenericMultiple = ({
   return (
     <>
       {(!!sectionTitle || addtype === 'top') && <div className="section-header">
-        {!!sectionTitle && <div className="section-title">{sectionTitle}</div>}
+        <div className="section-title">{sectionTitle}</div>
         <div className="section-actions">
           <button className="button-outline" onClick={() => createNewLine()}>
             <Plus></Plus>

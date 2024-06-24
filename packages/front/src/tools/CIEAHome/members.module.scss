@@ -1,0 +1,20 @@
+.readonly {
+    width: 100%;
+    border: solid 1px rgba(115, 191, 72, 0.25) !important;
+    border-radius: 0.5rem !important;
+    line-height: 1;
+
+    .title {
+        transform: translate(0, -0.5rem) scale(0.75);
+        font-size: 1rem;
+        background: #FFFFFF;
+        padding: 0 0.5rem;
+        display: inline-block;
+    }
+
+    .value {
+        padding: 0 1rem !important;
+        transform: translate(0.1rem, -0.3rem);
+        font-size: 0.8rem;
+    }
+}
