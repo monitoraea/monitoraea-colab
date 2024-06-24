@@ -49,15 +49,21 @@ class Service {
         c.ativo,
         c.documento_criacao,
         c.documento_criacao_arquivo,
-        c.regimento_interno,
+        c.regimento_interno_tem,
         c.regimento_interno_arquivo,
-        c.ppea_tem = 1 as ppea_tem,
-        c.ppea_decreto,
-        c.ppea_lei,
-        c.ppea_arquivo,
         c.composicao_cadeiras_set_pub,
         c.composicao_cadeiras_soc_civ,
-        c.composicao_cadeiras_outros
+        c.composicao_cadeiras_outros,
+        c.coordenacao,
+        c.coordenacao_especifique,
+        c.org_interna_periodicidade,
+        c.organizacao_interna_periodicidade_especifique,
+        c.organizacao_interna_estrutura_tem,
+        c.organizacao_interna_estrutura_especifique,
+        c.ppea_tem,
+        c.ppea_decreto,
+        c.ppea_lei,
+        c.ppea_arquivo
       FROM ciea.comissoes c
       inner join ufs u on u.id = c.uf
       WHERE c.id = :id
@@ -72,6 +78,7 @@ class Service {
     let commission = {
       ...entity[0],
       data_criacao: entity[0].data_criacao ? dayjs(`01-01-${entity[0].data_criacao}`, "MM-DD-YYYY") : null,
+      regimento_interno_tem: !entity[0].regimento_interno_tem ? null : (entity[0].regimento_interno_tem ? '1' : '0'),
     };
 
     for (let document of ['documento_criacao', 'regimento_interno', 'ppea']) {

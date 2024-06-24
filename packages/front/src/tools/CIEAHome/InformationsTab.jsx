@@ -343,6 +343,238 @@ export default function InformationsTab({ entityId }) {
                   </GenericMultiple>
 
                 </section>
+
+                <hr className="hr-spacer my-4" />
+                <section id="coordenacao">
+                  <div className="section-header">
+                    <div className="section-title">Coordenação</div>
+                  </div>
+                  <div className="row">
+                    <div className="col-xs-6" style={{ display: 'flex' }}>
+                      <TextField
+                        select
+                        id="money-select"
+                        label="Órgão Gestor"
+                        className="input-select"
+                        value={entity.coordenacao || 'none'}
+                        onChange={e => handleFieldChange('coordenacao')(e.target.value)}
+                      >
+                        <MenuItem value="none">Não respondido</MenuItem>
+                        <MenuItem value="1">Secretarias Estaduais de Meio Ambiente (ou correlatas) e de Educação</MenuItem>
+                        <MenuItem value="2">Apenas Secretaria de Estado de Meio Ambiente (ou correlatas)</MenuItem>
+                        <MenuItem value="3">Apenas Secretaria de Estado de Educação</MenuItem>
+                        <MenuItem value="4">Outra Pasta do Estado</MenuItem>
+                        <MenuItem value="5">Instituição da Sociedade Civil</MenuItem>
+                        <MenuItem value="6">Instituição de outro segmento</MenuItem>
+                      </TextField>
+                      <HelpBoxButton keyRef={['documento_criacao_tipo']} openHelpbox={_contentText} />
+                    </div>
+                    <div className="col-xs-6" style={{ display: 'flex' }}>
+                      {['4', '6'].includes(entity.coordenacao) && <TextField
+                        className="input-text"
+                        label="Especifique"
+                        value={entity.coordenacao_especifique || ''}
+                        onChange={e => handleFieldChange('coordenacao_especifique')(e.target.value)}
+                      />}
+                    </div>
+                  </div>
+                </section>
+
+                <hr className="hr-spacer my-4" />
+                <section id="regimento_interno">
+                  <div className="section-header">
+                    <div className="section-title">Regimento interno</div>
+                  </div>
+                  <div className="row">
+                    <div className="col-xs-4" style={{ display: 'flex' }}>
+                      <TextField
+                        select
+                        id="money-select"
+                        label="Tem regimento"
+                        className="input-select"
+                        value={entity.regimento_interno_tem || 'none'}
+                        onChange={e => handleFieldChange('regimento_interno_tem')(e.target.value)}
+                      >
+                        <MenuItem value="none">Não respondido</MenuItem>
+                        <MenuItem value="1">Sim</MenuItem>
+                        <MenuItem value="2">Não</MenuItem>
+                      </TextField>
+                      <HelpBoxButton keyRef={['regimento_interno_tem']} openHelpbox={_contentText} />
+                    </div>
+                    {!!entity.regimento_interno_tem && <>
+                      <div className="col-xs-2" style={{ display: 'flex' }}>
+                        <TextField
+                          select
+                          id="money-select"
+                          label="Tipo de arquivo regimento interno"
+                          className="input-select"
+                          value={entity.regimento_interno_tipo || 'none'}
+                          onChange={e => handleFieldChange('regimento_interno_tipo')(e.target.value)}
+                        >
+                          <MenuItem value="none">Não respondido</MenuItem>
+                          <MenuItem value="link">Link</MenuItem>
+                          <MenuItem value="file">Arquivo</MenuItem>
+                        </TextField>
+                        <HelpBoxButton keyRef={['regimento_interno_tipo']} openHelpbox={_contentText} />
+                      </div>
+
+                      <div className="col-xs-6" style={{ display: 'flex' }}>
+                        {entity.regimento_interno_tipo === 'link' && <TextField
+                          className="input-text"
+                          label="Link do regimento interno"
+                          value={entity.regimento_interno_arquivo || ''}
+                          onChange={e => handleFieldChange('regimento_interno_arquivo')(e.target.value)}
+                        />}
+                        {entity.regimento_interno_tipo === 'file' && <UploaderField
+                          onChange={handleFileChange('regimento_interno')}
+                          url={entity.regimento_interno_arquivo}
+                          type="file"
+                          filename={entity.regimento_interno_file_name}
+                          /* accept="application/pdf" */
+                          title="Regimento interno"
+                        />}
+                      </div>
+                    </>}
+                  </div>
+                </section>
+
+                <hr className="hr-spacer my-4" />
+                <section id="organizacao">
+                  <div className="section-header">
+                    <div className="section-title">Organização interna</div>
+                  </div>
+                  <div className="row">
+                    <div className="col-xs-6" style={{ display: 'flex' }}>
+                      <TextField
+                        select
+                        id="money-select"
+                        label="Periodicidade"
+                        className="input-select"
+                        value={entity.org_interna_periodicidade || 'none'}
+                        onChange={e => handleFieldChange('org_interna_periodicidade')(e.target.value)}
+                      >
+                        <MenuItem value="none">Não respondido</MenuItem>
+                        <MenuItem value="1">Mensal</MenuItem>
+                        <MenuItem value="2">Bimestral</MenuItem>
+                        <MenuItem value="3">Semestral</MenuItem>
+                        <MenuItem value="4">Anual</MenuItem>
+                        <MenuItem value="5">Outro</MenuItem>
+                      </TextField>
+                      <HelpBoxButton keyRef={['org_interna_periodicidade']} openHelpbox={_contentText} />
+                    </div>
+                    <div className="col-xs-6" style={{ display: 'flex' }}>
+                      {['5'].includes(entity.org_interna_periodicidade) && <TextField
+                        className="input-text"
+                        label="Especifique"
+                        value={entity.organizacao_interna_periodicidade_especifique || ''}
+                        onChange={e => handleFieldChange('organizacao_interna_periodicidade_especifique')(e.target.value)}
+                      />}
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-xs-6" style={{ display: 'flex' }}>
+                      <TextField
+                        select
+                        id="money-select"
+                        label="Possui câmaras técnicas ou grupos de trabalho?"
+                        className="input-select"
+                        value={entity.organizacao_interna_estrutura_tem || 'none'}
+                        onChange={e => handleFieldChange('organizacao_interna_estrutura_tem')(e.target.value)}
+                      >
+                        <MenuItem value="none">Não respondido</MenuItem>
+                        <MenuItem value="1">Sim</MenuItem>
+                        <MenuItem value="2">Não</MenuItem>
+                      </TextField>
+                      <HelpBoxButton keyRef={['organizacao_interna_estrutura_tem']} openHelpbox={_contentText} />
+                    </div>
+                    <div className="col-xs-6" style={{ display: 'flex' }}>
+                      {['1'].includes(entity.organizacao_interna_estrutura_tem) && <TextField
+                        className="input-text"
+                        label="Especifique"
+                        value={entity.organizacao_interna_estrutura_especifique || ''}
+                        onChange={e => handleFieldChange('organizacao_interna_estrutura_especifique')(e.target.value)}
+                      />}
+                    </div>
+                  </div>
+                </section>
+
+                <hr className="hr-spacer my-4" />
+                <section id="ppea">
+                  <div className="section-header">
+                    <div className="section-title">Política Pública de Educação Ambiental</div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-xs-4" style={{ display: 'flex' }}>
+                      <TextField
+                        select
+                        id="money-select"
+                        label="Tem política pública"
+                        className="input-select"
+                        value={entity.ppea_tem || 'none'}
+                        onChange={e => handleFieldChange('ppea_tem')(e.target.value)}
+                      >
+                        <MenuItem value="none">Não respondido</MenuItem>
+                        <MenuItem value="1">Sim</MenuItem>
+                        <MenuItem value="2">Não</MenuItem>
+                      </TextField>
+                      <HelpBoxButton keyRef={['ppea_tem']} openHelpbox={_contentText} />
+                    </div>
+                    {!!entity.ppea_tem && <>
+                      <div className="col-xs-2" style={{ display: 'flex' }}>
+                        <TextField
+                          select
+                          id="money-select"
+                          label="Tipo de arquivo política pública"
+                          className="input-select"
+                          value={entity.ppea_tipo || 'none'}
+                          onChange={e => handleFieldChange('ppea_tipo')(e.target.value)}
+                        >
+                          <MenuItem value="none">Não respondido</MenuItem>
+                          <MenuItem value="link">Link</MenuItem>
+                          <MenuItem value="file">Arquivo</MenuItem>
+                        </TextField>
+                        <HelpBoxButton keyRef={['ppea_tipo']} openHelpbox={_contentText} />
+                      </div>
+
+                      <div className="col-xs-6" style={{ display: 'flex' }}>
+                        {entity.ppea_tipo === 'link' && <TextField
+                          className="input-text"
+                          label="Link do regimento interno"
+                          value={entity.ppea_arquivo || ''}
+                          onChange={e => handleFieldChange('ppea_arquivo')(e.target.value)}
+                        />}
+                        {entity.ppea_tipo === 'file' && <UploaderField
+                          onChange={handleFileChange('ppea')}
+                          url={entity.ppea_arquivo}
+                          type="file"
+                          filename={entity.ppea_file_name}
+                          /* accept="application/pdf" */
+                          title="Política pública"
+                        />}
+                      </div>
+                    </>}
+                  </div>
+                  {!!entity.ppea_tem && <div className="row">
+                    <div className="col-xs-3" style={{ display: 'flex' }}>
+                      <TextField
+                        className="input-text"
+                        label="Decreto"
+                        value={entity.ppea_decreto || ''}
+                        onChange={e => handleFieldChange('ppea_decreto')(e.target.value)}
+                      />
+                    </div>
+                    <div className="col-xs-3" style={{ display: 'flex' }}>
+                      <TextField
+                        className="input-text"
+                        label="Lei"
+                        value={entity.ppea_lei || ''}
+                        onChange={e => handleFieldChange('ppea_lei')(e.target.value)}
+                      />
+                    </div>
+                  </div>}
+                </section>
+
                 <div className="section-header">
                   <div className="section-title"></div>
                   <div className="section-actions">
@@ -371,7 +603,7 @@ function Composicao({ row, DefaultRemove, handleChange, /*, handleRemove, index 
         className="input-text"
         label="Setor"
         value={row.name || ''}
-        onChange={(e)=>handleChange('name')(e.target.value)}
+        onChange={(e) => handleChange('name')(e.target.value)}
       />
     </div>
     <div className="col-xs-3" style={{ display: 'flex' }}>
@@ -379,13 +611,13 @@ function Composicao({ row, DefaultRemove, handleChange, /*, handleRemove, index 
         className="input-text"
         label="Núm. cadeiras"
         value={row.num || ''}
-        onChange={(e)=>handleChange('num')(e.target.value)}
+        onChange={(e) => handleChange('num')(e.target.value)}
       />
     </div>
     <div className="col-xs-1" style={{ display: 'flex' }}>
       {DefaultRemove}
-    </div> 
-   
+    </div>
+
   </div>
 }
 
