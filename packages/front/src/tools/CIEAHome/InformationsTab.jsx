@@ -330,19 +330,14 @@ export default function InformationsTab({ entityId }) {
                   </div>
 
                   <GenericMultiple
-                    data={[{
-                      name: 'Nome tal 1',
-                      num: '1',
-                    }, {
-                      name: 'Nome tal 2',
-                      num: '2',
-                    }]}
+                    data={entity.composicao_cadeiras_outros}
                     newData={{
                       name: '',
                       num: '',
                     }}
                     addtype="bottom"
                     addtitle="Adicionar setor"
+                    onChange={handleFieldChange('composicao_cadeiras_outros')}
                   >
                     <Composicao />
                   </GenericMultiple>

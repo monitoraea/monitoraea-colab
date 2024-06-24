@@ -24,16 +24,22 @@ const GenericMultiple = ({
   }, [data]);
 
   const createNewLine = () => {
-    _dataObjArr([
+    const newObjArr = [
       ...dataObjArr,
       { ...newData },
-    ]);
+    ];
+
+    _dataObjArr(newObjArr);
+    onChange(newObjArr)
   };
 
   const removeLine = index => () => {
     dataObjArr.splice(index, 1);
-    _dataObjArr([...dataObjArr]);
-    handleDataChange();
+
+    const newObjArr = [...dataObjArr];
+
+    _dataObjArr(newObjArr);
+    onChange(newObjArr)
   };
 
   const handleChange = index => field => value => {
@@ -44,11 +50,9 @@ const GenericMultiple = ({
       newObjArr = [...dataObjArr]
       newObjArr[index][field] = value;
     }
-    _dataObjArr(newObjArr);
-  };
 
-  const handleDataChange = () => { /* TODO: é necessário */
-    /* onChange(dataObjArr); */
+    _dataObjArr(newObjArr);
+    onChange(newObjArr)
   };
 
   return (
