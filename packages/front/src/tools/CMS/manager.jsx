@@ -462,7 +462,7 @@ export default function CMS({ id, onClose, onSave }) {
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-12">
+                <div className={`col-md-12 ${styles['editor-wrapper']}`}>
                   <CKEditor
                     editor={ClassicEditor}
                     config={{
