@@ -1,11 +1,13 @@
 import monitoraea from '../../images/perspectives/monitoraea.png';
 import zcm from '../../images/perspectives/zcm.png';
 import ciea from '../../images/perspectives/ciea.png';
+import ppea from '../../images/perspectives/ppea.png';
 
 const logos = {
     'monitoraea': monitoraea,
     'zcm': zcm,
     'ciea': ciea,
+    'ppea': ppea,
 }
 
 export default function perspectiveRenderer({ perspectives, community }) {

@@ -9,6 +9,7 @@ const tools = {
   NetworkHome: lazy(() => import('./NetworkHome')),
   NetworkHomeCIEA: lazy(() => import('./NetworkHomeCIEA')),
   CIEAHome: lazy(() => import('./CIEAHome')),
+  PPEAHome: lazy(() => import('./PPEAHome')),
   CMS: lazy(() => import('./CMS')),
   MenuManager: lazy(() => import('./MenuManager')),
   DashboardADM: lazy(() => import('./DashboardADM')),
