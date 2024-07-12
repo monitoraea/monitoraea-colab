@@ -12,7 +12,6 @@ router.get('/images', async (req, res) => {
     page,
     order,
     direction,
-    limit,
 
     category,
     last,
@@ -23,7 +22,6 @@ router.get('/images', async (req, res) => {
       page: page ? parseInt(page) : 1,
       order: order ? order : 'f."createdAt"',
       direction: direction ? direction : 'ASC',
-      limit: limit ? parseInt(limit) : 10,
       category,
       last,
     });

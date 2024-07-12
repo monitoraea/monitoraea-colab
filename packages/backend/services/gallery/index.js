@@ -17,10 +17,6 @@ const s3ContentURL = process.env.S3_CONTENT_URL;
 
 class Service {
   async getImagesFromGallery(config) {
-    let replacements = {
-      limit: config.limit,
-      offset: (config.page - 1) * config.limit,
-    };
 
     let joins = ['INNER JOIN files f ON f.id = gi.file_id'];
     let where = [];
@@ -38,11 +34,9 @@ class Service {
         ORDER BY ${
           !config.last ? `${protect.order(config.order)} ${protect.direction(config.direction)}` : 'gi."createdAt" DESC'
         }
-        LIMIT :limit 
-        OFFSET :offset
+        
         `,
       {
-        replacements,
         type: Sequelize.QueryTypes.SELECT,
       },
     );
