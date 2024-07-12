@@ -1,0 +1,28 @@
+# usando um form file no frontend
+# size é ignorado em views
+fields:
+
+- key: name
+  type: text
+  title: Nome
+  size: 6
+
+- key: lastname
+  type: text
+  title: Sobrenome
+  size: 6
+
+- key: birthyear
+  type: yearpicker
+  title: Ano de Nascimento
+  size: 4
+
+- key: social_status
+  type: options
+  title: Estado civil
+  size: 8
+  options:
+    - value: 'casado'
+      label: 'Casado'
+    - value: 'solteiro'
+      label: 'Solteiro'

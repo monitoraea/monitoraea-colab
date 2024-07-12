@@ -24,4 +24,5 @@ module.exports = [
   'uf',
   'help',
   'facilitator',
+  'form',
 ];

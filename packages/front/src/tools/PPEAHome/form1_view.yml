@@ -1,0 +1,17 @@
+# We can build a Layout Builder to create files like this one
+- type: row
+  elements:
+  - type: column
+    size: 6
+    key: name
+  - type: column
+    size: 6
+    key: lastname
+- type: row
+  elements:
+  - type: column
+    size: 4
+    key: birthyear
+  - type: column
+    size: 8
+    key: social_status

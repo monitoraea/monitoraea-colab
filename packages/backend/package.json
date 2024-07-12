@@ -28,7 +28,8 @@
     "simplify-geojson": "^1.0.4",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.1.6",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "yaml": "^2.4.5"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
