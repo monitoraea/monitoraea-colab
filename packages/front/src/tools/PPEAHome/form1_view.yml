@@ -15,3 +15,14 @@
   - type: column
     size: 8
     key: social_status
+- type: row
+  elements:
+  - type: column
+    size: 3
+    key: liked_number
+- type: row
+  elements:
+  - type: column
+    size: 12
+    key: why-even
+    

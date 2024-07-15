@@ -1,5 +1,11 @@
 # usando um form file no frontend
 # size é ignorado em views
+imports:
+  - name: scripts1
+    url: ./scripts.js
+
+# - http://localhost:4006/scripts
+
 fields:
 
 - key: name
@@ -26,3 +32,28 @@ fields:
       label: 'Casado'
     - value: 'solteiro'
       label: 'Solteiro'
+
+- key: liked_number
+  type: options
+  title: Escolha um número
+  size: 3
+  options:
+    - value: 0
+      label: '0'
+    - value: 1
+      label: '1'
+    - value: 2
+      label: '2'
+    - value: 3
+      label: '3'
+
+- key: why-even
+  type: text
+  title: Como você pode gostar de números pares?
+  size: 6
+  show:
+    function:
+      module: scripts1
+      name: isEven
+      params: 
+        - value_of: liked_number
