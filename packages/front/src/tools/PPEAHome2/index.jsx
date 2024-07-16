@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Renderer } from '../PPEAHome/Renderer'
+import { BasicRenderer } from '../PPEAHome/Renderer'
 
 import form1 from '../PPEAHome/form1.yml'
-import form1_view from '../PPEAHome/form1_view.yml'
 
 export default function PPEAHome() {
 
@@ -23,9 +22,9 @@ export default function PPEAHome() {
                 <div className="page-content">
                     <div className="page-body">
                         <div className="tablebox" style={{ padding: '20px', width: '75%', margin: '0 auto' }}>
-                            <h4>Teste com formulário e layout declarativos</h4>
+                            <h4>Teste com formulário</h4>
                             <hr />
-                            <Renderer form={form1} view={form1_view} data={data} onDataChange={handleDataChange} />
+                            <BasicRenderer form={form1} data={data} onDataChange={handleDataChange} />
                         </div>
                     </div>
                 </div>
