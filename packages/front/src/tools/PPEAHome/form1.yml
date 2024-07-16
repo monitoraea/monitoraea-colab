@@ -75,18 +75,24 @@ fields:
   title: Campo órfão teste
   size: 6
 
-# BasicRenderer: se houver blocks abaixo, o renderer utiliza esta informação para definir o visual e impor regras. Neste caso, campo deve estar presente em block para aparecer
-# Renderer (com view): utiliza esta informação, somente, para regras
+# 1. BasicRenderer: se houver blocks abaixo, o renderer utiliza esta informação para definir o visual e impor regras. 
+# -- Neste caso, campo deve estar presente em block para aparecer (ou ligar showOrphan)
+
+# 2. Renderer (com view): utiliza esta informação, somente, para regras
+
 blocks:
 
-  - key: ppea
-    title: Sobre a Política Pública
+  - key: ppea # só é necessário se tem regras ou com view?
+    title: Sobre a Política Pública # optional
+    # TODO: pode ter blocos? -> somente referencia? ou aninhar?
     fields:
       - name
       - area
       - area_especifique
 
-  - fields:
+  - key: inst
+    title: Sobre a Instituição
+    fields:
       - name_instituicao
       - enquadramento_instituicao
 

@@ -22,7 +22,7 @@ export default function PPEAHome() {
                 <div className="page-content">
                     <div className="page-body">
                         <div className="tablebox" style={{ padding: '20px', width: '75%', margin: '0 auto' }}>
-                            <h4>Teste com formulário</h4>
+                            <h4>Teste com formulário sem layout (view)</h4>
                             <hr />
                             <Renderer form={form1} data={data} onDataChange={handleDataChange} />
                         </div>

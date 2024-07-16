@@ -1,5 +1,6 @@
 # We can build a Layout Builder to create files like this one
 - type: row
+  block: ppea # opcional
   elements:
   - type: column
     size: 12
@@ -12,6 +13,7 @@
     key: area_especifique
 
 - type: row
+  block: inst
   elements:
   - type: column
     size: 6
@@ -20,7 +22,8 @@
     size: 6
     key: enquadramento_instituicao
 
-- type: row # AQUI! trocar por bloco!
+- type: row
+  block: test
   elements:
   - type: column
     size: 6

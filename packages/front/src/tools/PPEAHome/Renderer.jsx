@@ -35,20 +35,14 @@ export function Renderer(props) {
 /*****************************************************************
     Basic Renderer
  *****************************************************************/
-function BasicRenderer({ form, showOrphan=false, data, onDataChange }) {
+function BasicRenderer({ form, showOrphan = false, data, onDataChange }) {
     let inBlock = [];
     // mostrar campos em blocos
     const blocks = <>
         {form.blocks.map(b => {
             const k = b.key || uuidv4();
 
-            let show = true;
-            if (b.show?.target) show = (data[b.show.target.key] === b.show.target.value);
-
-            if(!show) return null;
-
-            return <div key={k}>
-                {b.title && <strong>{b.title}</strong>}
+            return <Block key={k} block={b} data={data}>
                 {b.fields.map(f => {
                     inBlock.push(f);
                     const field = form.fields.find(fi => fi.key === f);
@@ -56,11 +50,11 @@ function BasicRenderer({ form, showOrphan=false, data, onDataChange }) {
                         <FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
                     </div>
                 })}
-            </div>
+            </Block>
         })}
     </>;
 
-    // mostrar campos sem blocos - TODO: tornar opcional
+    // mostrar campos sem blocos
     const otherFields = <>
         {form.fields.filter(f => !inBlock.includes(f.key)).map(f => <div key={f.key} className='row'>
             <FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} />
@@ -76,23 +70,39 @@ function BasicRenderer({ form, showOrphan=false, data, onDataChange }) {
 /*****************************************************************
     View Renderer
  *****************************************************************/
+
 function ViewRenderer({ form, view, data, onDataChange }) {
 
     return <Element form={form} v={{ type: 'start', elements: view }} data={data} onDataChange={onDataChange} />
 }
-function Element({ form, v, data, onDataChange }) {
+function Element(props) {
+    const { form, v, data, onDataChange } = props;
+
     if (v.type === 'start') return <>
         {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} onDataChange={onDataChange} />)}
     </>
 
-    if (v.type === 'row') return <div className="row">
-        {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} onDataChange={onDataChange} />)}
-    </div>
+    if (v.type === 'row') {
+        if (!v.block) return <Row {...props} />
+        else {
+            const block = form.blocks.find(b => b.key === v.block)
+            return <Block block={block} data={data}><Row {...props} /></Block>
+        }
+    }
 
     const field = form.fields.find(f => f.key === v.key);
     if (!field) return <></>;
     return <FieldRenderer blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
 }
+function Row({ form, v, data, onDataChange }) {
+    return <div className="row">
+        {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} onDataChange={onDataChange} />)}
+    </div>
+}
+
+/*****************************************************************
+    Field Renderer
+ *****************************************************************/
 
 export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
     const [doShow, _doShow] = useState(false);
@@ -140,6 +150,10 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
 
 
 }
+
+/*****************************************************************
+    Field components
+ *****************************************************************/
 
 function StringField({ f, dataValue, onChange }) {
     const [value, _value] = useState('');
@@ -191,6 +205,30 @@ function DatePickerField({ f, dataValue, onChange }) {
         inputFormat="yyyy"
     />
 }
+
+/*****************************************************************
+    Aux Components
+ *****************************************************************/
+
+function Block({ block, data, children }) {
+    let show = true;
+    if (block.show?.target) show = (data[block.show.target.key] === block.show.target.value);
+
+    if (!show) return null;
+
+    if (!block.title) return <>{children}</>;
+
+    return <section id={block.key}>
+        <div className="section-header">
+            <div className="section-title">{block.title}</div>
+        </div>
+        <>{children}</>
+    </section>
+}
+
+/*****************************************************************
+    Aux functions
+ *****************************************************************/
 
 function fieldInBlock(keyRef, blocks) {
     let block = false;
