@@ -21,7 +21,7 @@ import style from './information.module.scss';
 
 export default function InformationsTab({ entityId }) {
   const [data, _data] = useState({
-    name: 'Ricardo 123',
+    name: 'Prefeitura Municipal de Malacacheta - MG',
   });
 
   const handleDataChange = (field, value) => {

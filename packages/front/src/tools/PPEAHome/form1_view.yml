@@ -2,27 +2,30 @@
 - type: row
   elements:
   - type: column
-    size: 6
+    size: 12
     key: name
   - type: column
     size: 6
-    key: lastname
+    key: area
+  - type: column
+    size: 6
+    key: area_especifique
+
 - type: row
   elements:
   - type: column
-    size: 4
-    key: birthyear
+    size: 6
+    key: name_instituicao
   - type: column
-    size: 8
-    key: social_status
-- type: row
+    size: 6
+    key: enquadramento_instituicao
+
+- type: row # AQUI! trocar por bloco!
   elements:
   - type: column
-    size: 3
-    key: liked_number
-- type: row
-  elements:
+    size: 6
+    key: test_field1
   - type: column
-    size: 12
-    key: why-even
+    size: 6
+    key: test_field2
     

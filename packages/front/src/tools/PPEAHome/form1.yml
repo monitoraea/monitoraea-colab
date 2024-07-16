@@ -1,59 +1,103 @@
-# usando um form file no frontend
-# size é ignorado em views
-imports:
-  - name: scripts1
-    url: ./scripts.js
-
-# - http://localhost:4006/scripts
-
 fields:
 
 - key: name
   type: text
-  title: Nome
-  size: 6
+  title: Nome da Política Pública
+  size: 12
 
-- key: lastname
-  type: text
-  title: Sobrenome
-  size: 6
-
-- key: birthyear
-  type: yearpicker
-  title: Ano de Nascimento
-  size: 4
-
-- key: social_status
+- key: area
   type: options
-  title: Estado civil
-  size: 8
-  options:
-    - value: 'casado'
-      label: 'Casado'
-    - value: 'solteiro'
-      label: 'Solteiro'
-
-- key: liked_number
-  type: options
-  title: Escolha um número
-  size: 3
-  options:
+  title: Área da Política Pública
+  size: 6
+  options: # options onde o value é número em sequencia, poderia ter somente uma lista de labels
     - value: 0
-      label: '0'
+      label: 'Geral'
     - value: 1
-      label: '1'
-    - value: 2
-      label: '2'
-    - value: 3
-      label: '3'
-
-- key: why-even
+      label: 'Temática'
+  
+- key: area_especifique
   type: text
-  title: Como você pode gostar de números pares?
+  title: Especifique
   size: 6
   show:
-    function:
-      module: scripts1
-      name: isEven
-      params: 
-        - value_of: liked_number
+    target:
+      key: area
+      value: 1
+  # disabled
+
+- key: name_instituicao
+  type: text
+  title: Nome da Instituição Executora
+  size: 6
+
+- key: enquadramento_instituicao
+  type: options
+  title: Enquadramento da Instituição
+  size: 8
+  options:
+    - value: 0
+      label: 'Poder Público - Nível Federal'
+    - value: 1
+      label: 'Poder Público - Nível Estadual'
+    - value: 2
+      label: 'Poder Público - Nível Municipal'
+    - value: 3
+      label: 'Conselhos'
+    - value: 4
+      label: 'Comitê de bacia hidrográfica'
+    - value: 5
+      label: 'Comitê gestor de Unidade de Conservação'
+    - value: 6
+      label: 'Instituição de Ensino'
+    - value: 7
+      label: 'Instituição de Pesquisa'
+    - value: 8
+      label: 'Organização da Sociedade Civil'
+    - value: 9
+      label: 'Coletivo Educador'
+    - value: 10
+      label: 'Instituição Privada'
+    - value: 11
+      label: 'Outro'
+
+- key: test_field1
+  type: text
+  title: Campo de teste 1
+  size: 6
+
+- key: test_field2
+  type: text
+  title: Campo de teste 2
+  size: 6
+
+- key: orphan_field
+  type: text
+  title: Campo órfão teste
+  size: 6
+
+# BasicRenderer: se houver blocks abaixo, o renderer utiliza esta informação para definir o visual e impor regras. Neste caso, campo deve estar presente em block para aparecer
+# Renderer (com view): utiliza esta informação, somente, para regras
+blocks:
+
+  - key: ppea
+    title: Sobre a Política Pública
+    fields:
+      - name
+      - area
+      - area_especifique
+
+  - fields:
+      - name_instituicao
+      - enquadramento_instituicao
+
+  - key: test
+    title: Bloco de teste com Regra
+    fields:
+      - test_field1
+      - test_field2
+    show:
+      target:
+        key: enquadramento_instituicao
+        value: 11
+    # iteration
+    
