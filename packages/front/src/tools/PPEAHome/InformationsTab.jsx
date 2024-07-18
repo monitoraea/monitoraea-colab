@@ -7,6 +7,8 @@ import Card from '../../components/Card';
 // import HelpBoxButton from './HelpBoxButton';
 // import GetHelpButton from './GetHelpButton';
 
+import FilePlus from '../../components/icons/FilePlus';
+
 import { Renderer } from '../../components/FormRenderer'
 
 import form1 from './form1.yml'
@@ -44,7 +46,18 @@ export default function InformationsTab({ entityId }) {
                   onDataChange={handleDataChange}
                 />
 
+                <div className="section-header">
+                  <div className="section-title"></div>
+                  <div className="section-actions">
+                    <button className="button-primary" onClick={() => console.log(data)}> {/* TODO: responsabilidade do Renderer */}
+                      <FilePlus></FilePlus>
+                      Gravar
+                    </button>
+                  </div>
+                </div>
+
               </div>
+
             </Card>
 
             {/* <Helpbox content={contentText} onClose={() => _contentText(null)} /> */}

@@ -25,7 +25,7 @@ export default function PPEAHome() {
                         <div className="tablebox" style={{ padding: '20px', width: '75%', margin: '0 auto' }}>
                             <h4>Teste com formulário sem layout (view)</h4>
                             <hr />
-                            <Renderer form={form1} data={data} lists={lists1} onDataChange={handleDataChange} />
+                            <Renderer form={form1} data={data} lists={lists1} showOrphans={true} onDataChange={handleDataChange} />
                         </div>
                     </div>
                 </div>

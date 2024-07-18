@@ -40,6 +40,81 @@ fields:
     module: property
     key: enquadramentos
 
+- key: nome_responsavel
+  type: text
+  title: Nome
+  size: 6
+
+- key: cargo_responsavel
+  type: text
+  title: Cargo/Função	
+  size: 6
+
+- key: telefone_responsavel
+  type: text
+  title: Telefone
+  size: 6
+
+- key: email_responsavel
+  type: text
+  title: Email
+  size: 6  
+  # TODO: capacidade de colocar o bloco aqui tbem? Assim, não preciso repetir a key no bloco?
+
+- key: link
+  type: text
+  title: Link para acesso à informações da Política Pública
+  size: 12  
+
+- key: acoes
+  type: textarea
+  rows: 3
+  title: Cite quais as ações, projetos, programas e planos estão contemplados pela PPEA
+  size: 12
+
+- key: fase_atual
+  type: options
+  title: Fase atual da Política Pública
+  size: 6
+  options:
+    - value: 0
+      label: 'Etapa de Formulação'
+    - value: 1
+      label: 'Etapa Inicial de Implementação'
+    - value: 2
+      label: 'Etapa de Implementação Avançada'
+    - value: 3
+      label: 'Etapa de Revisão'
+
+- key: fase_atual_ano
+  type: yearpicker
+  title: Desde que ano esta etapa da política política vem sendo desenvolvida
+  size: 6
+
+- key: dificuldades
+  type: multi_autocomplete
+  title: Principais dificuldades no processo de construção/implementação da política
+  size: 12
+  options:
+    - value: 0
+      label: 'Envolvimento da sociedade civil'
+    - value: 1
+      label: 'Envolvimento do poder público'
+    - value: 2
+      label: 'Transversalidade'
+    - value: 3
+      label: 'Equipe'
+    - value: 4
+      label: 'Recursos financeiros'
+    - value: 5
+      label: 'Morosidade na etapa de aprovação'
+    - value: 6
+      label: 'Dificuldades na definição de indicadores'
+    - value: 7
+      label: 'Descontinuidade'
+    - value: 8
+      label: 'Implementação'
+
 # 1. BasicRenderer: se houver blocks abaixo, o renderer utiliza esta informação para definir o visual e impor regras. 
 # -- Neste caso, campo deve estar presente em block para aparecer (ou ligar showOrphan)
 
@@ -60,4 +135,18 @@ blocks: # opcional
     fields:
       - name_instituicao
       - enquadramento_instituicao
-    
+
+  - key: responsavel
+    title: Sobre a Responsável
+    fields:
+      - nome_responsavel
+      - cargo_responsavel
+      - telefone_responsavel
+      - email_responsavel
+
+  - key: more
+    title: Mais informações
+    fields:
+      - acoes
+      - fase_atual
+      - fase_atual_ano

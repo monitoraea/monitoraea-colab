@@ -62,35 +62,48 @@ export function Renderer(props) {
 /*****************************************************************
     Basic Renderer
  *****************************************************************/
-function BasicRenderer({ form, showOrphan = false, data, onDataChange }) {
-    let inBlock = [];
-    // mostrar campos em blocos
-    const blocks = <>
-        {form.blocks.map(b => {
-            const k = b.key || uuidv4();
+function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
+    let blocks, otherFields = [];
 
-            return <Block key={k} block={b} data={data}>
-                {b.fields.map(f => {
-                    inBlock.push(f);
-                    const field = form.fields.find(fi => fi.key === f);
-                    return <div key={field.key} className='row'>
-                        <FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
-                    </div>
-                })}
-            </Block>
-        })}
-    </>;
+    if(!form.blocks) {
 
-    // mostrar campos sem blocos
-    const otherFields = <>
-        {form.fields.filter(f => !inBlock.includes(f.key)).map(f => <div key={f.key} className='row'>
-            <FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} />
-        </div>)}
-    </>
+        blocks = <>
+            {form.fields.map(f => <div key={f.key} className='row'>
+                <FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} />
+            </div>)}
+        </>
+
+    } else {
+
+        let inBlock = [];
+        // mostrar campos em blocos
+        blocks = <>
+            {form.blocks.map(b => {
+                const k = b.key || uuidv4();
+
+                return <Block key={k} block={b} data={data}>
+                    {b.fields.map(f => {
+                        inBlock.push(f);
+                        const field = form.fields.find(fi => fi.key === f);
+                        return <div key={field.key} className='row'>
+                            <FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
+                        </div>
+                    })}
+                </Block>
+            })}
+        </>;
+
+        // mostrar campos sem blocos
+        otherFields = <>
+            {form.fields.filter(f => !inBlock.includes(f.key)).map(f => <div key={f.key} className='row'>
+                <FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} />
+            </div>)}
+        </>
+    }
 
     return <>
         {blocks}
-        {!!showOrphan && otherFields}
+        {!!showOrphans && otherFields}
     </>
 }
 
@@ -171,7 +184,8 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
 
     if (f.type === 'options') Component = <OptionsField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
     else if (f.type === 'yearpicker') Component = <DatePickerField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
-    else Component = <StringField integer={f.type === 'integer'} f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
+    else if(f.type === 'multi_autocomplete') Component = <MultiAutocompleteField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
+    else Component = <StringField integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
 
     if (f.iterate) {
         if (!data[f.iterate.target]) return <></>;
@@ -200,7 +214,7 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
     Field components
  *****************************************************************/
 
-function StringField({ f, integer, index, dataValue, onChange }) {
+function StringField({ f, integer, multiline, rows, index, dataValue, onChange }) {
     const [value, _value] = useState('');
 
     useEffect(() => {
@@ -210,8 +224,10 @@ function StringField({ f, integer, index, dataValue, onChange }) {
     const handleChange = (e) => {
         let value = e.target.value;
 
-        if (integer) value = String(parseInt(value.replace(/[^\d.-]+/g, '')))
-        if (isNaN(value)) value = 0;
+        if (integer) {
+            value = String(parseInt(value.replace(/[^\d.-]+/g, '')))
+            if (isNaN(value)) value = 0;
+        }
 
         onChange(value)
     }
@@ -221,6 +237,8 @@ function StringField({ f, integer, index, dataValue, onChange }) {
         label={f.title.replace('%index%', index + 1)}
         value={value}
         onChange={handleChange}
+        multiline={multiline}
+        rows={rows || 2}
     />
 }
 
@@ -251,6 +269,37 @@ function OptionsField({ f, index, dataValue, onChange }) {
         <MenuItem value="none">Não respondido</MenuItem>
         {options.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
     </TextField>
+}
+
+function MultiAutocompleteField({ f, index, dataValue, onChange }) {
+    const [value, _value] = useState('none');
+    const [options, _options] = useState([]);
+
+    useEffect(() => {
+        if(f.options) _options(f.options);
+        
+        if(f.list) {
+            // console.log(context_lists, f.list.module, context_lists[f.list.module])
+            _options(context_lists[f.list.module]?.find(l => l.key === f.list.key)?.options || []);
+        }
+    }, [f])
+
+    useEffect(() => {
+        if (dataValue !== undefined) _value(dataValue);
+    }, [dataValue])
+
+    return <TextField
+        className="input-select"
+        label={f.title.replace('%index%', index + 1)}
+        value={value}
+        select
+        onChange={(e) => onChange(e.target.value)}
+    >
+        <MenuItem value="none">Não respondido</MenuItem>
+        {options.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
+    </TextField>
+
+    
 }
 
 function DatePickerField({ f, index, dataValue, onChange }) {
