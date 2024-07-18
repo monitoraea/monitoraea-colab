@@ -1,0 +1,168 @@
+fields:
+
+- key: name
+  type: text
+  title: Nome da Política Pública
+  size: 12
+
+- key: area
+  type: options
+  title: Área da Política Pública
+  size: 6
+  options: # options onde o value é número em sequencia, poderia ter somente uma lista de labels
+    - value: 0
+      label: 'Geral'
+    - value: 1
+      label: 'Temática'
+  
+- key: area_especifique
+  type: text
+  title: Especifique
+  size: 6
+  show:
+    target:
+      key: area
+      value: 1
+  # disabled
+
+- key: name_instituicao
+  type: text
+  title: Nome da Instituição Executora
+  size: 6
+
+- key: enquadramento_instituicao
+  type: options
+  title: Enquadramento da Instituição
+  size: 8
+  list: enquadramentos
+
+- key: test_field1
+  type: text
+  title: Campo de teste 1
+  size: 6
+
+- key: test_field2
+  type: text
+  title: Campo de teste 2
+  size: 6
+
+- key: orphan_field
+  type: text
+  title: Campo órfão teste
+  size: 6
+
+- key: how_many_cats
+  type: integer
+  title: Quantos gatos você tem?
+  default: 0
+  size: 4
+
+- key: cat_name
+  type: text
+  title: Qual o nome do gato %index%?
+  size: 6
+  iterate:
+    target: how_many_cats
+    index: default # padrao, nomeia cada iteracao como cat_name.[index]
+
+# 1. BasicRenderer: se houver blocks abaixo, o renderer utiliza esta informação para definir o visual e impor regras. 
+# -- Neste caso, campo deve estar presente em block para aparecer (ou ligar showOrphan)
+
+# 2. Renderer (com view): utiliza esta informação, somente, para regras
+
+blocks: # opcional
+
+  - key: ppea # só é necessário se tem regras ou com view?
+    title: Sobre a Política Pública # optional
+    # TODO: pode ter blocos? -> somente referencia? ou aninhar?
+    fields:
+      - name
+      - area
+      - area_especifique
+
+  - key: inst
+    title: Sobre a Instituição
+    fields:
+      - name_instituicao
+      - enquadramento_instituicao
+
+  - key: test
+    title: Bloco de teste de iteração
+    fields:
+      - how_many_cats
+      - cat_name
+
+  - key: test2
+    title: Bloco de teste com Regra
+    fields:
+      - test_field1
+      - test_field2
+    show:
+      target:
+        key: enquadramento_instituicao
+        value: 11
+    # iteration
+    
+
+###########################################################################
+
+# usando um form file no frontend
+# size é ignorado em views
+imports:
+  - key: scripts1
+    url: ./scripts.js
+    type: script # isso é novo e deve ser inserido no renderer
+
+# - http://localhost:4006/scripts
+
+fields:
+
+- key: name
+  type: text
+  title: Nome
+  size: 6
+
+- key: lastname
+  type: text
+  title: Sobrenome
+  size: 6
+
+- key: birthyear
+  type: yearpicker
+  title: Ano de Nascimento
+  size: 4
+
+- key: social_status
+  type: options
+  title: Estado civil
+  size: 8
+  options:
+    - value: 'casado'
+      label: 'Casado'
+    - value: 'solteiro'
+      label: 'Solteiro'
+
+- key: liked_number
+  type: options
+  title: Escolha um número
+  size: 3
+  options:
+    - value: 0
+      label: '0'
+    - value: 1
+      label: '1'
+    - value: 2
+      label: '2'
+    - value: 3
+      label: '3'
+
+- key: why-even
+  type: text
+  title: Como você pode gostar de números pares?
+  size: 6
+  show:
+    function:
+      module: scripts1
+      name: isEven
+      params: 
+        - value_of: liked_number

@@ -1,35 +1,61 @@
-import { useEffect, useState, cloneElement, Fragment } from 'react';
+import { useEffect, useState, cloneElement } from 'react';
 import { TextField, MenuItem } from '@mui/material';
 import DatePicker from '../../components/DatePicker';
 
-let modules = {}; // TODO: context?
+let modules = {}; // TODO: context? 
+let lists = {}; // TODO: context? 
+
+import YAML from 'yaml'
 
 import { v4 as uuidv4 } from 'uuid';
 
 export function Renderer(props) {
-    const { form, view } = props;
+    const { form, view, data } = props;
     const [imported, _imported] = useState(false)
+    const [preparedData, _preparedData] = useState({});
 
     useEffect(() => {
         async function doImport() {
-            for (let s of form.imports) {
+
+            // scripts
+            for (let s of form.imports.filter(i => i.type === 'script')) {
                 // console.log(s)
                 const module = await import(/* @vite-ignore */s.url);
                 // console.log({ module })
                 // console.log(module.isEven(1), module.isEven(2), module.isEven(33))
-                modules[s.name] = module;
+                modules[s.key] = module;
             }
+
+            for (let s of form.imports.filter(i => i.type === 'list-module')) {
+                // console.log(s)
+                const module = await import(/* @vite-ignore */s.url);
+                const jsonList = await YAML.parse(module.list);                
+                lists[s.key] = jsonList.list;
+            }
+
             _imported(true);
         }
 
         if (form.imports && Array.isArray(form.imports)) doImport();
         else _imported(true);
+
     }, [form])
+
+    useEffect(() => {
+        // defaults // TODO: and for iterated fields?
+
+        let pData = { ...data };
+        for (let f of form.fields.filter(f => f.default !== undefined)) {
+            if (!pData[f.key]) pData[f.key] = f.default;
+        }
+
+        _preparedData(pData);
+    }, [form, data])
 
     if (!imported) return <></>;
 
-    if (!view) return <BasicRenderer {...props} />
-    else return <ViewRenderer {...props} />
+    if (!view) return <BasicRenderer {...props} data={preparedData} />
+    else return <ViewRenderer {...props} data={preparedData} />
 }
 
 /*****************************************************************
@@ -140,11 +166,29 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
 
     let Component;
 
-    if (f.type === 'options') Component = <OptionsField f={f} dataValue={data?.[keyRef]} onChange={onChange(keyRef)} />
-    else if (f.type === 'yearpicker') Component = <DatePickerField f={f} dataValue={data?.[keyRef]} onChange={onChange(keyRef)} />
-    else Component = <StringField f={f} dataValue={data?.[keyRef]} onChange={onChange(keyRef)} />
+    const dataValue = data?.[keyRef];
 
-    return <div className={`col-xs-${size}`}>
+    if (f.type === 'options') Component = <OptionsField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
+    else if (f.type === 'yearpicker') Component = <DatePickerField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
+    else Component = <StringField integer={f.type === 'integer'} f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
+
+    if (f.iterate) {
+        if (!data[f.iterate.target]) return <></>;
+
+        let iteration = [];
+        for (let index = 0; index < data[f.iterate.target]; index++) {
+            const IterateElement = cloneElement(Component, { index });
+            iteration.push(<div className='row' key={`${f.key}.${index}`}>
+                <div className={`col-xs-${size}`}>
+                    {IterateElement}
+                </div>
+            </div>);
+        }
+
+        return <div className={`col-xs-12`}>
+            {iteration}
+        </div>;
+    } else return <div className={`col-xs-${size}`}>
         {Component}
     </div>
 
@@ -155,41 +199,60 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
     Field components
  *****************************************************************/
 
-function StringField({ f, dataValue, onChange }) {
+function StringField({ f, integer, index, dataValue, onChange }) {
     const [value, _value] = useState('');
 
     useEffect(() => {
-        if (!!dataValue) _value(dataValue);
+        if (dataValue !== undefined) _value(dataValue);
     }, [dataValue])
+
+    const handleChange = (e) => {
+        let value = e.target.value;
+
+        if (integer) value = String(parseInt(value.replace(/[^\d.-]+/g, '')))
+        if (isNaN(value)) value = 0;
+
+        onChange(value)
+    }
 
     return <TextField
         className="input-text"
-        label={f.title}
+        label={f.title.replace('%index%', index + 1)}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={handleChange}
     />
 }
 
-function OptionsField({ f, dataValue, onChange }) {
+function OptionsField({ f, index, dataValue, onChange }) {
     const [value, _value] = useState('none');
+    const [options, _options] = useState([]);
 
     useEffect(() => {
-        if (!!dataValue) _value(dataValue);
+        if(f.options) _options(f.options);
+        
+        if(f.list) {
+            console.log(lists, f.list.module, lists[f.list.module])
+            _options(lists[f.list.module]?.find(l => l.key === f.list.key)?.options || []);
+        }
+    }, [f])
+
+    useEffect(() => {
+        if (dataValue !== undefined) _value(dataValue);
     }, [dataValue])
 
     return <TextField
         className="input-select"
-        label={f.title}
+        label={f.title.replace('%index%', index + 1)}
         value={value}
         select
         onChange={(e) => onChange(e.target.value)}
     >
         <MenuItem value="none">Não respondido</MenuItem>
-        {f.options.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
+        {options.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
     </TextField>
 }
 
-function DatePickerField({ f, dataValue, onChange }) {
+function DatePickerField({ f, index, dataValue, onChange }) {
     const [value, _value] = useState(new Date());
 
     useEffect(() => {
@@ -198,7 +261,7 @@ function DatePickerField({ f, dataValue, onChange }) {
 
     return <DatePicker
         className="input-datepicker"
-        label={f.title}
+        label={f.title.replace('%index%', index + 1)}
         value={value}
         onChange={onChange}
         views={['year']}

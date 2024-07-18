@@ -1,0 +1,30 @@
+export const list =  `
+list:
+
+  - key: enquadramentos
+    options:
+    - value: 0
+      label: 'Poder Público - Nível Federal'
+    - value: 1
+      label: 'Poder Público - Nível Estadual'
+    - value: 2
+      label: 'Poder Público - Nível Municipal'
+    - value: 3
+      label: 'Conselhos'
+    - value: 4
+      label: 'Comitê de bacia hidrográfica'
+    - value: 5
+      label: 'Comitê gestor de Unidade de Conservação'
+    - value: 6
+      label: 'Instituição de Ensino'
+    - value: 7
+      label: 'Instituição de Pesquisa'
+    - value: 8
+      label: 'Organização da Sociedade Civil'
+    - value: 9
+      label: 'Coletivo Educador'
+    - value: 10
+      label: 'Instituição Privada'
+    - value: 11
+      label: 'Outro'
+`;

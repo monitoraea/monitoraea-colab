@@ -1,3 +1,8 @@
+imports:
+  - key: lists1
+    url: ./lists1.js
+    type: list-module # for "local" forms it has to be an this type OR is there another way?
+
 fields:
 
 - key: name
@@ -34,53 +39,16 @@ fields:
   type: options
   title: Enquadramento da Instituição
   size: 8
-  options:
-    - value: 0
-      label: 'Poder Público - Nível Federal'
-    - value: 1
-      label: 'Poder Público - Nível Estadual'
-    - value: 2
-      label: 'Poder Público - Nível Municipal'
-    - value: 3
-      label: 'Conselhos'
-    - value: 4
-      label: 'Comitê de bacia hidrográfica'
-    - value: 5
-      label: 'Comitê gestor de Unidade de Conservação'
-    - value: 6
-      label: 'Instituição de Ensino'
-    - value: 7
-      label: 'Instituição de Pesquisa'
-    - value: 8
-      label: 'Organização da Sociedade Civil'
-    - value: 9
-      label: 'Coletivo Educador'
-    - value: 10
-      label: 'Instituição Privada'
-    - value: 11
-      label: 'Outro'
-
-- key: test_field1
-  type: text
-  title: Campo de teste 1
-  size: 6
-
-- key: test_field2
-  type: text
-  title: Campo de teste 2
-  size: 6
-
-- key: orphan_field
-  type: text
-  title: Campo órfão teste
-  size: 6
+  list: 
+    module: lists1
+    key: enquadramentos
 
 # 1. BasicRenderer: se houver blocks abaixo, o renderer utiliza esta informação para definir o visual e impor regras. 
 # -- Neste caso, campo deve estar presente em block para aparecer (ou ligar showOrphan)
 
 # 2. Renderer (com view): utiliza esta informação, somente, para regras
 
-blocks:
+blocks: # opcional
 
   - key: ppea # só é necessário se tem regras ou com view?
     title: Sobre a Política Pública # optional
@@ -95,15 +63,4 @@ blocks:
     fields:
       - name_instituicao
       - enquadramento_instituicao
-
-  - key: test
-    title: Bloco de teste com Regra
-    fields:
-      - test_field1
-      - test_field2
-    show:
-      target:
-        key: enquadramento_instituicao
-        value: 11
-    # iteration
     

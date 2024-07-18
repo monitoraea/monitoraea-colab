@@ -21,14 +21,4 @@
   - type: column
     size: 6
     key: enquadramento_instituicao
-
-- type: row
-  block: test
-  elements:
-  - type: column
-    size: 6
-    key: test_field1
-  - type: column
-    size: 6
-    key: test_field2
     
