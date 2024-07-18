@@ -1,7 +1,4 @@
-imports:
-  - key: lists1
-    url: ./lists1.js
-    type: list-module # for "local" forms it has to be an this type OR is there another way?
+# imports: é ignorado pelo se é um form de front
 
 fields:
 
@@ -40,7 +37,7 @@ fields:
   title: Enquadramento da Instituição
   size: 8
   list: 
-    module: lists1
+    module: property
     key: enquadramentos
 
 # 1. BasicRenderer: se houver blocks abaixo, o renderer utiliza esta informação para definir o visual e impor regras. 

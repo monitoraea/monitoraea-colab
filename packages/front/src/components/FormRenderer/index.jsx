@@ -1,45 +1,46 @@
 import { useEffect, useState, cloneElement } from 'react';
 import { TextField, MenuItem } from '@mui/material';
-import DatePicker from '../../components/DatePicker';
+import DatePicker from '../DatePicker';
 
-let modules = {}; // TODO: context? 
-let lists = {}; // TODO: context? 
-
-import YAML from 'yaml'
+let context_modules = {}; // TODO: context? 
+let context_lists = {}; // TODO: context? 
 
 import { v4 as uuidv4 } from 'uuid';
 
 export function Renderer(props) {
-    const { form, view, data } = props;
+    const { form, view, data, lists } = props;
     const [imported, _imported] = useState(false)
+    const [imported_lists, _imported_lists] = useState(false)
+    const [imported_script, _imported_script] = useState(false)
     const [preparedData, _preparedData] = useState({});
 
     useEffect(() => {
         async function doImport() {
-
             // scripts
             for (let s of form.imports.filter(i => i.type === 'script')) {
                 // console.log(s)
                 const module = await import(/* @vite-ignore */s.url);
                 // console.log({ module })
                 // console.log(module.isEven(1), module.isEven(2), module.isEven(33))
-                modules[s.key] = module;
+                context_modules[s.key] = module;
             }
 
-            for (let s of form.imports.filter(i => i.type === 'list-module')) {
-                // console.log(s)
-                const module = await import(/* @vite-ignore */s.url);
-                const jsonList = await YAML.parse(module.list);                
-                lists[s.key] = jsonList.list;
-            }
-
-            _imported(true);
+            _imported_script(true);
         }
 
         if (form.imports && Array.isArray(form.imports)) doImport();
-        else _imported(true);
+        else _imported_script(true);
 
     }, [form])
+
+    useEffect(() => {
+        context_lists = {...context_lists, property: lists.lists}
+        _imported_lists(true)
+    }, [lists])
+
+    useEffect(()=>{
+        _imported(true)
+    },[imported_script, imported_lists])
 
     useEffect(() => {
         // defaults // TODO: and for iterated fields?
@@ -139,7 +140,7 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
         // field rules
         if (!!f.show?.function) {
             // console.log(data[f.show.function.params[0].value_of])
-            show = modules[f.show.function.module]?.[f.show.function.name].call(this, data[f.show.function.params[0].value_of]);
+            show = context_modules[f.show.function.module]?.[f.show.function.name].call(this, data[f.show.function.params[0].value_of]);
         } else if (!!f.show?.target) {
             // console.log(f.show.target.key, data[f.show.target.key], f.show.target.value)
             // TODO: can be an array
@@ -231,8 +232,8 @@ function OptionsField({ f, index, dataValue, onChange }) {
         if(f.options) _options(f.options);
         
         if(f.list) {
-            console.log(lists, f.list.module, lists[f.list.module])
-            _options(lists[f.list.module]?.find(l => l.key === f.list.key)?.options || []);
+            // console.log(context_lists, f.list.module, context_lists[f.list.module])
+            _options(context_lists[f.list.module]?.find(l => l.key === f.list.key)?.options || []);
         }
     }, [f])
 

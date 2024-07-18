@@ -1,5 +1,4 @@
-export const list =  `
-list:
+lists:
 
   - key: enquadramentos
     options:
@@ -27,4 +26,3 @@ list:
       label: 'Instituição Privada'
     - value: 11
       label: 'Outro'
-`;
