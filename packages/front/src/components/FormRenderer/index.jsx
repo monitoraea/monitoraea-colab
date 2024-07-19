@@ -186,11 +186,11 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
 
     if (f.type === 'options') Component = <OptionsField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
     else if (f.type === 'yearpicker') Component = <DatePickerField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
-    else if ( f.type === 'multi_autocomplete' ) Component = <MultiAutocompleteField 
-        f={f} 
+    else if (f.type === 'multi_autocomplete') Component = <MultiAutocompleteField
+        f={f}
         tag={!!f.tag}
-        dataValue={dataValue} 
-        onChange={onChange(keyRef)} 
+        dataValue={dataValue}
+        onChange={onChange(keyRef)}
     />
     else Component = <StringField integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
 
@@ -292,8 +292,18 @@ function MultiAutocompleteField({ f, index, tag = false, dataValue, onChange }) 
     }, [f])
 
     useEffect(() => {
-        if (dataValue !== undefined) _value(dataValue);
+        _value(dataValue !== undefined ? dataValue : []);
     }, [dataValue])
+
+    const handleCheckChange = o => (e) => {
+
+        const isChecked = e.target.checked;
+        const isInValue = value.find(v => v.value === o.value);
+
+        if (!isChecked && isInValue) onChange(value.filter(v => v.value !== o.value));
+        if (isChecked && !isInValue) onChange([...value, o]);
+
+    }
 
     if (tag) return <Autocomplete
         multiple
@@ -336,8 +346,12 @@ function MultiAutocompleteField({ f, index, tag = false, dataValue, onChange }) 
     return <FormControl className={styles.checklist}>
         <FormLabel>{f.title.replace('%index%', index + 1)}</FormLabel>
         <FormGroup>
-            {/* TODO: falta implementar o onChange! */}
-            {options.map(o => <FormControlLabel key={o.value} control={<Checkbox />} label={o.label} />)}
+            {options.map(o => <FormControlLabel
+                key={o.value}
+                control={<Checkbox checked={value.some(v => v.value === o.value)} />}
+                label={o.label}
+                onChange={handleCheckChange(o)} />
+            )}
         </FormGroup>
     </FormControl>
 

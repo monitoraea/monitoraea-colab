@@ -20,7 +20,25 @@ import lists1 from './lists1.yml'
 
 export default function InformationsTab({ entityId }) {
   const [data, _data] = useState({
-    name: 'Prefeitura Municipal de Malacacheta - MG',
+    "name": "Prefeitura Municipal de Malacacheta - MG",
+    "dificuldades": [
+      {
+        "value": 1,
+        "label": "Envolvimento do poder público"
+      },
+      {
+        "value": 3,
+        "label": "Equipe"
+      },
+      {
+        "value": 5,
+        "label": "Morosidade na etapa de aprovação"
+      },
+      {
+        "value": 7,
+        "label": "Descontinuidade"
+      }
+    ]
   });
 
   const handleDataChange = (field, value) => {
