@@ -51,12 +51,7 @@
 
 - type: row
   block: more
-  elements:
-  - type: row
-    elements:  
-    - type: column
-      size: 12
-      key: acoes
+  elements:  
   - type: row
     elements:  
     - type: column
@@ -65,4 +60,11 @@
     - type: column
       size: 3
       key: fase_atual_ano
-    
+  - type: row
+    elements:
+    - type: column
+      size: 4
+      key: dificuldades
+    - type: column
+      size: 8
+      key: acoes

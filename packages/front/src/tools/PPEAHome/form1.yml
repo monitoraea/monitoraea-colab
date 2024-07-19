@@ -68,7 +68,7 @@ fields:
 
 - key: acoes
   type: textarea
-  rows: 3
+  rows: 8
   title: Cite quais as ações, projetos, programas e planos estão contemplados pela PPEA
   size: 12
 
@@ -93,6 +93,7 @@ fields:
 
 - key: dificuldades
   type: multi_autocomplete
+  # tag: true
   title: Principais dificuldades no processo de construção/implementação da política
   size: 12
   options:
@@ -147,6 +148,7 @@ blocks: # opcional
   - key: more
     title: Mais informações
     fields:
-      - acoes
       - fase_atual
       - fase_atual_ano
+      - dificuldades
+      - acoes

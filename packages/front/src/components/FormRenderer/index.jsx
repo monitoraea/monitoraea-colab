@@ -1,11 +1,13 @@
 import { useEffect, useState, cloneElement } from 'react';
-import { TextField, MenuItem } from '@mui/material';
+import { TextField, MenuItem, Autocomplete, Chip, FormGroup, FormControl, FormLabel, FormControlLabel, Checkbox } from '@mui/material';
 import DatePicker from '../DatePicker';
 
 let context_modules = {}; // TODO: context? 
 let context_lists = {}; // TODO: context? 
 
 import { v4 as uuidv4 } from 'uuid';
+
+import styles from './styles.module.scss'
 
 export function Renderer(props) {
     const { form, view, data, lists } = props;
@@ -34,13 +36,13 @@ export function Renderer(props) {
     }, [form])
 
     useEffect(() => {
-        context_lists = {...context_lists, property: lists.lists}
+        context_lists = { ...context_lists, property: lists.lists }
         _imported_lists(true)
     }, [lists])
 
-    useEffect(()=>{
+    useEffect(() => {
         _imported(true)
-    },[imported_script, imported_lists])
+    }, [imported_script, imported_lists])
 
     useEffect(() => {
         // defaults // TODO: and for iterated fields?
@@ -65,7 +67,7 @@ export function Renderer(props) {
 function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
     let blocks, otherFields = [];
 
-    if(!form.blocks) {
+    if (!form.blocks) {
 
         blocks = <>
             {form.fields.map(f => <div key={f.key} className='row'>
@@ -184,7 +186,12 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
 
     if (f.type === 'options') Component = <OptionsField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
     else if (f.type === 'yearpicker') Component = <DatePickerField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
-    else if(f.type === 'multi_autocomplete') Component = <MultiAutocompleteField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
+    else if ( f.type === 'multi_autocomplete' ) Component = <MultiAutocompleteField 
+        f={f} 
+        tag={!!f.tag}
+        dataValue={dataValue} 
+        onChange={onChange(keyRef)} 
+    />
     else Component = <StringField integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
 
     if (f.iterate) {
@@ -247,9 +254,9 @@ function OptionsField({ f, index, dataValue, onChange }) {
     const [options, _options] = useState([]);
 
     useEffect(() => {
-        if(f.options) _options(f.options);
-        
-        if(f.list) {
+        if (f.options) _options(f.options);
+
+        if (f.list) {
             // console.log(context_lists, f.list.module, context_lists[f.list.module])
             _options(context_lists[f.list.module]?.find(l => l.key === f.list.key)?.options || []);
         }
@@ -271,14 +278,14 @@ function OptionsField({ f, index, dataValue, onChange }) {
     </TextField>
 }
 
-function MultiAutocompleteField({ f, index, dataValue, onChange }) {
-    const [value, _value] = useState('none');
+function MultiAutocompleteField({ f, index, tag = false, dataValue, onChange }) {
+    const [value, _value] = useState([]);
     const [options, _options] = useState([]);
 
     useEffect(() => {
-        if(f.options) _options(f.options);
-        
-        if(f.list) {
+        if (f.options) _options(f.options);
+
+        if (f.list) {
             // console.log(context_lists, f.list.module, context_lists[f.list.module])
             _options(context_lists[f.list.module]?.find(l => l.key === f.list.key)?.options || []);
         }
@@ -288,18 +295,53 @@ function MultiAutocompleteField({ f, index, dataValue, onChange }) {
         if (dataValue !== undefined) _value(dataValue);
     }, [dataValue])
 
-    return <TextField
-        className="input-select"
-        label={f.title.replace('%index%', index + 1)}
+    if (tag) return <Autocomplete
+        multiple
+        id="fixed-tags"
+        className="input-autocomplete"
         value={value}
-        select
-        onChange={(e) => onChange(e.target.value)}
-    >
-        <MenuItem value="none">Não respondido</MenuItem>
-        {options.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
-    </TextField>
+        onChange={(_, value) => onChange(value)}
+        options={options}
+        // getOptionLabel={(option) => option.label}
+        renderOption={(props, option) => {
+            return (
+                <li {...props} key={option.value}>
+                    {option.label}
+                </li>
+            )
+        }}
+        renderTags={(tagValue, getTagProps) =>
+            tagValue.map((option, index) => (
+                <Chip
+                    label={option.label}
+                    {...getTagProps({ index })}
+                    key={option.value}
+                />
+            ))
+        }
+        renderInput={(params) => (<form autoComplete={"new-password"}>
+            <TextField
+                InputProps={{
+                    autoComplete: 'new-password',
+                    form: {
+                        autoComplete: 'off',
+                    }
+                }}
+                {...params}
+                label={f.title.replace('%index%', index + 1)}
+            />
+        </form>)}
+    />
 
-    
+    return <FormControl className={styles.checklist}>
+        <FormLabel>{f.title.replace('%index%', index + 1)}</FormLabel>
+        <FormGroup>
+            {/* TODO: falta implementar o onChange! */}
+            {options.map(o => <FormControlLabel key={o.value} control={<Checkbox />} label={o.label} />)}
+        </FormGroup>
+    </FormControl>
+
+
 }
 
 function DatePickerField({ f, index, dataValue, onChange }) {
