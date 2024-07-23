@@ -36,7 +36,7 @@ export function Renderer(props) {
     }, [form])
 
     useEffect(() => {
-        context_lists = { ...context_lists, property: lists.lists }
+        if(!!lists) context_lists = { ...context_lists, property: lists.lists }
         _imported_lists(true)
     }, [lists])
 
@@ -184,7 +184,8 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
 
     const dataValue = data?.[keyRef];
 
-    if (f.type === 'options') Component = <OptionsField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
+    if (f.type === 'label') Component = <Label f={f} />
+    else if (f.type === 'options') Component = <OptionsField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
     else if (f.type === 'yearpicker') Component = <DatePickerField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
     else if (f.type === 'multi_autocomplete') Component = <MultiAutocompleteField
         f={f}
@@ -220,6 +221,10 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
 /*****************************************************************
     Field components
  *****************************************************************/
+
+function Label({ f, index }) {
+    return <>{f.title.replace('%index%', index + 1)}</>
+}
 
 function StringField({ f, integer, multiline, rows, index, dataValue, onChange }) {
     const [value, _value] = useState('');

@@ -1,0 +1,11 @@
+fields:
+
+- key: name
+  type: options
+  title: Realizou diagnóstico?
+  size: 6
+  options:
+    - value: 0
+      label: 'Não'
+    - value: 1
+      label: 'Sim'

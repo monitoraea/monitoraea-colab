@@ -97,7 +97,7 @@ export default function IndicatorsTab({ analysis }) {
   useEffect(() => {
     if (analysis) _tree(indicsTree(analysis));
 
-    console.log('analysis', analysis);
+    // console.log('analysis', analysis, indicsTree(analysis));
   }, [analysis]);
 
   useEffect(() => {

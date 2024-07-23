@@ -1,0 +1,5 @@
+fields:
+
+- key: text
+  type: label
+  title: Este indicador ainda não foi implementado!
