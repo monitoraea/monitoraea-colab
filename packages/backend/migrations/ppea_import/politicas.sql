@@ -29,5 +29,6 @@ CREATE TABLE ppea.politicas (
 	"createdAt" timestamp NULL,
 	"updatedAt" timestamp NULL,
 	"deletedAt" timestamp NULL,
+	versao varchar(10) DEFAULT 'draft'::character varying NOT NULL,
 	CONSTRAINT politicas_pk PRIMARY KEY (id)
 );

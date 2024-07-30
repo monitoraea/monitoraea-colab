@@ -37,9 +37,9 @@ const Manager = () => {
   /*  */
 
   //get entity_id
-  /* const { data: entity } = useQuery(['commission', { currentCommunity: currentCommunity.id }], {
-    queryFn: async () => (await axios.get(`${server}commission/id_from_community/${currentCommunity.id}`)).data,
-  }); */
+  const { data: entity } = useQuery(['policy', { currentCommunity: currentCommunity.id }], {
+    queryFn: async () => (await axios.get(`${server}ppea/id_from_community/${currentCommunity.id}`)).data,
+  });
 
   /* const { data: analysis } = useQuery(['project_indics', { project_id: project?.id }], {
     queryFn: async () => (await axios.get(`${server}project/${project?.id}/verify`)).data,
@@ -61,10 +61,10 @@ const Manager = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmOrMod, user, currentCommunity]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     if (!entity) return;
     _entityId(entity.id);
-  }, [entity]); */
+  }, [entity]);
 
   useEffect(() => {
     _tabindex(params && params.length ? params[0] : 'informacao');
@@ -136,7 +136,7 @@ const Manager = () => {
   };
 
   const handleDownload = () => {
-    window.open(`${server}commission/${entityId}/download`, '_blank');
+    // window.open(`${server}commission/${entityId}/download`, '_blank');
   };
 
   return (
@@ -160,7 +160,7 @@ const Manager = () => {
       {tabindex && (
         <>
           <Tabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} /* analysis={analysis} */ />
-          {/* entityId */true && (
+          {entityId && (
             <>
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} />}
               {tabindex === 'enquadramento' && <EnquadramentoTab entityId={entityId} />}

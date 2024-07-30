@@ -5,6 +5,7 @@ module.exports = [
   'news',
   'project',
   'commission',
+  'ppea',
   'institution',
   'organization',
   'segmento',

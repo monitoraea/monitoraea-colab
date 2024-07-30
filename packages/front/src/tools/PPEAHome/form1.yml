@@ -2,7 +2,7 @@
 
 fields:
 
-- key: name
+- key: nome
   type: text
   title: Nome da Política Pública
   size: 12
@@ -17,7 +17,7 @@ fields:
     - value: 1
       label: 'Temática'
   
-- key: area_especifique
+- key: area_tematica
   type: text
   title: Especifique
   size: 6
@@ -27,12 +27,12 @@ fields:
       value: 1
   # disabled
 
-- key: name_instituicao
+- key: instituicao_nome
   type: text
   title: Nome da Instituição Executora
   size: 6
 
-- key: enquadramento_instituicao
+- key: instituicao_enquadramento
   type: options
   title: Enquadramento da Instituição
   size: 8
@@ -40,22 +40,22 @@ fields:
     module: property
     key: enquadramentos
 
-- key: nome_responsavel
+- key: responsavel_nome
   type: text
   title: Nome
   size: 6
 
-- key: cargo_responsavel
+- key: responsavel_cargo
   type: text
   title: Cargo/Função	
   size: 6
 
-- key: telefone_responsavel
+- key: responsavel_telefone
   type: text
   title: Telefone
   size: 6
 
-- key: email_responsavel
+- key: responsavel_email
   type: text
   title: Email
   size: 6  
@@ -66,16 +66,16 @@ fields:
   title: Link para acesso à informações da Política Pública
   size: 12  
 
-- key: acoes
+- key: contemplados
   type: textarea
   rows: 8
   title: Cite quais as ações, projetos, programas e planos estão contemplados pela PPEA
   size: 12
 
-- key: fase_atual
+- key: fase
   type: options
   title: Fase atual da Política Pública
-  size: 6
+  size: 4
   options:
     - value: 0
       label: 'Etapa de Formulação'
@@ -86,10 +86,15 @@ fields:
     - value: 3
       label: 'Etapa de Revisão'
 
-- key: fase_atual_ano
+- key: fase_ano
   type: yearpicker
   title: Desde que ano esta etapa da política política vem sendo desenvolvida
-  size: 6
+  size: 4
+
+- key: fase_descricao
+  type: text
+  title: Descrição
+  size: 4
 
 - key: dificuldades
   type: multi_autocomplete
@@ -127,28 +132,28 @@ blocks: # opcional
     title: Sobre a Política Pública # optional
     # TODO: pode ter blocos? -> somente referencia? ou aninhar?
     fields:
-      - name
+      - nome
       - area
-      - area_especifique
+      - area_tematica
 
   - key: inst
     title: Sobre a Instituição
     fields:
-      - name_instituicao
-      - enquadramento_instituicao
+      - instituicao_nome
+      - instituicao_enquadramento
 
   - key: responsavel
     title: Sobre a Responsável
     fields:
-      - nome_responsavel
-      - cargo_responsavel
-      - telefone_responsavel
-      - email_responsavel
+      - responsavel_nome
+      - responsavel_cargo
+      - responsavel_telefone
+      - responsavel_email
 
   - key: more
     title: Mais informações
     fields:
-      - fase_atual
-      - fase_atual_ano
+      - fase
+      - fase_ano
       - dificuldades
-      - acoes
+      - contemplados
