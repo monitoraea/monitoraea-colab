@@ -14,11 +14,11 @@ import Card from '../../components/Card';
 
 import FilePlus from '../../components/icons/FilePlus';
 
-import { Renderer } from '../../components/FormRenderer'
+import { Renderer, mapData2Form } from '../../components/FormRenderer'
 
-import form1 from './form1.yml'
-import form1_view from './form1_view.yml'
-import lists1 from './lists1.yml'
+import form from './form1.yml'
+import form_view from './form1_view.yml'
+import lists from './lists1.yml'
 
 /* style */
 // import style from './information.module.scss';
@@ -33,41 +33,21 @@ export default function InformationsTab({ entityId }) {
   const [originalEntity, _originalEntity] = useState([]);
   const [entity, _entity] = useState([]);
 
-  /* const [mock_data, _mock_data] = useState({
-    "nome": "Prefeitura Municipal de Malacacheta - MG",
-    "dificuldades": [
-      {
-        "value": 1,
-        "label": "Envolvimento do poder público"
-      },
-      {
-        "value": 3,
-        "label": "Equipe"
-      },
-      {
-        "value": 5,
-        "label": "Morosidade na etapa de aprovação"
-      },
-      {
-        "value": 7,
-        "label": "Descontinuidade"
-      }
-    ]
-  }); */
-
   //get policy_data
   const { data } = useQuery(['policy_info', { entityId }], {
-    queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft`)).data,
+    queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft/info`)).data,
   });
 
   useEffect(() => {
-    if (!data) return;
+    if (!data || !form) return;
 
-    _entity(data);
-    _originalEntity(data);
+    const mData = mapData2Form(data,form);
+
+    _entity(mData);
+    _originalEntity(mData);
 
     // console.log(data)
-  }, [data]);
+  }, [data, form]);
 
   const handleDataChange = (field, value) => {
     _entity(entity => ({
@@ -85,9 +65,9 @@ export default function InformationsTab({ entityId }) {
               <div className="p-3">
 
                 <Renderer
-                  form={form1}
-                  view={form1_view}
-                  lists={lists1}
+                  form={form}
+                  view={form_view}
+                  lists={lists}
                   data={entity}
                   onDataChange={handleDataChange}
                 />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { TextField, Switch, FormGroup, Stack, MenuItem } from '@mui/material';
-import Helpbox from '../CMS/helpbox';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useSnackbar } from 'notistack';
 import { useDorothy } from 'dorothy-dna-react';
 import axios from 'axios';
 import _ from 'lodash';
@@ -9,7 +9,7 @@ import { /* useDorothy, */ useRouter } from 'dorothy-dna-react';
 /* components */
 import Card from '../../components/Card';
 import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
-import { Renderer } from '../../components/FormRenderer';
+import { Renderer, mapData2Form } from '../../components/FormRenderer';
 
 /* icons */
 import CheckCircle from '../../components/icons/CheckCircle';
@@ -20,8 +20,11 @@ import styles from './indicators.module.scss';
 
 import tree from './indics';
 
-export default function IndicatorsTab({ entityId }) {
+export default function IndicatorsTab({ entityId }) {/* hooks */
+    const { server } = useDorothy();
     const { currentCommunity, changeRoute, params } = useRouter();
+    const queryClient = useQueryClient();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const [currentIndics, _currentIndics] = useState(null);
 
@@ -32,8 +35,27 @@ export default function IndicatorsTab({ entityId }) {
 
     const [changed, _changed] = useState(false);
 
-    const [data, _data] = useState({});
     const [currentForm, _currentForm] = useState(null);
+
+    /* states */
+    const [originalEntity, _originalEntity] = useState([]);
+    const [entity, _entity] = useState([]);
+
+    //get policy_data
+    const { data } = useQuery(['policy_info', { entityId }], {
+        queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft/indics`)).data,
+    });
+
+    useEffect(() => {
+        if (!data || !currentForm || !currentIndics || !data.indicadores?.[currentIndics]) return;
+
+        const mData = mapData2Form(data.indicadores[currentIndics], currentForm);
+
+        _entity(mData);
+        _originalEntity(mData);
+
+        // console.log(data)
+    }, [data, currentForm, currentIndics]);
 
     useEffect(() => {
         if (params && params[1]) _currentIndics(params[1]);
@@ -88,8 +110,8 @@ export default function IndicatorsTab({ entityId }) {
     };
 
     const handleDataChange = (field, value) => {
-        _data(data => ({
-            ...data,
+        _entity(entity => ({
+            ...entity,
             [field]: value
         }))
     }
@@ -130,7 +152,7 @@ export default function IndicatorsTab({ entityId }) {
                         <div className="p-3">
                             {!!currentForm && <Renderer
                                 form={currentForm}
-                                data={data}
+                                data={entity}
                                 onDataChange={handleDataChange}
                             />}
                         </div>

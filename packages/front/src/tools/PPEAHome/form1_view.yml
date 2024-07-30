@@ -58,7 +58,7 @@
       size: 4
       key: fase  
     - type: column
-      size: 3
+      size: 4
       key: fase_ano
     - type: column
       size: 4

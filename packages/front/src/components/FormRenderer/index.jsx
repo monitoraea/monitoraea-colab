@@ -247,7 +247,7 @@ function StringField({ f, integer, multiline, rows, index, dataValue, onChange }
     return <TextField
         className="input-text"
         label={f.title.replace('%index%', index + 1)}
-        value={value}
+        value={value || ''}
         onChange={handleChange}
         multiline={multiline}
         rows={rows || 2}
@@ -364,7 +364,7 @@ function MultiAutocompleteField({ f, index, tag = false, dataValue, onChange }) 
 }
 
 function DatePickerField({ f, index, dataValue, onChange }) {
-    const [value, _value] = useState(new Date());
+    const [value, _value] = useState(null);
 
     useEffect(() => {
         if (!!dataValue) _value(dataValue);
@@ -373,7 +373,7 @@ function DatePickerField({ f, index, dataValue, onChange }) {
     return <DatePicker
         className="input-datepicker"
         label={f.title.replace('%index%', index + 1)}
-        value={value}
+        value={value || ''}
         onChange={onChange}
         views={['year']}
         inputFormat="yyyy"
@@ -418,4 +418,20 @@ function fieldInBlock(keyRef, blocks) {
     }
 
     return block;
+}
+
+/*****************************************************************
+    Basic Mapper
+ *****************************************************************/
+
+export function mapData2Form(data, form) {
+    let mappedData = data;
+
+    // multi_autocomplete
+    for(let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
+        const nValue = f.options.filter(o => !!data[String(f.key)] && data[String(f.key)].includes(o.value));
+        data[f.key] = nValue;
+    }
+
+    return mappedData;
 }

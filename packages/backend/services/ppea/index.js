@@ -24,8 +24,7 @@ class Service {
     return entity[0];
   }
 
-
-  async getDraft(id) {
+  async getDraftInfo(id) {
     const entity = await db.instance().query(
       `
       SELECT
@@ -44,7 +43,26 @@ class Service {
         fase_descricao,
         dificuldades,
         contemplados
+      FROM ppea.politicas p
+      WHERE p.id = :id
+      AND versao = 'draft'
+        `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
+    let policy = entity[0];
+
+    return policy;
+  }
+
+  async getDraftIndic(id) {
+    const entity = await db.instance().query(
+      `
+      SELECT
+        indicadores
       FROM ppea.politicas p
       WHERE p.id = :id
       AND versao = 'draft'
