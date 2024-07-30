@@ -46,12 +46,13 @@ class Service {
     if (!community.length) throw new Error('Unknown community!');
     const type = community[0].type.trim();
 
-    if (!['adm', 'facilitador', 'adm_zcm', 'adm_ciea'].includes(type)) throw new Error('Permission denied!');
+    if (!['adm', 'facilitador', 'adm_zcm', 'adm_ciea', 'adm_ppea'].includes(type)) throw new Error('Permission denied!');
 
     if (type === 'adm') return this.list4Adm(communityId, config);
     else if (type === 'facilitador') return this.list4Facilit(communityId, config);
     else if (type === 'adm_zcm') return this.list4AdmZCM(communityId, config);
     else if (type === 'adm_ciea') return this.list4AdmCIEA(communityId, config);
+    else if (type === 'adm_ppea') return this.list4AdmPPEA(communityId, config);
     else return {
       entities: [],
       total: 0,
@@ -69,7 +70,7 @@ class Service {
           dc.alias, 
           TRIM(dc.type) as "type",
           case
-            when TRIM(dc.type) = 'commission' then 'Comissão'
+            when TRIM(dc.type) = 'policy' then 'Política'
             when TRIM(dc.type) = 'project' then 'Projeto'
             else 'Facilitador'
           end as "typeName",
@@ -165,6 +166,33 @@ class Service {
         from dorothy_communities
         where type not in ('network','adm_ciea')
         and descriptor_json->>'perspective' = '3'
+        order by "${config.order}" ${config.direction}
+      `,
+      {
+        replacements: { communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return {
+      entities,
+      total: entities.length ? parseInt(entities[0].total_count) : 0,
+    };
+  }
+
+  async list4AdmPPEA(communityId, config) {
+    let entities = await db.instance().query(
+      `
+        select 
+          id, 
+          alias, 
+          TRIM(type) as "type", 
+          'Comissão' as "typeName",
+          descriptor_json->'title' as "name",
+          count(*) OVER() AS total_count 
+        from dorothy_communities
+        where type not in ('network','adm_ppea')
+        and descriptor_json->>'perspective' = '4'
         order by "${config.order}" ${config.direction}
       `,
       {

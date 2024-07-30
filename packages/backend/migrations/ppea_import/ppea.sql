@@ -1,0 +1,3 @@
+-- DROP SCHEMA ppea;
+
+CREATE SCHEMA ppea AUTHORIZATION postgres;

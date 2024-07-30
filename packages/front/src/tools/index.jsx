@@ -8,6 +8,7 @@ const tools = {
   Members: lazy(() => import('./Members')),
   NetworkHome: lazy(() => import('./NetworkHome')),
   NetworkHomeCIEA: lazy(() => import('./NetworkHomeCIEA')),
+  NetworkHomePPEA: lazy(() => import('./NetworkHomePPEA')),
   CIEAHome: lazy(() => import('./CIEAHome')),
   PPEAHome: lazy(() => import('./PPEAHome')),
   PPEAHome2: lazy(() => import('./PPEAHome2')),
