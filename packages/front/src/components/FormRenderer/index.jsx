@@ -429,8 +429,13 @@ export function mapData2Form(data, form) {
 
     // multi_autocomplete
     for(let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
-        const nValue = f.options.filter(o => !!data[String(f.key)] && data[String(f.key)].includes(o.value));
-        data[f.key] = nValue;
+        let value = data[String(f.key)];
+        if(!Array.isArray(value)) value = [value]; // legacy
+
+        if(!!value) {
+            const nValue = f.options.filter(o => value.includes(o.value));
+            data[f.key] = nValue;
+        }
     }
 
     return mappedData;
