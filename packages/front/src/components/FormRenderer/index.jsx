@@ -84,7 +84,7 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
                 const k = b.key || uuidv4();
 
                 return <Block key={k} block={b} data={data}>
-                    {b.fields.map(f => {
+                    {b.elements.map(f => {
                         inBlock.push(f);
                         const field = form.fields.find(fi => fi.key === f);
                         return <div key={field.key} className='row'>
@@ -422,7 +422,7 @@ function fieldInBlock(keyRef, blocks) {
     // console.log(keyRef, blocks)
     for (let b of blocks) {
         // console.log({ b })
-        const found = b.fields.find(key => key === keyRef);
+        const found = b.elements.find(key => key === keyRef);
         if (found) {
             block = b;
             break;

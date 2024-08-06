@@ -66,7 +66,7 @@ export default function InformationsTab({ entityId }) {
 
                 <Renderer
                   form={form}
-                  view={form_view}
+                  /* view={form_view} */
                   lists={lists}
                   data={entity}
                   onDataChange={handleDataChange}

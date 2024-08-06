@@ -131,20 +131,20 @@ blocks: # opcional
   - key: ppea # só é necessário se tem regras ou com view?
     title: Sobre a Política Pública # optional
     # TODO: pode ter blocos? -> somente referencia? ou aninhar?
-    fields:
+    elements:
       - nome
       - area
       - area_tematica
 
   - key: inst
     title: Sobre a Instituição
-    fields:
+    elements:
       - instituicao_nome
       - instituicao_enquadramento
 
   - key: responsavel
     title: Sobre a Responsável
-    fields:
+    elements:
       - responsavel_nome
       - responsavel_cargo
       - responsavel_telefone
@@ -152,7 +152,7 @@ blocks: # opcional
 
   - key: more
     title: Mais informações
-    fields:
+    elements:
       - fase
       - fase_ano
       - dificuldades

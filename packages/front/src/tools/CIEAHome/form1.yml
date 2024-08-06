@@ -68,11 +68,39 @@ fields:
       key: documento_criacao_tipo
       value: file
 
+- key: composicao_cadeiras_set_pub
+  type: integer
+  title: Núm. cadeiras - setor público
+  size: 3
+
+- key: composicao_cadeiras_soc_civ
+  type: integer
+  title: Núm. cadeiras - sociedade civil
+  size: 3
+
+# - key: it_teste
+#   type: text
+#   title: Iteração teste %index%
+#   size: 6
+#   iterate:
+#     target: composicao_cadeiras_set_pub
+#     index: default # padrao, nomeia cada iteracao como cat_name.[index]
+
+- key: it_b_1
+  type: text
+  title: Campo em bloco it %index%.1 
+  size: 6
+
+- key: it_b_2
+  type: text
+  title: Campo em bloco it %index%.2
+  size: 6
+
 blocks:
 
   - key: detalhes
     title: Detalhes da comissão
-    fields:
+    elements:
       - logo
       - uf_nome
       - regiao
@@ -82,7 +110,25 @@ blocks:
   
   - key: documento
     title: Documento de criação
-    fields:
+    elements:
       - documento_criacao
       - documento_criacao_arquivo
       - documento_criacao_arquivo2
+
+  - key: composicao
+    title: Composição
+    elements:
+      # - type: field
+      #   key: composicao_cadeiras_set_pub
+      # - type: block
+      #   key: composicao_it
+      - composicao_cadeiras_soc_civ # opcao curta (sem type é campo)
+      #- it_teste
+
+  - key: composicao_it
+    elements:
+      - it_b_1
+      - it_b_2
+    iterate:
+      target: composicao_cadeiras_set_pub
+      index: default

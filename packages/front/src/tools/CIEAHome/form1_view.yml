@@ -45,4 +45,23 @@
     - type: column
       size: 6
       key: documento_criacao_arquivo2
+
+- type: separator
+
+- type: row
+  block: composicao
+  elements:
+  - type: row
+    elements:
+    - type: column
+      size: 3
+      key: composicao_cadeiras_set_pub    
+    - type: column
+      size: 3
+      key: composicao_cadeiras_soc_civ
+  # - type: row
+  #   elements:
+  #   - type: column
+  #     size: 3
+  #     key: it_teste
     
