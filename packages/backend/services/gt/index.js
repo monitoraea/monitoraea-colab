@@ -187,7 +187,7 @@ class Service {
           id, 
           alias, 
           TRIM(type) as "type", 
-          'Comissão' as "typeName",
+          'Política Pública' as "typeName",
           descriptor_json->'title' as "name",
           count(*) OVER() AS total_count 
         from dorothy_communities

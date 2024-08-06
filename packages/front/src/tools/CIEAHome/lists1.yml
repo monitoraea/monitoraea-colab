@@ -1,0 +1,8 @@
+lists:
+
+  - key: tipo_arquivo
+    options:
+    - value: 'link'
+      label: 'Link'
+    - value: 'file'
+      label: 'Arquivo'

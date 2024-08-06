@@ -36,7 +36,7 @@ export function Renderer(props) {
     }, [form])
 
     useEffect(() => {
-        if(!!lists) context_lists = { ...context_lists, property: lists.lists }
+        if (!!lists) context_lists = { ...context_lists, property: lists.lists }
         _imported_lists(true)
     }, [lists])
 
@@ -132,6 +132,10 @@ function Element(props) {
         }
     }
 
+    if(v.type === 'separator') {
+        return <hr className="hr-spacer my-4" />;
+    }
+
     const field = form.fields.find(f => f.key === v.key);
     if (!field) return <></>;
     return <FieldRenderer blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
@@ -185,6 +189,7 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
     const dataValue = data?.[keyRef];
 
     if (f.type === 'label') Component = <Label f={f} />
+    else if (f.type === 'read_only') Component = <ReadOnly f={f} dataValue={dataValue} />
     else if (f.type === 'options') Component = <OptionsField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
     else if (f.type === 'yearpicker') Component = <DatePickerField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
     else if (f.type === 'multi_autocomplete') Component = <MultiAutocompleteField
@@ -224,6 +229,13 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
 
 function Label({ f, index }) {
     return <>{f.title.replace('%index%', index + 1)}</>
+}
+
+function ReadOnly({ f, index, dataValue }) {
+    return <div className={styles.readonly}>
+        <div className={styles.title}>{f.title.replace('%index%', index + 1)}</div>
+        <div className={styles.value}>{dataValue}</div>
+    </div>
 }
 
 function StringField({ f, integer, multiline, rows, index, dataValue, onChange }) {
@@ -274,7 +286,7 @@ function OptionsField({ f, index, dataValue, onChange }) {
     return <TextField
         className="input-select"
         label={f.title.replace('%index%', index + 1)}
-        value={value}
+        value={value || 'none'}
         select
         onChange={(e) => onChange(e.target.value)}
     >
@@ -428,11 +440,11 @@ export function mapData2Form(data, form) {
     let mappedData = data;
 
     // multi_autocomplete
-    for(let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
+    for (let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
         let value = data[String(f.key)];
-        if(!Array.isArray(value)) value = [value]; // legacy
+        if (!Array.isArray(value)) value = [value]; // legacy
 
-        if(!!value) {
+        if (!!value) {
             const nValue = f.options.filter(o => value.includes(o.value));
             data[f.key] = nValue;
         }

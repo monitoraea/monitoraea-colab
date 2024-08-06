@@ -1,0 +1,48 @@
+- type: row
+  block: detalhes
+  elements:
+  - type: row
+    elements:
+    - type: column
+      size: 3
+      key: logo
+  - type: row
+    elements:
+    - type: column
+      size: 3
+      key: uf_nome
+    - type: column
+      size: 3
+      key: regiao
+    - type: column
+      size: 3
+      key: data_criacao
+    - type: column
+      size: 3
+      key: ativo
+  - type: row
+    elements:
+    - type: column
+      size: 12
+      key: link
+
+- type: separator
+
+- type: row
+  block: documento
+  elements:
+  - type: row
+    elements:
+    - type: column
+      size: 4
+      key: documento_criacao
+    - type: column
+      size: 2
+      key: documento_criacao_tipo
+    - type: column
+      size: 6
+      key: documento_criacao_arquivo
+    - type: column
+      size: 6
+      key: documento_criacao_arquivo2
+    

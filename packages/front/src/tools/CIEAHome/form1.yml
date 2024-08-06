@@ -1,0 +1,88 @@
+fields:
+
+- key: logo
+  type: label
+  title: Logotipo (TODO - FILE)
+  size: 3
+
+- key: uf_nome
+  type: read_only
+  title: Estado
+  size: 3
+
+- key: regiao
+  type: read_only
+  title: Região
+  size: 3
+
+- key: data_criacao
+  type: yearpicker
+  title: Data da criação
+  size: 3
+
+- key: ativo
+  type: options
+  title: Ativo
+  size: 3
+  options:
+    - value: 1
+      label: 'Sim'
+    - value: 2
+      label: 'Em reestruturação'
+    - value: 3
+      label: 'Não'
+
+- key: link
+  type: text
+  title: Link para o site
+  size: 12
+
+- key: documento_criacao
+  type: text
+  title: Título do documento de criação
+  size: 4
+
+- key: documento_criacao_tipo
+  type: options
+  title: Tipo de documento de criação
+  size: 2
+  list: 
+    module: property
+    key: tipo_arquivo
+
+- key: documento_criacao_arquivo
+  type: text
+  title: Link para o documento de criação
+  size: 6
+  show:
+    target:
+      key: documento_criacao_tipo
+      value: link
+
+- key: documento_criacao_arquivo2
+  type: text
+  title: Arquivo de criação (TODO - FILE)
+  size: 6
+  show:
+    target:
+      key: documento_criacao_tipo
+      value: file
+
+blocks:
+
+  - key: detalhes
+    title: Detalhes da comissão
+    fields:
+      - logo
+      - uf_nome
+      - regiao
+      - data_criacao
+      - ativo
+      - link
+  
+  - key: documento
+    title: Documento de criação
+    fields:
+      - documento_criacao
+      - documento_criacao_arquivo
+      - documento_criacao_arquivo2

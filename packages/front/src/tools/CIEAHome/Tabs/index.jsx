@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 
 export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
-  const [infoIsReady, _infoIsReady] = useState(false);  
+  const [infoIsReady, _infoIsReady] = useState(false);
 
   const handleChange = e => {
     onTabChange(e.target.id);
@@ -57,6 +57,11 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           />
           <Tab
             disableRipple
+            label="Informações old"
+            {...a11yProps('informacao_remove')}            
+          />
+          <Tab
+            disableRipple
             label="Linha do tempo"
             {...a11yProps('linha_tempo')}
           />
@@ -64,7 +69,7 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             disableRipple
             label="Membros"
             {...a11yProps('membros')}
-          />            
+          />
         </Tabs>
       </div>
     </div>
