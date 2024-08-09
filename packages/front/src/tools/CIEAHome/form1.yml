@@ -120,7 +120,7 @@ blocks:
     elements:
       # - type: field
       #   key: composicao_cadeiras_set_pub
-      # - type: block
+      # - type: block # posicional para sem view, hierarquico para ambos
       #   key: composicao_it
       - composicao_cadeiras_soc_civ # opcao curta (sem type é campo)
       #- it_teste
