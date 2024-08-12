@@ -65,58 +65,68 @@ export function Renderer(props) {
     Basic Renderer
  *****************************************************************/
 function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
-    let blocks, otherFields, processedBlocks = [];
+    const [blocks, _blocks] = useState([]);
+    const [otherFields, _otherFields] = useState([]);
 
-    if (!form.blocks) {
+    useEffect(() => {
+        if (!!data /* && !!Object.keys(data).length - tem que renderizar para vazio */ && !!form) {
+            let blocks, otherFields, processedBlocks = [];
 
-        blocks = <>
-            {form.fields.map(f => <div key={f.key} className='row'>
-                <FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} />
-            </div>)}
-        </>
+            if (!form.blocks) {
 
-    } else {
+                blocks = <>
+                    {form.fields.map(f => <div key={f.key} className='row'>
+                        <FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} />
+                    </div>)}
+                </>
 
-        function RenderBlock(k, b) {
-            processedBlocks.push(k);
-            return <Block key={k} block={b} data={data}>
-                {b.elements.map(e => {
-                    if (e.type === 'block') {
-                        const innerBlock = form.blocks.find(bl => bl.key === e.key);
+            } else {
 
-                        return RenderBlock(e.key, innerBlock);
-                    }
+                function RenderBlock(k, b) {
+                    processedBlocks.push(k);
+                    return <Block key={k} block={b} data={data}>
+                        {b.elements.map(e => {
+                            if (e.type === 'block') {
+                                const innerBlock = form.blocks.find(bl => bl.key === e.key);
 
-                    const fKey = e.key || e;
+                                return RenderBlock(e.key, innerBlock);
+                            }
 
-                    inBlock.push(fKey);
-                    const field = form.fields.find(fi => fi.key === fKey);
-                    return <div key={field.key} className='row'>
-                        <FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
-                    </div>
-                })}
-            </Block>
+                            const fKey = e.key || e;
+
+                            inBlock.push(fKey);
+                            const field = form.fields.find(fi => fi.key === fKey);
+                            return <div key={field.key} className='row'>
+                                <FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
+                            </div>
+                        })}
+                    </Block>
+                }
+
+                let inBlock = [];
+                // mostrar campos em blocos
+                blocks = <>
+                    {form.blocks.map(b => {
+                        const k = b.key || uuidv4();
+
+                        if (processedBlocks.includes(k)) return null;
+
+                        return RenderBlock(k, b);
+                    })}
+                </>;
+
+                // mostrar campos sem blocos
+                otherFields = <>
+                    {form.fields.filter(f => !inBlock.includes(f.key)).map(f => <div key={f.key} className='row'>
+                        <FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} />
+                    </div>)}
+                </>
+            }
+
+            _blocks(blocks);
+            _otherFields(otherFields);
         }
-
-        let inBlock = [];
-        // mostrar campos em blocos
-        blocks = <>
-            {form.blocks.map(b => {
-                const k = b.key || uuidv4();
-
-                if(processedBlocks.includes(k)) return null;
-
-                return RenderBlock(k, b);
-            })}
-        </>;
-
-        // mostrar campos sem blocos
-        otherFields = <>
-            {form.fields.filter(f => !inBlock.includes(f.key)).map(f => <div key={f.key} className='row'>
-                <FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} />
-            </div>)}
-        </>
-    }
+    }, [data, form])
 
     return <>
         {blocks}
