@@ -13,6 +13,15 @@ class Database {
 
     this.sequelize = new Sequelize(dbString, {
       logging: process.env.LOG_SEQUELIZE === "1" ? console.log : false,
+
+      dialect: "postgres",
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false // <<<<<<< YOU NEED THIS
+        }
+      }
+
     });
 
     this.models = {};
