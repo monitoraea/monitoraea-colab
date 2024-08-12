@@ -86,14 +86,14 @@ fields:
 #     target: composicao_cadeiras_set_pub
 #     index: default # padrao, nomeia cada iteracao como cat_name.[index]
 
-- key: it_b_1
+- key: setor
   type: text
-  title: Campo em bloco it %index%.1 
+  title: Setor %index%
   size: 6
 
-- key: it_b_2
+- key: cadeiras
   type: text
-  title: Campo em bloco it %index%.2
+  title: Cadeiras %index%
   size: 6
 
 blocks:
@@ -112,23 +112,23 @@ blocks:
     title: Documento de criação
     elements:
       - documento_criacao
+      - documento_criacao_tipo
       - documento_criacao_arquivo
       - documento_criacao_arquivo2
 
   - key: composicao
     title: Composição
     elements:
-      # - type: field
-      #   key: composicao_cadeiras_set_pub
-      # - type: block # posicional para sem view, hierarquico para ambos
-      #   key: composicao_it
+      - type: field
+        key: composicao_cadeiras_set_pub
+      - type: block # posicional para sem view, hierarquico para ambos
+        key: composicao_outros
       - composicao_cadeiras_soc_civ # opcao curta (sem type é campo)
-      #- it_teste
 
-  - key: composicao_it
+  - key: composicao_outros
     elements:
-      - it_b_1
-      - it_b_2
+      - setor
+      - cadeiras
     iterate:
       target: composicao_cadeiras_set_pub
       index: default

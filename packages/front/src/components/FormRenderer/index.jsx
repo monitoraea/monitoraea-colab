@@ -65,7 +65,7 @@ export function Renderer(props) {
     Basic Renderer
  *****************************************************************/
 function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
-    let blocks, otherFields = [];
+    let blocks, otherFields, processedBlocks = [];
 
     if (!form.blocks) {
 
@@ -77,21 +77,36 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
 
     } else {
 
+        function RenderBlock(k, b) {
+            processedBlocks.push(k);
+            return <Block key={k} block={b} data={data}>
+                {b.elements.map(e => {
+                    if (e.type === 'block') {
+                        const innerBlock = form.blocks.find(bl => bl.key === e.key);
+
+                        return RenderBlock(e.key, innerBlock);
+                    }
+
+                    const fKey = e.key || e;
+
+                    inBlock.push(fKey);
+                    const field = form.fields.find(fi => fi.key === fKey);
+                    return <div key={field.key} className='row'>
+                        <FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
+                    </div>
+                })}
+            </Block>
+        }
+
         let inBlock = [];
         // mostrar campos em blocos
         blocks = <>
             {form.blocks.map(b => {
                 const k = b.key || uuidv4();
 
-                return <Block key={k} block={b} data={data}>
-                    {b.elements.map(f => {
-                        inBlock.push(f);
-                        const field = form.fields.find(fi => fi.key === f);
-                        return <div key={field.key} className='row'>
-                            <FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
-                        </div>
-                    })}
-                </Block>
+                if(processedBlocks.includes(k)) return null;
+
+                return RenderBlock(k, b);
             })}
         </>;
 
@@ -132,7 +147,7 @@ function Element(props) {
         }
     }
 
-    if(v.type === 'separator') {
+    if (v.type === 'separator') {
         return <hr className="hr-spacer my-4" />;
     }
 
@@ -228,12 +243,12 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
  *****************************************************************/
 
 function Label({ f, index }) {
-    return <>{f.title.replace('%index%', index + 1)}</>
+    return <>{titleAndIndex(f.title, index)}</>
 }
 
 function ReadOnly({ f, index, dataValue }) {
     return <div className={styles.readonly}>
-        <div className={styles.title}>{f.title.replace('%index%', index + 1)}</div>
+        <div className={styles.title}>{titleAndIndex(f.title, index)}</div>
         <div className={styles.value}>{dataValue}</div>
     </div>
 }
@@ -258,7 +273,7 @@ function StringField({ f, integer, multiline, rows, index, dataValue, onChange }
 
     return <TextField
         className="input-text"
-        label={f.title.replace('%index%', index + 1)}
+        label={titleAndIndex(f.title, index)}
         value={value || ''}
         onChange={handleChange}
         multiline={multiline}
@@ -285,7 +300,7 @@ function OptionsField({ f, index, dataValue, onChange }) {
 
     return <TextField
         className="input-select"
-        label={f.title.replace('%index%', index + 1)}
+        label={titleAndIndex(f.title, index)}
         value={value || 'none'}
         select
         onChange={(e) => onChange(e.target.value)}
@@ -355,13 +370,13 @@ function MultiAutocompleteField({ f, index, tag = false, dataValue, onChange }) 
                     }
                 }}
                 {...params}
-                label={f.title.replace('%index%', index + 1)}
+                label={titleAndIndex(f.title, index)}
             />
         </form>)}
     />
 
     return <FormControl className={styles.checklist}>
-        <FormLabel>{f.title.replace('%index%', index + 1)}</FormLabel>
+        <FormLabel>{titleAndIndex(f.title, index)}</FormLabel>
         <FormGroup>
             {options.map(o => <FormControlLabel
                 key={o.value}
@@ -384,7 +399,7 @@ function DatePickerField({ f, index, dataValue, onChange }) {
 
     return <DatePicker
         className="input-datepicker"
-        label={f.title.replace('%index%', index + 1)}
+        label={titleAndIndex(f.title, index)}
         value={value || ''}
         onChange={onChange}
         views={['year']}
@@ -430,6 +445,10 @@ function fieldInBlock(keyRef, blocks) {
     }
 
     return block;
+}
+
+function titleAndIndex(title, index) {
+    return title.replace('%index%', !!index ? index + 1 : '?');
 }
 
 /*****************************************************************
