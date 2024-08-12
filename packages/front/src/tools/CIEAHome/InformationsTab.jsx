@@ -38,19 +38,20 @@ export default function InformationsTab({ entityId }) {
     queryFn: async () => (await axios.get(`${server}commission/${entityId}/draft`)).data,
   });
 
+  // TODO: ABAIXO: responsabilidade do formRenderer?
+
   useEffect(() => {
     if (!data || !form) return;
 
     // TODO: remove teste composicao_cadeiras_outros
-    const mData = mapData2Form({ ...data, composicao_cadeiras_outros: [{ setor: 'Set1', cadeiras: '1' }, { setor: 'Set2', cadeiras: '2' }, { setor: 'Set3', cadeiras: '3' }] }, form);
+    const mData = mapData2Form({ ...data }, form);
 
     _entity(mData);
     _originalEntity(mData);
 
     // console.log(data)
   }, [data, form]);
-
-  // TODO: responsabilidade do formRenderer?
+  
   const handleDataChange = (field, value, iterative /* k = block key, index */) => {
     if (iterative === undefined) { /* campos fora de blocos ou em blocos não iterativos */
 
@@ -60,7 +61,7 @@ export default function InformationsTab({ entityId }) {
       }))
 
     } else { /* campos em blocos iterativos */
-      
+
       let complexValue = entity[iterative.k];
       if (!!complexValue && Array.isArray(complexValue)) {
         complexValue[iterative.index][field] = value;
@@ -72,6 +73,31 @@ export default function InformationsTab({ entityId }) {
 
       }
     }
+  }
+
+  const handleRemoveIterative = (iterative) => {
+    let complexValue = entity[iterative.k];
+    complexValue.splice(iterative.index, 1);
+
+    _entity(entity => ({
+      ...entity,
+      [iterative.k]: complexValue
+    }))
+  }
+
+  const handleAddIterative = (block) => {
+
+    let newEmptyValue = {};
+    for(let field of block.elements) newEmptyValue[field] = null;
+
+    let newComplexValue;
+    if(!entity[block.key]) newComplexValue = [newEmptyValue];
+    else newComplexValue = [...entity[block.key], newEmptyValue];
+
+    _entity(entity => ({
+      ...entity,
+      [block.key]: newComplexValue
+    }))
   }
 
   return (
@@ -88,6 +114,8 @@ export default function InformationsTab({ entityId }) {
                   lists={lists}
                   data={entity}
                   onDataChange={handleDataChange}
+                  onRemoveIterative={handleRemoveIterative}
+                  onAddIterative={handleAddIterative}
                 />
 
                 <div className="section-header">

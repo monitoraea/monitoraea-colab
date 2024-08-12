@@ -1,5 +1,7 @@
 import { useEffect, useState, cloneElement } from 'react';
-import { TextField, MenuItem, Autocomplete, Chip, FormGroup, FormControl, FormLabel, FormControlLabel, Checkbox } from '@mui/material';
+import { TextField, MenuItem, Autocomplete, Chip, FormGroup, FormControl, FormLabel, FormControlLabel, Checkbox, Tooltip, IconButton } from '@mui/material';
+import Plus from '../icons/Plus';
+import Trash from '../icons/Trash';
 import DatePicker from '../DatePicker';
 
 let context_modules = {}; // TODO: context? 
@@ -64,7 +66,7 @@ export function Renderer(props) {
 /*****************************************************************
     Basic Renderer
  *****************************************************************/
-function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
+function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemoveIterative, onAddIterative }) {
     const [blocks, _blocks] = useState([]);
     const [otherFields, _otherFields] = useState([]);
 
@@ -84,7 +86,7 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
 
                 function RenderBlock(k, b, index) {
                     processedBlocks.push(k);
-                    return <Block key={`${!index ? k : `${k}.${index}`}`} block={b} data={data}>
+                    return <Block key={`${!index ? k : `${k}.${index}`}`} block={b} data={data} basic={true} iterative={index === undefined ? undefined : { k, index, free: b.iterate.target === 'none' }} onRemoveIterative={onRemoveIterative}>
                         {b.elements.map(e => {
                             if (e.type === 'block') {
                                 const innerBlock = form.blocks.find(bl => bl.key === e.key);
@@ -92,8 +94,21 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
                                 // handle iteration
                                 if (!innerBlock.iterate) return RenderBlock(e.key, innerBlock);
                                 else {
-                                    if (innerBlock.iterate.target === 'none' && !!data?.[e.key]) {
-                                        return data[e.key].map((v, index) => RenderBlock(e.key, innerBlock, index));
+                                    if (innerBlock.iterate.target === 'none') {
+                                        const childrenBocks = !data?.[e.key] ? [] : data[e.key].map((v, index) => RenderBlock(e.key, innerBlock, index));
+                                        if(!childrenBocks.length) processedBlocks.push(e.key);
+
+                                        return <div key={`add_${e.key}`}>
+                                            {childrenBocks}
+                                            <div className='row'>
+                                                <div className='col-xs-12'>
+                                                    <button className="button-outline" onClick={() => onAddIterative(innerBlock)}>
+                                                        <Plus></Plus>
+                                                        {innerBlock.iterate.add || 'Add'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     } else return RenderBlock(e.key, innerBlock); /* TODO: target -> field (integer) */ /* TODO: target -> field (multiple options) */
                                 }
                             }
@@ -435,13 +450,29 @@ function DatePickerField({ f, index, dataValue, onChange }) {
     Aux Components
  *****************************************************************/
 
-function Block({ block, data, children }) {
+function Block({ block, data, basic = false, iterative, onRemoveIterative, children }) {
     let show = true;
     if (block.show?.target) show = (data[block.show.target.key] === block.show.target.value);
 
     if (!show) return null;
 
-    if (!block.title) return <>{children}</>;
+    if (!block.title) {
+        if (!basic) return <>{children}</>;
+        else {
+            return <div className={styles['basic-block']}>
+                {!!iterative && iterative.free && <div className={styles['iterative']}>
+                    <div className={styles['svg-icon-box']}>
+                        <Tooltip title="Remover">
+                            <IconButton onClick={() => onRemoveIterative(iterative)}>
+                                <Trash />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                </div>}
+                <div className={!!iterative && iterative.free ? styles['iterative-children'] : ''}>{children}</div>
+            </div>;
+        }
+    }
 
     return <section id={block.key}>
         <div className="section-header">

@@ -1,3 +1,5 @@
+@use '../../sass/theme/app_variables' as *;
+
 .checklist {
     border: solid 1px rgb(115 191 72 / 28%);
     border-radius: 5px;
@@ -18,9 +20,9 @@
     line-height: 1;
 
     .title {
-        transform: translate(0, -0.5rem) scale(0.75);        
+        transform: translate(0, -0.5rem) scale(0.75);
         font-size: 1rem;
-        background: #FFFFFF;        
+        background: #FFFFFF;
         padding: 0 0.5rem;
         display: inline-block;
     }
@@ -29,5 +31,52 @@
         padding: 0 1rem !important;
         transform: translate(0.1rem, -0.3rem);
         font-size: 0.8rem;
+    }
+}
+
+.basic-block {
+    position: relative;
+    padding: 3px;
+    margin: 1px;
+    border-radius: 2px;
+    border: dashed 1px #ddd;
+
+    .iterative {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+
+        .svg-icon-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            height: 100%;
+
+            div, button {
+                display: flex;
+                margin-right: .5rem;
+                cursor: pointer;
+                transition: .25s ease;
+
+                svg {
+                    height: 1.4rem;
+                    width: 1.4rem;
+                    stroke: $gray;
+                }
+
+                &:last-child {
+                    margin-right: 0;
+                }
+
+                &:hover {
+                    opacity: .5;
+                }
+            }
+        }
+    }
+
+    .iterative-children {
+        padding-right: 10px;
     }
 }

@@ -92,7 +92,7 @@ fields:
   size: 6
 
 - key: cadeiras
-  type: text
+  type: integer
   title: Cadeiras %index%
   size: 6
 
@@ -121,9 +121,9 @@ blocks:
     elements:
       - type: field
         key: composicao_cadeiras_set_pub
+      - composicao_cadeiras_soc_civ # opcao curta (sem type é campo)
       - type: block # posicional para sem view, hierarquico para ambos
         key: composicao_cadeiras_outros
-      - composicao_cadeiras_soc_civ # opcao curta (sem type é campo)
 
   - key: composicao_cadeiras_outros
     elements:
@@ -132,3 +132,4 @@ blocks:
     iterate:
       target: none
       index: default
+      add: Adicionar setor
