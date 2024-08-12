@@ -82,14 +82,20 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
 
             } else {
 
-                function RenderBlock(k, b) {
+                function RenderBlock(k, b, index) {
                     processedBlocks.push(k);
-                    return <Block key={k} block={b} data={data}>
+                    return <Block key={`${!index ? k : `${k}.${index}`}`} block={b} data={data}>
                         {b.elements.map(e => {
                             if (e.type === 'block') {
                                 const innerBlock = form.blocks.find(bl => bl.key === e.key);
 
-                                return RenderBlock(e.key, innerBlock);
+                                // handle iteration
+                                if (!innerBlock.iterate) return RenderBlock(e.key, innerBlock);
+                                else {
+                                    if (innerBlock.iterate.target === 'none' && !!data?.[e.key]) {
+                                        return data[e.key].map((v, index) => RenderBlock(e.key, innerBlock, index));
+                                    } else return RenderBlock(e.key, innerBlock); /* TODO: target -> field (integer) */ /* TODO: target -> field (multiple options) */
+                                }
                             }
 
                             const fKey = e.key || e;
@@ -97,14 +103,14 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange }) {
                             inBlock.push(fKey);
                             const field = form.fields.find(fi => fi.key === fKey);
                             return <div key={field.key} className='row'>
-                                <FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
+                                <FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} iterative={index === undefined ? undefined : { k, index }} onDataChange={onDataChange} />
                             </div>
                         })}
                     </Block>
                 }
 
                 let inBlock = [];
-                // mostrar campos em blocos
+                // process blocks (nested!)
                 blocks = <>
                     {form.blocks.map(b => {
                         const k = b.key || uuidv4();
@@ -175,7 +181,7 @@ function Row({ form, v, data, onDataChange }) {
     Field Renderer
  *****************************************************************/
 
-export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
+export function FieldRenderer({ f, size, keyRef, blocks, data, iterative, onDataChange }) {
     const [doShow, _doShow] = useState(false);
 
     useEffect(() => {
@@ -203,29 +209,31 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
 
     }, [f, blocks, data])
 
-    const onChange = field => value => {
-        onDataChange(field, value);
+    const onChange = (field, iterative) => value => {
+        onDataChange(field, value, iterative);
     }
 
     if (!doShow) return null;
 
     let Component;
 
-    const dataValue = data?.[keyRef];
+    let dataValue = data?.[keyRef];
+    if (!!iterative) dataValue = data?.[iterative.k]?.[iterative.index]?.[keyRef];
 
     if (f.type === 'label') Component = <Label f={f} />
     else if (f.type === 'read_only') Component = <ReadOnly f={f} dataValue={dataValue} />
-    else if (f.type === 'options') Component = <OptionsField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
-    else if (f.type === 'yearpicker') Component = <DatePickerField f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
+    else if (f.type === 'options') Component = <OptionsField f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
+    else if (f.type === 'yearpicker') Component = <DatePickerField f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
     else if (f.type === 'multi_autocomplete') Component = <MultiAutocompleteField
         f={f}
         tag={!!f.tag}
         dataValue={dataValue}
-        onChange={onChange(keyRef)}
+        onChange={onChange(keyRef, iterative)}
     />
-    else Component = <StringField integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef)} />
+    else Component = <StringField integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
 
     if (f.iterate) {
+        // iterative field
         if (!data[f.iterate.target]) return <></>;
 
         let iteration = [];
@@ -241,6 +249,12 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, onDataChange }) {
         return <div className={`col-xs-12`}>
             {iteration}
         </div>;
+    } else if (!!iterative) {
+        // field in iterative block
+        const IterateElement = cloneElement(Component, { index: iterative.index });
+        return <div className={`col-xs-${size}`}>
+            {IterateElement}
+        </div>
     } else return <div className={`col-xs-${size}`}>
         {Component}
     </div>
@@ -458,7 +472,7 @@ function fieldInBlock(keyRef, blocks) {
 }
 
 function titleAndIndex(title, index) {
-    return title.replace('%index%', !!index ? index + 1 : '?');
+    return title.replace('%index%', index !== undefined ? index + 1 : '?');
 }
 
 /*****************************************************************

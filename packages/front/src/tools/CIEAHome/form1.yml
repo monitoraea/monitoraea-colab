@@ -122,13 +122,13 @@ blocks:
       - type: field
         key: composicao_cadeiras_set_pub
       - type: block # posicional para sem view, hierarquico para ambos
-        key: composicao_outros
+        key: composicao_cadeiras_outros
       - composicao_cadeiras_soc_civ # opcao curta (sem type é campo)
 
-  - key: composicao_outros
+  - key: composicao_cadeiras_outros
     elements:
       - setor
       - cadeiras
     iterate:
-      target: composicao_cadeiras_set_pub
+      target: none
       index: default

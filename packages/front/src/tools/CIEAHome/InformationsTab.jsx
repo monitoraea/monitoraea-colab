@@ -41,7 +41,8 @@ export default function InformationsTab({ entityId }) {
   useEffect(() => {
     if (!data || !form) return;
 
-    const mData = mapData2Form(data,form);
+    // TODO: remove teste composicao_cadeiras_outros
+    const mData = mapData2Form({ ...data, composicao_cadeiras_outros: [{ setor: 'Set1', cadeiras: '1' }, { setor: 'Set2', cadeiras: '2' }, { setor: 'Set3', cadeiras: '3' }] }, form);
 
     _entity(mData);
     _originalEntity(mData);
@@ -49,11 +50,28 @@ export default function InformationsTab({ entityId }) {
     // console.log(data)
   }, [data, form]);
 
-  const handleDataChange = (field, value) => {
-    _entity(entity => ({
-      ...entity,
-      [field]: value
-    }))
+  // TODO: responsabilidade do formRenderer?
+  const handleDataChange = (field, value, iterative /* k = block key, index */) => {
+    if (iterative === undefined) { /* campos fora de blocos ou em blocos não iterativos */
+
+      _entity(entity => ({
+        ...entity,
+        [field]: value
+      }))
+
+    } else { /* campos em blocos iterativos */
+      
+      let complexValue = entity[iterative.k];
+      if (!!complexValue && Array.isArray(complexValue)) {
+        complexValue[iterative.index][field] = value;
+
+        _entity(entity => ({
+          ...entity,
+          [iterative.k]: complexValue
+        }))
+
+      }
+    }
   }
 
   return (
