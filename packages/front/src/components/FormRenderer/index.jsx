@@ -95,11 +95,11 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemove
                                 if (!innerBlock.iterate) return RenderBlock(e.key, innerBlock);
                                 else {
                                     if (innerBlock.iterate.target === 'none') {
-                                        const childrenBocks = !data?.[e.key] ? [] : data[e.key].map((v, index) => RenderBlock(e.key, innerBlock, index));
-                                        if (!childrenBocks.length) processedBlocks.push(e.key);
+                                        const childrenBlocks = !data?.[e.key] ? [] : data[e.key].map((v, index) => RenderBlock(e.key, innerBlock, index));
+                                        if (!childrenBlocks.length) processedBlocks.push(e.key);
 
                                         return <div key={`block_${e.key}`}>
-                                            {childrenBocks}
+                                            {childrenBlocks}
                                             <div className='row'>
                                                 <div className='col-xs-12'>
                                                     <button className="button-outline" onClick={() => onAddIterative(innerBlock)}>
@@ -183,10 +183,13 @@ function Element(props) {
                 </Block>
             } else {
                 if (block.iterate.target === 'none') {
-                    const childrenBocks = !data?.[block.key] ? [] : data[block.key].map((v, index) => <Row key={`row_${block.key}_${index}`} {...props} iterative={{ k: block.key, index }} />);
+                    const childrenBlocks = !data?.[block.key] ? [] : data[block.key].map((v, index) => <Block key={`row_${block.key}_${index}`} block={block} data={data}>
+                        <Row {...props} iterative={{ k: block.key, index }} />
+                    </Block>);
+
 
                     return <Fragment key={`block_${block.key}`}>
-                        {childrenBocks}
+                        {childrenBlocks}
                     </Fragment>
                 } else { /* TODO: target -> field (integer) */ /* TODO: target -> field (multiple options) */
                     return <Block block={block} data={data}>
@@ -227,7 +230,7 @@ function Element(props) {
         }
 
         if (!!v.elements) {
-            return <div className={`col-xs-${v.size}`}>{v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative}  addBlock={addBlock} onAddIterative={onAddIterative} />)}</div>
+            return <div className={`col-xs-${v.size}`}>{v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}</div>
         }
 
         return null;
@@ -239,7 +242,9 @@ function Element(props) {
 
             const block = form.blocks.find(b => b.key === v.block);
 
-            return <>{v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={block} onAddIterative={onAddIterative} />)}</>
+            return <Block key={`add_${block.key}`} block={block} data={data}>
+                {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={block} onAddIterative={onAddIterative} />)}
+            </Block>
         }
     }
 
@@ -280,12 +285,7 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, iterative, onData
 
         }
 
-        // TODO: dá para juntar as verificações de regras de campos soltos, campos de blocos e blocos!!!
-
-        // block rules
-        const block = fieldInBlock(keyRef, blocks);
-        // TODO: TODO acima, pois todas as regras devem ser implementadas para campos de bloco
-        if (block && block.show?.target) show = (data[block.show.target.key] === block.show.target.value);
+        // TODO: dá para juntar as verificações de regras de campos soltos, campos de blocos e blocos!!!        
 
         _doShow(show);
 
@@ -340,6 +340,111 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, iterative, onData
 
 
 }
+
+/*****************************************************************
+    Aux Components
+ *****************************************************************/
+
+/***
+    Block 
+    - basic, it handles the show rule, the title and the remove button (for iterative - TODO: esta questão do botão, deveria ser responsabilidade deste elemento?)
+ ***/
+function Block({ block, data, basic = false, iterative, onRemoveIterative, children }) {
+    const [doShow, _doShow] = useState(false);
+
+    useEffect(() => {
+        let show = true;
+
+        // field rules
+        if (!!block.show?.function) {
+            // console.log(data[f.show.function.params[0].value_of])
+            show = context_modules[block.show.function.module]?.[block.show.function.name].call(this, data[block.show.function.params[0].value_of]);
+        } else if (!!block.show?.target) {
+            // console.log(f.show.target.key, data[f.show.target.key], f.show.target.value)
+            // TODO: can be an array
+            show = (data[block.show.target.key] === block.show.target.value);
+            console.log(block.show.target.key, block.show.target.value, data[block.show.target.key])
+        }
+
+        // TODO: dá para juntar as verificações de regras de campos soltos, campos de blocos e blocos!!!        
+
+        _doShow(show);
+
+    }, [block, data])
+
+    if (!doShow) return null;
+
+    if (!block.title) {
+        if (!basic) return <>{children}</>;
+        else {
+            return <div className={styles['basic-block']}>
+                {!!iterative && iterative.free && <div className={styles['iterative']}>
+                    <div className={styles['svg-icon-box']}>
+                        <Tooltip title="Remover">
+                            <IconButton onClick={() => onRemoveIterative(iterative)}>
+                                <Trash />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                </div>}
+                <div className={!!iterative && iterative.free ? styles['iterative-children'] : ''}>{children}</div>
+            </div>;
+        }
+    }
+
+    return <section id={block.key}>
+        <div className="section-header">
+            <div className="section-title">{block.title}</div>
+        </div>
+        <>{children}</>
+    </section>
+}
+
+/*****************************************************************
+    Aux functions
+ *****************************************************************/
+
+function fieldInBlock(keyRef, blocks) {
+    let block = false;
+
+    // console.log(keyRef, blocks)
+    for (let b of blocks) {
+        // console.log({ b })
+        const found = b.elements.find(key => key === keyRef);
+        if (found) {
+            block = b;
+            break;
+        }
+    }
+
+    return block;
+}
+
+function titleAndIndex(title, index) {
+    return title.replace('%index%', index !== undefined ? index + 1 : '?');
+}
+
+/*****************************************************************
+    Basic Mapper
+ *****************************************************************/
+
+export function mapData2Form(data, form) {
+    let mappedData = data;
+
+    // multi_autocomplete
+    for (let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
+        let value = data[String(f.key)];
+        if (!Array.isArray(value)) value = [value]; // legacy
+
+        if (!!value) {
+            const nValue = f.options.filter(o => value.includes(o.value));
+            data[f.key] = nValue;
+        }
+    }
+
+    return mappedData;
+}
+
 
 /*****************************************************************
     Field components
@@ -508,85 +613,4 @@ function DatePickerField({ f, index, dataValue, onChange }) {
         views={['year']}
         inputFormat="yyyy"
     />
-}
-
-/*****************************************************************
-    Aux Components
- *****************************************************************/
-
-function Block({ block, data, basic = false, iterative, onRemoveIterative, children }) {
-    let show = true;
-    if (block.show?.target) show = (data[block.show.target.key] === block.show.target.value);
-
-    if (!show) return null;
-
-    if (!block.title) {
-        if (!basic) return <>{children}</>;
-        else {
-            return <div className={styles['basic-block']}>
-                {!!iterative && iterative.free && <div className={styles['iterative']}>
-                    <div className={styles['svg-icon-box']}>
-                        <Tooltip title="Remover">
-                            <IconButton onClick={() => onRemoveIterative(iterative)}>
-                                <Trash />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                </div>}
-                <div className={!!iterative && iterative.free ? styles['iterative-children'] : ''}>{children}</div>
-            </div>;
-        }
-    }
-
-    return <section id={block.key}>
-        <div className="section-header">
-            <div className="section-title">{block.title}</div>
-        </div>
-        <>{children}</>
-    </section>
-}
-
-/*****************************************************************
-    Aux functions
- *****************************************************************/
-
-function fieldInBlock(keyRef, blocks) {
-    let block = false;
-
-    // console.log(keyRef, blocks)
-    for (let b of blocks) {
-        // console.log({ b })
-        const found = b.elements.find(key => key === keyRef);
-        if (found) {
-            block = b;
-            break;
-        }
-    }
-
-    return block;
-}
-
-function titleAndIndex(title, index) {
-    return title.replace('%index%', index !== undefined ? index + 1 : '?');
-}
-
-/*****************************************************************
-    Basic Mapper
- *****************************************************************/
-
-export function mapData2Form(data, form) {
-    let mappedData = data;
-
-    // multi_autocomplete
-    for (let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
-        let value = data[String(f.key)];
-        if (!Array.isArray(value)) value = [value]; // legacy
-
-        if (!!value) {
-            const nValue = f.options.filter(o => value.includes(o.value));
-            data[f.key] = nValue;
-        }
-    }
-
-    return mappedData;
 }

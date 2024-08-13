@@ -133,3 +133,7 @@ blocks:
       target: none
       index: default
       add: Adicionar setor
+    # show:
+    #   target:
+    #     key: documento_criacao_tipo
+    #     value: file
