@@ -5,6 +5,7 @@ import axios from 'axios';
 /* components */
 import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
+import InformationsTab_basic from './InformationsTab_basic';
 import InformationsTab_remove from './InformationsTab_remove';
 import TimelineTab from './TimelineTab';
 import MembersTab from './MembersTab';
@@ -163,6 +164,7 @@ const Manager = () => {
           {entityId && (
             <>
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} />}
+              {tabindex === 'informacao_basic' && <InformationsTab_basic entityId={entityId} />}
               {tabindex === 'informacao_remove' && <InformationsTab_remove entityId={entityId} />}
               {tabindex === 'linha_tempo' && <TimelineTab entityId={entityId} />}
               {tabindex === 'membros' && <MembersTab entityId={entityId} />}

@@ -43,8 +43,7 @@ export default function InformationsTab({ entityId }) {
   useEffect(() => {
     if (!data || !form) return;
 
-    // TODO: remove teste composicao_cadeiras_outros
-    const mData = mapData2Form({ ...data, composicao_cadeiras_outros: [{ setor: 'Set1', cadeiras: '1' }, { setor: 'Set2', cadeiras: '2' }] }, form);
+    const mData = mapData2Form({ ...data }, form);
 
     _entity(mData);
     _originalEntity(mData);
@@ -110,7 +109,7 @@ export default function InformationsTab({ entityId }) {
 
                 <Renderer
                   form={form}
-                  view={form_view}
+                  /* view={form_view} */
                   lists={lists}
                   data={entity}
                   onDataChange={handleDataChange}

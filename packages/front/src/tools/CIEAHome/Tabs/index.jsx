@@ -57,6 +57,11 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           />
           <Tab
             disableRipple
+            label="Informações basic"
+            {...a11yProps('informacao_basic')}            
+          />
+          <Tab
+            disableRipple
             label="Informações old"
             {...a11yProps('informacao_remove')}            
           />

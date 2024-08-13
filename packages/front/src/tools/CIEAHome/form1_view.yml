@@ -59,9 +59,18 @@
     - type: column
       size: 3
       key: composicao_cadeiras_soc_civ
-  # - type: row
-  #   elements:
-  #   - type: column
-  #     size: 3
-  #     key: it_teste
+  - type: row
+    block: composicao_cadeiras_outros # iterative!
+    elements:
+      - type: column
+        size: 3
+        key: setor
+      - type: column
+        size: 3
+        key: cadeiras
+      - type: column
+        size: 1
+        elements:
+          -type: remove
+
     

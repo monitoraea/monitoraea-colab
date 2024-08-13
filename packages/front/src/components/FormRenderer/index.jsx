@@ -1,4 +1,4 @@
-import { useEffect, useState, cloneElement } from 'react';
+import { useEffect, useState, cloneElement, Fragment } from 'react';
 import { TextField, MenuItem, Autocomplete, Chip, FormGroup, FormControl, FormLabel, FormControlLabel, Checkbox, Tooltip, IconButton } from '@mui/material';
 import Plus from '../icons/Plus';
 import Trash from '../icons/Trash';
@@ -96,9 +96,9 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemove
                                 else {
                                     if (innerBlock.iterate.target === 'none') {
                                         const childrenBocks = !data?.[e.key] ? [] : data[e.key].map((v, index) => RenderBlock(e.key, innerBlock, index));
-                                        if(!childrenBocks.length) processedBlocks.push(e.key);
+                                        if (!childrenBocks.length) processedBlocks.push(e.key);
 
-                                        return <div key={`add_${e.key}`}>
+                                        return <div key={`block_${e.key}`}>
                                             {childrenBocks}
                                             <div className='row'>
                                                 <div className='col-xs-12'>
@@ -164,7 +164,7 @@ function ViewRenderer({ form, view, data, onDataChange }) {
     return <Element form={form} v={{ type: 'start', elements: view }} data={data} onDataChange={onDataChange} />
 }
 function Element(props) {
-    const { form, v, data, onDataChange } = props;
+    const { form, v, data, iterative, onDataChange } = props;
 
     if (v.type === 'start') return <>
         {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} onDataChange={onDataChange} />)}
@@ -174,7 +174,27 @@ function Element(props) {
         if (!v.block) return <Row {...props} />
         else {
             const block = form.blocks.find(b => b.key === v.block)
-            return <Block block={block} data={data}><Row {...props} /></Block>
+
+            // handle iteration
+            if (!block.iterate) {
+                return <Block block={block} data={data}>
+                    <Row {...props} />
+                </Block>
+            } else {
+                if (block.iterate.target === 'none') {
+                    const childrenBocks = !data?.[block.key] ? [] : data[block.key].map((v, index) => <Row key={`row_${block.key}_${index}`} {...props} iterative={{ k: block.key, index }} />);
+
+                    return <Fragment key={`block_${block.key}`}>
+                        {childrenBocks}
+                    </Fragment>
+                } else { /* TODO: target -> field (integer) */ /* TODO: target -> field (multiple options) */
+                    return <Block block={block} data={data}>
+                        <Row {...props} />
+                    </Block>
+                }
+            }
+
+
         }
     }
 
@@ -182,13 +202,18 @@ function Element(props) {
         return <hr className="hr-spacer my-4" />;
     }
 
-    const field = form.fields.find(f => f.key === v.key);
-    if (!field) return <></>;
-    return <FieldRenderer blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} onDataChange={onDataChange} />
+    if (v.type === 'column') {
+        const field = form.fields.find(f => f.key === v.key);
+        if (!field) return null;
+        return <FieldRenderer blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} iterative={iterative} onDataChange={onDataChange} />
+    }
+
+    return null;
+
 }
-function Row({ form, v, data, onDataChange }) {
+function Row({ form, v, data, iterative, onDataChange }) {
     return <div className="row">
-        {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} onDataChange={onDataChange} />)}
+        {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} />)}
     </div>
 }
 
@@ -247,7 +272,7 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, iterative, onData
     />
     else Component = <StringField integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
 
-    if (f.iterate) {
+    /* if (f.iterate) {
         // iterative field
         if (!data[f.iterate.target]) return <></>;
 
@@ -264,7 +289,7 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, iterative, onData
         return <div className={`col-xs-12`}>
             {iteration}
         </div>;
-    } else if (!!iterative) {
+    } else */ if (!!iterative) {
         // field in iterative block
         const IterateElement = cloneElement(Component, { index: iterative.index });
         return <div className={`col-xs-${size}`}>
