@@ -61,7 +61,7 @@ fields:
   type: text
   title: Qual o nome do gato %index%?
   size: 6
-  iterate:
+  iterate: # neste versão, foi removida a iteração para campos
     target: how_many_cats
     index: default # padrao, nomeia cada iteracao como cat_name.[index]
 
