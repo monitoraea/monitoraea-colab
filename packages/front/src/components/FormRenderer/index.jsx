@@ -224,6 +224,9 @@ function Element(props) {
         if (!!v.key) { /* field */
             const field = form.fields.find(f => f.key === v.key);
             if (!field) return null;
+
+            if (!checkShow(field, data)) return null;
+
             return <div className={`col-xs-${v.size}`}>
                 <FieldRenderer blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} iterative={iterative} onDataChange={onDataChange} />
             </div>
@@ -272,20 +275,7 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, iterative, onData
     const [doShow, _doShow] = useState(false);
 
     useEffect(() => {
-        let show = true;
-
-        // field rules
-        if (!!f.show?.function) {
-            // console.log(data[f.show.function.params[0].value_of])
-            show = context_modules[f.show.function.module]?.[f.show.function.name].call(this, data[f.show.function.params[0].value_of]);
-        } else if (!!f.show?.target) {
-            // console.log(f.show.target.key, data[f.show.target.key], f.show.target.value)
-            // TODO: can be an array
-            show = (data[f.show.target.key] === f.show.target.value);
-
-        }
-
-        // TODO: dá para juntar as verificações de regras de campos soltos, campos de blocos e blocos!!!        
+        let show = checkShow(f, data);
 
         _doShow(show);
 
@@ -353,20 +343,7 @@ function Block({ block, data, basic = false, iterative, onRemoveIterative, child
     const [doShow, _doShow] = useState(false);
 
     useEffect(() => {
-        let show = true;
-
-        // field rules
-        if (!!block.show?.function) {
-            // console.log(data[f.show.function.params[0].value_of])
-            show = context_modules[block.show.function.module]?.[block.show.function.name].call(this, data[block.show.function.params[0].value_of]);
-        } else if (!!block.show?.target) {
-            // console.log(f.show.target.key, data[f.show.target.key], f.show.target.value)
-            // TODO: can be an array
-            show = (data[block.show.target.key] === block.show.target.value);
-            console.log(block.show.target.key, block.show.target.value, data[block.show.target.key])
-        }
-
-        // TODO: dá para juntar as verificações de regras de campos soltos, campos de blocos e blocos!!!        
+        let show = checkShow(block, data);
 
         _doShow(show);
 
@@ -404,7 +381,28 @@ function Block({ block, data, basic = false, iterative, onRemoveIterative, child
     Aux functions
  *****************************************************************/
 
-function fieldInBlock(keyRef, blocks) {
+function checkShow(e, data) {
+    let show = true;
+
+    // field rules
+    if (!!e.show?.function) {
+        // console.log(data[f.show.function.params[0].value_of])
+        show = context_modules[e.show.function.module]?.[e.show.function.name].call(this, data[e.show.function.params[0].value_of]);
+    } else if (!!e.show?.target) {
+        // console.log(f.show.target.key, data[f.show.target.key], f.show.target.value)
+        // TODO: can be an array
+        show = (data[e.show.target.key] === e.show.target.value);
+
+    }
+
+    return show;
+}
+
+function titleAndIndex(title, index) {
+    return title.replace('%index%', index !== undefined ? index + 1 : '?');
+}
+
+/* function fieldInBlock(keyRef, blocks) {
     let block = false;
 
     // console.log(keyRef, blocks)
@@ -418,11 +416,7 @@ function fieldInBlock(keyRef, blocks) {
     }
 
     return block;
-}
-
-function titleAndIndex(title, index) {
-    return title.replace('%index%', index !== undefined ? index + 1 : '?');
-}
+} */
 
 /*****************************************************************
     Basic Mapper
