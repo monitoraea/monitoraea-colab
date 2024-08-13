@@ -71,6 +71,16 @@
       - type: column
         size: 1
         elements:
-          -type: remove
+          - type: remove
+  - type: add
+    block: composicao_cadeiras_outros # iterative - show if block shows!
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar setor
 
     

@@ -80,3 +80,42 @@
         padding-right: 10px;
     }
 }
+
+.remove {
+    position: relative;
+
+    .iterative {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+
+        .svg-icon-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            height: 100%;
+
+            div, button {
+                display: flex;
+                margin-right: .5rem;
+                cursor: pointer;
+                transition: .25s ease;
+
+                svg {
+                    height: 1.4rem;
+                    width: 1.4rem;
+                    stroke: $gray;
+                }
+
+                &:last-child {
+                    margin-right: 0;
+                }
+
+                &:hover {
+                    opacity: .5;
+                }
+            }
+        }
+    }
+}

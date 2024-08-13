@@ -78,7 +78,7 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemove
 
                 blocks = <>
                     {form.fields.map(f => <div key={f.key} className='row'>
-                        <FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} />
+                        <div className={`col-xs-${f.size}`}><FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} /></div>
                     </div>)}
                 </>
 
@@ -118,7 +118,7 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemove
                             inBlock.push(fKey);
                             const field = form.fields.find(fi => fi.key === fKey);
                             return <div key={field.key} className='row'>
-                                <FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} iterative={index === undefined ? undefined : { k, index }} onDataChange={onDataChange} />
+                                <div className={`col-xs-${field.size}`}><FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} iterative={index === undefined ? undefined : { k, index }} onDataChange={onDataChange} /></div>
                             </div>
                         })}
                     </Block>
@@ -139,7 +139,7 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemove
                 // mostrar campos sem blocos
                 otherFields = <>
                     {form.fields.filter(f => !inBlock.includes(f.key)).map(f => <div key={f.key} className='row'>
-                        <FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} />
+                        <div className={`col-xs-${f.size}`}><FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} /></div>
                     </div>)}
                 </>
             }
@@ -158,16 +158,17 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemove
 /*****************************************************************
     View Renderer
  *****************************************************************/
+// TODO: tentar resolver esta cascata de props - hooks? context?
 
-function ViewRenderer({ form, view, data, onDataChange }) {
+function ViewRenderer({ form, view, data, onDataChange, onRemoveIterative, onAddIterative, addBlock }) {
 
-    return <Element form={form} v={{ type: 'start', elements: view }} data={data} onDataChange={onDataChange} />
+    return <Element v={{ type: 'start', elements: view }} form={form} data={data} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />
 }
 function Element(props) {
-    const { form, v, data, iterative, onDataChange } = props;
+    const { form, v, data, iterative, onDataChange, onRemoveIterative, onAddIterative, addBlock } = props;
 
     if (v.type === 'start') return <>
-        {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} onDataChange={onDataChange} />)}
+        {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
     </>
 
     if (v.type === 'row') {
@@ -202,18 +203,59 @@ function Element(props) {
         return <hr className="hr-spacer my-4" />;
     }
 
+    if (v.type === 'remove') {
+        return <div className={styles.remove}>
+            <div className={styles.iterative}>
+                <div className={styles['svg-icon-box']}>
+                    <Tooltip title="Remover">
+                        <IconButton onClick={() => onRemoveIterative(iterative)}>
+                            <Trash />
+                        </IconButton>
+                    </Tooltip>
+                </div>
+            </div>
+        </div>;
+    }
+
     if (v.type === 'column') {
-        const field = form.fields.find(f => f.key === v.key);
-        if (!field) return null;
-        return <FieldRenderer blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} iterative={iterative} onDataChange={onDataChange} />
+        if (!!v.key) { /* field */
+            const field = form.fields.find(f => f.key === v.key);
+            if (!field) return null;
+            return <div className={`col-xs-${v.size}`}>
+                <FieldRenderer blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} iterative={iterative} onDataChange={onDataChange} />
+            </div>
+        }
+
+        if (!!v.elements) {
+            return <div className={`col-xs-${v.size}`}>{v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative}  addBlock={addBlock} onAddIterative={onAddIterative} />)}</div>
+        }
+
+        return null;
+    }
+
+    if (v.type === 'add') {
+        if (!!v.elements) {
+            // TODO: verify show rule!!
+
+            const block = form.blocks.find(b => b.key === v.block);
+
+            return <>{v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={block} onAddIterative={onAddIterative} />)}</>
+        }
+    }
+
+    if (v.type === 'button') {
+        return <button className="button-outline" onClick={() => onAddIterative(addBlock)}>
+            <Plus></Plus>
+            {v.title || 'Add'}
+        </button>
     }
 
     return null;
 
 }
-function Row({ form, v, data, iterative, onDataChange }) {
+function Row({ form, v, data, iterative, onDataChange, onRemoveIterative, addBlock, onAddIterative }) {
     return <div className="row">
-        {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} />)}
+        {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
     </div>
 }
 
@@ -292,12 +334,9 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, iterative, onData
     } else */ if (!!iterative) {
         // field in iterative block
         const IterateElement = cloneElement(Component, { index: iterative.index });
-        return <div className={`col-xs-${size}`}>
-            {IterateElement}
-        </div>
-    } else return <div className={`col-xs-${size}`}>
-        {Component}
-    </div>
+        return <>{IterateElement}</>
+
+    } else return <>{Component}</>
 
 
 }
