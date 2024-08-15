@@ -1,9 +1,9 @@
 fields:
 
 - key: logo
-  type: label
-  title: Logotipo (TODO - FILE)
-  size: 3
+  type: thumbnail
+  title: Logotipo
+  size: 2
 
 - key: uf_nome
   type: read_only
@@ -60,8 +60,9 @@ fields:
       value: link
 
 - key: documento_criacao_arquivo2
-  type: text
-  title: Arquivo de criação (TODO - FILE)
+  type: file
+  # accept: application/pdf
+  title: Arquivo de criação
   size: 6
   show:
     target:

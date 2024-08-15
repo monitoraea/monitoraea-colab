@@ -3,6 +3,7 @@ import { TextField, MenuItem, Autocomplete, Chip, FormGroup, FormControl, FormLa
 import Plus from '../icons/Plus';
 import Trash from '../icons/Trash';
 import DatePicker from '../DatePicker';
+import UploaderField from '../../components/UploaderField';
 
 let context_modules = {}; // TODO: context? 
 let context_lists = {}; // TODO: context? 
@@ -302,6 +303,8 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, iterative, onData
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
     />
+    else if (f.type === 'file') Component = <FileField f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} accept={f.accept} />
+    else if (f.type === 'thumbnail') Component = <ThumbnailField f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
     else Component = <StringField integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
 
     /* if (f.iterate) {
@@ -607,4 +610,36 @@ function DatePickerField({ f, index, dataValue, onChange }) {
         views={['year']}
         inputFormat="yyyy"
     />
+}
+
+function FileField({ f, index, dataValue, accept, onChange }) {
+    const [value, _value] = useState(null);
+
+    useEffect(() => {
+        if (!!dataValue) _value(dataValue);
+    }, [dataValue])
+    
+    return <UploaderField
+        onChange={value => onChange(value)}
+        url={value?.url}
+        type="file"
+        filename={value?.file?.name}
+        accept={accept}
+        title={titleAndIndex(f.title, index)}
+    />
+}
+
+function ThumbnailField({ f, index, dataValue, onChange }) {
+    const [value, _value] = useState(null);
+
+    useEffect(() => {
+        if (!!dataValue) _value(dataValue);
+    }, [dataValue])
+
+    return <UploaderField
+        onChange={value => onChange(value)}
+        url={value?.url}
+        alt={titleAndIndex(f.title, index)}
+        title={titleAndIndex(f.title, index)}
+    />;
 }
