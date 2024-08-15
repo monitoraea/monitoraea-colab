@@ -47,3 +47,10 @@ module.exports.countAlerts = (row, haC, laC) => {
         la,
     }
 }
+
+module.exports.getSegmentedId = (id) => {
+    let segmentedId = String(id);
+    while (segmentedId.length < 9) segmentedId = `0${segmentedId}`;
+
+    return segmentedId.match(/.{1,3}/g).join('/');
+}

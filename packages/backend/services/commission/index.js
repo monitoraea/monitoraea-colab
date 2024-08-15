@@ -1,9 +1,20 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
-const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect } = require('../../utils');
+const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId } = require('../../utils');
 
 const dayjs = require('dayjs');
+
+const aws = require('aws-sdk');
+const s3BucketName = process.env.S3_BUCKET_NAME;
+
+const s3 = new aws.S3({
+    apiVersion: '2006-03-01',
+
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+
+});
 
 class Service {
   /* Entity */
@@ -89,7 +100,7 @@ class Service {
           { replacements: { file_id: entity[0][`${document}_arquivo`] }, type: Sequelize.QueryTypes.SELECT }
         );
 
-        if(entity.length) {
+        if (entity.length) {
           commission[`${document}_arquivo`] = file_entity[0].url;
           commission[`${document}_tipo`] = file_entity[0].content_type === 'text/uri-list' ? 'link' : 'file';
         }
@@ -97,6 +108,26 @@ class Service {
     }
 
     return commission;
+  }
+
+  async saveDraft(user, entity, files, id) {
+
+    /* Transformations */
+    if(!!entity.data_criacao) entity.data_criacao =  dayjs(entity.data_criacao).year();
+
+    await db.models['Commission'].update(entity, {
+      where: { id }
+    });
+
+    const entityModel = await db.models['Commission'].findByPk(id);
+
+    // if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
+    // else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
+
+    // if (entity.documento_criacao_arquivo === 'remove') await this.removeFile(entityModel, 'documento_criacao_arquivo');
+    // else if (files.documento_criacao_arquivo) await this.updateFile(entityModel, files.documento_criacao_arquivo, 'documento_criacao_arquivo');
+
+    return entity;
   }
 
   /* Retorna o id do projeto relacionado a uma comunidade */
@@ -120,6 +151,48 @@ class Service {
     const id = result[0].id;
 
     return { id };
+  }
+
+  async removeFile(entityModel, fieldName) {
+
+    let fileId = entityModel.get(fieldName);
+    entityModel.set(fieldName, null);
+
+    entityModel.save();
+
+    /* remove file */
+    db.models['File'].destroy({
+      where: { id: fileId }
+    });
+
+    /* TODO: remove from S3? */
+  }
+
+  async updateFile(entityModel, file, fieldName) {
+    // S3
+    await s3.putObject({
+      Bucket: s3BucketName,
+      Key: this.getFileKey(entityModel.get('id'), fieldName, file.originalname),
+      Body: file.buffer,
+      ACL: 'public-read',
+    }).promise()
+
+    const fileModel = await db.models['File'].create({
+      file_name: file.originalname,
+      url: file.originalname,
+      document_type: `ciea_${fieldName}`,
+      content_type: file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`,
+    });
+
+    entityModel.set(fieldName, fileModel.id);
+
+    entityModel.save();
+  }
+
+  getFileKey(id, folder, filename) {
+    const segmentedId = getSegmentedId(id);
+
+    return `ciea/${folder}/${segmentedId}/original/${filename}`;
   }
 }
 

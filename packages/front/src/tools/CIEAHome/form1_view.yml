@@ -8,7 +8,7 @@
       elements:
       - type: column
         size: 2
-        key: logo
+        key: logo_arquivo
     - type: row
       elements:
       - type: column

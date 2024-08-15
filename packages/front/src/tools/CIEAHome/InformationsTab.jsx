@@ -23,6 +23,11 @@ import lists from './lists1.yml'
 /* style */
 // import style from './information.module.scss';
 
+const emptyFiles = {
+  'logo_arquivo': null,
+  'documento_criacao_arquivo2': null,
+}
+
 export default function InformationsTab({ entityId }) {
   /* hooks */
   const { server } = useDorothy();
@@ -30,8 +35,9 @@ export default function InformationsTab({ entityId }) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   /* states */
-  const [originalEntity, _originalEntity] = useState([]);
-  const [entity, _entity] = useState([]);
+  const [originalEntity, _originalEntity] = useState({});
+  const [entity, _entity] = useState({});
+  const [files, _files] = useState(emptyFiles);
 
   //get commission_data
   const { data } = useQuery(['commission_info', { entityId }], {
@@ -43,24 +49,45 @@ export default function InformationsTab({ entityId }) {
   useEffect(() => {
     if (!data || !form) return;
 
-    // TODO: remove teste composicao_cadeiras_outros
     const mData = mapData2Form(data, form);
 
     _entity(mData);
     _originalEntity(mData);
 
+    _files(emptyFiles);
+
     // console.log(data)
   }, [data, form]);
-  
+
   const handleDataChange = (field, value, iterative /* k = block key, index */) => {
     if (iterative === undefined) { /* campos fora de blocos ou em blocos não iterativos */
 
-      _entity(entity => ({
-        ...entity,
-        [field]: value
-      }))
+      let newEntity;
+
+      // handle files
+      if (['logo_arquivo', 'documento_criacao_arquivo2'].includes(field)) {
+
+        newEntity = {
+          ...entity,
+          [field]: value ? value.url : 'remove',
+        };
+
+        _files({ ...files, [field]: value?.file });
+
+      } else {
+
+        newEntity = {
+          ...entity,
+          [field]: value
+        };
+
+      }
+
+      _entity(newEntity)
 
     } else { /* campos em blocos iterativos */
+
+      /* TODO: files */
 
       let complexValue = entity[iterative.k];
       if (!!complexValue && Array.isArray(complexValue)) {
@@ -88,10 +115,10 @@ export default function InformationsTab({ entityId }) {
   const handleAddIterative = (block) => {
 
     let newEmptyValue = {};
-    for(let field of block.elements) newEmptyValue[field] = null;
+    for (let field of block.elements) newEmptyValue[field] = null;
 
     let newComplexValue;
-    if(!entity[block.key]) newComplexValue = [newEmptyValue];
+    if (!entity[block.key]) newComplexValue = [newEmptyValue];
     else newComplexValue = [...entity[block.key], newEmptyValue];
 
     _entity(entity => ({
@@ -99,6 +126,68 @@ export default function InformationsTab({ entityId }) {
       [block.key]: newComplexValue
     }))
   }
+
+  const handleSave = async () => {
+
+    /* save */
+    let data = new FormData();
+
+    if (files['logo_arquivo']) data.append('logo', files['logo_arquivo']);
+    if (files['documento_criacao_arquivo2']) data.append('documento_criacao', files['documento_criacao_arquivo2']);
+
+    const snackKey = enqueueSnackbar('Gravando...', {
+      /* variant: 'info', */
+      /* hideIconVariant: true, */
+      persist: true,
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'center',
+      },
+    });
+
+    try {
+      let method, url;
+      /* edit */
+      method = 'put';
+      url = `${server}commission/${entityId}/draft`;
+      data.set('entity', JSON.stringify(entity));
+
+      const { data: response } = await axios({
+        method,
+        url,
+        data,
+        config: { headers: { 'Content-Type': 'multipart/form-data' } },
+      });
+
+      // console.log(response);
+
+      queryClient.invalidateQueries('commission_info');
+
+      // onSave(!_.isEqual(originalEntity, entity));
+
+      closeSnackbar(snackKey);
+
+      enqueueSnackbar('Registro gravado com sucesso!', {
+        variant: 'success',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+    } catch (error) {
+      closeSnackbar(snackKey);
+
+      console.error(error);
+
+      enqueueSnackbar('Erro ao gravar o registro!', {
+        variant: 'error',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+    }
+  };
 
   return (
     <>
@@ -121,7 +210,7 @@ export default function InformationsTab({ entityId }) {
                 <div className="section-header">
                   <div className="section-title"></div>
                   <div className="section-actions">
-                    <button className="button-primary" onClick={() => console.log(entity)}> {/* TODO: responsabilidade do Renderer */}
+                    <button className="button-primary" onClick={handleSave}>
                       <FilePlus></FilePlus>
                       Gravar
                     </button>

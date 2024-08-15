@@ -7,7 +7,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-      },  
+      },
+      ativo: {
+        type: DataTypes.INTEGER,
+      },
+      data_criacao: {
+        type: DataTypes.INTEGER,
+      }
     },
     {
       tableName: 'comissoes',

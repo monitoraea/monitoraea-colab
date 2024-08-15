@@ -1,6 +1,6 @@
 fields:
 
-- key: logo
+- key: logo_arquivo
   type: thumbnail
   title: Logotipo
   size: 2

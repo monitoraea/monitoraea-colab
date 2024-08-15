@@ -145,7 +145,7 @@ const Manager = () => {
       <div className="page-header">
         <PageTitle title="Comissão" />
         <div className="page-header-buttons">
-          <button className="button-outline" onClick={handleDownload}>
+          {/* <button className="button-outline" onClick={handleDownload}>
             <Download></Download>
             Baixar CSV
           </button>
@@ -155,7 +155,7 @@ const Manager = () => {
               <CheckCircle></CheckCircle>
               Publicar
             </button>
-          )}
+          )} */}
         </div>
       </div>
       {tabindex && (
