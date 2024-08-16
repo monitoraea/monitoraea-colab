@@ -258,7 +258,7 @@ export default function TimelineTab({ entityId }) {
                   <div className="section-header">
                     <div className="section-title"></div>
                     <div className="section-actions">
-                      {/* <GetHelpButton tab="timeline" /> */}
+                      <GetHelpButton tab="timeline" />
 
                       <button className="button-primary" onClick={() => handleSave()}>
                         <FilePlus></FilePlus>

@@ -52,7 +52,7 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             disableRipple
             label="Informações"
             {...a11yProps('informacao'/* , infoProblemCounter */)}
-            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} `} /* TODO: <<--${infoProblemCounter < 10 && styles['fixed-size']
+            /* className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} `}  *//* TODO: <<--${infoProblemCounter < 10 && styles['fixed-size']
             } */
           />
           {/* <Tab
