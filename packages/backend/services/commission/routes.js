@@ -6,7 +6,12 @@ const entity = require('./index');
 const multer = require('multer');
 const upload = multer(); // Memory
 
-const upFields = upload.fields([{ name: 'logo', maxCount: 1 }, { name: 'documento_criacao', maxCount: 1 }, { name: 'regimento_interno', maxCount: 1 }]);
+const upFields = upload.fields([
+  { name: 'logo', maxCount: 1 }, 
+  { name: 'documento_criacao', maxCount: 1 }, 
+  { name: 'regimento_interno', maxCount: 1 },
+  { name: 'ppea', maxCount: 1 },
+]);
 
 /* TODO */
 router.get('/:id/draft', async (req, res) => {
@@ -27,7 +32,7 @@ router.put("/:id/draft", upFields, async (req, res) => {
   const { id } = req.params;
   const { entity: entityData } = req.body;
 
-  const { logo, documento_criacao, regimento_interno } = req.files;
+  const { logo, documento_criacao, regimento_interno, ppea } = req.files;
 
   try {
       const result = await entity.saveDraft(res.locals.user,
@@ -36,6 +41,7 @@ router.put("/:id/draft", upFields, async (req, res) => {
               logo_arquivo: logo && logo.length ? logo[0] : null,
               documento_criacao_arquivo: documento_criacao && documento_criacao.length ? documento_criacao[0] : null,
               regimento_interno_arquivo: regimento_interno && regimento_interno.length ? regimento_interno[0] : null,
+              ppea_arquivo: ppea && ppea.length ? ppea[0] : null,
           },
           id
       );

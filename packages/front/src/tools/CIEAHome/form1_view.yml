@@ -119,5 +119,58 @@
       size: 6
       key: regimento_interno_arquivo2
     
+- type: row
+  block: organizacao_interna
+  elements:
+    - type: column
+      size: 12
+      elements:
+        - type: row
+          elements:
+            - type: column
+              size: 6
+              key: org_interna_periodicidade      
+            - type: column
+              size: 6
+              key: organizacao_interna_periodicidade_especifique
+        - type: row
+          elements:
+            - type: column
+              size: 6
+              key: organizacao_interna_estrutura_tem      
+            - type: column
+              size: 6
+              key: organizacao_interna_estrutura_especifique
 
-    
+- type: row
+  block: ppea_block
+  elements:
+    - type: column
+      size: 4
+      key: ppea_tem
+
+- type: row
+  block: ppea_tem_block
+  elements:
+    - type: column
+      size: 12
+      elements:
+        - type: row
+          elements:
+            - type: column
+              size: 6
+              key: ppea_tipo
+            - type: column
+              size: 6
+              key: ppea_arquivo      
+            - type: column
+              size: 6
+              key: ppea_arquivo2        
+        - type: row
+          elements:
+            - type: column
+              size: 3
+              key: ppea_decreto
+            - type: column
+              size: 3
+              key: ppea_lei

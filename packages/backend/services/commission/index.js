@@ -93,6 +93,8 @@ class Service {
       ...entity[0],
       data_criacao: entity[0].data_criacao ? dayjs(`01-01-${entity[0].data_criacao}`, "MM-DD-YYYY") : null,
       regimento_interno_tem: !entity[0].regimento_interno_tem ? null : (entity[0].regimento_interno_tem ? 'sim' : 'nao'),
+      organizacao_interna_estrutura_tem: entity[0].organizacao_interna_estrutura_tem === null ? null : (entity[0].organizacao_interna_estrutura_tem ? 'sim' : 'nao'),
+      ppea_tem: entity[0].ppea_tem === null ? null : (entity[0].ppea_tem ? 'sim' : 'nao'),
     };
 
     for (let document of ['logo', 'documento_criacao', 'regimento_interno', 'ppea']) {
@@ -127,12 +129,15 @@ class Service {
     /* Transformations */
     if (!!entity.data_criacao) entity.data_criacao = dayjs(entity.data_criacao).year();
     entity.regimento_interno_tem = entity.regimento_interno_tem === 'none' ? null : (entity.regimento_interno_tem === 'sim')
+    entity.organizacao_interna_estrutura_tem = entity.organizacao_interna_estrutura_tem === 'none' ? null : (entity.organizacao_interna_estrutura_tem === 'sim')
+    entity.ppea_tem = entity.ppea_tem === 'none' ? null : (entity.ppea_tem === 'sim')
 
     await db.models['Commission'].update({
       ...entity,
       logo_arquivo: undefined,
       documento_criacao_arquivo: entity.documento_criacao_tipo === 'none' ? null : undefined,
       regimento_interno_arquivo: entity.regimento_interno_tipo === 'none' ? null : undefined,
+      ppea_arquivo: entity.ppea_tipo === 'none' ? null : undefined,
     }, {
       where: { id }
     });
@@ -142,7 +147,7 @@ class Service {
     if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
     else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
 
-    for (let wFile of ['documento_criacao', 'regimento_interno']) {
+    for (let wFile of ['documento_criacao', 'regimento_interno', 'ppea']) {
       if (entity[`${wFile}_tipo`] === 'link') await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
       else if (entity[`${wFile}_tipo`] === 'file') {
         if (entity[`${wFile}_arquivo2`] === 'remove') await this.removeFile(entityModel, `${wFile}_arquivo`);

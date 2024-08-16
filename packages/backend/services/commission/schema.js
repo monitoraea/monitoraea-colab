@@ -41,6 +41,27 @@ module.exports = (sequelize, DataTypes) => {
       regimento_interno: {
         type: DataTypes.STRING,
       },
+      org_interna_periodicidade: {
+        type: DataTypes.INTEGER,
+      },
+      organizacao_interna_periodicidade_especifique: {
+        type: DataTypes.STRING,
+      },
+      organizacao_interna_estrutura_tem: {
+        type: DataTypes.BOOLEAN,
+      },
+      organizacao_interna_estrutura_especifique: {
+        type: DataTypes.STRING,
+      },
+      ppea_tem: {
+        type: DataTypes.BOOLEAN,
+      },
+      ppea_decreto: {
+        type: DataTypes.STRING,
+      },
+      ppea_lei: {
+        type: DataTypes.STRING,
+      },
     },
     {
       tableName: 'comissoes',
@@ -59,6 +80,10 @@ module.exports = (sequelize, DataTypes) => {
     Commission.belongsTo(models["File"], {
       foreignKey: "regimento_interno_arquivo",
     })
+    Commission.belongsTo(models["File"], {
+      foreignKey: "ppea_arquivo",
+    })
+    
   }
 
   return Commission;
