@@ -1,5 +1,12 @@
 lists:
 
+  - key: sim_nao
+    options:
+    - value: 'sim'
+      label: 'Sim'
+    - value: 'nao'
+      label: 'Não'
+
   - key: tipo_arquivo
     options:
     - value: 'link'

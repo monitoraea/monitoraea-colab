@@ -62,6 +62,7 @@ class Service {
         c.documento_criacao,
         c.documento_criacao_arquivo,
         c.regimento_interno_tem,
+        c.regimento_interno,
         c.regimento_interno_arquivo,
         c.composicao_cadeiras_set_pub,
         c.composicao_cadeiras_soc_civ,
@@ -91,12 +92,12 @@ class Service {
     let commission = {
       ...entity[0],
       data_criacao: entity[0].data_criacao ? dayjs(`01-01-${entity[0].data_criacao}`, "MM-DD-YYYY") : null,
-      regimento_interno_tem: !entity[0].regimento_interno_tem ? null : (entity[0].regimento_interno_tem ? '1' : '0'),
+      regimento_interno_tem: !entity[0].regimento_interno_tem ? null : (entity[0].regimento_interno_tem ? 'sim' : 'nao'),
     };
 
     for (let document of ['logo', 'documento_criacao', 'regimento_interno', 'ppea']) {
       if (document !== 'logo') commission[`${document}_tipo`] = null;
-      
+
       if (!!entity[0][`${document}_arquivo`]) {
         const file_entity = await db.instance().query(
           `select f.url, f.file_name, f.content_type from files f where f.id = :file_id`,
@@ -114,7 +115,7 @@ class Service {
           }
 
           if (document !== 'logo') commission[`${document}_tipo`] = file_entity[0].content_type === 'text/uri-list' ? 'link' : 'file';
-        } 
+        }
       }
     }
 
@@ -125,11 +126,13 @@ class Service {
 
     /* Transformations */
     if (!!entity.data_criacao) entity.data_criacao = dayjs(entity.data_criacao).year();
+    entity.regimento_interno_tem = entity.regimento_interno_tem === 'none' ? null : (entity.regimento_interno_tem === 'sim')
 
     await db.models['Commission'].update({
       ...entity,
       logo_arquivo: undefined,
       documento_criacao_arquivo: entity.documento_criacao_tipo === 'none' ? null : undefined,
+      regimento_interno_arquivo: entity.regimento_interno_tipo === 'none' ? null : undefined,
     }, {
       where: { id }
     });
@@ -139,10 +142,12 @@ class Service {
     if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
     else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
 
-    if (entity.documento_criacao_tipo === 'link') await this.updateFileModel(entityModel, 'documento_criacao_arquivo', entity.documento_criacao_arquivo, 'text/uri-list');
-    else if (entity.documento_criacao_tipo === 'file') {
-      if (entity.documento_criacao_arquivo2 === 'remove') await this.removeFile(entityModel, 'documento_criacao_arquivo');
-      else if (files.documento_criacao_arquivo) await this.updateFile(entityModel, files.documento_criacao_arquivo, 'documento_criacao_arquivo');
+    for (let wFile of ['documento_criacao', 'regimento_interno']) {
+      if (entity[`${wFile}_tipo`] === 'link') await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
+      else if (entity[`${wFile}_tipo`] === 'file') {
+        if (entity[`${wFile}_arquivo2`] === 'remove') await this.removeFile(entityModel, `${wFile}_arquivo`);
+        else if (files[`${wFile}_arquivo`]) await this.updateFile(entityModel, files[`${wFile}_arquivo`], `${wFile}_arquivo`);
+      }
     }
 
     return entity;

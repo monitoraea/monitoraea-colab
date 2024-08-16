@@ -26,6 +26,7 @@ import lists from './lists1.yml'
 const emptyFiles = {
   'logo_arquivo': null,
   'documento_criacao_arquivo2': null,
+  'regimento_interno_arquivo2': null,
 }
 
 export default function InformationsTab({ entityId }) {
@@ -77,7 +78,7 @@ export default function InformationsTab({ entityId }) {
       }
 
       // handle files
-      if (['logo_arquivo', 'documento_criacao_arquivo2'].includes(field)) {
+      if (['logo_arquivo', 'documento_criacao_arquivo2', 'regimento_interno_arquivo2'].includes(field)) {
 
         newEntity = {
           ...newEntity,
@@ -148,6 +149,7 @@ export default function InformationsTab({ entityId }) {
 
     if (!!files['logo_arquivo']) data.append('logo', files['logo_arquivo']);
     if (entity.documento_criacao_tipo === 'file' && !!files['documento_criacao_arquivo2']) data.append('documento_criacao', files['documento_criacao_arquivo2']);
+    if (entity.regimento_interno_tipo === 'file' && !!files['regimento_interno_arquivo2']) data.append('regimento_interno', files['regimento_interno_arquivo2']);
 
     const snackKey = enqueueSnackbar('Gravando...', {
       /* variant: 'info', */

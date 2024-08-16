@@ -37,7 +37,7 @@
   - type: row
     elements:
     - type: column
-      size: 4
+      size: 12
       key: documento_criacao
     - type: column
       size: 2
@@ -85,5 +85,39 @@
             elements:
               - type: button
                 title: Adicionar setor
+  
+- type: row
+  block: coordenacao_block
+  elements:
+    - type: column
+      size: 6
+      key: coordenacao      
+    - type: column
+      size: 6
+      key: coordenacao_especifique
+
+- type: row
+  block: regimento_interno_block
+  elements:
+    - type: column
+      size: 6
+      key: regimento_interno_tem      
+    - type: column
+      size: 6
+      key: regimento_interno
+
+- type: row
+  block: regimento_interno_tem_block
+  elements:
+    - type: column
+      size: 6
+      key: regimento_interno_tipo
+    - type: column
+      size: 6
+      key: regimento_interno_arquivo      
+    - type: column
+      size: 6
+      key: regimento_interno_arquivo2
+    
 
     

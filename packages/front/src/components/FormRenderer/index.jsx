@@ -393,8 +393,9 @@ function checkShow(e, data) {
         show = context_modules[e.show.function.module]?.[e.show.function.name].call(this, data[e.show.function.params[0].value_of]);
     } else if (!!e.show?.target) {
         // console.log(f.show.target.key, data[f.show.target.key], f.show.target.value)
-        // TODO: can be an array
-        show = (data[e.show.target.key] === e.show.target.value);
+        
+        if(!Array.isArray(e.show.target.value)) show = (data[e.show.target.key] === e.show.target.value);
+        else show = e.show.target.value.includes(data[e.show.target.key])
 
     }
 

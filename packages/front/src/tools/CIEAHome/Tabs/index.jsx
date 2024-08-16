@@ -55,11 +55,11 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} `} /* TODO: <<--${infoProblemCounter < 10 && styles['fixed-size']
             } */
           />
-          <Tab
+          {/* <Tab
             disableRipple
             label="Informações basic"
             {...a11yProps('informacao_basic')}            
-          />
+          /> */}
           <Tab
             disableRipple
             label="Informações old"
@@ -70,11 +70,11 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             label="Linha do tempo"
             {...a11yProps('linha_tempo')}
           />
-          <Tab
+          {/* <Tab
             disableRipple
             label="Membros"
             {...a11yProps('membros')}
-          />
+          /> */}
         </Tabs>
       </div>
     </div>

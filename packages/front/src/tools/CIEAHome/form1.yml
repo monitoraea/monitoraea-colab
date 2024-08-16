@@ -61,7 +61,7 @@ fields:
 
 - key: documento_criacao_arquivo2
   type: file
-  # accept: application/pdf
+  accept: application/pdf
   title: Arquivo de criação
   size: 6
   show:
@@ -79,14 +79,6 @@ fields:
   title: Núm. cadeiras - sociedade civil
   size: 3
 
-# - key: it_teste
-#   type: text
-#   title: Iteração teste %index%
-#   size: 6
-#   iterate:
-#     target: composicao_cadeiras_set_pub
-#     index: default # padrao, nomeia cada iteracao como cat_name.[index]
-
 - key: setor
   type: text
   title: Setor %index%
@@ -96,6 +88,77 @@ fields:
   type: integer
   title: Cadeiras %index%
   size: 6
+
+- key: coordenacao
+  type: options
+  title: Órgão gestor
+  size: 6
+  options:
+    - value: 1
+      label: Secretarias Estaduais de Meio Ambiente (ou correlatas) e de Educação
+    - value: 2
+      label: Apenas Secretaria de Estado de Meio Ambiente (ou correlatas)
+    - value: 3
+      label: Apenas Secretaria de Estado de Educação
+    - value: 4
+      label: Outra Pasta do Estado
+    - value: 5
+      label: Instituição da Sociedade Civil
+    - value: 6
+      label: Instituição de outro segmento
+
+- key: coordenacao_especifique
+  type: text
+  title: Especifique
+  size: 6
+  show:
+    target:
+      key: coordenacao
+      value: [4,6]
+
+- key: regimento_interno_tem
+  type: options
+  title: Tem regimento?
+  size: 4
+  list: 
+    module: property
+    key: sim_nao
+
+- key: regimento_interno
+  type: text
+  title: Título do regimento interno
+  size: 12
+  show:
+    target:
+      key: regimento_interno_tem
+      value: sim
+
+- key: regimento_interno_tipo
+  type: options
+  title: Tipo de documento de regimento
+  size: 2
+  list: 
+    module: property
+    key: tipo_arquivo
+
+- key: regimento_interno_arquivo
+  type: text
+  title: Link para o regimento interno
+  size: 6
+  show:
+    target:
+      key: regimento_interno_tipo
+      value: link
+
+- key: regimento_interno_arquivo2
+  type: file
+  accept: application/pdf
+  title: Arquivo de regimento
+  size: 6
+  show:
+    target:
+      key: regimento_interno_tipo
+      value: file
 
 blocks:
 
@@ -134,7 +197,27 @@ blocks:
       target: none
       index: default
       add: Adicionar setor
-    # show:
-    #   target:
-    #     key: documento_criacao_tipo
-    #     value: file
+  
+  - key: coordenacao_block
+    title: Coordenação
+    elements:
+      - coordenacao
+      - coordenacao_especifique
+
+  - key: regimento_interno_block
+    title: Regimento interno
+    elements:
+      - regimento_interno_tem
+      - regimento_interno
+      - type: block
+        key: regimento_interno_tem_block
+
+  - key: regimento_interno_tem_block
+    elements:
+      - regimento_interno_tipo
+      - regimento_interno_arquivo
+      - regimento_interno_arquivo2    
+    show:
+      target:
+        key: regimento_interno_tem
+        value: sim
