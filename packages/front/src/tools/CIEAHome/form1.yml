@@ -254,7 +254,7 @@ blocks:
   - key: detalhes
     title: Detalhes da comissão
     elements:
-      - logo
+      - logo_arquivo
       - uf_nome
       - regiao
       - data_criacao

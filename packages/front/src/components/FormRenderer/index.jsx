@@ -459,6 +459,7 @@ function ReadOnly({ f, index, dataValue }) {
     </div>
 }
 
+let timeoutTest;
 function StringField({ f, integer, multiline, rows, index, dataValue, onChange }) {
     const [value, _value] = useState('');
 
@@ -474,7 +475,12 @@ function StringField({ f, integer, multiline, rows, index, dataValue, onChange }
             if (isNaN(value)) value = 0;
         }
 
-        onChange(value)
+        _value(value);
+
+        if(timeoutTest) clearTimeout(timeoutTest);
+        timeoutTest = setTimeout(() => {
+            onChange(value)
+        }, 500)
     }
 
     return <TextField
