@@ -213,6 +213,16 @@ export default function InformationsTab({ entityId }) {
             <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
               <div className="p-3">
 
+              <div className="section-header">
+                  <div className="section-title"></div>
+                  <div className="section-actions">
+                    <button className="button-primary" onClick={handleSave}>
+                      <FilePlus></FilePlus>
+                      Gravar
+                    </button>
+                  </div>
+                </div>
+
                 <Renderer
                   form={form}
                   view={form_view}
