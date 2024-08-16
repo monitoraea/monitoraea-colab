@@ -9,10 +9,10 @@ const aws = require('aws-sdk');
 const s3BucketName = process.env.S3_BUCKET_NAME;
 
 const s3 = new aws.S3({
-    apiVersion: '2006-03-01',
+  apiVersion: '2006-03-01',
 
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 
 });
 
@@ -55,6 +55,7 @@ class Service {
         c.uf,
         u.nm_estado as uf_nome,        
         u.nm_regiao as regiao,
+        c.logo_arquivo,
         c.link,
         c.data_criacao,
         c.ativo,
@@ -93,17 +94,27 @@ class Service {
       regimento_interno_tem: !entity[0].regimento_interno_tem ? null : (entity[0].regimento_interno_tem ? '1' : '0'),
     };
 
-    for (let document of ['documento_criacao', 'regimento_interno', 'ppea']) {
+    for (let document of ['logo', 'documento_criacao', 'regimento_interno', 'ppea']) {
+      if (document !== 'logo') commission[`${document}_tipo`] = null;
+      
       if (!!entity[0][`${document}_arquivo`]) {
         const file_entity = await db.instance().query(
-          `select f.url, f.content_type from files f where f.id = :file_id`,
+          `select f.url, f.file_name, f.content_type from files f where f.id = :file_id`,
           { replacements: { file_id: entity[0][`${document}_arquivo`] }, type: Sequelize.QueryTypes.SELECT }
         );
 
-        if (entity.length) {
-          commission[`${document}_arquivo`] = file_entity[0].url;
-          commission[`${document}_tipo`] = file_entity[0].content_type === 'text/uri-list' ? 'link' : 'file';
-        }
+        if (file_entity.length) {
+          if (document === 'logo' || file_entity[0].content_type !== 'text/uri-list') {
+            commission[`${document}_arquivo${document !== 'logo' ? 2 : ''}`] = {
+              url: `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, `${document}_arquivo`, file_entity[0].url)}`,
+              file: { name: file_entity[0].file_name },
+            };
+          } else {
+            commission[`${document}_arquivo`] = file_entity[0].file_name;
+          }
+
+          if (document !== 'logo') commission[`${document}_tipo`] = file_entity[0].content_type === 'text/uri-list' ? 'link' : 'file';
+        } 
       }
     }
 
@@ -113,19 +124,26 @@ class Service {
   async saveDraft(user, entity, files, id) {
 
     /* Transformations */
-    if(!!entity.data_criacao) entity.data_criacao =  dayjs(entity.data_criacao).year();
+    if (!!entity.data_criacao) entity.data_criacao = dayjs(entity.data_criacao).year();
 
-    await db.models['Commission'].update(entity, {
+    await db.models['Commission'].update({
+      ...entity,
+      logo_arquivo: undefined,
+      documento_criacao_arquivo: entity.documento_criacao_tipo === 'none' ? null : undefined,
+    }, {
       where: { id }
     });
 
     const entityModel = await db.models['Commission'].findByPk(id);
 
-    // if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
-    // else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
+    if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
+    else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
 
-    // if (entity.documento_criacao_arquivo === 'remove') await this.removeFile(entityModel, 'documento_criacao_arquivo');
-    // else if (files.documento_criacao_arquivo) await this.updateFile(entityModel, files.documento_criacao_arquivo, 'documento_criacao_arquivo');
+    if (entity.documento_criacao_tipo === 'link') await this.updateFileModel(entityModel, 'documento_criacao_arquivo', entity.documento_criacao_arquivo, 'text/uri-list');
+    else if (entity.documento_criacao_tipo === 'file') {
+      if (entity.documento_criacao_arquivo2 === 'remove') await this.removeFile(entityModel, 'documento_criacao_arquivo');
+      else if (files.documento_criacao_arquivo) await this.updateFile(entityModel, files.documento_criacao_arquivo, 'documento_criacao_arquivo');
+    }
 
     return entity;
   }
@@ -177,22 +195,41 @@ class Service {
       ACL: 'public-read',
     }).promise()
 
-    const fileModel = await db.models['File'].create({
-      file_name: file.originalname,
-      url: file.originalname,
-      document_type: `ciea_${fieldName}`,
-      content_type: file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`,
-    });
+    this.updateFileModel(entityModel, fieldName, file.originalname, file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`)
+  }
 
-    entityModel.set(fieldName, fileModel.id);
+  async updateFileModel(entityModel, fieldName, file_name, content_type) {
+    let fileModel;
+    if (!!entityModel[fieldName]) {
+      fileModel = await db.models['File'].findByPk(entityModel[fieldName]);
+    }
 
-    entityModel.save();
+    if (!!fileModel) {
+
+      fileModel.file_name = file_name;
+      fileModel.url = file_name;
+      fileModel.document_type = `ciea_${fieldName}`;
+      fileModel.content_type = content_type;
+
+      fileModel.save();
+    } else {
+      const fileModel = await db.models['File'].create({
+        file_name,
+        url: file_name,
+        document_type: `ciea_${fieldName}`,
+        content_type,
+      });
+
+      entityModel.set(fieldName, fileModel.id);
+
+      entityModel.save();
+    }
   }
 
   getFileKey(id, folder, filename) {
     const segmentedId = getSegmentedId(id);
 
-    return `ciea/${folder}/${segmentedId}/original/${filename}`;
+    return `ciea/${segmentedId}/${folder}/original/${filename}`;
   }
 }
 

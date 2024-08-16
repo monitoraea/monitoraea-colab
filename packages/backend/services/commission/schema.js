@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       data_criacao: {
         type: DataTypes.INTEGER,
-      }
+      },
     },
     {
       tableName: 'comissoes',
@@ -21,6 +21,15 @@ module.exports = (sequelize, DataTypes) => {
       schema: 'ciea',
     },
   );
+
+  Comission.associate = function (models) {
+    Comission.belongsTo(models["File"], {
+      foreignKey: "logo_arquivo",
+    });
+    Comission.belongsTo(models["File"], {
+      foreignKey: "documento_criacao_arquivo",
+    });
+  }
 
   return Comission;
 };

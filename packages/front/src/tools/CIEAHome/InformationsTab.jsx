@@ -42,6 +42,8 @@ export default function InformationsTab({ entityId }) {
   //get commission_data
   const { data } = useQuery(['commission_info', { entityId }], {
     queryFn: async () => (await axios.get(`${server}commission/${entityId}/draft`)).data,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   // TODO: ABAIXO: responsabilidade do formRenderer?
@@ -62,14 +64,24 @@ export default function InformationsTab({ entityId }) {
   const handleDataChange = (field, value, iterative /* k = block key, index */) => {
     if (iterative === undefined) { /* campos fora de blocos ou em blocos não iterativos */
 
-      let newEntity;
+      let newEntity = {...entity};
+
+      if(field.includes('tipo') && value === 'link') {
+        console.log()
+
+        const mainField = field.replace('_tipo','');
+        newEntity = {
+          ...newEntity,
+          [`${mainField}_arquivo`]: originalEntity[`${mainField}_tipo`] === 'link' ? originalEntity[`${mainField}_arquivo`] : '',
+        };
+      }
 
       // handle files
       if (['logo_arquivo', 'documento_criacao_arquivo2'].includes(field)) {
 
         newEntity = {
-          ...entity,
-          [field]: value ? value.url : 'remove',
+          ...newEntity,
+          [field]: value ? value : 'remove',
         };
 
         _files({ ...files, [field]: value?.file });
@@ -77,11 +89,13 @@ export default function InformationsTab({ entityId }) {
       } else {
 
         newEntity = {
-          ...entity,
+          ...newEntity,
           [field]: value
         };
 
       }
+
+      console.log(`changing ${field}:`, value, newEntity);
 
       _entity(newEntity)
 
@@ -132,8 +146,8 @@ export default function InformationsTab({ entityId }) {
     /* save */
     let data = new FormData();
 
-    if (files['logo_arquivo']) data.append('logo', files['logo_arquivo']);
-    if (files['documento_criacao_arquivo2']) data.append('documento_criacao', files['documento_criacao_arquivo2']);
+    if (!!files['logo_arquivo']) data.append('logo', files['logo_arquivo']);
+    if (entity.documento_criacao_tipo === 'file' && !!files['documento_criacao_arquivo2']) data.append('documento_criacao', files['documento_criacao_arquivo2']);
 
     const snackKey = enqueueSnackbar('Gravando...', {
       /* variant: 'info', */

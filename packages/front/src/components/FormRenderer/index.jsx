@@ -620,7 +620,7 @@ function FileField({ f, index, dataValue, accept, onChange }) {
     }, [dataValue])
     
     return <UploaderField
-        onChange={value => onChange(value)}
+        onChange={onChange}
         url={value?.url}
         type="file"
         filename={value?.file?.name}
@@ -637,7 +637,7 @@ function ThumbnailField({ f, index, dataValue, onChange }) {
     }, [dataValue])
 
     return <UploaderField
-        onChange={value => onChange(value)}
+        onChange={onChange}
         url={value?.url}
         alt={titleAndIndex(f.title, index)}
         title={titleAndIndex(f.title, index)}

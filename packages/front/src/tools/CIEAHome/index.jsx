@@ -40,6 +40,8 @@ const Manager = () => {
   //get entity_id
   const { data: entity } = useQuery(['commission', { currentCommunity: currentCommunity.id }], {
     queryFn: async () => (await axios.get(`${server}commission/id_from_community/${currentCommunity.id}`)).data,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   /* const { data: analysis } = useQuery(['project_indics', { project_id: project?.id }], {
