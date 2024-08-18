@@ -13,6 +13,22 @@ const upFields = upload.fields([
   { name: 'ppea', maxCount: 1 },
 ]);
 
+const upTimelineImage = upload.fields([
+  { name: 'image', maxCount: 1 }, 
+]);
+
+/* TODO */
+router.delete('/:id/draft/timeline/:tlId', async (req, res) => {
+  const { id, tlId } = req.params;
+
+  try {
+    const result = await entity.removeDraftTimeline(id, tlId);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
 
 /* TODO */
 router.get('/:id/draft/timeline', async (req, res) => {
@@ -24,6 +40,25 @@ router.get('/:id/draft/timeline', async (req, res) => {
     res.json(result);
   } catch (ex) {
     sendError(res, ex, 500);
+  }
+});
+
+router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
+  const { id } = req.params;
+  const { entity: entityData } = req.body;
+
+  const { image } = req.files;
+
+  try {
+      const result = await entity.saveDraftTimeline(res.locals.user,
+          JSON.parse(entityData),
+          image && image.length ? image[0] : null,
+          id
+      );
+
+      res.json(result);
+  } catch (ex) {
+      sendError(res, ex, 500);
   }
 });
 

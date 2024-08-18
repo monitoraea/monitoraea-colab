@@ -16,6 +16,8 @@ const s3 = new aws.S3({
 
 });
 
+const { v4: uuidv4 } = require('uuid');
+
 class Service {
   /* Entity */
   async get(id) {
@@ -47,6 +49,26 @@ class Service {
     return entity[0];
   }
 
+  async removeDraftTimeline(id, tlId) {
+    const timeline = await db.models['Commision_timeline'].findByPk(tlId);
+
+    if (timeline.get('fileId')) {
+      /* remove file */
+      await db.models['File'].destroy({
+        where: { id: timeline.get('fileId') }
+      });
+    }
+
+    await db.models['Commision_timeline'].destroy({
+      where: {
+        id: tlId,
+        comissao_id: id,
+      }
+    })
+
+    return true;
+  }
+
   async getDraftTimeline(id) {
     const commissionTLs = await db.instance().query(
       `
@@ -57,7 +79,7 @@ class Service {
           f.url,
           f.file_name 
       FROM ciea.linhas_do_tempo lt
-      left join files f on f.id = lt.file
+      left join files f on f.id = lt."fileId"
       WHERE lt.comissao_id = :id
       order by lt."date"
         `,
@@ -67,11 +89,45 @@ class Service {
       },
     );
 
-    for(let tl of commissionTLs) {
-      if(!!tl.url) tl.image = `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'timeline', tl.url)}`;
-    }    
+    for (let tl of commissionTLs) {
+      if (!!tl.url) tl.image = `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'timeline', tl.url)}`;
+    }
 
     return commissionTLs;
+  }
+
+  async saveDraftTimeline(user, entity, image, id) {
+
+    // insere arquivo, se houver
+    if (!!image) {
+      const uuid = uuidv4();
+      const file_name = `${uuid}.${image.originalname.split('.').pop()}`;
+
+      // S3
+      await s3.putObject({
+        Bucket: s3BucketName,
+        Key: this.getFileKey(id, 'timeline', file_name),
+        Body: image.buffer,
+        ACL: 'public-read',
+      }).promise()
+
+      // file
+      const fileModel = await db.models['File'].create({
+        file_name,
+        url: file_name,
+        document_type: `ciea_timeline`,
+        content_type: 'image/jpeg',
+      });
+
+      entity.fileId = fileModel.id;
+    }
+
+    const entityModel = db.models['Commision_timeline'].create({
+      ...entity,
+      comissao_id: id,
+    });
+
+    return entityModel;
   }
 
   async getDraft(id) {

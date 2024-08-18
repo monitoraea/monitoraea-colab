@@ -32,6 +32,11 @@
 .timeline {
     /* display: grid; */
 
+    .highlight {
+        background-color: #eff8e9;
+        transition: background-color 0.5s ease;
+    }
+
     .each {
         display: grid;
         grid-template-columns: 4fr 120px 32fr 4fr;

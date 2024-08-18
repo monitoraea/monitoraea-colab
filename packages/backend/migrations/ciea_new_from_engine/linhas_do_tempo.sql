@@ -1,0 +1,1 @@
+ALTER TABLE ciea.linhas_do_tempo RENAME COLUMN file TO "fileId";

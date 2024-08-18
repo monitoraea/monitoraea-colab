@@ -14,6 +14,7 @@ import Card from '../../components/Card';
 import { TextField, Switch, FormGroup, Stack, MenuItem, unstable_useId } from '@mui/material';
 import DatePicker from '../../components/DatePicker';
 import UploaderField from '../../components/UploaderField';
+import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
 
 import Plus from '../../components/icons/plus.svg?react';
 import Trash from '../../components/icons/trash.svg?react';
@@ -29,82 +30,65 @@ export default function TimelineTab({ entityId }) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   /* states */
-  const [originalEntity, _originalEntity] = useState([]);
   const [entity, _entity] = useState([]);
 
+  const [date, _date] = useState(new Date());
+  const [thumb, _thumb] = useState(null);
+  const [file, _file] = useState(null);
+  const [texto, _texto] = useState(null);
+
+  const [toRemove, _toRemove] = useState(null);
+  const [toHighlight, _toHighlight] = useState(null);
+  const [toHighlight2, _toHighlight2] = useState(null);
+
   //get commission_data
-  const { data } = useQuery(['commission_info', { entityId }], {
+  const { data } = useQuery(['commission_timeline', { entityId }], {
     queryFn: async () => (await axios.get(`${server}commission/${entityId}/draft/timeline`)).data,
     retry: false,
     refetchOnWindowFocus: false,
   });
 
+  const mutationRemove = useMutation(
+    id => {
+      return axios.delete(`${server}commission/${entityId}/draft/timeline/${id}`);
+    },
+    {
+      onSuccess: () => queryClient.invalidateQueries(`commission_timeline`),
+    },
+  );
+
   useEffect(() => {
     if (!data) return;
 
     _entity(data);
-    _originalEntity(data);
 
     // console.log(data)
   }, [data]);
 
-  /* const handleFieldChange = field => value => {
-    _editing(true);
-
-    let newEntityInfo = {};
-
-    if ([
-      'documento_criacao_tipo',
-      'regimento_interno_tipo',
-      'ppea_tipo',
-    ].includes(field)) {
-      const doc = field.replace('_tipo', '');
-
-      newEntityInfo = {
-        ...entity,
-        [`${doc}_arquivo`]: originalEntity[`${doc}_tipo`] === value ? originalEntity[`${doc}_arquivo`] : '',
-        [field]: value,
-      };
-
-    } else newEntityInfo = { ...entity, [field]: value };
-
-    console.log(`changing ${field}:`, value, newEntityInfo);
-
-    _entity(newEntityInfo);
-  };
-
-  const handleFileChange = type => value => {
-
-  } */
-
-  const mutationSave = useMutation(
-    entity => {
-      if (entity) return axios.put(`${server}commission/${entityId}/draft`, entity);
-    },
-    {
-      onSuccess: () => queryClient.invalidateQueries(`commission/${entityId}/draft`),
-    },
-  );
-
-  const handleSave = async () => {
-    _editing(false);
-
-    /* if (entity.nome.trim().length === 0) {
-      _errors({ ...errors, nome: true });
-      return;
+  useEffect(()=>{
+    if(toHighlight) {
+      setTimeout(()=>{
+        document.getElementById(`timeline_${toHighlight}`).scrollIntoView();
+        _toHighlight2(toHighlight);
+        _toHighlight(null);
+        setTimeout(()=>_toHighlight2(null),2000);
+      }, 10);
     }
+  },[entity, toHighlight])
 
-    if (['em_desenvolvimento', 'finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && !entity.mes_inicio) {
-      _errors({ ...errors, mes_inicio: true });
-      return;
-    }
+  useEffect(() => {
+    if (thumb) {
+      _file(thumb.file)
+    } else _file(null);
+  }, [thumb])
 
-    if (['finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && !entity.mes_fim) {
-      _errors({ ...errors, mes_fim: true });
-      return;
-    } */
+  const handleInsert = async () => {
 
-    _errors([]);
+    if (!texto || !texto.length) return;
+
+    /* save */
+    let data = new FormData();
+    if (!!file) data.append('image', file);
 
     const snackKey = enqueueSnackbar('Gravando...', {
       persist: true,
@@ -114,13 +98,31 @@ export default function TimelineTab({ entityId }) {
       },
     });
 
-    /* save */
     try {
-      await mutationSave.mutateAsync(entity);
+      let method, url;
+      /* edit */
+      method = 'post';
+      url = `${server}commission/${entityId}/draft/timeline`;
+      data.set('entity', JSON.stringify({
+        date,
+        texto,
+      }));
 
-      // queryClient.invalidateQueries(`project_indics`);
+      const { data: response } = await axios({
+        method,
+        url,
+        data,
+        config: { headers: { 'Content-Type': 'multipart/form-data' } },
+      });
 
-      /* !_.isEqual(originalEntity, entity); */
+      _toHighlight(response.id);      
+
+      _date(new Date());
+      _texto(null);
+      _thumb(null);
+      _file(null);
+
+      queryClient.invalidateQueries('commission_timeline');
 
       closeSnackbar(snackKey);
 
@@ -146,6 +148,16 @@ export default function TimelineTab({ entityId }) {
     }
   };
 
+  const remove = tlId => () => {
+    _toRemove(tlId);
+  };
+
+  const handleConfirmation = async action => {
+    if (action === 'confirm') await mutationRemove.mutateAsync(toRemove);
+
+    _toRemove(null);
+  };
+
   return (
     <>
       {entity && (
@@ -161,8 +173,8 @@ export default function TimelineTab({ entityId }) {
                       <DatePicker
                         className="input-datepicker"
                         label="Mês"
-                        value={new Date()}
-                        onChange={console.log}
+                        value={date || ''}
+                        onChange={_date}
                         views={['month', 'year']}
                         inputFormat="MM/yyyy"
                       />
@@ -170,8 +182,8 @@ export default function TimelineTab({ entityId }) {
 
                     <div className="col-xs-1">
                       <UploaderField
-                        onChange={console.log}
-                        url={null} /* value?.url */
+                        onChange={_thumb}
+                        url={thumb?.url}
                         alt="imagem"
                         title="Imagem"
                       />
@@ -181,15 +193,15 @@ export default function TimelineTab({ entityId }) {
                       <TextField
                         className="input-text"
                         label="Texto"
-                        value={''}
-                        onChange={console.log}
+                        value={texto || ''}
+                        onChange={e => _texto(e.target.value)}
                         multiline
                         rows={4}
                       />
                     </div>
 
                     <div className={`col-xs-1 ${styles['vcentered']}`}>
-                      <button className={styles.add} /* onClick={append} */>
+                      <button className={styles.add} onClick={handleInsert}>
                         <Plus></Plus>
                       </button>
                     </div>
@@ -207,7 +219,7 @@ export default function TimelineTab({ entityId }) {
 
                   {<div className={styles.timeline}>
 
-                    {!!data && entity.map(e => <div key={e.id} className={styles.each}>
+                    {!!data && entity.map(e => <div id={`timeline_${e.id}`} key={e.id} className={`${styles.each} ${toHighlight2 === e.id ? styles.highlight : ''}`}>
                       <div className={styles.date}> &#9900; {dayjs(e.date).locale('pt-br').format('MMM [de] YYYY')}</div>
 
                       <div className={styles.thumb}>
@@ -222,7 +234,7 @@ export default function TimelineTab({ entityId }) {
                       <div className={styles.text}>{e.texto}</div>
 
                       <div>
-                        <button className={styles.remove} /* onClick={append} */>
+                        <button className={styles.remove} onClick={remove(e.id)}>
                           <Trash></Trash>
                         </button>
                       </div>
@@ -237,6 +249,13 @@ export default function TimelineTab({ entityId }) {
 
 
           </div>
+
+          <ConfirmationDialog
+            open={!!toRemove}
+            content="Confirma a remoção deste item?"
+            confirmButtonText="Remover"
+            onClose={handleConfirmation}
+          />
         </div>
       )}
     </>

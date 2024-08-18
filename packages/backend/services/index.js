@@ -5,6 +5,7 @@ module.exports = [
   'news',
   'project',
   'commission',
+  'commision_timeline',
   'ppea',
   'institution',
   'organization',
