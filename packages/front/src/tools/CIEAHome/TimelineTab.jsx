@@ -10,7 +10,6 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br'
 
 /* components */
-import FilePlus from '../../components/icons/FilePlus';
 import Card from '../../components/Card';
 import { TextField, Switch, FormGroup, Stack, MenuItem, unstable_useId } from '@mui/material';
 import DatePicker from '../../components/DatePicker';
@@ -48,20 +47,20 @@ export default function TimelineTab({ entityId }) {
         id: 1,
         date: dayjs('2023-05-01'),
         texto: `Curabitur arcu dolor, vulputate vitae purus a, feugiat commodo lacus. Nam hendrerit a nisl a feugiat. Nulla ipsum erat, fermentum aliquet rutrum id, dignissim vitae mi. Suspendisse sodales nisi libero, in efficitur nibh ornare sed. Aliquam vitae arcu vitae dui pretium blandit. Suspendisse sapien dolor, congue sit amet lectus vitae, convallis tempor tellus. Phasellus imperdiet libero mauris, ut dictum ante gravida eget. In id felis quam.`,
-        image: 'https://images.pexels.com/photos/7551762/pexels-photo-7551762.jpeg',
+        image: 'https://zcm-content-images.s3.us-east-2.amazonaws.com/ciea/000/000/004/timeline/pexels-photo-7551762.jpeg',
       },
 
       {
         id: 2,
         date: dayjs('2023-07-01'),
         texto: `Pellentesque ac malesuada magna. Fusce at magna elit. Fusce lacinia nunc id neque feugiat, ut porta magna euismod. Ut sed odio sit amet leo efficitur suscipit. Proin maximus luctus felis, nec vehicula est fermentum finibus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nullam augue ante, fermentum non ex eu, bibendum posuere nibh. Sed euismod nisl sit amet ipsum molestie, vel bibendum velit pellentesque. Quisque ut placerat mauris.Fusce lacinia nunc id neque feugiat, ut porta magna euismod. Ut sed odio sit amet leo efficitur suscipit. Proin maximus luctus felis, nec vehicula est fermentum finibus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nullam augue ante, fermentum non ex eu, bibendum posuere nibh. Sed euismod nisl sit amet ipsum molestie, vel bibendum velit pellentesque. Quisque ut placerat mauris.`,
-        image: 'https://as2.ftcdn.net/v2/jpg/02/70/96/71/1000_F_270967198_bjVDtAtUWi1bKqFaFs0TG3IzqpI1ne9E.jpg',
       },
 
       {
         id: 3,
         date: dayjs('2024-01-01'),
         texto: `Maecenas lectus erat, feugiat sed turpis nec, convallis accumsan justo. Fusce nulla tellus, vehicula nec erat eget, eleifend vestibulum magna. Ut sem urna, consequat ac pellentesque ac, rutrum id purus. Aliquam ornare venenatis vehicula. Pellentesque fermentum justo id orci auctor vulputate.`,
+        image: 'https://zcm-content-images.s3.us-east-2.amazonaws.com/ciea/000/000/004/timeline/1000_F_270967198_bjVDtAtUWi1bKqFaFs0TG3IzqpI1ne9E.jpg',
       },
 
     ]);
@@ -226,17 +225,6 @@ export default function TimelineTab({ entityId }) {
               <div className="p-3">
 
                 <section id="details">
-                  <div className="section-header">
-                    <div className="section-title"></div>
-                    <div className="section-actions">
-                      {/* <GetHelpButton tab="timeline" /> */}
-
-                      <button className="button-primary" onClick={() => handleSave()}>
-                        <FilePlus></FilePlus>
-                        Gravar
-                      </button>
-                    </div>
-                  </div>
 
                   <div className={styles.timeline}>
 
