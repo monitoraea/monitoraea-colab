@@ -1,0 +1,71 @@
+.readonly {
+    width: 100%;
+    border: solid 1px rgba(115, 191, 72, 0.25) !important;
+    border-radius: 0.5rem !important;
+    line-height: 1;
+
+    .title {
+        transform: translate(0, -0.5rem) scale(0.75);
+        font-size: 1rem;
+        background: #FFFFFF;
+        padding: 0 0.5rem;
+        display: inline-block;
+    }
+
+    .value {
+        padding: 0 1rem !important;
+        transform: translate(0.1rem, -0.3rem);
+        font-size: 0.8rem;
+    }
+}
+
+.logo_wrapper {
+    width: 180px;
+    padding: 0.5rem;
+}
+
+.add_below,
+.add_above {
+    display: flex;
+    justify-content: center;
+}
+
+.remove {
+    display: flex;
+    align-items: center;
+}
+
+.tl_button {
+    padding: 0 1rem;
+    height: 2rem;
+    border: 1px solid #bbb;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-sizing: border-box;
+    background: transparent;
+    color: #bbb;
+    cursor: pointer;
+    font-family: "Raleway", sans-serif !important;
+    transition: 0.5s ease;
+    display: flex;
+    align-items: center;
+
+    svg {
+        height: 1rem;
+    }
+
+    &:hover {
+        color: #666;
+        /* border: 1px solid #666; */
+    }
+}
+
+.tlcard {
+    border: 1px dashed #ddd;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    margin-bottom: .5rem;
+    background-color: white;
+    cursor: move;
+}
