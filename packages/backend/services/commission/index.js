@@ -47,6 +47,32 @@ class Service {
     return entity[0];
   }
 
+  async getDraftTimeline(id) {
+    const commissionTLs = await db.instance().query(
+      `
+      SELECT
+          lt.id, 
+          lt."date",
+          lt.texto,
+          f.url,
+          f.file_name 
+      FROM ciea.linhas_do_tempo lt
+      left join files f on f.id = lt.file
+      WHERE lt.comissao_id = :id
+      order by lt."date"
+        `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    for(let tl of commissionTLs) {
+      if(!!tl.url) tl.image = `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'timeline', tl.url)}`;
+    }    
+
+    return commissionTLs;
+  }
 
   async getDraft(id) {
     const entity = await db.instance().query(

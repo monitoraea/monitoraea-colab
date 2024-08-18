@@ -13,6 +13,20 @@ const upFields = upload.fields([
   { name: 'ppea', maxCount: 1 },
 ]);
 
+
+/* TODO */
+router.get('/:id/draft/timeline', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await entity.getDraftTimeline(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
 /* TODO */
 router.get('/:id/draft', async (req, res) => {
   const { id } = req.params;

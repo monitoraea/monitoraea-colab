@@ -34,36 +34,15 @@ export default function TimelineTab({ entityId }) {
 
   //get commission_data
   const { data } = useQuery(['commission_info', { entityId }], {
-    queryFn: async () => (await axios.get(`${server}commission/${entityId}/draft`)).data,
+    queryFn: async () => (await axios.get(`${server}commission/${entityId}/draft/timeline`)).data,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
     if (!data) return;
 
-    // _entity(data);
-    // fake data
-    _entity([
-      {
-        id: 1,
-        date: dayjs('2023-05-01'),
-        texto: `Curabitur arcu dolor, vulputate vitae purus a, feugiat commodo lacus. Nam hendrerit a nisl a feugiat. Nulla ipsum erat, fermentum aliquet rutrum id, dignissim vitae mi. Suspendisse sodales nisi libero, in efficitur nibh ornare sed. Aliquam vitae arcu vitae dui pretium blandit. Suspendisse sapien dolor, congue sit amet lectus vitae, convallis tempor tellus. Phasellus imperdiet libero mauris, ut dictum ante gravida eget. In id felis quam.`,
-        image: 'https://zcm-content-images.s3.us-east-2.amazonaws.com/ciea/000/000/004/timeline/pexels-photo-7551762.jpeg',
-      },
-
-      {
-        id: 2,
-        date: dayjs('2023-07-01'),
-        texto: `Pellentesque ac malesuada magna. Fusce at magna elit. Fusce lacinia nunc id neque feugiat, ut porta magna euismod. Ut sed odio sit amet leo efficitur suscipit. Proin maximus luctus felis, nec vehicula est fermentum finibus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nullam augue ante, fermentum non ex eu, bibendum posuere nibh. Sed euismod nisl sit amet ipsum molestie, vel bibendum velit pellentesque. Quisque ut placerat mauris.Fusce lacinia nunc id neque feugiat, ut porta magna euismod. Ut sed odio sit amet leo efficitur suscipit. Proin maximus luctus felis, nec vehicula est fermentum finibus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nullam augue ante, fermentum non ex eu, bibendum posuere nibh. Sed euismod nisl sit amet ipsum molestie, vel bibendum velit pellentesque. Quisque ut placerat mauris.`,
-      },
-
-      {
-        id: 3,
-        date: dayjs('2024-01-01'),
-        texto: `Maecenas lectus erat, feugiat sed turpis nec, convallis accumsan justo. Fusce nulla tellus, vehicula nec erat eget, eleifend vestibulum magna. Ut sem urna, consequat ac pellentesque ac, rutrum id purus. Aliquam ornare venenatis vehicula. Pellentesque fermentum justo id orci auctor vulputate.`,
-        image: 'https://zcm-content-images.s3.us-east-2.amazonaws.com/ciea/000/000/004/timeline/1000_F_270967198_bjVDtAtUWi1bKqFaFs0TG3IzqpI1ne9E.jpg',
-      },
-
-    ]);
+    _entity(data);
     _originalEntity(data);
 
     // console.log(data)
@@ -226,9 +205,9 @@ export default function TimelineTab({ entityId }) {
 
                 <section id="details">
 
-                  <div className={styles.timeline}>
+                  {<div className={styles.timeline}>
 
-                    {entity.map(e => <div key={e.id} className={styles.each}>
+                    {!!data && entity.map(e => <div key={e.id} className={styles.each}>
                       <div className={styles.date}> &#9900; {dayjs(e.date).locale('pt-br').format('MMM [de] YYYY')}</div>
 
                       <div className={styles.thumb}>
@@ -249,7 +228,7 @@ export default function TimelineTab({ entityId }) {
                       </div>
                     </div>)}
 
-                  </div>
+                  </div>}
 
                 </section>
 
