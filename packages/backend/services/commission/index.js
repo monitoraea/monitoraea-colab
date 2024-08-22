@@ -35,7 +35,11 @@ class Service {
         c.ppea_tem = 1 as ppea_tem,
         c.ppea_decreto,
         c.ppea_lei,
-        (select f.url from files f where f.id = c.ppea_arquivo) as ppea_arquivo
+        (select f.url from files f where f.id = c.ppea_arquivo) as ppea_arquivo,
+        c.ppea2_tem = 1 as ppea2_tem,
+        c.ppea2_decreto,
+        c.ppea2_lei,
+        (select f.url from files f where f.id = c.ppea2_arquivo) as ppea2_arquivo
       FROM ciea.comissoes c
       inner join ufs u on u.id = c.uf
       WHERE c.id = :id
@@ -159,6 +163,10 @@ class Service {
         c.ppea_decreto,
         c.ppea_lei,
         c.ppea_arquivo,
+        c.ppea2_tem,
+        c.ppea2_decreto,
+        c.ppea2_lei,
+        c.ppea2_arquivo,
         c.membros
       FROM ciea.comissoes c
       inner join ufs u on u.id = c.uf
@@ -177,9 +185,10 @@ class Service {
       regimento_interno_tem: !entity[0].regimento_interno_tem ? null : (entity[0].regimento_interno_tem ? 'sim' : 'nao'),
       organizacao_interna_estrutura_tem: entity[0].organizacao_interna_estrutura_tem === null ? null : (entity[0].organizacao_interna_estrutura_tem ? 'sim' : 'nao'),
       ppea_tem: entity[0].ppea_tem === null ? null : (entity[0].ppea_tem ? 'sim' : 'nao'),
+      ppea2_tem: entity[0].ppea2_tem === null ? null : (entity[0].ppea2_tem ? 'sim' : 'nao'),
     };
 
-    for (let document of ['logo', 'documento_criacao', 'regimento_interno', 'ppea']) {
+    for (let document of ['logo', 'documento_criacao', 'regimento_interno', 'ppea', 'ppea2']) {
       if (document !== 'logo') commission[`${document}_tipo`] = null;
 
       if (!!entity[0][`${document}_arquivo`]) {
@@ -213,6 +222,7 @@ class Service {
     entity.regimento_interno_tem = entity.regimento_interno_tem === 'none' ? null : (entity.regimento_interno_tem === 'sim')
     entity.organizacao_interna_estrutura_tem = entity.organizacao_interna_estrutura_tem === 'none' ? null : (entity.organizacao_interna_estrutura_tem === 'sim')
     entity.ppea_tem = entity.ppea_tem === 'none' ? null : (entity.ppea_tem === 'sim')
+    entity.ppea2_tem = entity.ppea2_tem === 'none' ? null : (entity.ppea2_tem === 'sim')
 
     await db.models['Commission'].update({
       ...entity,
@@ -220,6 +230,7 @@ class Service {
       documento_criacao_arquivo: entity.documento_criacao_tipo === 'none' ? null : undefined,
       regimento_interno_arquivo: entity.regimento_interno_tipo === 'none' ? null : undefined,
       ppea_arquivo: entity.ppea_tipo === 'none' ? null : undefined,
+      ppea2_arquivo: entity.ppea2_tipo === 'none' ? null : undefined,
     }, {
       where: { id }
     });
@@ -229,7 +240,7 @@ class Service {
     if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
     else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
 
-    for (let wFile of ['documento_criacao', 'regimento_interno', 'ppea']) {
+    for (let wFile of ['documento_criacao', 'regimento_interno', 'ppea', 'ppea2']) {
       if (entity[`${wFile}_tipo`] === 'link') await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
       else if (entity[`${wFile}_tipo`] === 'file') {
         if (entity[`${wFile}_arquivo2`] === 'remove') await this.removeFile(entityModel, `${wFile}_arquivo`);

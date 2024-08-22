@@ -8,3 +8,11 @@ update ciea.comissoes set ppea_tem_bool = (ppea_tem = 1);
 ALTER TABLE ciea.comissoes DROP COLUMN ppea_tem;
 
 ALTER TABLE ciea.comissoes RENAME COLUMN ppea_tem_bool TO ppea_tem;
+
+ALTER TABLE ciea.comissoes ADD ppea2_decreto varchar NULL;
+
+ALTER TABLE ciea.comissoes ADD ppea2_lei varchar NULL;
+
+ALTER TABLE ciea.comissoes ADD ppea2_arquivo int4 NULL;
+
+ALTER TABLE ciea.comissoes ADD ppea2_tem bool NULL;

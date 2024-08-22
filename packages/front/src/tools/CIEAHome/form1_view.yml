@@ -174,3 +174,36 @@
             - type: column
               size: 3
               key: ppea_lei
+
+- type: row
+  block: ppea2_block
+  elements:
+    - type: column
+      size: 4
+      key: ppea2_tem
+
+- type: row
+  block: ppea2_tem_block
+  elements:
+    - type: column
+      size: 12
+      elements:
+        - type: row
+          elements:
+            - type: column
+              size: 6
+              key: ppea2_tipo
+            - type: column
+              size: 6
+              key: ppea2_arquivo      
+            - type: column
+              size: 6
+              key: ppea2_arquivo2        
+        - type: row
+          elements:
+            - type: column
+              size: 3
+              key: ppea2_decreto
+            - type: column
+              size: 3
+              key: ppea2_lei
