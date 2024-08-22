@@ -48,6 +48,7 @@ export default function InformationsTab({ entityId }) {
   });
 
   // TODO: ABAIXO: responsabilidade do formRenderer?
+  // onde digo "responsabilidade do renderer" pode ser responsabilidade de um outro componente controller, fazendo o papel que hoje está com o componente que usa o renderer
 
   useEffect(() => {
     if (!data || !form) return;
