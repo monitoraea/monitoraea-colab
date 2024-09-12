@@ -4,6 +4,9 @@ const { sendError } = require('dorothy-dna-services').util;
 
 const { User } = require('dorothy-dna-services');
 
+const multer = require('multer');
+const upload = multer(); // Memory
+
 const entity = require('./index');
 
 /* TODO */
@@ -103,6 +106,69 @@ router.put("/:id/follow", async (req, res) => {
 
     try {
         const result = await entity.follow(res.locals.user?.id, room, communityId, String(following) === '1');
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex, 500);
+    }
+});
+
+/* TODO */
+router.get("/has_thumb", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await entity.hasThumb(res.locals.user.id);
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex, 500);
+    }
+});
+
+/* TODO */
+router.get("/info", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await entity.getExtendedInfo(res.locals.user.id);
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex, 500);
+    }
+});
+/* TODO */
+router.put("/info", async (req, res) => {
+    const data = req.body;
+
+    try {
+        const result = await entity.setExtendedInfo(res.locals.user.id, data);
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex, 500);
+    }
+});
+/* TODO */
+router.delete("/thumb", async (req, res) => {
+
+    try {
+        const result = await entity.removeThumb(res.locals.user.id);
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex, 500);
+    }
+});
+
+const upFields = upload.fields([{ name: 'thumb', maxCount: 1 }]);
+
+router.post("/thumb", upFields, async (req, res) => {
+    const { thumb } = req.files;
+
+    try {
+        const result = await entity.setThumb(res.locals.user, thumb[0]);        
 
         res.json(result);
     } catch (ex) {
