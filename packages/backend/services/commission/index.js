@@ -100,7 +100,10 @@ class Service {
     return commissionTLs;
   }
 
-  async saveDraftTimeline(user, entity, image, id) {
+  async saveDraftTimeline(user, entity, image, id, tlid) {
+
+    // if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
+    // else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
 
     // insere arquivo, se houver
     if (!!image) {
@@ -126,10 +129,25 @@ class Service {
       entity.fileId = fileModel.id;
     }
 
-    const entityModel = db.models['Commision_timeline'].create({
-      ...entity,
-      comissao_id: id,
-    });
+    console.log({ entity });
+
+    let entityModel;
+    if(!tlid) {
+      entityModel = await db.models['Commision_timeline'].create({
+        ...entity,
+        comissao_id: id,
+      });
+    } else {
+      // recupera
+      entityModel = await db.models['Commision_timeline'].findByPk(tlid);
+      // atualiza
+      entityModel.date = entity.date;
+      entityModel.texto = entity.texto;
+      entityModel.fileId = entity.fileId;
+      // salva
+      entityModel.save();
+    }
+    
 
     return entityModel;
   }

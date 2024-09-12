@@ -44,6 +44,25 @@ router.get('/:id/draft/timeline', async (req, res) => {
   }
 });
 
+router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
+  const { id, tlid } = req.params;
+  const { entity: entityData } = req.body;
+
+  const { image } = req.files;
+
+  try {
+      const result = await entity.saveDraftTimeline(res.locals.user,
+          JSON.parse(entityData),
+          image && image.length ? image[0] : null,
+          id,
+          tlid
+      );
+
+      res.json(result);
+  } catch (ex) {
+      sendError(res, ex, 500);
+  }
+});
 router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
   const { id } = req.params;
   const { entity: entityData } = req.body;

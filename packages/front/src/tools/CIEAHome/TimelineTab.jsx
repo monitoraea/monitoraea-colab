@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, Fragment } from 'react';
 
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useDorothy } from 'dorothy-dna-react';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
-import _, { now } from 'lodash';
+import _, { entries, now } from 'lodash';
 
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br'
@@ -18,6 +18,9 @@ import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
 
 import Plus from '../../components/icons/plus.svg?react';
 import Trash from '../../components/icons/trash.svg?react';
+import Edit from '../../components/icons/edit-2.svg?react';
+import Cancel from '../../components/icons/x.svg?react';
+import Save from '../../components/icons/save.svg?react';
 import no_thumb from '../../images/no_thumb.png';
 
 /* styles */
@@ -27,19 +30,15 @@ export default function TimelineTab({ entityId }) {
   /* hooks */
   const { server } = useDorothy();
   const queryClient = useQueryClient();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   /* states */
   const [entity, _entity] = useState([]);
 
-  const [date, _date] = useState(new Date());
-  const [thumb, _thumb] = useState(null);
-  const [file, _file] = useState(null);
-  const [texto, _texto] = useState(null);
-
   const [toRemove, _toRemove] = useState(null);
   const [toHighlight, _toHighlight] = useState(null);
   const [toHighlight2, _toHighlight2] = useState(null);
+
+  const [editing, _editing] = useState(null);
 
   //get commission_data
   const { data } = useQuery(['commission_timeline', { entityId }], {
@@ -65,16 +64,156 @@ export default function TimelineTab({ entityId }) {
     // console.log(data)
   }, [data]);
 
-  useEffect(()=>{
-    if(toHighlight) {
-      setTimeout(()=>{
-        document.getElementById(`timeline_${toHighlight}`).scrollIntoView();
+  useEffect(() => {
+    if (toHighlight) {
+      setTimeout(() => {
+        const el = document.getElementById(`timeline_${toHighlight}`);
+        if (!el) return;
+
+        el.scrollIntoView({ block: "end", inline: "nearest" });
         _toHighlight2(toHighlight);
         _toHighlight(null);
-        setTimeout(()=>_toHighlight2(null),2000);
+        setTimeout(() => _toHighlight2(null), 2000);
       }, 10);
     }
-  },[entity, toHighlight])
+  }, [entity, toHighlight])
+
+  const remove = tlId => () => {
+    _toRemove(tlId);
+  };
+
+  const edit = tlId => () => {
+
+    const editingEntity = entity.find(e => e.id === tlId);
+    if (!!editingEntity) _editing(editingEntity);
+  }
+
+  const cancelEdit = () => {
+    _editing(null);
+  }
+
+  const handleConfirmation = async action => {
+    if (action === 'confirm') await mutationRemove.mutateAsync(toRemove);
+
+    _toRemove(null);
+  };
+
+  const handleEditCancel = () => {
+    _editing(null);
+  }
+  const handleEditSave = () => {
+    _editing(null);
+  }
+
+  return (
+    <>
+      {entity && (
+        <div className="page-content">
+          <div className="page-body">
+            <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
+              <div className={`p-3 ${styles['add-panel']}`}>
+
+                <section id="details">
+
+                  <TimelineManager
+                    entityId={entityId}
+                    editing={editing}
+                    onHighlight={_toHighlight}
+                    add={true}
+                  />
+
+                </section>
+
+              </div>
+            </Card>
+
+            <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
+              <div className="p-3">
+
+                <section id="details">
+
+                  {<div className={styles.timeline}>
+
+                    {!!data && entity.map(e => <Fragment key={e.id}>
+
+                      {editing?.id !== e.id && <div id={`timeline_${e.id}`} className={`${styles.each} ${toHighlight2 === e.id ? styles.highlight : ''}`}>
+                        <div className={styles.date}> <span className={styles.text}>{dayjs(e.date).locale('pt-br').format('MMM [de] YYYY')}</span></div>
+
+                        <div className={styles.thumb}>
+
+                          <div className={styles['thumb-image']}>
+                            {!!e.image && <img src={e.image} alt="imagem de timeline" />}
+                            {!e.image && <img src={no_thumb} alt="sem imagem de timeline" />}
+                          </div>
+
+                        </div>
+
+                        <div className={styles.text}>{e.texto}</div>
+
+                        <div className={styles.buttons}>
+                          <button className={styles.action} onClick={edit(e.id)} disabled={!!editing}>
+                            <Edit></Edit>
+                          </button>
+                          {editing?.id !== e.id && <button className={styles.action} onClick={remove(e.id)} disabled={!!editing}>
+                            <Trash></Trash>
+                          </button>}
+                        </div>
+                      </div>}
+
+                      {editing?.id === e.id && <TimelineManager
+                        entityId={entityId}
+                        editing={editing}
+                        onHighlight={_toHighlight}
+                        onCancel={handleEditCancel}
+                        onSave={handleEditSave}
+                      />}
+                    </Fragment>)}
+
+                  </div>}
+
+                </section>
+
+              </div>
+            </Card>
+
+
+          </div>
+
+          <ConfirmationDialog
+            open={!!toRemove}
+            content="Confirma a remoção deste item?"
+            confirmButtonText="Remover"
+            onClose={handleConfirmation}
+          />
+        </div>
+      )}
+    </>
+  );
+}
+
+function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave }) {
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  /* hooks */
+  const { server } = useDorothy();
+  const queryClient = useQueryClient();
+
+  const [date, _date] = useState(new Date());
+  const [thumb, _thumb] = useState(null);
+  const [file, _file] = useState(null);
+  const [texto, _texto] = useState(null);
+
+  useEffect(() => {
+    if(add) {
+      _date(new Date())
+      _texto(null);
+    } else {
+      _date(editing.date);
+      _texto(editing.texto);
+      _thumb({
+        url: editing.image,
+      });
+    }
+  }, [editing])
 
   useEffect(() => {
     if (thumb) {
@@ -82,7 +221,7 @@ export default function TimelineTab({ entityId }) {
     } else _file(null);
   }, [thumb])
 
-  const handleInsert = async () => {
+  const handleSave = async () => {
 
     if (!texto || !texto.length) return;
 
@@ -100,9 +239,17 @@ export default function TimelineTab({ entityId }) {
 
     try {
       let method, url;
-      /* edit */
-      method = 'post';
-      url = `${server}commission/${entityId}/draft/timeline`;
+      /* save */
+
+      if(add) { /* insert */
+        method = 'post';
+        url = `${server}commission/${entityId}/draft/timeline`;
+      } else {
+       /* edit */
+        method = 'put';
+        url = `${server}commission/${entityId}/draft/timeline/${editing.id}`;
+      }
+
       data.set('entity', JSON.stringify({
         date,
         texto,
@@ -115,12 +262,14 @@ export default function TimelineTab({ entityId }) {
         config: { headers: { 'Content-Type': 'multipart/form-data' } },
       });
 
-      _toHighlight(response.id);      
+      onHighlight(response.id);
 
       _date(new Date());
       _texto(null);
       _thumb(null);
       _file(null);
+
+      onSave();
 
       queryClient.invalidateQueries('commission_timeline');
 
@@ -148,116 +297,54 @@ export default function TimelineTab({ entityId }) {
     }
   };
 
-  const remove = tlId => () => {
-    _toRemove(tlId);
-  };
+  return (<div className={`row ${!add && !!editing ? styles.editing : ''}`}>
+    <div className={`col-xs-2 ${styles['vcentered']}`}>
+      <DatePicker
+        className="input-datepicker"
+        label="Mês"
+        value={date || ''}
+        onChange={_date}
+        views={['month', 'year']}
+        inputFormat="MM/yyyy"
+        disabled={add && !!editing}
+      />
+    </div>
 
-  const handleConfirmation = async action => {
-    if (action === 'confirm') await mutationRemove.mutateAsync(toRemove);
+    <div className="col-xs-1">
+      <UploaderField
+        onChange={_thumb}
+        url={thumb?.url}
+        alt="imagem"
+        title="Imagem"
+        disabled={add && !!editing}
+        viewer={false}
+      />
+    </div>
 
-    _toRemove(null);
-  };
+    <div className="col-xs-8">
+      <TextField
+        className="input-text"
+        label="Texto"
+        value={texto || ''}
+        onChange={e => _texto(e.target.value)}
+        multiline
+        rows={4}
+        disabled={add && !!editing}
+      />
+    </div>
 
-  return (
-    <>
-      {entity && (
-        <div className="page-content">
-          <div className="page-body">
-            <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
-              <div className="p-3">
-
-                <section id="details">
-
-                  <div className="row">
-                    <div className={`col-xs-2 ${styles['vcentered']}`}>
-                      <DatePicker
-                        className="input-datepicker"
-                        label="Mês"
-                        value={date || ''}
-                        onChange={_date}
-                        views={['month', 'year']}
-                        inputFormat="MM/yyyy"
-                      />
-                    </div>
-
-                    <div className="col-xs-1">
-                      <UploaderField
-                        onChange={_thumb}
-                        url={thumb?.url}
-                        alt="imagem"
-                        title="Imagem"
-                      />
-                    </div>
-
-                    <div className="col-xs-8">
-                      <TextField
-                        className="input-text"
-                        label="Texto"
-                        value={texto || ''}
-                        onChange={e => _texto(e.target.value)}
-                        multiline
-                        rows={4}
-                      />
-                    </div>
-
-                    <div className={`col-xs-1 ${styles['vcentered']}`}>
-                      <button className={styles.add} onClick={handleInsert}>
-                        <Plus></Plus>
-                      </button>
-                    </div>
-                  </div>
-
-                </section>
-
-              </div>
-            </Card>
-
-            <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
-              <div className="p-3">
-
-                <section id="details">
-
-                  {<div className={styles.timeline}>
-
-                    {!!data && entity.map(e => <div id={`timeline_${e.id}`} key={e.id} className={`${styles.each} ${toHighlight2 === e.id ? styles.highlight : ''}`}>
-                      <div className={styles.date}> <span className={styles.text}>{dayjs(e.date).locale('pt-br').format('MMM [de] YYYY')}</span></div>
-
-                      <div className={styles.thumb}>
-
-                        <div className={styles['thumb-image']}>
-                          {!!e.image && <img src={e.image} alt="imagem de timeline" />}
-                          {!e.image && <img src={no_thumb} alt="sem imagem de timeline" />}
-                        </div>
-
-                      </div>
-
-                      <div className={styles.text}>{e.texto}</div>
-
-                      <div>
-                        <button className={styles.remove} onClick={remove(e.id)}>
-                          <Trash></Trash>
-                        </button>
-                      </div>
-                    </div>)}
-
-                  </div>}
-
-                </section>
-
-              </div>
-            </Card>
-
-
-          </div>
-
-          <ConfirmationDialog
-            open={!!toRemove}
-            content="Confirma a remoção deste item?"
-            confirmButtonText="Remover"
-            onClose={handleConfirmation}
-          />
-        </div>
-      )}
-    </>
-  );
+    <div className={`col-xs-1 ${styles['vcentered']}`}>
+      {add && <button className={styles.add} onClick={handleSave} disabled={add && !!editing}>
+        <Plus></Plus>
+      </button>}
+      {!add && <div className={styles['edit-buttons']}>
+        <button className={styles.add} onClick={handleSave} disabled>
+          <Save></Save>
+        </button>
+        <button className={styles.add} onClick={onCancel}>
+          <Cancel></Cancel>
+        </button>
+      </div>}
+    </div>
+  </div>)
 }

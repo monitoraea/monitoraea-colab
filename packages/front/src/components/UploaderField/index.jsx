@@ -6,6 +6,7 @@ import './styles.temp.scss';
 
 import deleteIcon from './delete.png';
 import uploadIcon from './upload.png';
+import uploadIconDisabled from './upload-disabled.png';
 import documentIcon from './document.png';
 import magnifierIcon from './magnifier.png';
 
@@ -21,6 +22,7 @@ export default function UploaderField({
   contentType,
   className,
   title,
+  disabled,
 }) {
   const fileInput = useRef();
 
@@ -71,7 +73,7 @@ export default function UploaderField({
         <div
           className={`drop_zone ${!!className ? `uploader-${className}` : ''} ${!previewUrl ? (type !== 'file' ? 'no-image' : 'file-no-image') : ''}`}
           style={{
-            backgroundImage: !previewUrl && type !== 'file' ? `url(${uploadIcon})` : 'unset',
+            backgroundImage: !previewUrl && type !== 'file' ? `url(${!disabled ? uploadIcon : uploadIconDisabled})` : 'unset',
           }}
           onDragOver={handleDragOver}
           onDrop={handleOnDrop}
@@ -101,6 +103,7 @@ export default function UploaderField({
             onChange={e => {
               if (e.target.files.length) handleFile(e.target.files[0]);
             }}
+            disabled={disabled}
           />
         </div>
         {previewUrl && (

@@ -4,7 +4,7 @@
 }
 
 .add,
-.remove {
+.action {
     padding: 0 1rem;
     height: 2rem;
     border: 1px solid #bbb;
@@ -12,21 +12,21 @@
     font-size: 0.875rem;
     font-weight: 500;
     box-sizing: border-box;
-    background: transparent;
-    color: #bbb;
+    background: transparent;    
     cursor: pointer;
     font-family: "Raleway", sans-serif !important;
     transition: 0.5s ease;
     display: flex;
     align-items: center;
+    color: #666;
 
     svg {
         height: 1rem;
     }
 
-    &:hover {
-        color: #666;
-        /* border: 1px solid #666; */
+    &:disabled {
+        color: #bbb;
+        cursor: default;
     }
 }
 
@@ -88,5 +88,22 @@
             text-align: justify;
             padding: 5px 25px;
         }
+
+        .buttons {
+            display: flex;
+            gap: 5px;
+        }
     }
+}
+
+.editing {
+    padding: 10px 5px;
+    border: solid 2px #5d9f38;
+    border-radius: 10px;
+}
+
+.edit-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
