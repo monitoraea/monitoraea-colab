@@ -36,7 +36,7 @@ app.use((req, res, next) => {
 });
 
 server.listen({ port }, () => {
-  console.log(`ZCM API Server is running on port ${port}`);
+  console.log(`MEA API Server is running on port ${port}`);
 });
 
 /* process.on("SIGINT", async () => {

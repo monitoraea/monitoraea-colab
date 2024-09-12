@@ -6,6 +6,6 @@ docker_postgres_backup.sql
 .env.development
 .env.production
 *.log
-package-lock.json
+*-lock.*
 .gitmodules
 .vscode/
