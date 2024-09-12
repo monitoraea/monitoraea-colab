@@ -220,7 +220,7 @@ export default function TimelineTab({ entityId }) {
                   {<div className={styles.timeline}>
 
                     {!!data && entity.map(e => <div id={`timeline_${e.id}`} key={e.id} className={`${styles.each} ${toHighlight2 === e.id ? styles.highlight : ''}`}>
-                      <div className={styles.date}> &#9900; {dayjs(e.date).locale('pt-br').format('MMM [de] YYYY')}</div>
+                      <div className={styles.date}> <span className={styles.text}>{dayjs(e.date).locale('pt-br').format('MMM [de] YYYY')}</span></div>
 
                       <div className={styles.thumb}>
 
