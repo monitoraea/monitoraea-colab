@@ -3,6 +3,8 @@ build/
 .idea
 docker_postgres_backup.sql
 .env.local
+.env.development
+.env.production
 *.log
 package-lock.json
 .gitmodules
