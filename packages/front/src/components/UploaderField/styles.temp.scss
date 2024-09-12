@@ -18,6 +18,10 @@
   background-color: #FFFFFF;
   padding: 0 0.5rem;
   display: inline-block;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 10px;
+  z-index: 5000;
 }
 
 .drop_zone {
