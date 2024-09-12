@@ -648,5 +648,6 @@ function ThumbnailField({ f, index, dataValue, onChange }) {
         url={value?.url}
         alt={titleAndIndex(f.title, index)}
         title={titleAndIndex(f.title, index)}
+        viewer={false}
     />;
 }
