@@ -3,7 +3,7 @@ export ENV_PATH="./packages/backend/.env.development"
 
 CONTAINER_NAME=dev-monitoraea-colab
 IMAGE_NAME=$CONTAINER_NAME-image:1.0.0
-PORT=4446
+PORT=4448
 VIRTUAL_HOST=teste.monitoraea.org.br
 VIRTUAL_PORT=$PORT
 LETSENCRYPT_HOST=$VIRTUAL_HOST
@@ -23,7 +23,7 @@ docker run \
     --detach \
     --restart always \
     --name $CONTAINER_NAME \
-    --publish $PORT \
+    --publish $PORT:$PORT \
     --env-file $ENV_PATH \
     --env VIRTUAL_HOST=$VIRTUAL_HOST \
     --env VIRTUAL_PORT=$VIRTUAL_PORT \
