@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '.env.local' }); // for development only
 
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
@@ -50,4 +50,4 @@ const { Messagery } = require('dorothy-dna-services');
 Messagery.initSocket(server);
 
 require('./scheduler')(port);
-require('../courier')(process.env.DATABASE_URL);
+require('./courier')(process.env.DATABASE_URL);
