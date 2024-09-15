@@ -56,10 +56,10 @@ class Service {
   async removeDraftTimeline(id, tlId) {
     const timeline = await db.models['Commision_timeline'].findByPk(tlId);
 
-    if (timeline.get('fileId')) {
+    if (timeline.get('timeline_arquivo')) {
       /* remove file */
       await db.models['File'].destroy({
-        where: { id: timeline.get('fileId') }
+        where: { id: timeline.get('timeline_arquivo') }
       });
     }
 
@@ -83,7 +83,7 @@ class Service {
           f.url,
           f.file_name 
       FROM ciea.linhas_do_tempo lt
-      left join files f on f.id = lt."fileId"
+      left join files f on f.id = lt.timeline_arquivo
       WHERE lt.comissao_id = :id
       order by lt."date"
         `,
@@ -94,45 +94,16 @@ class Service {
     );
 
     for (let tl of commissionTLs) {
-      if (!!tl.url) tl.image = `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'timeline', tl.url)}`;
+      if (!!tl.url) tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'timeline_arquivo', tl.url)}`;
     }
 
     return commissionTLs;
   }
 
-  async saveDraftTimeline(user, entity, image, id, tlid) {
-
-    // if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
-    // else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
-
-    // insere arquivo, se houver
-    if (!!image) {
-      const uuid = uuidv4();
-      const file_name = `${uuid}.${image.originalname.split('.').pop()}`;
-
-      // S3
-      await s3.putObject({
-        Bucket: s3BucketName,
-        Key: this.getFileKey(id, 'timeline', file_name),
-        Body: image.buffer,
-        ACL: 'public-read',
-      }).promise()
-
-      // file
-      const fileModel = await db.models['File'].create({
-        file_name,
-        url: file_name,
-        document_type: `ciea_timeline`,
-        content_type: 'image/jpeg',
-      });
-
-      entity.fileId = fileModel.id;
-    }
-
-    console.log({ entity });
+  async saveDraftTimeline(user, entity, timeline_arquivo, id, tlid) {
 
     let entityModel;
-    if(!tlid) {
+    if (!tlid) {
       entityModel = await db.models['Commision_timeline'].create({
         ...entity,
         comissao_id: id,
@@ -143,11 +114,12 @@ class Service {
       // atualiza
       entityModel.date = entity.date;
       entityModel.texto = entity.texto;
-      entityModel.fileId = entity.fileId;
       // salva
       entityModel.save();
     }
-    
+
+    if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
+    else if (timeline_arquivo) await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', entityModel.get('comissao_id'));    
 
     return entityModel;
   }
@@ -307,16 +279,16 @@ class Service {
     /* TODO: remove from S3? */
   }
 
-  async updateFile(entityModel, file, fieldName) {
+  async updateFile(entityModel, file, fieldName, entityId) {
     // S3
     await s3.putObject({
       Bucket: s3BucketName,
-      Key: this.getFileKey(entityModel.get('id'), fieldName, file.originalname),
+      Key: this.getFileKey(entityId || entityModel.get('id'), fieldName, file.originalname),
       Body: file.buffer,
       ACL: 'public-read',
     }).promise()
 
-    this.updateFileModel(entityModel, fieldName, file.originalname, file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`)
+    await this.updateFileModel(entityModel, fieldName, file.originalname, file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`)
   }
 
   async updateFileModel(entityModel, fieldName, file_name, content_type) {
@@ -343,7 +315,7 @@ class Service {
 
       entityModel.set(fieldName, fileModel.id);
 
-      entityModel.save();
+      await entityModel.save();
     }
   }
 

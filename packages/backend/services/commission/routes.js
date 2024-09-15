@@ -15,7 +15,7 @@ const upFields = upload.fields([
 ]);
 
 const upTimelineImage = upload.fields([
-  { name: 'image', maxCount: 1 }, 
+  { name: 'imagem', maxCount: 1 }, 
 ]);
 
 /* TODO */
@@ -48,12 +48,12 @@ router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
   const { id, tlid } = req.params;
   const { entity: entityData } = req.body;
 
-  const { image } = req.files;
+  const { imagem } = req.files;
 
   try {
       const result = await entity.saveDraftTimeline(res.locals.user,
           JSON.parse(entityData),
-          image && image.length ? image[0] : null,
+          imagem && imagem.length ? imagem[0] : null,
           id,
           tlid
       );
@@ -67,12 +67,12 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
   const { id } = req.params;
   const { entity: entityData } = req.body;
 
-  const { image } = req.files;
+  const { imagem } = req.files;
 
   try {
       const result = await entity.saveDraftTimeline(res.locals.user,
           JSON.parse(entityData),
-          image && image.length ? image[0] : null,
+          imagem && imagem.length ? imagem[0] : null,
           id
       );
 

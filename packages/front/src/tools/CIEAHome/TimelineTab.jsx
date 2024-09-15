@@ -142,8 +142,8 @@ export default function TimelineTab({ entityId }) {
                         <div className={styles.thumb}>
 
                           <div className={styles['thumb-image']}>
-                            {!!e.image && <img src={e.image} alt="imagem de timeline" />}
-                            {!e.image && <img src={no_thumb} alt="sem imagem de timeline" />}
+                            {!!e.timeline_arquivo && <img src={e.timeline_arquivo} alt="imagem de timeline" />}
+                            {!e.timeline_arquivo && <img src={no_thumb} alt="sem imagem de timeline" />}
                           </div>
 
                         </div>
@@ -210,16 +210,16 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
       _date(editing.date);
       _texto(editing.texto);
       _thumb({
-        url: editing.image,
+        url: editing.timeline_arquivo,
       });
     }
   }, [editing])
 
-  useEffect(() => {
-    if (thumb) {
-      _file(thumb.file)
-    } else _file(null);
-  }, [thumb])
+  const handleThumbChange = (value) => {
+    _thumb(value ? value : 'remove');
+
+    _file(value?.file);
+  }
 
   const handleSave = async () => {
 
@@ -227,7 +227,7 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
 
     /* save */
     let data = new FormData();
-    if (!!file) data.append('image', file);
+    if (!!file) data.append('imagem', file);
 
     const snackKey = enqueueSnackbar('Gravando...', {
       persist: true,
@@ -253,6 +253,7 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
       data.set('entity', JSON.stringify({
         date,
         texto,
+        timeline_arquivo: thumb,
       }));
 
       const { data: response } = await axios({
@@ -312,7 +313,7 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
 
     <div className="col-xs-1">
       <UploaderField
-        onChange={_thumb}
+        onChange={handleThumbChange}
         url={thumb?.url}
         alt="imagem"
         title="Imagem"
@@ -338,7 +339,7 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
         <Plus></Plus>
       </button>}
       {!add && <div className={styles['edit-buttons']}>
-        <button className={styles.add} onClick={handleSave} disabled>
+        <button className={styles.add} onClick={handleSave}>
           <Save></Save>
         </button>
         <button className={styles.add} onClick={onCancel}>

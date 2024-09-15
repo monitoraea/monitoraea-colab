@@ -25,7 +25,9 @@ module.exports = (sequelize, DataTypes) => {
     CommissionTimeline.belongsTo(models["Commission"], {
       foreignKey: "comissao_id",
     });
-    CommissionTimeline.belongsTo(models["File"]);    
+    CommissionTimeline.belongsTo(models["File"], {
+      foreignKey: "timeline_arquivo",
+    });    
   }
 
   return CommissionTimeline;
