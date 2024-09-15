@@ -120,6 +120,7 @@ export default function TimelineTab({ entityId }) {
                     editing={editing}
                     onHighlight={_toHighlight}
                     add={true}
+                    onSave={handleEditSave}
                   />
 
                 </section>

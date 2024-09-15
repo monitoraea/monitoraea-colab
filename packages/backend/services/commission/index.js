@@ -107,6 +107,7 @@ class Service {
       entityModel = await db.models['Commision_timeline'].create({
         ...entity,
         comissao_id: id,
+        timeline_arquivo: undefined,
       });
     } else {
       // recupera
