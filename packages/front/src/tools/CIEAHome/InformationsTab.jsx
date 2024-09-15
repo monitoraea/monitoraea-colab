@@ -29,6 +29,8 @@ const emptyFiles = {
   'regimento_interno_arquivo2': null,
   'ppea_arquivo2': null,
   'ppea2_arquivo2': null,
+  'programa_estadual_arquivo2': null,
+  'plano_estadual_arquivo2': null,
 }
 
 export default function InformationsTab({ entityId }) {
@@ -81,7 +83,7 @@ export default function InformationsTab({ entityId }) {
       }
 
       // handle files
-      if (['logo_arquivo', 'documento_criacao_arquivo2', 'regimento_interno_arquivo2', 'ppea_arquivo2', 'ppea2_arquivo2'].includes(field)) {
+      if (['logo_arquivo', 'documento_criacao_arquivo2', 'regimento_interno_arquivo2', 'ppea_arquivo2', 'ppea2_arquivo2', 'programa_estadual_arquivo2', 'plano_estadual_arquivo2'].includes(field)) {
 
         newEntity = {
           ...newEntity,
@@ -155,6 +157,8 @@ export default function InformationsTab({ entityId }) {
     if (entity.regimento_interno_tipo === 'file' && !!files['regimento_interno_arquivo2']) data.append('regimento_interno', files['regimento_interno_arquivo2']);
     if (entity.ppea_tipo === 'file' && !!files['ppea_arquivo2']) data.append('ppea', files['ppea_arquivo2']);
     if (entity.ppea2_tipo === 'file' && !!files['ppea2_arquivo2']) data.append('ppea2', files['ppea2_arquivo2']);
+    if (entity.programa_estadual_tipo === 'file' && !!files['programa_estadual_arquivo2']) data.append('programa_estadual', files['programa_estadual_arquivo2']);
+    if (entity.plano_estadual_tipo === 'file' && !!files['plano_estadual_arquivo2']) data.append('plano_estadual', files['plano_estadual_arquivo2']);
 
     const snackKey = enqueueSnackbar('Gravando...', {
       /* variant: 'info', */

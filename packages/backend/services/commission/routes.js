@@ -12,6 +12,8 @@ const upFields = upload.fields([
   { name: 'regimento_interno', maxCount: 1 },
   { name: 'ppea', maxCount: 1 },
   { name: 'ppea2', maxCount: 1 },
+  { name: 'programa_estadual', maxCount: 1 },
+  { name: 'plano_estadual', maxCount: 1 },
 ]);
 
 const upTimelineImage = upload.fields([
@@ -101,7 +103,7 @@ router.put("/:id/draft", upFields, async (req, res) => {
   const { id } = req.params;
   const { entity: entityData } = req.body;
 
-  const { logo, documento_criacao, regimento_interno, ppea, ppea2 } = req.files;
+  const { logo, documento_criacao, regimento_interno, ppea, ppea2, programa_estadual, plano_estadual } = req.files;
 
   try {
       const result = await entity.saveDraft(res.locals.user,
@@ -112,6 +114,8 @@ router.put("/:id/draft", upFields, async (req, res) => {
               regimento_interno_arquivo: regimento_interno && regimento_interno.length ? regimento_interno[0] : null,
               ppea_arquivo: ppea && ppea.length ? ppea[0] : null,
               ppea2_arquivo: ppea2 && ppea2.length ? ppea2[0] : null,
+              programa_estadual_arquivo: programa_estadual && programa_estadual.length ? programa_estadual[0] : null,
+              plano_estadual_arquivo: plano_estadual && plano_estadual.length ? plano_estadual[0] : null,
           },
           id
       );

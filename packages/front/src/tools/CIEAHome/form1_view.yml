@@ -207,3 +207,69 @@
             - type: column
               size: 3
               key: ppea2_lei
+
+- type: row
+  block: programa_estadual_block
+  elements:
+    - type: column
+      size: 4
+      key: programa_estadual_tem
+
+- type: row
+  block: programa_estadual_tem_block
+  elements:
+    - type: column
+      size: 12
+      elements:
+        - type: row
+          elements:
+            - type: column
+              size: 6
+              key: programa_estadual_tipo
+            - type: column
+              size: 6
+              key: programa_estadual_arquivo      
+            - type: column
+              size: 6
+              key: programa_estadual_arquivo2        
+        - type: row
+          elements:
+            - type: column
+              size: 3
+              key: programa_estadual_decreto
+            - type: column
+              size: 3
+              key: programa_estadual_lei
+
+- type: row
+  block: plano_estadual_block
+  elements:
+    - type: column
+      size: 4
+      key: plano_estadual_tem
+
+- type: row
+  block: plano_estadual_tem_block
+  elements:
+    - type: column
+      size: 12
+      elements:
+        - type: row
+          elements:
+            - type: column
+              size: 6
+              key: plano_estadual_tipo
+            - type: column
+              size: 6
+              key: plano_estadual_arquivo      
+            - type: column
+              size: 6
+              key: plano_estadual_arquivo2        
+        - type: row
+          elements:
+            - type: column
+              size: 3
+              key: plano_estadual_decreto
+            - type: column
+              size: 3
+              key: plano_estadual_lei

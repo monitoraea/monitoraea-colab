@@ -292,6 +292,96 @@ fields:
   title: Lei
   size: 3
 
+- key: programa_estadual_tem
+  type: options
+  title: Tem programa estadual?
+  size: 4
+  list: 
+    module: property
+    key: sim_nao
+
+- key: programa_estadual_tipo
+  type: options
+  title: Tipo de documento
+  size: 2
+  list: 
+    module: property
+    key: tipo_arquivo
+
+- key: programa_estadual_arquivo
+  type: text
+  title: Link para o programa
+  size: 6
+  show:
+    target:
+      key: programa_estadual_tipo
+      value: link
+
+- key: programa_estadual_arquivo2
+  type: file
+  accept: application/pdf
+  title: Arquivo do programa
+  size: 6
+  show:
+    target:
+      key: programa_estadual_tipo
+      value: file
+
+- key: programa_estadual_decreto
+  type: text
+  title: Decreto
+  size: 3
+
+- key: programa_estadual_lei
+  type: text
+  title: Lei
+  size: 3
+
+- key: plano_estadual_tem
+  type: options
+  title: Tem plano estadual?
+  size: 4
+  list: 
+    module: property
+    key: sim_nao
+
+- key: plano_estadual_tipo
+  type: options
+  title: Tipo de documento
+  size: 2
+  list: 
+    module: property
+    key: tipo_arquivo
+
+- key: plano_estadual_arquivo
+  type: text
+  title: Link para o plano
+  size: 6
+  show:
+    target:
+      key: plano_estadual_tipo
+      value: link
+
+- key: plano_estadual_arquivo2
+  type: file
+  accept: application/pdf
+  title: Arquivo do plano
+  size: 6
+  show:
+    target:
+      key: plano_estadual_tipo
+      value: file
+
+- key: plano_estadual_decreto
+  type: text
+  title: Decreto
+  size: 3
+
+- key: plano_estadual_lei
+  type: text
+  title: Lei
+  size: 3
+
 ################################################################
 
 blocks:
@@ -400,4 +490,42 @@ blocks:
     show:
       target:
         key: ppea2_tem
+        value: sim
+  
+  - key: programa_estadual_block
+    title: Programa Estadual de Educação Ambiental
+    elements:
+      - programa_estadual_tem
+      - type: block
+        key: programa_estadual_tem_block
+
+  - key: programa_estadual_tem_block
+    elements:
+      - programa_estadual_tipo
+      - programa_estadual_arquivo
+      - programa_estadual_arquivo2
+      - programa_estadual_decreto    
+      - programa_estadual_lei    
+    show:
+      target:
+        key: programa_estadual_tem
+        value: sim
+  
+  - key: plano_estadual_block
+    title: Plano Estadual de Educação Ambiental
+    elements:
+      - plano_estadual_tem
+      - type: block
+        key: plano_estadual_tem_block
+
+  - key: plano_estadual_tem_block
+    elements:
+      - plano_estadual_tipo
+      - plano_estadual_arquivo
+      - plano_estadual_arquivo2
+      - plano_estadual_decreto    
+      - plano_estadual_lei    
+    show:
+      target:
+        key: plano_estadual_tem
         value: sim

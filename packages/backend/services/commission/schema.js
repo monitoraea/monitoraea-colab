@@ -71,6 +71,24 @@ module.exports = (sequelize, DataTypes) => {
       ppea2_lei: {
         type: DataTypes.STRING,
       },
+      programa_estadual_tem: {
+        type: DataTypes.BOOLEAN,
+      },
+      programa_estadual_decreto: {
+        type: DataTypes.STRING,
+      },
+      programa_estadual_lei: {
+        type: DataTypes.STRING,
+      },
+      plano_estadual_tem: {
+        type: DataTypes.BOOLEAN,
+      },
+      plano_estadual_decreto: {
+        type: DataTypes.STRING,
+      },
+      plano_estadual_lei: {
+        type: DataTypes.STRING,
+      },
     },
     {
       tableName: 'comissoes',
@@ -94,6 +112,12 @@ module.exports = (sequelize, DataTypes) => {
     })
     Commission.belongsTo(models["File"], {
       foreignKey: "ppea2_arquivo",
+    })
+    Commission.belongsTo(models["File"], {
+      foreignKey: "programa_estadual_arquivo",
+    })
+    Commission.belongsTo(models["File"], {
+      foreignKey: "plano_estadual_arquivo",
     })
     
   }
