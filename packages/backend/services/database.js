@@ -16,10 +16,10 @@ class Database {
 
       dialect: "postgres",
       dialectOptions: {
-/*        ssl: {
+        ssl: {
           require: true,
           rejectUnauthorized: false // <<<<<<< YOU NEED THIS
-      }*/
+        }
       }
 
     });
