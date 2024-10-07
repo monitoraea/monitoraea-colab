@@ -22,6 +22,11 @@ const dayjs = require('dayjs');
 
 const { User } = require('dorothy-dna-services');
 
+const perspectives_networks = {
+  pppzcm: process.env.PPPZCM_NETWORK_GT,
+  ciea: process.env.CIEA_NETWORK_GT,
+}
+
 class Service {
   /* Entity */
   async requestRecoveryCode(email) {
@@ -70,7 +75,7 @@ class Service {
     }).promise();
   }
 
-  async signup({ email, name, password }) {
+  async signup({ email, name, password, perspectives }) {
     let result;
 
     /* Verify email */
@@ -94,8 +99,10 @@ class Service {
 
     const newUserId = result[0].id; /* recupera o id recem criado */
 
-    /* Torna o usuario membro de Rede (250) */
-    await require('../gt').addMember(250, newUserId, 'member', 1); /* TODO: harcoded */
+    /* Torna o usuario membro das redes das perspectivas selecionadas */
+
+    for(let p of perspectives)
+      await require('../gt').addMember(perspectives_networks[p], newUserId, 'member', 1);
 
     return { success: true };
   }

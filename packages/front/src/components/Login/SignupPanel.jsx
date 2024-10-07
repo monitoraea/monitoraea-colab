@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import LoginAbout from './LoginAbout';
 import Card from '../Card';
-import { TextField } from '@mui/material';
+import { Box, TextField, FormControl, FormLabel, FormControlLabel, Checkbox, FormGroup } from '@mui/material';
 
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
@@ -13,6 +13,11 @@ import {
 } from 'react-router-dom';
 
 import { useMutation } from 'react-query';
+
+const perspectives_options = [
+  ['pppzcm', 'PPPZCM'],
+  ['ciea', 'CIEA'],
+]
 
 const SignupPanel = ({ next }) => {
 
@@ -26,6 +31,8 @@ const SignupPanel = ({ next }) => {
   const [password, _password] = useState('');
   const [password_conf, _password_conf] = useState('');
 
+  const [perspectives, _perspectives] = useState({})
+
   const [status, _status] = useState('signup');
 
   const mutations = {
@@ -34,7 +41,12 @@ const SignupPanel = ({ next }) => {
     }),
   }
 
+  const handlePerspectiveChange = (e) => {
+    _perspectives({...perspectives, [e.target.name]: e.target.checked });
+  }
+
   const handleSignup = async () => {
+
     if (!password.length || !name.length || !email.length) {
       enqueueSnackbar('Todos os campos devem ser preenchidos!', {
         variant: 'error',
@@ -59,6 +71,19 @@ const SignupPanel = ({ next }) => {
       return;
     }
 
+    const hasPerspectiveSelected = Object.values(perspectives).find(p_selected => !!p_selected);
+    if (!hasPerspectiveSelected) {
+      enqueueSnackbar('Ao menos uma perspectiva deve ser selecionada!', {
+        variant: 'error',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+
+      return;
+    }
+
     const snack = enqueueSnackbar('Criando o seu cadastro...', {
       persist: true,
       anchorOrigin: {
@@ -67,8 +92,10 @@ const SignupPanel = ({ next }) => {
       },
     });
 
+    const selected_perspectives = Object.keys(perspectives).filter(k => perspectives[k]);
+
     try {
-      const { data } = await mutations.signup.mutateAsync({ email, name, password });
+      const { data } = await mutations.signup.mutateAsync({ email, name, password, perspectives: selected_perspectives });
 
       closeSnackbar(snack);
 
@@ -86,6 +113,7 @@ const SignupPanel = ({ next }) => {
       _name('');
       _password('');
       _password_conf('');
+      _perspectives({});
 
       _status('signed');
 
@@ -130,6 +158,26 @@ const SignupPanel = ({ next }) => {
                   <div className='row mb-3'>
                     <TextField className="input-text" type="password" id="text-pass" label="Confirmação de senha" value={password_conf} onChange={(e) => _password_conf(e.target.value)} />
                   </div>
+
+                  <hr style={{ border: 'solid 1px #eee' }} />
+
+                  <div className='row mb-3'>
+                    <Box>
+                      
+                      <FormControl component="fieldset" variant="standard">
+                        <FormLabel component="legend">Em qual perspectiva deseja participar? <span style={{ fontSize: '0.75em'}}>(pelo menos uma deve ser selecionada)</span></FormLabel>
+                        <FormGroup sx={{ display: 'flex' }}>
+                          {perspectives_options.map(([key, title]) => <FormControlLabel
+                            key={key}
+                            control={
+                              <Checkbox checked={perspectives[key] || false} onChange={handlePerspectiveChange} name={key} />
+                            }
+                            label={title}
+                          />)}
+                        </FormGroup>
+                      </FormControl>
+                    </Box>
+                  </div>
                 </>}
 
                 {status === 'signed' && <div className='row mb-3' style={{ display: 'flex', flexDirection: 'column' }}>
@@ -137,10 +185,10 @@ const SignupPanel = ({ next }) => {
                   <div>Agora, basta <Link to="/login" style={{ color: 'inherit', fontWeight: '600' }}>acessar a area de colaboração</Link></div>
                 </div>}
 
-                <div className='row mb-3 end-xs middle-xs'>
-                  {!['signed'].includes(status) && <button className='button-outline' onClick={() => history.push(`/login${!!query ? `?${query}` : ''}`)}>voltar ao login</button>}
+                {!['signed'].includes(status) && <div className='row mb-3 end-xs middle-xs'>
+                  <button className='button-outline' onClick={() => history.push(`/login${!!query ? `?${query}` : ''}`)}>voltar ao login</button>
                   <button style={{ marginLeft: '10px' }} className='button-primary' onClick={handleSignup}>cadastrar</button>
-                </div>
+                </div>}
               </div>
             </Card>
 
