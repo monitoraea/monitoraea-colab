@@ -1506,7 +1506,7 @@ class Service {
     });
 
     /* Envia email para o requerente  */
-    const subject = isADM ? 'Confirmação de responsabilidade por ação' : 'Confirmação de pedido de participação';
+    const subject = isADM ? 'Confirmação de responsabilidade por iniciativa' : 'Confirmação de pedido de participação';
 
     const pedido = isADM ? 'moderador' : 'membro';
     const message = `Agora você é ${pedido} do grupo "${pData.project_name}".
@@ -1514,11 +1514,11 @@ class Service {
 
     const msg = {
       to: pData.user_email,
-      from: `Plataforma MonitoraEA/PPPZCM <${process.env.CONTACT_EMAIL}>`,
-      subject: `MonitoraEA/PPPZCM - ${subject}`,
+      from: `Plataforma MonitoraEA <${process.env.CONTACT_EMAIL}>`,
+      subject: `MonitoraEA - ${subject}`,
       text: `${message}\n\n${process.env.BASE_URL}/projeto/${pData.communityId}`,
       html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/projeto/${pData.communityId
-        }">Clique aqui para acessar esta ação</a>`,
+        }">Clique aqui para acessar esta iniciativa</a>`,
     };
 
     try {

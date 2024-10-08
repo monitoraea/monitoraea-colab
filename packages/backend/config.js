@@ -4,6 +4,6 @@ module.exports =  {
     },
     invite: {
         from: 'contato@monitoraea.org.br',
-        subject: 'MonitoraEA/PPPZCM - Convite',
+        subject: 'MonitoraEA- Convite',
     }
 }

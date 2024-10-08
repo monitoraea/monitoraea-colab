@@ -41,7 +41,7 @@ class Service {
     const msg = {
       to,
       from: process.env.CONTACT_EMAIL,
-      subject: `Recuperação de senha`,
+      subject: `MonitoraEA - Recuperação de senha`,
       html: message,
     };
 
