@@ -770,7 +770,6 @@ class Service {
 
     // torna membro
     await this.addMember(invitation['communityId'], newUserId);
-    await this.addMember(250, newUserId);
 
     return { success: true };
   }
@@ -793,7 +792,7 @@ class Service {
     // recupera as comunidades do usuário
     const communities = await db.instance().query(`
     select 
-      array_agg(dm."communityId"::text) as communities,
+      coalesce(array_agg(dm."communityId"::text), '{}') as communities,
 	    coalesce(max(dm."order"),0)::integer as "max_order"
     from dorothy_members dm 
     where dm."userId" = :userId
