@@ -526,7 +526,7 @@ class Service {
 
     const msg = {
       to: pData.user_email,
-      from: `Plataforma MonitoraEA/PPPZCM <${process.env.FROM_EMAIL}>`,
+      from: `Plataforma MonitoraEA <${process.env.FROM_EMAIL}>`,
       subject: `MonitoraEA - ${subject}`,
       text: `${message}\n\n${process.env.BASE_URL}/colabora/projeto/${pData.communityId}`,
       html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/colabora/projeto/${pData.communityId
@@ -786,6 +786,109 @@ class Service {
     );
   }
 
+  async participate(user, communityId, initiativeName, isADM) {
+    /* Verifica se o user ja e' membro da comunidade */
+    const [{ count: countMembership }] = await db.instance().query(
+      `
+      select count(*)::integer from dorothy_members 
+      where "userId" = :userId and "communityId" = :communityId
+      `,
+      {
+        replacements: { userId: user.id, communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (countMembership > 0) throw new Error('already_member');
+
+    /* verifica se ja existe registro user_id, id */
+    const [{ count: countParticipate }] = await db.instance().query(
+      `
+      select count(*)::integer from participar 
+      where "userId" = :userId and "communityId" = :communityId and "resolvedAt" is null
+      `,
+      {
+        replacements: { userId: user.id, communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (countParticipate > 0) throw new Error('already_in_list');
+
+    /* cadastra participacao */
+    await db.instance().query(
+      `
+          insert into participar("communityId", "userId", adm, "createdAt", "updatedAt") 
+          values(:communityId, :userId, :adm, NOW(), NOW())`,
+      {
+        replacements: { userId: user.id, communityId, adm: isADM },
+        type: Sequelize.QueryTypes.INSERT,
+      },
+    );
+
+    /**************** 
+     * NOTIFICACAO
+    *****************/
+
+    /* se for isADM, notificacao e' para o contato da sec executiva */
+    /* se nao for isADM, descobre moderadores, se nao tiver moderador, envia para a sec executiva */
+
+    let to = 'sec';
+    if (!isADM) {
+      const [{ total }] = await db.instance().query(
+        `
+        select count(*) as total
+        from dorothy_members m
+        where m."communityId" = :communityId and m."type" = 'adm'
+        `,
+        {
+          replacements: { communityId },
+          type: Sequelize.QueryTypes.SELECT,
+        },
+      );
+      if (total > 0) to = 'gt'
+    }
+
+    let content = {
+      communityId,
+      initiativeName,
+      userId: user.id,
+      userName: user.name,
+      isADM,
+      to,
+    }
+
+    let room = `room_c${communityId}_t1`;
+    if (to === 'sec') {
+      // descobre a comunidade adm da comunidade referida
+      const adms = await db.instance().query(`
+      select 
+      ct.adm_community_id
+      from community_types ct 
+      inner join dorothy_communities dc on trim(dc.alias) = ct.alias 
+      where dc.id = :communityId
+      `,
+        {
+          replacements: { communityId },
+          type: Sequelize.QueryTypes.SELECT,
+        },
+      )
+
+      if(adms.length && adms[0].adm_community_id) room = `room_c${adms[0].adm_community_id}_t1`;
+    }
+
+    await Messagery.sendNotification({ id: 0 }, room, {
+      content,
+      userId: 0,
+      tool: {
+        type: "native",
+        element: "ParticipationNotification"
+      },
+    });
+
+    return { success: true };
+  }
+
   async addMember(communityId, userId, type = 'adm', order = 0) {
     /* type: MEMBER */
 
@@ -850,7 +953,7 @@ class Service {
     const networks = await db.instance().query(`
     select ct.network_community_id::text 
     from dorothy_communities dc 
-    inner join community_types ct on ct.alias = dc.alias
+    inner join community_types ct on ct.alias = trim(dc.alias)
     where dc.id = :communityId
     `,
       {
@@ -860,20 +963,20 @@ class Service {
     );
 
     // se não há rede retorna
-    if(!networks.length || !networks[0].network_community_id) return { success: true, network: null }
+    if (!networks.length || !networks[0].network_community_id) return { success: true, network: null }
 
     // verifica se usuário já é membdo a rede da comunidade em questão
-    if (!communities[0].communities.includes(networks[0].network_community_id)) {      
+    if (!communities[0].communities.includes(networks[0].network_community_id)) {
       // não é? insere o usuário como membro da rede da comunidade em questão
       await db.instance().query(
-          ` insert into dorothy_members("communityId", "userId", "type", "createdAt", "updatedAt", "order")
+        ` insert into dorothy_members("communityId", "userId", "type", "createdAt", "updatedAt", "order")
             values(:communityId, :userId, :type, NOW(), NOW(), :order)
             `,
-          {
-            replacements: { communityId: networks[0].network_community_id, userId, type: 'member', order: communities[0].max_order+1 },
-            type: Sequelize.QueryTypes.INSERT,
-          },
-        );
+        {
+          replacements: { communityId: networks[0].network_community_id, userId, type: 'member', order: communities[0].max_order + 1 },
+          type: Sequelize.QueryTypes.INSERT,
+        },
+      );
     }
 
     return { success: true, network: networks[0].network_community_id }

@@ -60,7 +60,7 @@ export default function NewUserNotification({ data }) {
                 {/* {JSON.stringify(data)} */}
 
                 <>
-                    {data && data.content.to === 'sec' && <p>O usuário {data.content.userName} deseja {data.content.isADM ? 'se tornar o responsável pela' : 'participar da'} iniciativa "<span className={styles.name} onClick={handleClick}>{data.content.projectName}</span>"</p>}
+                    {data && data.content.to === 'sec' && <p>O usuário {data.content.userName} deseja {data.content.isADM ? 'se tornar o responsável pela' : 'participar da'} iniciativa "<span className={styles.name} onClick={handleClick}>{data.content.initiativeName}</span>"</p>}
                     {data && data.content.to !== 'sec' && <p>O usuário {data.content.userName} deseja participar desta iniciativa - <span className={styles.access} onClick={handleClick}>acessar pedido</span></p>}
                 </>
             </Box>
