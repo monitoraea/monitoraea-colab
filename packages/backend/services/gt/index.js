@@ -61,7 +61,7 @@ class Service {
 
   async list4Adm(communityId, config) {
     let order = `"${config.order}"`;
-    if(config.order === 'perspectiveName') order = 'p."name"';
+    if (config.order === 'perspectiveName') order = 'p."name"';
 
     let entities = await db.instance().query(
       `
@@ -790,6 +790,25 @@ class Service {
   async addMember(communityId, userId, type = 'adm', order = 0) {
     /* type: MEMBER */
 
+    // recupera as comunidades do usuário
+    const communities = await db.instance().query(`
+    select 
+      array_agg(dm."communityId"::text) as communities,
+	    coalesce(max(dm."order"),0)::integer as "max_order"
+    from dorothy_members dm 
+    where dm."userId" = :userId
+    `,
+      {
+        replacements: { userId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    // verifica se já é membro da comunidade em questão
+    // se já é membro da comunidade, retorna
+    if (communities[0].communities.includes(communityId)) return { error: 'already_in_community' }
+
+    // inclui como membro da comunidade em questao
     await db.instance().query(
       ` insert into dorothy_members("communityId", "userId", "type", "createdAt", "updatedAt", "order")
         values(:communityId, :userId, :type, NOW(), NOW(), :order)
@@ -800,7 +819,7 @@ class Service {
       },
     );
 
-    /* FOLLOW */
+    /* FOLLOW - verifica se usuário já segue a comunidade */
     const entities = await db.instance().query(
       `
         SELECT f.id
@@ -814,8 +833,7 @@ class Service {
     );
 
     if (!entities.length) {
-      /* INSERT */
-
+      /* INSERT - insere usuário como seguidor da comunidade */
 
       await db.instance().query(
         `
@@ -828,6 +846,38 @@ class Service {
         },
       );
     }
+
+    // recupera a rede da comunidade em questão
+    const networks = await db.instance().query(`
+    select ct.network_community_id::text 
+    from dorothy_communities dc 
+    inner join community_types ct on ct.alias = dc.alias
+    where dc.id = :communityId
+    `,
+      {
+        replacements: { communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    // se não há rede retorna
+    if(!networks.length || !networks[0].network_community_id) return { success: true, network: null }
+
+    // verifica se usuário já é membdo a rede da comunidade em questão
+    if (!communities[0].communities.includes(networks[0].network_community_id)) {      
+      // não é? insere o usuário como membro da rede da comunidade em questão
+      await db.instance().query(
+          ` insert into dorothy_members("communityId", "userId", "type", "createdAt", "updatedAt", "order")
+            values(:communityId, :userId, :type, NOW(), NOW(), :order)
+            `,
+          {
+            replacements: { communityId: networks[0].network_community_id, userId, type: 'member', order: communities[0].max_order+1 },
+            type: Sequelize.QueryTypes.INSERT,
+          },
+        );
+    }
+
+    return { success: true, network: networks[0].network_community_id }
   }
 }
 

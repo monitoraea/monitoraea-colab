@@ -206,4 +206,18 @@ router.post("/broadcasting", async (req, res) => {
   }
 });
 
+// TODO: remover!!!!
+router.get("/test/:communityId/:userId", async (req, res) => {
+  const { communityId, userId } = req.params;
+
+  try {
+
+    const result = await entity.addMember(communityId, userId);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
 module.exports = router;
