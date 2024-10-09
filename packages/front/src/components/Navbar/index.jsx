@@ -616,13 +616,23 @@ function PerspectivesDialog({ show, onClose }) {
   }
 
   const handleAccess = (community) => {
+    // TODO: temp
     changeRoute({ community });
+    if (updated) {
+      setTimeout(()=>window.location.href = window.location.href,500);
+
+      _updated(false)
+    } 
+    
     onClose();
   }
 
   const handleClose = () => {
     // TODO: temp
-    window.location.href = window.location.href;
+    if (updated) {
+      window.location.href = window.location.href;
+      _updated(false)
+    } onClose();
   }
 
   return <Dialog
