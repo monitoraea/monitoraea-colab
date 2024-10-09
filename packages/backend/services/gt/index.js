@@ -955,7 +955,7 @@ class Service {
     from dorothy_communities dc 
     inner join community_types ct on ct.alias = trim(dc.alias)
     inner join perspectives p on p.id = ct.perspective_id 
-    where dc.id = :communityId
+    where dc.id <> p.network_community_id and dc.id = :communityId
     `,
       {
         replacements: { communityId },
