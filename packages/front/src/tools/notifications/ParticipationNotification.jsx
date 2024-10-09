@@ -20,7 +20,8 @@ export default function NewUserNotification({ data }) {
     }, [data]);
 
     const handleClick = () => {
-        changeRoute({ tool: 'membros', params: ['solicitacoes']})
+        if (data.content.to === 'sec') changeRoute({ community: data.content.communityId, tool: 'membros', params: ['solicitacoes'] })
+        else changeRoute({ tool: 'membros', params: ['solicitacoes'] })
     }
 
     return (
