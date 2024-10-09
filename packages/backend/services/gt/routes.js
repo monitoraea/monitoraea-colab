@@ -11,6 +11,13 @@ router.get('/perspectives', async (req, res) => {
   res.json(result);
 });
 
+router.get('/perspectives/user', async (req, res) => {
+
+  const result = await entity.getPerspectivesUser(res.locals.user);
+
+  res.json(result);
+});
+
 router.get('/:communityId', async (req, res) => {
   const { communityId } = req.params;
   const { alias, order, direction } = req.query;
@@ -206,15 +213,16 @@ router.post("/broadcasting", async (req, res) => {
   }
 });
 
-// TODO: remover!!!!
-router.get("/test/:communityId/:userId", async (req, res) => {
-  const { communityId, userId } = req.params;
+router.post("/add_user_perspective/:communityId", async (req, res) => {
+  const { communityId } = req.params;
 
   try {
+    if(res.locals.user) {
+      
+      const result = await entity.addMember(communityId, res.locals.user.id);
+      res.json(result);
 
-    const result = await entity.addMember(communityId, userId);
-
-    res.json(result);
+    } else sendError(res, 'User not found!', 500);
   } catch (ex) {
     sendError(res, ex, 500);
   }

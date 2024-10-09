@@ -31,7 +31,7 @@ import {
   useHistory,
 } from "react-router-dom";
 
-import { useUser, ToolMenuContainer, useDorothy } from 'dorothy-dna-react';
+import { useUser, ToolMenuContainer, useDorothy, useRouter } from 'dorothy-dna-react';
 
 import ConfirmationDialog from '../ConfirmationDialog';
 
@@ -74,6 +74,7 @@ export default function Navbar() {
   const [showProfile, _showProfile] = useState(false);
 
   const [showProfileImage, _showProfileImage] = useState(false);
+  const [showPerspectives, _showPerspectives] = useState(false);
   const [imgSrc, _imgSrc] = useState('');
   const previewCanvasRef = useRef(null)
   const imgRef = useRef(null)
@@ -164,6 +165,11 @@ export default function Navbar() {
   const openProfileImage = () => {
     setAnchorEl(null);
     _showProfileImage(true);
+  }
+
+  const openPerspectives = () => {
+    setAnchorEl(null);
+    _showPerspectives(true);
   }
 
   const handleChangePasswwordRequest = () => {
@@ -415,6 +421,7 @@ export default function Navbar() {
             <MenuItem onClick={openProfile}>Informações de perfil</MenuItem>
             <MenuItem onClick={openProfileImage}>{hasThumb ? <>Alterar a</> : <>Enviar</>} foto do perfil</MenuItem>
             <MenuItem onClick={handleChangePasswwordRequest}>Trocar senha</MenuItem>
+            <MenuItem onClick={openPerspectives}>Perspectivas</MenuItem>
             <MenuItem onClick={handleLogout}>Sair</MenuItem>
 
             <div className={`${styles.version_number}`}>
@@ -561,5 +568,86 @@ export default function Navbar() {
         <Button onClick={handleCloseProfileImage}>cancelar</Button>
       </DialogActions>
     </Dialog>
+
+    <PerspectivesDialog
+      show={showPerspectives}
+      onClose={() => _showPerspectives(false)}
+    />
+
   </>);
+}
+
+function PerspectivesDialog({ show, onClose }) {
+  const { server } = useDorothy();
+  const { changeRoute } = useRouter();
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+  const { data } = useQuery(
+    ['my-perspective'],
+    { queryFn: async () => (await axios.get(`${server}gt/perspectives/user`)).data },
+  );
+
+  const mutations = {
+    participate: useMutation(
+      (communityId) => axios.post(`${server}gt/add_user_perspective/${communityId}`),
+      {
+        onSuccess: () => queryClient.invalidateQueries(`my-perspective`),
+      },
+    ),
+  };
+
+  const doParticipate = async (communityId) => {
+    const snack = enqueueSnackbar('Removendo a imagem do perfil...', {
+      persist: true,
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'center',
+      },
+    });
+
+    await mutations.participate.mutateAsync(communityId);
+
+    closeSnackbar(snack);
+  }
+
+  const handleAccess = (community) => {
+    changeRoute({ community });
+    onClose();
+  }
+
+  return <Dialog
+    className="modal"
+    open={show}
+    onClose={onClose}
+    maxWidth="md"
+    scroll="paper"
+    aria-labelledby="scroll-dialog-title"
+    aria-describedby="scroll-dialog-description"
+  >
+    <DialogTitle id="scroll-dialog-title">Perspectivas</DialogTitle>
+    <DialogContent dividers={true}>
+      <ul className={styles['perspective_list']}>
+        {!data && <>Carregando...</>}
+        {data && data.map(p => <li key={p.id} className={styles['perspective']}>
+          <div className={styles.name}>{p.name}</div>
+          <div className={styles.actions}>
+            {p.participate && <>
+              <button className="button-primary" onClick={() => handleAccess(p.network_community_id)}>
+                Acessar
+              </button>
+            </>}
+            {!p.participate && <>
+              <button className="button-primary" onClick={() => doParticipate(p.network_community_id)}>
+                Participar
+              </button>
+            </>}
+          </div>
+        </li>)}
+      </ul>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={onClose}>fechar</Button>
+    </DialogActions>
+  </Dialog>
 }

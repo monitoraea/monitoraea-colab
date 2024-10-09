@@ -29,6 +29,33 @@ class Service {
     );
   }
 
+  async getPerspectivesUser(user) {
+
+    return await db.instance().query(
+    `
+    select 
+    p.id,
+    p.name,
+    p.network_community_id,
+    p.id in (
+      select 
+        distinct p.id
+      from dorothy_members dm 
+      inner join dorothy_communities dc on dc.id = dm."communityId"
+      inner join community_types ct on ct.alias = trim(dc.alias)
+      inner join perspectives p on p.id = ct.perspective_id 
+      where dm."userId" = :userId
+    ) as "participate"
+    from perspectives p
+    where p.id <> 1
+    `,
+      {
+        replacements: { userId: user.id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+  }
+
   async list(communityId, alias, config) {
     // what type of community is this?
     const community = await db.instance().query(

@@ -196,3 +196,24 @@
     font-weight: 600;
   }
 }
+
+.perspective_list {
+  li.perspective {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .actions {
+          display: flex;
+          gap: 5px;
+          background: #fff;
+      }
+
+      margin: 8px 0;
+
+      background-color: #fafafa;
+      &:nth-child(even) {
+          background-color: #f3f3f3;
+      }
+  }
+}
