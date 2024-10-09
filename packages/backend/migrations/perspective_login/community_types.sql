@@ -1,20 +1,35 @@
 CREATE TABLE public.community_types (
 	id serial4 NOT NULL,
 	alias varchar NOT NULL,
-	network_community_id int4 NULL,
-	adm_community_id int4 NULL,
+	perspective_id int4 NULL,
 	CONSTRAINT community_types_pk PRIMARY KEY (id),
 	CONSTRAINT community_types_unique UNIQUE (alias)
 );
 
--- TODO: ATENCAO: conferir os IDS das redes
-INSERT INTO public.community_types (alias,network_community_id,adm_community_id) VALUES
-	 ('rede',NULL,NULL),
-	 ('adm_ciea',499,NULL),
-	 ('adm_zcm',250,NULL),
-	 ('adm',NULL,NULL),
-	 ('comissao',499,497),
-	 ('facilitador',250,1),
-	 ('projeto',250,1),
-	 ('adm_ppea',1889,NULL),
-	 ('politica',1889,1890);
+INSERT INTO public.community_types
+(id, alias, perspective_id)
+VALUES(1, 'rede', NULL);
+INSERT INTO public.community_types
+(id, alias, perspective_id)
+VALUES(9, 'adm', 1);
+INSERT INTO public.community_types
+(id, alias, perspective_id)
+VALUES(3, 'comissao', 3);
+INSERT INTO public.community_types
+(id, alias, perspective_id)
+VALUES(4, 'facilitador', 2);
+INSERT INTO public.community_types
+(id, alias, perspective_id)
+VALUES(6, 'projeto', 2);
+INSERT INTO public.community_types
+(id, alias, perspective_id)
+VALUES(8, 'politica', 4);
+INSERT INTO public.community_types
+(id, alias, perspective_id)
+VALUES(2, 'adm_ciea', 3);
+INSERT INTO public.community_types
+(id, alias, perspective_id)
+VALUES(5, 'adm_zcm', 2);
+INSERT INTO public.community_types
+(id, alias, perspective_id)
+VALUES(7, 'adm_ppea', 4);

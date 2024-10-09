@@ -862,8 +862,9 @@ class Service {
       // descobre a comunidade adm da comunidade referida
       const adms = await db.instance().query(`
       select 
-      ct.adm_community_id
+        p.adm_community_id
       from community_types ct 
+      inner join perspectives p on p.id = ct.perspective_id 
       inner join dorothy_communities dc on trim(dc.alias) = ct.alias 
       where dc.id = :communityId
       `,
@@ -950,9 +951,10 @@ class Service {
 
     // recupera a rede da comunidade em questão
     const networks = await db.instance().query(`
-    select ct.network_community_id::text 
+    select p.network_community_id::text
     from dorothy_communities dc 
     inner join community_types ct on ct.alias = trim(dc.alias)
+    inner join perspectives p on p.id = ct.perspective_id 
     where dc.id = :communityId
     `,
       {
