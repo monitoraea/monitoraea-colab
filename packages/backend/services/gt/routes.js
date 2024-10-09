@@ -218,8 +218,8 @@ router.post("/add_user_perspective/:communityId", async (req, res) => {
 
   try {
     if(res.locals.user) {
-      
-      const result = await entity.addMember(communityId, res.locals.user.id);
+
+      const result = await entity.addMember(communityId, res.locals.user.id, 'member');
       res.json(result);
 
     } else sendError(res, 'User not found!', 500);

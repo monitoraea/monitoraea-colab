@@ -32,7 +32,7 @@ class Service {
   async getPerspectivesUser(user) {
 
     return await db.instance().query(
-    `
+      `
     select 
     p.id,
     p.name,
@@ -901,7 +901,7 @@ class Service {
         },
       )
 
-      if(adms.length && adms[0].adm_community_id) room = `room_c${adms[0].adm_community_id}_t1`;
+      if (adms.length && adms[0].adm_community_id) room = `room_c${adms[0].adm_community_id}_t1`;
     }
 
     await Messagery.sendNotification({ id: 0 }, room, {
@@ -991,23 +991,33 @@ class Service {
     );
 
     // se não há rede retorna
-    if (!networks.length || !networks[0].network_community_id) return { success: true, network: null }
+    let result;
+    if (!networks.length || !networks[0].network_community_id) {
 
-    // verifica se usuário já é membdo a rede da comunidade em questão
-    if (!communities[0].communities.includes(networks[0].network_community_id)) {
-      // não é? insere o usuário como membro da rede da comunidade em questão
-      await db.instance().query(
-        ` insert into dorothy_members("communityId", "userId", "type", "createdAt", "updatedAt", "order")
+      result = { success: true, network: null }
+
+    } else {
+      // verifica se usuário já é membdo a rede da comunidade em questão
+      if (!communities[0].communities.includes(networks[0].network_community_id)) {
+        // não é? insere o usuário como membro da rede da comunidade em questão
+        await db.instance().query(
+          ` insert into dorothy_members("communityId", "userId", "type", "createdAt", "updatedAt", "order")
             values(:communityId, :userId, :type, NOW(), NOW(), :order)
             `,
-        {
-          replacements: { communityId: networks[0].network_community_id, userId, type: 'member', order: communities[0].max_order + 1 },
-          type: Sequelize.QueryTypes.INSERT,
-        },
-      );
+          {
+            replacements: { communityId: networks[0].network_community_id, userId, type: 'member', order: communities[0].max_order + 1 },
+            type: Sequelize.QueryTypes.INSERT,
+          },
+        );
+      }
+
+      result = { success: true, network: networks[0].network_community_id }
     }
 
-    return { success: true, network: networks[0].network_community_id }
+    // comando instantane para atualizar GTs do usuário
+    // TODO: está atualizando o usuário conectado - ERRO!
+    // Messagery.command('update_user', { userId })
+    return result;
   }
 }
 

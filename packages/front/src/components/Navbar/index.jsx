@@ -583,6 +583,8 @@ function PerspectivesDialog({ show, onClose }) {
   const queryClient = useQueryClient();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
+  const [updated, _updated] = useState(false);
+
   const { data } = useQuery(
     ['my-perspective'],
     { queryFn: async () => (await axios.get(`${server}gt/perspectives/user`)).data },
@@ -608,6 +610,8 @@ function PerspectivesDialog({ show, onClose }) {
 
     await mutations.participate.mutateAsync(communityId);
 
+    _updated(true);
+
     closeSnackbar(snack);
   }
 
@@ -616,10 +620,15 @@ function PerspectivesDialog({ show, onClose }) {
     onClose();
   }
 
+  const handleClose = () => {
+    // TODO: temp
+    window.location.href = window.location.href;
+  }
+
   return <Dialog
     className="modal"
     open={show}
-    onClose={onClose}
+    onClose={handleClose}
     maxWidth="md"
     scroll="paper"
     aria-labelledby="scroll-dialog-title"
@@ -647,7 +656,7 @@ function PerspectivesDialog({ show, onClose }) {
       </ul>
     </DialogContent>
     <DialogActions>
-      <Button onClick={onClose}>fechar</Button>
+      <Button onClick={handleClose}>fechar</Button>
     </DialogActions>
   </Dialog>
 }
