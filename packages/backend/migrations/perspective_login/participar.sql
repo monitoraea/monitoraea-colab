@@ -1,0 +1,1 @@
+ALTER TABLE public.participar ADD initiative_name varchar NULL;

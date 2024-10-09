@@ -127,6 +127,17 @@ router.put("/:id/draft", upFields, async (req, res) => {
 });
 
 /* TODO */
+router.get('/mine', async (req, res) => {
+  try {
+    const result = await entity.getListForUser(res.locals.user);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+/* TODO */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -149,6 +160,19 @@ router.get('/id_from_community/:community_id', async (req, res) => {
     res.json(result);
   } catch (ex) {
     sendError(res, ex);
+  }
+});
+
+router.post('/:id/participate', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isADM } = req.body;
+
+    const result = await entity.participate(res.locals.user, id, isADM);
+
+    res.json(result);
+  } catch (error) {
+    res.json({ error: error.message });
   }
 });
 

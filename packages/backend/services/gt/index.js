@@ -475,9 +475,8 @@ class Service {
   async approveParticipacion(id) {
     /* recupera os dados da participacao e do usuario */
     const participation = await db.instance().query(
-      `select p.id, "userId", "communityId", p2.nome as project_name, u.id as user_id, u."name" as user_name, u.email as user_email, adm  
+      `select p.id, "userId", "communityId", initiative_name, u.id as user_id, u."name" as user_name, u.email as user_email, adm  
       from participar p 
-      inner join projetos p2 on p2.community_id = p."communityId"
       inner join dorothy_users u on u.id = p."userId" 
       where p.id = :id and "resolvedAt" is null`,
       {
@@ -521,7 +520,7 @@ class Service {
     const subject = isADM ? 'Confirmação de responsabilidade por iniciativa' : 'Confirmação de pedido de participação';
 
     const pedido = isADM ? 'moderador' : 'membro';
-    const message = `Agora você é ${pedido} do grupo "${pData.project_name}".
+    const message = `Agora você é ${pedido} do grupo "${pData.initiative_name}".
     `;
 
     const msg = {
@@ -818,10 +817,10 @@ class Service {
     /* cadastra participacao */
     await db.instance().query(
       `
-          insert into participar("communityId", "userId", adm, "createdAt", "updatedAt") 
-          values(:communityId, :userId, :adm, NOW(), NOW())`,
+          insert into participar("communityId", "userId", adm, initiative_name, "createdAt", "updatedAt") 
+          values(:communityId, :userId, :adm, :initiativeName, NOW(), NOW())`,
       {
-        replacements: { userId: user.id, communityId, adm: isADM },
+        replacements: { userId: user.id, communityId, adm: isADM, initiativeName },
         type: Sequelize.QueryTypes.INSERT,
       },
     );

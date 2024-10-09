@@ -1,144 +1,117 @@
-// import { useState, useEffect } from 'react';
-// import { TextField } from '@mui/material';
+import { useDorothy, useRouter } from 'dorothy-dna-react';
 
-// import Dialog from '@mui/material/Dialog';
-// import DialogActions from '@mui/material/DialogActions';
-// import DialogContent from '@mui/material/DialogContent';
-// import DialogTitle from '@mui/material/DialogTitle';
-// import Button from '@mui/material/Button';
+import axios from 'axios';
 
-// import { useDorothy, useRouter } from 'dorothy-dna-react';
-// import axios from 'axios';
-// import { PageTitle } from '../../components/PageTitle/PageTitle';
-// import { useSnackbar } from 'notistack';
+import { useSnackbar } from 'notistack';
+import { useQuery, useQueryClient } from 'react-query';
 
-// import { useMutation } from 'react-query';
+import styles from './styles.module.scss'
 
 export default function NetworkHomeCIEA() {
-  // const { server } = useDorothy();
-  // const { currentCommunity } = useRouter();
+  const { server } = useDorothy();
+  const { changeRoute } = useRouter();
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  // const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { data } = useQuery(
+    ['user_commissions_list'],
+    {
+      queryFn: async () => (await axios.get(`${server}commission/mine`)).data,
+    }
+  );
 
-  // const [showNPDialog, _showNPDialog] = useState(false);
+  const doParticipate = async (isADM, commissionId) => {
+    const snackKey = enqueueSnackbar('Enviando pedido de participação...', {
+      persist: true,
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'right',
+      },
+    });
 
-  // const mutation = {
-  //   create: useMutation(name => axios.post(`${server}project/?communityId=${currentCommunity.id}`, { nome: name }), {
-  //     onSuccess: () => {
-  //       // queryClient.invalidateQueries('project_indics');
-  //     },
-  //   }),
-  // };
+    const { data } = await axios.post(
+      `${server}commission/${commissionId}/participate`,
+      {
+        isADM,
+      },
+    );
 
-  // const handleNProject = async name => {
-  //   if (!name || !name.length) return;
+    closeSnackbar(snackKey);
 
-  //   const snackKey = enqueueSnackbar('Criando a iniciativa..', {
-  //     persist: true,
-  //     anchorOrigin: {
-  //       vertical: 'top',
-  //       horizontal: 'right',
-  //     },
-  //   });
+    if (data.success) {
+      enqueueSnackbar('Seu pedido de participação foi enviado! Uma notificação será enviada, no momento da aprovação', {
+        variant: 'success',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
+      });
 
-  //   /* save */
-  //   try {
-  //     const { data } = await mutation.create.mutateAsync(name);
-
-  //     closeSnackbar(snackKey);
-
-  //     enqueueSnackbar('Iniciativa gravada com sucesso!', {
-  //       variant: 'success',
-  //       anchorOrigin: {
-  //         vertical: 'top',
-  //         horizontal: 'right',
-  //       },
-  //     });
-
-  //     _showNPDialog(false);
-  //     window.location = `/colabora/projeto/${data.communityId}`; /* TODO: melhorar */
-  //   } catch (error) {
-  //     closeSnackbar(snackKey);
-
-  //     console.error(error);
-
-  //     enqueueSnackbar('Erro ao gravar a iniciativa!', {
-  //       variant: 'error',
-  //       anchorOrigin: {
-  //         vertical: 'top',
-  //         horizontal: 'right',
-  //       },
-  //     });
-  //   }
-  // };
+      queryClient.invalidateQueries(`user_commissions_list`);
+    } else {
+      if (data.error === 'already_member') {
+        enqueueSnackbar('Você já é membro deste grupo!', {
+          variant: 'error',
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+        });
+      } else if (data.error === 'already_in_list') {
+        enqueueSnackbar('Você já está na lista de aprovação deste grupo!', {
+          variant: 'error',
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+        });
+      } else {
+        enqueueSnackbar('Erro ao enviar seu pedido de participação! Por favor, entre em contato com a administração', {
+          variant: 'error',
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+        });
+      }
+    }
+  };
 
   return (
     <>
       <div className="page width-limiter">
-        {/* <div className="page-header">
-          <PageTitle title={''} />
-          <div className="page-header-buttons">
-            <button className="button-primary" onClick={() => _showNPDialog(true)}>
-              Nova iniciativa
-            </button>
-          </div>
-        </div> */}
         <div className="page-content">
           <div className="page-body">
             <div className="tablebox" style={{ padding: '20px' }}>
-              <h4>
-                Esta é a página de entrada da área de colaboração da Rede de Comunidades de Aprendizagens do CIEA.
-              </h4>
-              {/* <p>Para criar a sua iniciativa, clique no botão "Nova iniciativa" (acima)</p> */}
+              <h4>A Rede de Comunidades de Aprendizagens do CIEA é composta pelas seguintes comissões:</h4>
+              <ul className={styles['commission_list']}>
+                {!data && <>Carregando...</>}
+                {data && data.map(c => <li key={c.id} className={styles['commission']}>
+                  <div className={styles.name}>{c.name}</div>
+                  <div className={styles.actions}>
+                    {c.is_requesting && <div className={styles.sent}>Solicitação enviada</div>}
+                    {!c.is_requesting && <>
+                      {c.is_member && <>
+                        <button className="button-primary" onClick={() => changeRoute({ community: c.community_id })}>
+                          Acessar
+                        </button>
+                      </>}
+                      {!c.is_member && <>
+                        {!c.has_members && <button className="button-outline" onClick={() => doParticipate(true, c.id)}>
+                          Participar como responsável
+                        </button>}
+                        <button className="button-primary" onClick={() => doParticipate(false, c.id)}>
+                          Participar como colaborador
+                        </button>
+                      </>}
+                    </>}
+                  </div>
+                </li>)}
+              </ul>
             </div>
           </div>
         </div>
       </div>
-
-      {/* <NewProjectDialog open={showNPDialog} onCreate={handleNProject} onClose={() => _showNPDialog(false)} /> */}
     </>
   );
 }
-
-/* function NewProjectDialog({ open, onCreate, onClose }) {
-  const [name, _name] = useState('');
-
-  useEffect(() => {
-    if (open) _name('');
-  }, [open]);
-
-  return (
-    <div>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle id="alert-dialog-title">Nova iniciativa</DialogTitle>
-        <DialogContent>
-          <div className="row">
-            <div className="col-xs-12">
-              <TextField
-                className="input-text"
-                label="Nome da nova iniciativa"
-                value={name}
-                onChange={e => _name(e.target.value)}
-              />
-            </div>
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => onClose()} autoFocus>
-            Cancelar
-          </Button>
-          <button className="button-primary" onClick={() => onCreate(name)}>
-            Criar
-          </button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
-} */
