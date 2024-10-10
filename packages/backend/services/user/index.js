@@ -25,6 +25,7 @@ const { User } = require('dorothy-dna-services');
 const perspectives_networks = {
   pppzcm: process.env.PPPZCM_NETWORK_GT,
   ciea: process.env.CIEA_NETWORK_GT,
+  ppea: process.env.PPEA_NETWORK_GT,
 }
 
 class Service {

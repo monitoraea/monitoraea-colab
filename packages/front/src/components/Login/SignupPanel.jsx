@@ -15,8 +15,9 @@ import {
 import { useMutation } from 'react-query';
 
 const perspectives_options = [
-  ['pppzcm', 'PPPZCM'],
-  ['ciea', 'CIEA'],
+  ['ppea', 'M&A de Políticas Públicas de Educação Ambiental'],
+  ['pppzcm', 'M&A de Iniciativas Vinculadas ao PPPZCM'],
+  ['ciea', 'Comissões Interinstitucional de Educação Ambiental'],
 ]
 
 const SignupPanel = ({ next }) => {
@@ -165,7 +166,7 @@ const SignupPanel = ({ next }) => {
                     <Box>
                       
                       <FormControl component="fieldset" variant="standard">
-                        <FormLabel component="legend">Em qual perspectiva deseja participar? <span style={{ fontSize: '0.75em'}}>(pelo menos uma deve ser selecionada)</span></FormLabel>
+                        <FormLabel component="legend"><span style={{ fontWeight: 'bold' }}>Em qual perspectiva deseja participar? <span style={{ fontSize: '0.75em'}}>(pelo menos uma deve ser selecionada)</span></span></FormLabel>
                         <FormGroup sx={{ display: 'flex' }}>
                           {perspectives_options.map(([key, title]) => <FormControlLabel
                             key={key}
