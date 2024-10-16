@@ -1,8 +1,8 @@
 require('dotenv').config({ path: '.env.local' }); // for development only
 
 const express = require('express');
-const swaggerUi = require('swagger-ui-express');
-const swaggerJsdoc = require('swagger-jsdoc');
+// const swaggerUi = require('swagger-ui-express');
+// const swaggerJsdoc = require('swagger-jsdoc');
 const http = require('http');
 const cors = require('cors');
 const path = require('path');
@@ -22,13 +22,13 @@ app.use('/scripts', express.static(path.join(__dirname, '..', '..', 'scripts_tes
 
 const server = http.createServer(app);
 
-const specs = swaggerJsdoc(require('./services/swagger_options'));
+// const specs = swaggerJsdoc(require('./services/swagger_options'));
 
-app.get('/openapi', function (_, res) {
-  res.send(specs);
-});
+// app.get('/openapi', function (_, res) {
+//   res.send(specs);
+// });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
 
 app.use(require('./services/routes'));
 app.use((req, res, next) => {
