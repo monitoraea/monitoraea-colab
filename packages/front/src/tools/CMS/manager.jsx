@@ -85,6 +85,7 @@ const emptyEntity = {
   portal: 'none',
   type: 'news',
   text: '',
+  intro: '',
   categories: [],
   tags: [],
   featured_images: '',
@@ -428,7 +429,7 @@ export default function CMS({ id, onClose, onSave }) {
                     onChange={e => handleFieldChange('type')(e.target.value)}
                     style={{ minWidth: '120px' }}
                     options={[
-                      { value: 'news', title: 'Novidade' },
+                      { value: 'news', title: 'Fique por dentro' },
                       { value: 'page', title: 'Página' },
                       { value: 'helpbox', title: 'Conteúdo auxiliar' },
                       { value: 'learning', title: 'Processo formativo' },
@@ -735,7 +736,22 @@ export default function CMS({ id, onClose, onSave }) {
                             </div> */}
                   </div>
 
-                  {(['news', 'learning', 'publication'].includes(entity.type) || (entity.type === 'page' && entity.level === 1)) && (
+                  {(['news', 'learning', 'publication'].includes(entity.type) || (entity.type === 'page' && entity.level === 1)) && (<>
+
+                    <div className="row">
+                      <div className="col-md-12">
+                        <TextField
+                          className="input-text"
+                          label="Introdução"
+                          shrink="false"
+                          value={entity.intro}
+                          multiline
+                          rows={2}
+                          onChange={e => handleFieldChange('intro')(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
                     <div className="row">
                       <div className="col-md-6">
                         <TextField
@@ -772,7 +788,7 @@ export default function CMS({ id, onClose, onSave }) {
                         />
                       </div>
                     </div>
-                  )}
+                  </>)}
                 </>
               )}
               {entity.type === 'helpbox' && (

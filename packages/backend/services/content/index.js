@@ -148,7 +148,9 @@ class Service {
     select 
         c.id, 
         c."title",
+        coalesce(c."intro",'') as "intro",
         c.published,
+        c."publishedAt",
         c.featured_images,
         c.portal,
         count(*) OVER() AS total_count 

@@ -1,0 +1,1 @@
+ALTER TABLE public.contents ADD "intro" text NULL;
