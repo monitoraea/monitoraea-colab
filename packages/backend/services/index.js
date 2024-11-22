@@ -27,4 +27,5 @@ module.exports = [
   'help',
   'facilitator',
   'form',
+  'institution-home',
 ];
