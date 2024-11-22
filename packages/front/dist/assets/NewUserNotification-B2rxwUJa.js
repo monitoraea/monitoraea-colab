@@ -1,0 +1,1 @@
+import{r,L as i,j as s}from"./index-7W1X0-fp.js";function c({data:e}){const[t,o]=r.useState(""),[n,u]=r.useState("");return r.useEffect(()=>{e&&(o(i(e.createdAt).format("DD/MM/YYYY HH:mm")),u(e.user_name))},[e]),s.jsxs("div",{children:[t," ",s.jsx("strong",{children:n}),' criou um novo usuario: "[Usuario]"']})}export{c as default};
