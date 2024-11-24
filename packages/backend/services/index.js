@@ -28,4 +28,5 @@ module.exports = [
   'facilitator',
   'form',
   'institution-home',
+  'na-midia',
 ];
