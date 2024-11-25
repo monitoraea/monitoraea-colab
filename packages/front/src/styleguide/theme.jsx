@@ -4,7 +4,7 @@ import { ptBR } from '@mui/material/locale';
 const defaultTheme = createTheme(
   {
     typography: {
-      fontFamily: `'Raleway', sans-serif`,
+      fontFamily: `'Poppins', sans-serif`,
       allVariants: {
         color: '#444',
         textDecoration: 'none',

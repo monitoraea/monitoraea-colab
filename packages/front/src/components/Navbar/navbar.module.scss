@@ -17,7 +17,7 @@
 
     .nav_logo {
       margin-right: 1rem;
-      height: 3rem;
+      height: 50px;
     }
   }
 
@@ -67,7 +67,7 @@
     display: flex;
     align-items: center;
     font-weight: 500;
-    color: $gray;
+    color: $white;
     cursor: pointer;
 
     .nav_profile_img {

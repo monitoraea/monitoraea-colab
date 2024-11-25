@@ -152,7 +152,7 @@ export default function Agora() {
         {/* flow geral de comunidade especifica */}
         <div className="page width-limiter">
             <div className="page-header">
-                <PageTitle title="Fluxo" />
+                <PageTitle title="Conversa" />
             </div>
             <div className="page-content">
                 <div className="page-body">

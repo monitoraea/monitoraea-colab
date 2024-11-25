@@ -147,7 +147,7 @@ export function barChartConfig(config) {
   let chart = {
     options: {
       legend: {
-        fontFamily: 'Raleway',
+        fontFamily: 'Poppins',
         fontSize: 16,
         labels: {
           colors: ['#444444'],
@@ -156,7 +156,7 @@ export function barChartConfig(config) {
       },
       colors: paleta,
       chart: {
-        fontFamily: 'Raleway',
+        fontFamily: 'Poppins',
         id: 'VisualizationCommerceVolumeByYearAndAccumulated',
         toolbar: {
           tools: {
@@ -187,7 +187,7 @@ export function barChartConfig(config) {
         /* offsetY: -100, */
         // enabledOnSeries: [0, 1],
         style: {
-          fontFamily: 'Raleway',
+          fontFamily: 'Poppins',
           fontSize: '12px',
           fontWeight: 'bold',
           colors: ['#fff'],
@@ -244,7 +244,7 @@ export function horizontalBarChartConfig(config) {
   let chart = {
     options: {
       legend: {
-        fontFamily: 'Raleway',
+        fontFamily: 'Poppins',
         fontSize: 16,
         labels: {
           colors: ['#444444'],
@@ -255,7 +255,7 @@ export function horizontalBarChartConfig(config) {
       colors: paleta,
       chart: {
         stacked: true,
-        fontFamily: 'Raleway',
+        fontFamily: 'Poppins',
         id: 'VisualizationCommerceVolumeByYearAndAccumulated',
         toolbar: {
           tools: {
@@ -290,7 +290,7 @@ export function horizontalBarChartConfig(config) {
         position: 'center',
         // enabledOnSeries: [0, 1],
         style: {
-          fontFamily: 'Raleway',
+          fontFamily: 'Poppins',
           fontSize: '16px',
           fontWeight: 'bold',
           colors: ['#fff'],
@@ -357,7 +357,7 @@ export function twoBarsChartConfig(config) {
   return {
     options: {
       legend: {
-        fontFamily: 'Raleway',
+        fontFamily: 'Poppins',
         fontSize: 16,
         labels: {
           colors: ['#444444'],
@@ -366,7 +366,7 @@ export function twoBarsChartConfig(config) {
       },
       colors: ['#F9C623', '#E46F2A'],
       chart: {
-        fontFamily: 'Raleway',
+        fontFamily: 'Poppins',
         id: 'VisualizationCommerceMoneyByYearAndAccumulated',
         animations: {
           enabled: false,
@@ -393,7 +393,7 @@ export function twoBarsChartConfig(config) {
         /* offsetY: -100, */
         // enabledOnSeries: [0, 1],
         style: {
-          fontFamily: 'Raleway',
+          fontFamily: 'Poppins',
           fontSize: '14px',
           fontWeight: 'bold',
           colors: ['#fff'],

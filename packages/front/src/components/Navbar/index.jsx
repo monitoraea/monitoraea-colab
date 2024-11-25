@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Menu, MenuItem, TextField, Card, useMediaQuery, Dialog, DialogActions, DialogContent, DialogTitle, Button, Slider } from '@mui/material';
 
 import ChevronDown from '../icons/ChevronDown';
-import Logo from './logo-monitoraea.png';
+import Logo from './logo-monitoraea_2.png';
 import MenuRenderer from './MenuRenderer';
 import NavbarRoleSelector from './NavbarRoleSelector';
 import NavbarRoleShow from './NavbarRoleShow';
@@ -166,7 +166,7 @@ export default function Navbar() {
     setAnchorEl(null);
     _showProfileImage(true);
   }
-
+  144
   const openPerspectives = () => {
     setAnchorEl(null);
     _showPerspectives(true);
@@ -389,7 +389,7 @@ export default function Navbar() {
         <a href="/"><img className='nav-logo' src={Logo} alt="logo" /></a>
         <NavbarRoleSelector perspectives={perspectives} onFilterChange={value => console.log('navbar role selector', value)} />
       </div>
-      <div className="nav-center">
+      <div className="nav-center-new">
         <ToolMenuContainer>
           <MenuRenderer />
         </ToolMenuContainer>
@@ -432,7 +432,7 @@ export default function Navbar() {
       </div>
     </div>
 
-    <Card><NavbarRoleShow perspectives={perspectives} onFilterChange={value => console.log('navbar role selector', value)} /></Card>
+    <NavbarRoleShow perspectives={perspectives} onFilterChange={value => console.log('navbar role selector', value)} />
 
 
     <ConfirmationDialog
