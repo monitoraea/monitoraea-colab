@@ -1,8 +1,17 @@
 @forward '../../commons/sass/theme/dorothy_variables';
 
-// Theme  
-$primary: #73bf48;
-$secondary: #5d9f38;
+// Theme
+$indigo: #051e59;
+$cristal: #d6e6f8;
+$anil: #2d8bba;
+$amarelo: #faad23; //amarelo da paleta MonitoraEA-KV
+$verde: #409a4d; //verde da paleta 
+$azul: #3c6dbc; //azul da paleta 
+$chumbo: #070707; //cor da letra - chumbo da paleta 
+$disabled: #737373;
+
+$primary: $indigo;
+$secondary: $anil;
 
 /* Custom */
 $chart1: #326AB8;
