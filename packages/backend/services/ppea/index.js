@@ -13,7 +13,8 @@ class Service {
       SELECT
         * -- TODO
       FROM ppea.politicas p
-      WHERE p.id = :id
+      WHERE p.politica_id = :id
+      AND versao = 'draft'
         `,
       {
         replacements: { id },
@@ -44,7 +45,7 @@ class Service {
         dificuldades,
         contemplados
       FROM ppea.politicas p
-      WHERE p.id = :id
+      WHERE p.politica_id = :id
       AND versao = 'draft'
         `,
       {
@@ -64,7 +65,7 @@ class Service {
       SELECT
         indicadores
       FROM ppea.politicas p
-      WHERE p.id = :id
+      WHERE p.politica_id = :id
       AND versao = 'draft'
         `,
       {
@@ -85,7 +86,7 @@ class Service {
     let result;
 
     result = await sequelize.query(
-      ` select  c.id
+      ` select  c.politica_id as id
         from ppea.politicas c
         where c.community_id = :community_id`,
       {

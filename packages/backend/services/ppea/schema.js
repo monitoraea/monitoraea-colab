@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+      },
+      politica_id: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
       },  
     },
     {

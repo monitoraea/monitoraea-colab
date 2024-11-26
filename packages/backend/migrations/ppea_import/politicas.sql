@@ -1,5 +1,12 @@
+-- ppea.politicas definition
+
+-- Drop table
+
+-- DROP TABLE ppea.politicas;
+
 CREATE TABLE ppea.politicas (
 	id serial4 NOT NULL,
+	politica_id int4 NOT NULL,
 	legacy_id int4 NOT NULL,
 	community_id int4 NOT NULL,
 	enquadramento_1 int2 NULL,
