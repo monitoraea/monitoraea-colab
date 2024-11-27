@@ -3,7 +3,7 @@ export default function MenuItem({ title/* , icon */, id/*,  setActiveMenuItem *
 
   return (
     <div className={active ? 'nav-menu-item-new active' : 'nav-menu-item-new'} onClick={() => onItemClick(id)} /* onMouseEnter={handleMouseEnter} */>
-      <button class="button-outline">{title}</button>
+      <button className="button-outline">{title}</button>
     </div>
   );
 }
