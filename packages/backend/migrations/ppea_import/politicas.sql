@@ -37,5 +37,6 @@ CREATE TABLE ppea.politicas (
 	"updatedAt" timestamp NULL,
 	"deletedAt" timestamp NULL,
 	versao varchar(10) DEFAULT 'draft'::character varying NOT NULL,
+	geom public.geometry NULL,
 	CONSTRAINT politicas_pk PRIMARY KEY (id)
 );
