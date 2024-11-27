@@ -1,9 +1,3 @@
--- ppea.politicas definition
-
--- Drop table
-
--- DROP TABLE ppea.politicas;
-
 CREATE TABLE ppea.politicas (
 	id serial4 NOT NULL,
 	politica_id int4 NOT NULL,
@@ -37,6 +31,7 @@ CREATE TABLE ppea.politicas (
 	"updatedAt" timestamp NULL,
 	"deletedAt" timestamp NULL,
 	versao varchar(10) DEFAULT 'draft'::character varying NOT NULL,
-	geom public.geometry NULL,
+	atuacao_aplica bool NULL,
+	atuacao_naplica_just text NULL,
 	CONSTRAINT politicas_pk PRIMARY KEY (id)
 );

@@ -7,7 +7,7 @@ import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
 import EnquadramentoTab from './EnquadramentoTab';
 import IndicatorsTab from './IndicatorsTab';
-import AtuacaoTab from './AtuacaoTab';
+import AtuacaoTab from './ActingTab';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
 import CheckCircle from '../../components/icons/CheckCircle';

@@ -28,7 +28,7 @@ const position = [-15.559793, -56.58506];
 const zoom = 4;
 
 
-export default function MapEditor({ initialGeoms, initialBBOX, templateLayers, onSave, onEdit, isEditing, onCancel }) {
+export default function MapEditor({ entity, initialGeoms, initialBBOX, templateLayers, onSave, onEdit, isEditing, onCancel }) {
 
   const mapRef = useRef();
   const editableFG = useRef();
@@ -62,7 +62,7 @@ export default function MapEditor({ initialGeoms, initialBBOX, templateLayers, o
     initialGeoms.forEach(geojson => {
       const leafletGeoJSON = new L.GeoJSON(geojson);
 
-      console.log(geojson)
+      /* console.log(geojson) */
 
       leafletGeoJSON.eachLayer(layer => {
         editableFG.current.leafletElement.addLayer(layer);
@@ -93,7 +93,7 @@ export default function MapEditor({ initialGeoms, initialBBOX, templateLayers, o
     const data = new FormData()
     data.append('file', file);
 
-    const { data: { geojson } } = await axios.post(`${server}project/upload-shp`, data)
+    const { data: { geojson } } = await axios.post(`${server}${entity}/upload-shp`, data)
 
     const leafletGeoJSON = new L.GeoJSON(geojson);
 

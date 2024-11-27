@@ -44,7 +44,7 @@ const templateLayers = [
 async function retrieveGeoms(server, id) {
   const {
     data: { geoms, bbox },
-  } = await axios.get(`${server}project/${id}/geo-draw`);
+  } = await axios.get(`${server}ppea/${id}/geo-draw`);
 
   console.log({ geoms, bbox });
 
@@ -69,7 +69,7 @@ export default function ActingTab() {
     async function fetchID() {
       const {
         data: { id },
-      } = await axios.get(`${server}project/id_from_community/${currentCommunity.id}`);
+      } = await axios.get(`${server}ppea/id_from_community/${currentCommunity.id}`);
       _id(id);
     }
     fetchID();
@@ -82,7 +82,7 @@ export default function ActingTab() {
     async function hasGeo() {
       const {
         data: { atuacao_aplica, atuacao_naplica_just },
-      } = await axios.get(`${server}project/${id}/geo-draw/has-geo`);
+      } = await axios.get(`${server}ppea/${id}/geo-draw/has-geo`);
 
       _hasGeo(atuacao_aplica);
       _justification(atuacao_naplica_just ? atuacao_naplica_just : '');
@@ -129,7 +129,7 @@ export default function ActingTab() {
       },
     });
 
-    /* const { data } =  */ await axios.post(`${server}project/${id}/geo-draw`, {
+    /* const { data } =  */ await axios.post(`${server}ppea/${id}/geo-draw`, {
       geoms: geomsToSave,
     });
 
@@ -155,7 +155,7 @@ export default function ActingTab() {
       },
     });
 
-    await axios.put(`${server}project/${id}/geo-draw/${checked ? (checked === 'none' ? 'none' : '1') : '0'}`);
+    await axios.put(`${server}ppea/${id}/geo-draw/${checked ? (checked === 'none' ? 'none' : '1') : '0'}`);
 
     queryClient.invalidateQueries(`project_indics`);
 
@@ -173,7 +173,7 @@ export default function ActingTab() {
       },
     });
 
-    await axios.put(`${server}project/${id}/draft/justification`, { value: justification });
+    await axios.put(`${server}ppea/${id}/draft/justification`, { value: justification });
 
     queryClient.invalidateQueries(`project_indics`);
 
@@ -209,7 +209,7 @@ export default function ActingTab() {
 
             {hasGeo === true && (
               <MapEditor
-                entity='project'
+                entity='ppea'
                 initialGeoms={geoms}
                 initialBBOX={bbox}
                 templateLayers={templateLayers}
