@@ -67,7 +67,7 @@ export function Renderer(props) {
 /*****************************************************************
     Basic Renderer
  *****************************************************************/
-function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemoveIterative, onAddIterative }) {
+function BasicRenderer({ form, readonly, showOrphans = false, data, onDataChange, onRemoveIterative, onAddIterative }) {
     const [blocks, _blocks] = useState([]);
     const [otherFields, _otherFields] = useState([]);
 
@@ -79,7 +79,7 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemove
 
                 blocks = <>
                     {form.fields.map(f => <div key={f.key} className='row'>
-                        <div className={`col-xs-${f.size}`}><FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} /></div>
+                        <div className={`col-xs-${f.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} /></div>
                     </div>)}
                 </>
 
@@ -119,7 +119,7 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemove
                             inBlock.push(fKey);
                             const field = form.fields.find(fi => fi.key === fKey);
                             return <div key={field.key} className='row'>
-                                <div className={`col-xs-${field.size}`}><FieldRenderer blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} iterative={index === undefined ? undefined : { k, index }} onDataChange={onDataChange} /></div>
+                                <div className={`col-xs-${field.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} iterative={index === undefined ? undefined : { k, index }} onDataChange={onDataChange} /></div>
                             </div>
                         })}
                     </Block>
@@ -140,7 +140,7 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemove
                 // mostrar campos sem blocos
                 otherFields = <>
                     {form.fields.filter(f => !inBlock.includes(f.key)).map(f => <div key={f.key} className='row'>
-                        <div className={`col-xs-${f.size}`}><FieldRenderer blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} /></div>
+                        <div className={`col-xs-${f.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} /></div>
                     </div>)}
                 </>
             }
@@ -161,15 +161,14 @@ function BasicRenderer({ form, showOrphans = false, data, onDataChange, onRemove
  *****************************************************************/
 // TODO: tentar resolver esta cascata de props - hooks? context?
 
-function ViewRenderer({ form, view, data, onDataChange, onRemoveIterative, onAddIterative, addBlock }) {
-
-    return <Element v={{ type: 'start', elements: view }} form={form} data={data} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />
+function ViewRenderer({ form, view, data, readonly, onDataChange, onRemoveIterative, onAddIterative, addBlock }) {
+    return <Element v={{ type: 'start', elements: view }} readonly={readonly} form={form} data={data} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />
 }
 function Element(props) {
-    const { form, v, data, iterative, onDataChange, onRemoveIterative, onAddIterative, addBlock } = props;
+    const { readonly, form, v, data, iterative, onDataChange, onRemoveIterative, onAddIterative, addBlock } = props;
 
     if (v.type === 'start') return <>
-        {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
+        {v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
     </>
 
     if (v.type === 'row') {
@@ -227,14 +226,14 @@ function Element(props) {
             if (!field) return null;
 
             if (!checkShow(field, data)) return null;
-
+            
             return <div className={`col-xs-${v.size}`}>
-                <FieldRenderer blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} iterative={iterative} onDataChange={onDataChange} />
+                <FieldRenderer readonly={readonly} blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} iterative={iterative} onDataChange={onDataChange} />
             </div>
         }
 
         if (!!v.elements) {
-            return <div className={`col-xs-${v.size}`}>{v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}</div>
+            return <div className={`col-xs-${v.size}`}>{v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}</div>
         }
 
         return null;
@@ -247,7 +246,7 @@ function Element(props) {
             const block = form.blocks.find(b => b.key === v.block);
 
             return <Block key={`add_${block.key}`} block={block} data={data}>
-                {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={block} onAddIterative={onAddIterative} />)}
+                {v.elements.map((v, idx) => <Element readonly={readonly} key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={block} onAddIterative={onAddIterative} />)}
             </Block>
         }
     }
@@ -262,9 +261,9 @@ function Element(props) {
     return null;
 
 }
-function Row({ form, v, data, iterative, onDataChange, onRemoveIterative, addBlock, onAddIterative }) {
+function Row({ readonly, form, v, data, iterative, onDataChange, onRemoveIterative, addBlock, onAddIterative }) {
     return <div className="row">
-        {v.elements.map((v, idx) => <Element key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
+        {v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
     </div>
 }
 
@@ -272,7 +271,7 @@ function Row({ form, v, data, iterative, onDataChange, onRemoveIterative, addBlo
     Field Renderer
  *****************************************************************/
 
-export function FieldRenderer({ f, size, keyRef, blocks, data, iterative, onDataChange }) {
+export function FieldRenderer({ f, size, readonly, keyRef, blocks, data, iterative, onDataChange }) {
     const [doShow, _doShow] = useState(false);
 
     useEffect(() => {
@@ -295,17 +294,18 @@ export function FieldRenderer({ f, size, keyRef, blocks, data, iterative, onData
 
     if (f.type === 'label') Component = <Label f={f} />
     else if (f.type === 'read_only') Component = <ReadOnly f={f} dataValue={dataValue} />
-    else if (f.type === 'options') Component = <OptionsField f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
-    else if (f.type === 'yearpicker') Component = <DatePickerField f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
+    else if (f.type === 'options') Component = <OptionsField readonly={readonly} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
+    else if (f.type === 'yearpicker') Component = <DatePickerField readonly={readonly} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
     else if (f.type === 'multi_autocomplete') Component = <MultiAutocompleteField
+        readonly={readonly}
         f={f}
         tag={!!f.tag}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
     />
-    else if (f.type === 'file') Component = <FileField f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} accept={f.accept} />
-    else if (f.type === 'thumbnail') Component = <ThumbnailField f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
-    else Component = <StringField integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
+    else if (f.type === 'file') Component = <FileField readonly={readonly} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} accept={f.accept} />
+    else if (f.type === 'thumbnail') Component = <ThumbnailField readonly={readonly} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
+    else Component = <StringField readonly={readonly} integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
 
     /* if (f.iterate) {
         // iterative field
@@ -393,8 +393,8 @@ function checkShow(e, data) {
         show = context_modules[e.show.function.module]?.[e.show.function.name].call(this, data[e.show.function.params[0].value_of]);
     } else if (!!e.show?.target) {
         // console.log(f.show.target.key, data[f.show.target.key], f.show.target.value)
-        
-        if(!Array.isArray(e.show.target.value)) show = (data[e.show.target.key] === e.show.target.value);
+
+        if (!Array.isArray(e.show.target.value)) show = (data[e.show.target.key] === e.show.target.value);
         else show = e.show.target.value.includes(data[e.show.target.key])
 
     }
@@ -460,7 +460,7 @@ function ReadOnly({ f, index, dataValue }) {
 }
 
 let timeoutTest;
-function StringField({ f, integer, multiline, rows, index, dataValue, onChange }) {
+function StringField({ f, readonly, integer, multiline, rows, index, dataValue, onChange }) {
     const [value, _value] = useState('');
 
     useEffect(() => {
@@ -477,7 +477,7 @@ function StringField({ f, integer, multiline, rows, index, dataValue, onChange }
 
         _value(value);
 
-        if(timeoutTest) clearTimeout(timeoutTest);
+        if (timeoutTest) clearTimeout(timeoutTest);
         timeoutTest = setTimeout(() => {
             onChange(value)
         }, 500)
@@ -490,10 +490,11 @@ function StringField({ f, integer, multiline, rows, index, dataValue, onChange }
         onChange={handleChange}
         multiline={multiline}
         rows={rows || 2}
+        disabled={readonly}
     />
 }
 
-function OptionsField({ f, index, dataValue, onChange }) {
+function OptionsField({ f, readonly, index, dataValue, onChange }) {
     const [value, _value] = useState('none');
     const [options, _options] = useState([]);
 
@@ -516,13 +517,14 @@ function OptionsField({ f, index, dataValue, onChange }) {
         value={value || 'none'}
         select
         onChange={(e) => onChange(e.target.value)}
+        disabled={readonly}
     >
         <MenuItem value="none">Não respondido</MenuItem>
         {options.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
     </TextField>
 }
 
-function MultiAutocompleteField({ f, index, tag = false, dataValue, onChange }) {
+function MultiAutocompleteField({ f, readonly, index, tag = false, dataValue, onChange }) {
     const [value, _value] = useState([]);
     const [options, _options] = useState([]);
 
@@ -555,6 +557,7 @@ function MultiAutocompleteField({ f, index, tag = false, dataValue, onChange }) 
         className="input-autocomplete"
         value={value}
         onChange={(_, value) => onChange(value)}
+        disabled={readonly}
         options={options}
         // getOptionLabel={(option) => option.label}
         renderOption={(props, option) => {
@@ -594,15 +597,16 @@ function MultiAutocompleteField({ f, index, tag = false, dataValue, onChange }) 
                 key={o.value}
                 control={<Checkbox checked={value.some(v => v.value === o.value)} />}
                 label={o.label}
-                onChange={handleCheckChange(o)} />
-            )}
+                onChange={handleCheckChange(o)}
+                disabled={readonly}
+            />)}
         </FormGroup>
     </FormControl>
 
 
 }
 
-function DatePickerField({ f, index, dataValue, onChange }) {
+function DatePickerField({ f, readonly, index, dataValue, onChange }) {
     const [value, _value] = useState(null);
 
     useEffect(() => {
@@ -616,16 +620,17 @@ function DatePickerField({ f, index, dataValue, onChange }) {
         onChange={onChange}
         views={['year']}
         inputFormat="yyyy"
+        disabled={readonly}
     />
 }
 
-function FileField({ f, index, dataValue, accept, onChange }) {
+function FileField({ f, readonly, index, dataValue, accept, onChange }) {
     const [value, _value] = useState(null);
 
     useEffect(() => {
         if (!!dataValue) _value(dataValue);
     }, [dataValue])
-    
+
     return <UploaderField
         onChange={onChange}
         url={value?.url}
@@ -633,10 +638,11 @@ function FileField({ f, index, dataValue, accept, onChange }) {
         filename={value?.file?.name}
         accept={accept}
         title={titleAndIndex(f.title, index)}
+        disabled={readonly}
     />
 }
 
-function ThumbnailField({ f, index, dataValue, onChange }) {
+function ThumbnailField({ f, readonly, index, dataValue, onChange }) {
     const [value, _value] = useState(null);
 
     useEffect(() => {
@@ -649,5 +655,6 @@ function ThumbnailField({ f, index, dataValue, onChange }) {
         alt={titleAndIndex(f.title, index)}
         title={titleAndIndex(f.title, index)}
         viewer={false}
+        disabled={readonly}
     />;
 }

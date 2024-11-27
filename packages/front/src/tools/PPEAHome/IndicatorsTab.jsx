@@ -154,6 +154,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
                                 form={currentForm}
                                 data={entity}
                                 onDataChange={handleDataChange}
+                                readonly={true}
                             />}
                         </div>
                     </Card>

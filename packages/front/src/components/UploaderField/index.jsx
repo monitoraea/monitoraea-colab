@@ -69,9 +69,9 @@ export default function UploaderField({
   return (
     <>
       <div className={`uploader-wrapper ${type}`}>
-        {!!title && <div className="uploader-title">{title}</div>}
+        {!!title && <div className={`uploader-title  ${disabled ? 'disabled' : ''}`}>{title}</div>}
         <div
-          className={`drop_zone ${!!className ? `uploader-${className}` : ''} ${!previewUrl ? (type !== 'file' ? 'no-image' : 'file-no-image') : ''}`}
+          className={`drop_zone ${disabled ? 'disabled' : ''} ${!!className ? `uploader-${className}` : ''} ${!previewUrl ? (type !== 'file' ? 'no-image' : 'file-no-image') : ''}`}
           style={{
             backgroundImage: !previewUrl && type !== 'file' ? `url(${!disabled ? uploadIcon : uploadIconDisabled})` : 'unset',
           }}
@@ -108,7 +108,7 @@ export default function UploaderField({
         </div>
         {previewUrl && (
           <>
-            <button className="remove" onClick={handleRemove}>
+            <button className="remove" onClick={handleRemove} disabled={disabled}>
               <img src={deleteIcon} alt="delete" />
             </button>
             {viewer && <>
