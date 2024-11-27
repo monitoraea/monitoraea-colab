@@ -62,14 +62,14 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           />  
           <Tab
             disableRipple
-            label="Indicadores legados"
-            {...a11yProps('indicadores')}
-          /> 
-          <Tab
-            disableRipple
             label="Atuação"
             {...a11yProps('atuacao')}
-          />             
+          />  
+          <Tab
+            disableRipple
+            label="Indicadores legados"
+            {...a11yProps('indicadores')}
+          />            
         </Tabs>
       </div>
     </div>
