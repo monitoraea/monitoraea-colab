@@ -3,6 +3,7 @@ fields:
 - key: logo_arquivo
   type: thumbnail
   title: Logotipo
+  db_field: logo # TODO: db_field só funciona para arquivos, por enquanto
   size: 2
 
 - key: uf_nome
@@ -46,6 +47,11 @@ fields:
   type: options
   title: Tipo de documento de criação
   size: 2
+  onchange: # pode indicar um script (TODO)
+    - key: documento_criacao_arquivo # pode indicar um script (TODO)
+      value:
+    - key: documento_criacao_arquivo2
+      value:
   list: 
     module: property
     key: tipo_arquivo
@@ -63,6 +69,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo de criação
+  db_field: documento_criacao
   size: 6
   show:
     target:
@@ -154,6 +161,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo de regimento
+  db_field: regimento_interno
   size: 6
   show:
     target:
@@ -231,6 +239,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo de política pública
+  db_field: ppea
   size: 6
   show:
     target:
@@ -276,6 +285,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo de política pública
+  db_field: ppea2
   size: 6
   show:
     target:
@@ -321,6 +331,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo do programa
+  db_field: programa_estadual
   size: 6
   show:
     target:
@@ -366,6 +377,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo do plano
+  db_field: plano_estadual
   size: 6
   show:
     target:
