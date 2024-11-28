@@ -17,7 +17,14 @@ export function Renderer(props) {
     const [imported, _imported] = useState(false)
     const [imported_lists, _imported_lists] = useState(false)
     const [imported_script, _imported_script] = useState(false)
-    const [preparedData, _preparedData] = useState({});
+
+    const [entity, _entity] = useState({});
+    const [files, _files] = useState({});
+
+    useEffect(() => {
+        _files(form.fields.filter(f => ['thumbnail', 'file'].includes(f.type)).reduce((acc, f) => ({ ...acc, [f.key]: null }), {}))
+
+    }, [form])
 
     useEffect(() => {
         async function doImport() {
@@ -55,19 +62,123 @@ export function Renderer(props) {
             if (!pData[f.key]) pData[f.key] = f.default;
         }
 
-        _preparedData(pData);
+        _entity(pData);
     }, [form, data])
+
+    useEffect(() => {
+        props.onDataChange(entity, files)
+    }, [entity])
+
+    const handleDataChange = (field, value, iterative /* k = block key, index */) => {
+        if (iterative === undefined) { /* campos fora de blocos ou em blocos não iterativos */
+
+            let newEntity = { ...entity };
+
+            // handle files
+            if (Object.keys(files).includes(field)) {
+
+                newEntity = {
+                    ...newEntity,
+                    [field]: value ? value : 'remove',
+                };
+
+                _files({ ...files, [field]: value?.file });
+
+            } else {
+
+                newEntity = {
+                    ...newEntity,
+                    [field]: value
+                };
+
+            }
+
+            // onchange
+            const onchange = form.fields.find(f => f.key === field)?.onchange
+            if (onchange) for (let c of onchange) {
+                newEntity = {
+                    ...newEntity,
+                    [c.key]: c.value
+                }
+
+                // handle files
+                if (Object.keys(files).includes(c.key)) {
+                    _files({ ...files, [c.key]: null })
+                }
+            }
+
+            console.log(`changing ${field}:`, value, newEntity);
+
+            _entity(newEntity)
+
+        } else { /* campos em blocos iterativos */
+
+            /* TODO: files */
+            /* TODO: onchange */
+
+            let complexValue = entity[iterative.k];
+            if (!!complexValue && Array.isArray(complexValue)) {
+                complexValue[iterative.index][field] = value;
+
+                _entity(entity => {
+                    const newEntity = {
+                        ...entity,
+                        [iterative.k]: complexValue
+                    }
+
+                    console.log(`changing iterative ${iterative.k}:`, complexValue, newEntity);
+
+                    return newEntity
+                })
+
+
+
+            }
+        }
+    }
+
+    const handleRemoveIterative = (iterative) => {
+        let complexValue = entity[iterative.k];
+        complexValue.splice(iterative.index, 1);
+
+        _entity(entity => ({
+            ...entity,
+            [iterative.k]: complexValue
+        }))
+    }
+
+    const handleAddIterative = (block) => {
+
+        let newEmptyValue = {};
+        for (let field of block.elements) newEmptyValue[field] = null;
+
+        let newComplexValue;
+        if (!entity[block.key]) newComplexValue = [newEmptyValue];
+        else newComplexValue = [...entity[block.key], newEmptyValue];
+
+        _entity(entity => ({
+            ...entity,
+            [block.key]: newComplexValue
+        }))
+    }
 
     if (!imported) return <></>;
 
-    if (!view) return <BasicRenderer {...props} data={preparedData} />
-    else return <ViewRenderer {...props} data={preparedData} />
+    const props_ext = {
+        ...props,
+        handleDataChange,
+        onRemoveIterative: handleRemoveIterative,
+        onAddIterative: handleAddIterative,
+    }
+
+    if (!view) return <BasicRenderer {...props_ext} data={entity} />
+    else return <ViewRenderer {...props_ext} data={entity} />
 }
 
 /*****************************************************************
     Basic Renderer
  *****************************************************************/
-function BasicRenderer({ form, readonly, showOrphans = false, data, onDataChange, onRemoveIterative, onAddIterative }) {
+function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataChange, onRemoveIterative, onAddIterative }) {
     const [blocks, _blocks] = useState([]);
     const [otherFields, _otherFields] = useState([]);
 
@@ -79,7 +190,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, onDataChange
 
                 blocks = <>
                     {form.fields.map(f => <div key={f.key} className='row'>
-                        <div className={`col-xs-${f.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} /></div>
+                        <div className={`col-xs-${f.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} handleDataChange={handleDataChange} /></div>
                     </div>)}
                 </>
 
@@ -119,7 +230,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, onDataChange
                             inBlock.push(fKey);
                             const field = form.fields.find(fi => fi.key === fKey);
                             return <div key={field.key} className='row'>
-                                <div className={`col-xs-${field.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} iterative={index === undefined ? undefined : { k, index }} onDataChange={onDataChange} /></div>
+                                <div className={`col-xs-${field.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} iterative={index === undefined ? undefined : { k, index }} handleDataChange={handleDataChange} /></div>
                             </div>
                         })}
                     </Block>
@@ -140,7 +251,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, onDataChange
                 // mostrar campos sem blocos
                 otherFields = <>
                     {form.fields.filter(f => !inBlock.includes(f.key)).map(f => <div key={f.key} className='row'>
-                        <div className={`col-xs-${f.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} onDataChange={onDataChange} /></div>
+                        <div className={`col-xs-${f.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} handleDataChange={handleDataChange} /></div>
                     </div>)}
                 </>
             }
@@ -161,14 +272,14 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, onDataChange
  *****************************************************************/
 // TODO: tentar resolver esta cascata de props - hooks? context?
 
-function ViewRenderer({ form, view, data, readonly, onDataChange, onRemoveIterative, onAddIterative, addBlock }) {
-    return <Element v={{ type: 'start', elements: view }} readonly={readonly} form={form} data={data} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />
+function ViewRenderer({ form, view, data, readonly, handleDataChange, onRemoveIterative, onAddIterative, addBlock }) {
+    return <Element v={{ type: 'start', elements: view }} readonly={readonly} form={form} data={data} handleDataChange={handleDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />
 }
 function Element(props) {
-    const { readonly, form, v, data, iterative, onDataChange, onRemoveIterative, onAddIterative, addBlock } = props;
+    const { readonly, form, v, data, iterative, handleDataChange, onRemoveIterative, onAddIterative, addBlock } = props;
 
     if (v.type === 'start') return <>
-        {v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
+        {v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} handleDataChange={handleDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
     </>
 
     if (v.type === 'row') {
@@ -226,14 +337,14 @@ function Element(props) {
             if (!field) return null;
 
             if (!checkShow(field, data)) return null;
-            
+
             return <div className={`col-xs-${v.size}`}>
-                <FieldRenderer readonly={readonly} blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} iterative={iterative} onDataChange={onDataChange} />
+                <FieldRenderer readonly={readonly} blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} iterative={iterative} handleDataChange={handleDataChange} />
             </div>
         }
 
         if (!!v.elements) {
-            return <div className={`col-xs-${v.size}`}>{v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}</div>
+            return <div className={`col-xs-${v.size}`}>{v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} iterative={iterative} handleDataChange={handleDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}</div>
         }
 
         return null;
@@ -246,7 +357,7 @@ function Element(props) {
             const block = form.blocks.find(b => b.key === v.block);
 
             return <Block key={`add_${block.key}`} block={block} data={data}>
-                {v.elements.map((v, idx) => <Element readonly={readonly} key={idx} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={block} onAddIterative={onAddIterative} />)}
+                {v.elements.map((v, idx) => <Element readonly={readonly} key={idx} form={form} v={v} data={data} iterative={iterative} handleDataChange={handleDataChange} onRemoveIterative={onRemoveIterative} addBlock={block} onAddIterative={onAddIterative} />)}
             </Block>
         }
     }
@@ -261,9 +372,9 @@ function Element(props) {
     return null;
 
 }
-function Row({ readonly, form, v, data, iterative, onDataChange, onRemoveIterative, addBlock, onAddIterative }) {
+function Row({ readonly, form, v, data, iterative, handleDataChange, onRemoveIterative, addBlock, onAddIterative }) {
     return <div className="row">
-        {v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} iterative={iterative} onDataChange={onDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
+        {v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} iterative={iterative} handleDataChange={handleDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
     </div>
 }
 
@@ -271,7 +382,7 @@ function Row({ readonly, form, v, data, iterative, onDataChange, onRemoveIterati
     Field Renderer
  *****************************************************************/
 
-export function FieldRenderer({ f, size, readonly, keyRef, blocks, data, iterative, onDataChange }) {
+export function FieldRenderer({ f, size, readonly, keyRef, blocks, data, iterative, handleDataChange }) {
     const [doShow, _doShow] = useState(false);
 
     useEffect(() => {
@@ -282,7 +393,7 @@ export function FieldRenderer({ f, size, readonly, keyRef, blocks, data, iterati
     }, [f, blocks, data])
 
     const onChange = (field, iterative) => value => {
-        onDataChange(field, value, iterative);
+        handleDataChange(field, value, iterative);
     }
 
     if (!doShow) return null;
@@ -443,6 +554,23 @@ export function mapData2Form(data, form) {
     return mappedData;
 }
 
+/*****************************************************************
+    Create FormData: data + files
+ *****************************************************************/
+
+export function getFormData(form, entity, files) {
+    let data = new FormData()
+
+    for (let key of Object.keys(files)) if (!!files[key]) data.append(dbFieldKey(form, key), files[key])  
+
+    data.set('entity', JSON.stringify(entity))
+
+    return data
+}
+function dbFieldKey(form, key) {
+    const db_field = form.fields.find(f => f.key === key)?.db_field
+    return db_field || key
+}
 
 /*****************************************************************
     Field components

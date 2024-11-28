@@ -9,7 +9,7 @@ import { /* useDorothy, */ useRouter } from 'dorothy-dna-react';
 /* components */
 import Card from '../../components/Card';
 import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
-import { Renderer, mapData2Form } from '../../components/FormRenderer';
+import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer'
 
 /* icons */
 import CheckCircle from '../../components/icons/CheckCircle';
@@ -38,24 +38,13 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
     const [currentForm, _currentForm] = useState(null);
 
     /* states */
-    const [originalEntity, _originalEntity] = useState([]);
     const [entity, _entity] = useState([]);
+    const [files, _files] = useState({});
 
     //get policy_data
     const { data } = useQuery(['policy_info', { entityId }], {
         queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft/indics`)).data,
     });
-
-    useEffect(() => {
-        if (!data || !currentForm || !currentIndics || !data.indicadores?.[currentIndics]) return;
-
-        const mData = mapData2Form(data.indicadores[currentIndics], currentForm);
-
-        _entity(mData);
-        _originalEntity(mData);
-
-        // console.log(data)
-    }, [data, currentForm, currentIndics]);
 
     useEffect(() => {
         if (params && params[1]) _currentIndics(params[1]);
@@ -74,24 +63,6 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
         }
     }, [currentIndics]);
 
-    /* useEffect(() => {
-        async function setup() {
-            await dispatch({
-                type: 'setup',
-                payload: indicData.data,
-            });
-
-            _changed(false);
-        }
-
-        if (indicData) {
-            console.log('indicData', indicData);
-            _indic(indicData.indic);
-            _problems(indicData.problems);
-            setup();
-        }
-    }, [indicData]); */
-
     const handleNavBranch = id => {
         if (navBranch !== id) _navBranch(id);
         else _navBranch(null);
@@ -109,12 +80,12 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
         _toNavigate(null);
     };
 
-    const handleDataChange = (field, value) => {
-        _entity(entity => ({
-            ...entity,
-            [field]: value
-        }))
+    const handleDataChange = (entity, files) => {
+        _entity(entity)
+        _files(files)
     }
+
+    if(!data?.indicadores?.[currentIndics]) return <></>
 
     return (
         <>
@@ -152,7 +123,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
                         <div className="p-3">
                             {!!currentForm && <Renderer
                                 form={currentForm}
-                                data={entity}
+                                data={mapData2Form(data.indicadores[currentIndics], currentForm)}
                                 onDataChange={handleDataChange}
                                 readonly={true}
                             />}

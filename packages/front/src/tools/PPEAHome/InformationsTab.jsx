@@ -14,7 +14,7 @@ import Card from '../../components/Card';
 
 import FilePlus from '../../components/icons/FilePlus';
 
-import { Renderer, mapData2Form } from '../../components/FormRenderer'
+import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer'
 
 import form from './form1.yml'
 import form_view from './form1_view.yml'
@@ -30,31 +30,20 @@ export default function InformationsTab({ entityId }) {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   /* states */
-  const [originalEntity, _originalEntity] = useState([]);
   const [entity, _entity] = useState([]);
+  const [files, _files] = useState({});
 
   //get policy_data
   const { data } = useQuery(['policy_info', { entityId }], {
     queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft/info`)).data,
   });
 
-  useEffect(() => {
-    if (!data || !form) return;
-
-    const mData = mapData2Form(data,form);
-
-    _entity(mData);
-    _originalEntity(mData);
-
-    // console.log(data)
-  }, [data, form]);
-
-  const handleDataChange = (field, value) => {
-    _entity(entity => ({
-      ...entity,
-      [field]: value
-    }))
+  const handleDataChange = (entity, files) => {
+    _entity(entity)
+    _files(files)
   }
+
+  if(!data) return <></>
 
   return (
     <>
@@ -68,7 +57,7 @@ export default function InformationsTab({ entityId }) {
                   form={form}
                   view={form_view}
                   lists={lists}
-                  data={entity}
+                  data={mapData2Form(data, form)}
                   onDataChange={handleDataChange}
                 />
 

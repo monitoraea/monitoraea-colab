@@ -14,7 +14,7 @@ import Card from '../../components/Card';
 
 import FilePlus from '../../components/icons/FilePlus';
 
-import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer/new'
+import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer'
 
 import form from './form1.yml'
 import form_view from './form1_view.yml'
@@ -40,15 +40,6 @@ export default function InformationsTab({ entityId }) {
     retry: false,
     refetchOnWindowFocus: false,
   });
-
-  // TODO: ABAIXO: responsabilidade do formRenderer?
-  // onde digo "responsabilidade do renderer" pode ser responsabilidade de um outro componente controller, fazendo o papel que hoje está com o componente que usa o renderer
-
-  // useEffect(() => {
-  //   if (!data || !form) return;
-  //   _originalEntity(mapData2Form(data, form));
-
-  // }, [data, form]);
 
   const handleDataChange = (entity, files) => {
     _entity(entity)
@@ -112,6 +103,8 @@ export default function InformationsTab({ entityId }) {
       });
     }
   };
+
+  if(!data) return <></>
 
   return (
     <>
