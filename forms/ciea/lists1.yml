@@ -2,9 +2,9 @@ lists:
 
   - key: sim_nao
     options:
-    - value: 'sim'
+    - value: true
       label: 'Sim'
-    - value: 'nao'
+    - value: ~
       label: 'Não'
 
   - key: tipo_arquivo

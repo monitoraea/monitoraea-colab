@@ -6,18 +6,10 @@ const entity = require('./index');
 const multer = require('multer');
 const upload = multer(); // Memory
 
-const upFields = upload.fields([
-  { name: 'logo', maxCount: 1 }, 
-  { name: 'documento_criacao', maxCount: 1 }, 
-  { name: 'regimento_interno', maxCount: 1 },
-  { name: 'ppea', maxCount: 1 },
-  { name: 'ppea2', maxCount: 1 },
-  { name: 'programa_estadual', maxCount: 1 },
-  { name: 'plano_estadual', maxCount: 1 },
-]);
+const FormManager = require('../../FormsManager')
 
 const upTimelineImage = upload.fields([
-  { name: 'imagem', maxCount: 1 }, 
+  { name: 'imagem', maxCount: 1 },
 ]);
 
 /* TODO */
@@ -53,16 +45,16 @@ router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
   const { imagem } = req.files;
 
   try {
-      const result = await entity.saveDraftTimeline(res.locals.user,
-          JSON.parse(entityData),
-          imagem && imagem.length ? imagem[0] : null,
-          id,
-          tlid
-      );
+    const result = await entity.saveDraftTimeline(res.locals.user,
+      JSON.parse(entityData),
+      imagem && imagem.length ? imagem[0] : null,
+      id,
+      tlid
+    );
 
-      res.json(result);
+    res.json(result);
   } catch (ex) {
-      sendError(res, ex, 500);
+    sendError(res, ex, 500);
   }
 });
 router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
@@ -72,24 +64,11 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
   const { imagem } = req.files;
 
   try {
-      const result = await entity.saveDraftTimeline(res.locals.user,
-          JSON.parse(entityData),
-          imagem && imagem.length ? imagem[0] : null,
-          id
-      );
-
-      res.json(result);
-  } catch (ex) {
-      sendError(res, ex, 500);
-  }
-});
-
-/* TODO */
-router.get('/:id/draft', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const result = await entity.getDraft(id);
+    const result = await entity.saveDraftTimeline(res.locals.user,
+      JSON.parse(entityData),
+      imagem && imagem.length ? imagem[0] : null,
+      id
+    );
 
     res.json(result);
   } catch (ex) {
@@ -97,34 +76,41 @@ router.get('/:id/draft', async (req, res) => {
   }
 });
 
+/* *** FORMS.Begin *** */
+(async function setupForms() {
+  
+  const form1 = await FormManager.getForm('ciea/form1')
 
-/* TODO */
-router.put("/:id/draft", upFields, async (req, res) => {
-  const { id } = req.params;
-  const { entity: entityData } = req.body;
+  router.get('/:id/draft', async (req, res) => {
+    const { id } = req.params;
 
-  const { logo, documento_criacao, regimento_interno, ppea, ppea2, programa_estadual, plano_estadual } = req.files;
+    try {
+      const result = await entity.getDraft(id);
 
-  try {
-      const result = await entity.saveDraft(res.locals.user,
-          JSON.parse(entityData),
-          {
-              logo_arquivo: logo && logo.length ? logo[0] : null,
-              documento_criacao_arquivo: documento_criacao && documento_criacao.length ? documento_criacao[0] : null,
-              regimento_interno_arquivo: regimento_interno && regimento_interno.length ? regimento_interno[0] : null,
-              ppea_arquivo: ppea && ppea.length ? ppea[0] : null,
-              ppea2_arquivo: ppea2 && ppea2.length ? ppea2[0] : null,
-              programa_estadual_arquivo: programa_estadual && programa_estadual.length ? programa_estadual[0] : null,
-              plano_estadual_arquivo: plano_estadual && plano_estadual.length ? plano_estadual[0] : null,
-          },
-          id
+      res.json(result);
+    } catch (ex) {
+      sendError(res, ex, 500);
+    }
+  }); 
+
+  router.put("/:id/draft", upload.fields(FormManager.upFields(form1)), async (req, res) => {
+
+    try {
+      const result = await entity.saveDraft(
+        res.locals.user,
+        form1,
+        req.body,
+        req.files,
+        req.params.id
       );
 
       res.json(result);
-  } catch (ex) {
+    } catch (ex) {
       sendError(res, ex, 500);
-  }
-});
+    }
+  });
+})()
+/* *** FORMS.End *** */
 
 /* TODO */
 router.get('/mine', async (req, res) => {

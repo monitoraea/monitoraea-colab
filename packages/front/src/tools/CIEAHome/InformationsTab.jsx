@@ -16,9 +16,9 @@ import FilePlus from '../../components/icons/FilePlus';
 
 import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer'
 
-import form from './form1.yml'
-import form_view from './form1_view.yml'
-import lists from './lists1.yml'
+import form from '../../../../../forms/ciea/form1.yml'
+import form_view from '../../../../../forms/ciea/form1_view.yml'
+import lists from '../../../../../forms/ciea/lists1.yml'
 
 /* style */
 // import style from './information.module.scss';

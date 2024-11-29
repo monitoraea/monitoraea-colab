@@ -1,6 +1,8 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
+const FormManager = require('../../FormsManager')
+
 const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId } = require('../../utils');
 
 const dayjs = require('dayjs');
@@ -186,17 +188,12 @@ class Service {
       },
     );
 
-    let commission = {
+    let commission = { /* TODO: dá para simplificar com FormManager */
       ...entity[0],
       data_criacao: entity[0].data_criacao ? dayjs(`01-01-${entity[0].data_criacao}`, "MM-DD-YYYY") : null,
-      regimento_interno_tem: !entity[0].regimento_interno_tem ? null : (entity[0].regimento_interno_tem ? 'sim' : 'nao'),
-      organizacao_interna_estrutura_tem: entity[0].organizacao_interna_estrutura_tem === null ? null : (entity[0].organizacao_interna_estrutura_tem ? 'sim' : 'nao'),
-      ppea_tem: entity[0].ppea_tem === null ? null : (entity[0].ppea_tem ? 'sim' : 'nao'),
-      ppea2_tem: entity[0].ppea2_tem === null ? null : (entity[0].ppea2_tem ? 'sim' : 'nao'),
-      programa_estadual_tem: entity[0].programa_estadual_tem === null ? null : (entity[0].programa_estadual_tem ? 'sim' : 'nao'),
-      plano_estadual_tem: entity[0].plano_estadual_tem === null ? null : (entity[0].plano_estadual_tem ? 'sim' : 'nao'),
     };
 
+    /* TODO: dá para simplificar com FormManager */
     for (let document of ['logo', 'documento_criacao', 'regimento_interno', 'ppea', 'ppea2', 'programa_estadual', 'plano_estadual']) {
       if (document !== 'logo') commission[`${document}_tipo`] = null;
 
@@ -224,35 +221,47 @@ class Service {
     return commission;
   }
 
-  async saveDraft(user, entity, files, id) {
+  async saveDraft(user, form, body, files, id) {
+    const form1 = await FormManager.getForm('ciea/form1')
 
     /* Transformations */
-    if (!!entity.data_criacao) entity.data_criacao = dayjs(entity.data_criacao).year();
-    entity.regimento_interno_tem = entity.regimento_interno_tem === 'none' ? null : (entity.regimento_interno_tem === 'sim')
-    entity.organizacao_interna_estrutura_tem = entity.organizacao_interna_estrutura_tem === 'none' ? null : (entity.organizacao_interna_estrutura_tem === 'sim')
-    entity.ppea_tem = entity.ppea_tem === 'none' ? null : (entity.ppea_tem === 'sim')
-    entity.ppea2_tem = entity.ppea2_tem === 'none' ? null : (entity.ppea2_tem === 'sim')
-    entity.programa_estadual_tem = entity.programa_estadual_tem === 'none' ? null : (entity.programa_estadual_tem === 'sim')
-    entity.plano_estadual_tem = entity.plano_estadual_tem === 'none' ? null : (entity.plano_estadual_tem === 'sim')
+    const entity = FormManager.parse(form1, body.entity)    
 
     await db.models['Commission'].update({
       ...entity,
-      logo_arquivo: undefined,
-      documento_criacao_arquivo: entity.documento_criacao_tipo === 'none' ? null : undefined,
-      regimento_interno_arquivo: entity.regimento_interno_tipo === 'none' ? null : undefined,
-      ppea_arquivo: entity.ppea_tipo === 'none' ? null : undefined,
-      ppea2_arquivo: entity.ppea2_tipo === 'none' ? null : undefined,
-      programa_estadual_arquivo: entity.programa_estadual_tipo === 'none' ? null : undefined,
-      plano_estadual_arquivo: entity.plano_estadual_tipo === 'none' ? null : undefined,
+
+      logo_arquivo: undefined, /* TODO: files/thumbnail except those in link_or_file */
+
+      /* TODO: files in link_or_file */ /* ENTENDER!!!!!!! */
+      documento_criacao_arquivo: entity.documento_criacao_tipo === null ? null : undefined,
+      regimento_interno_arquivo: entity.regimento_interno_tipo === null ? null : undefined,
+      ppea_arquivo: entity.ppea_tipo === null ? null : undefined,
+      ppea2_arquivo: entity.ppea2_tipo === null ? null : undefined,
+      programa_estadual_arquivo: entity.programa_estadual_tipo === null ? null : undefined,
+      plano_estadual_arquivo: entity.plano_estadual_tipo === null ? null : undefined,
+
     }, {
       where: { id }
     });
 
     const entityModel = await db.models['Commission'].findByPk(id);
 
+    /* TODO: GENERALIZAR: recuperar em form.yml - files/thumbnai que não em link_or_file <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form */
     if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
     else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
 
+    files = { /* TODO: recuperar em form - nem precisa existir, pode ser resolvido abaixo */
+      logo_arquivo: files.logo_arquivo && files.logo_arquivo.length ? files.logo_arquivo[0] : null,
+      documento_criacao_arquivo: files.documento_criacao_arquivo && files.documento_criacao_arquivo.length ? files.documento_criacao_arquivo[0] : null,
+      regimento_interno_arquivo: files.regimento_interno_arquivo && files.regimento_interno_arquivo.length ? files.regimento_interno_arquivo[0] : null,
+      ppea_arquivo: files.ppea_arquivo && files.ppea_arquivo.length ? files.ppea_arquivo[0] : null,
+      ppea2_arquivo: files.ppea2_arquivo && files.ppea2_arquivo.length ? files.ppea2_arquivo[0] : null,
+      programa_estadual_arquivo: files.programa_estadual_arquivo && files.programa_estadual_arquivo.length ? files.programa_estadual_arquivo[0] : null,
+      plano_estadual_arquivo: files.plano_estadual_arquivo && files.plano_estadual_arquivo.length ? files.plano_estadual_arquivo[0] : null,
+    }
+
+    // !!!!! form.link_or_file_fields <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form
+    /* TODO: GENERALIZAR: recuperar em form.yml - updateFile deveria ser único (util?) */
     for (let wFile of ['documento_criacao', 'regimento_interno', 'ppea', 'ppea2', 'programa_estadual', 'plano_estadual']) {
       if (entity[`${wFile}_tipo`] === 'link') await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
       else if (entity[`${wFile}_tipo`] === 'file') {

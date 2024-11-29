@@ -3,7 +3,7 @@ fields:
 - key: logo_arquivo
   type: thumbnail
   title: Logotipo
-  db_field: logo # TODO: db_field só funciona para arquivos, por enquanto
+  db_field: logo_arquivo
   size: 2
 
 - key: uf_nome
@@ -69,7 +69,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo de criação
-  db_field: documento_criacao
+  db_field: documento_criacao_arquivo
   size: 6
   show:
     target:
@@ -138,7 +138,7 @@ fields:
   show:
     target:
       key: regimento_interno_tem
-      value: sim
+      value: true
 
 - key: regimento_interno_tipo
   type: options
@@ -161,7 +161,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo de regimento
-  db_field: regimento_interno
+  db_field: regimento_interno_arquivo
   size: 6
   show:
     target:
@@ -208,7 +208,7 @@ fields:
   show:
     target:
       key: organizacao_interna_estrutura_tem
-      value: sim
+      value: true
 
 - key: ppea_tem
   type: options
@@ -239,7 +239,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo de política pública
-  db_field: ppea
+  db_field: ppea_arquivo
   size: 6
   show:
     target:
@@ -285,7 +285,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo de política pública
-  db_field: ppea2
+  db_field: ppea2_arquivo
   size: 6
   show:
     target:
@@ -331,7 +331,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo do programa
-  db_field: programa_estadual
+  db_field: programa_estadual_arquivo
   size: 6
   show:
     target:
@@ -377,7 +377,7 @@ fields:
   type: file
   accept: application/pdf
   title: Arquivo do plano
-  db_field: plano_estadual
+  db_field: plano_estadual_arquivo
   size: 6
   show:
     target:
@@ -456,7 +456,7 @@ blocks:
     show:
       target:
         key: regimento_interno_tem
-        value: sim
+        value: true
 
   - key: organizacao_interna
     title: Organização interna
@@ -483,7 +483,7 @@ blocks:
     show:
       target:
         key: ppea_tem
-        value: sim
+        value: true
 
   - key: ppea2_block
     title: Política Pública Estadual de Mudanças do Clima
@@ -502,7 +502,7 @@ blocks:
     show:
       target:
         key: ppea2_tem
-        value: sim
+        value: true
   
   - key: programa_estadual_block
     title: Programa Estadual de Educação Ambiental
@@ -521,7 +521,7 @@ blocks:
     show:
       target:
         key: programa_estadual_tem
-        value: sim
+        value: true
   
   - key: plano_estadual_block
     title: Plano Estadual de Educação Ambiental
@@ -540,4 +540,15 @@ blocks:
     show:
       target:
         key: plano_estadual_tem
-        value: sim
+        value: true
+
+################################################################
+# objetos livres não definida no protocolo, para fins de abastecer o servidor com mais informações
+
+link_or_file_fields:
+  - documento_criacao
+  - regimento_interno
+  - ppea
+  - ppea2
+  - programa_estadual
+  - plano_estadual  
