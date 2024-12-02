@@ -12,7 +12,7 @@ fields:
 
 - key: 2
   type: options
-  title: Quando foi realizado o diagnóstico?
+  title: Quando foi realizado o diagnóstico?
   size: 6
   options:    
     - value: 0
@@ -23,8 +23,8 @@ fields:
       label: Durante todo o processo de construção, implementação e revisão da PPEA
 
 - key: 6
-  type: text # campo File
-  title: Insira elemento comprobatório referente a pergunta acima //TODO - FILE
+  type: file
+  title: Insira elemento comprobatório referente a pergunta acima
   size: 12
 
 - key: 3
@@ -42,8 +42,8 @@ fields:
       label: Conjunto de técnicas participativas (MAPPEA - Mínima Aproximação Prévia para elaboração de Programas de Educação Ambiental, DRP – Diagnóstico Rápido Participativo, etc.)
 
 - key: 7
-  type: text # campo File
-  title: Insira elemento comprobatório referente a pergunta acima //TODO - FILE
+  type: file
+  title: Insira elemento comprobatório referente a pergunta acima
   size: 12
 
 - key: 4

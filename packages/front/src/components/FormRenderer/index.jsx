@@ -75,7 +75,7 @@ export function Renderer(props) {
             let newEntity = { ...entity };
 
             // handle files
-            if (Object.keys(files).includes(field)) {
+            if (Object.keys(files).includes(String(field))) {
 
                 newEntity = {
                     ...newEntity,
@@ -102,7 +102,7 @@ export function Renderer(props) {
                 }
 
                 // handle files
-                if (Object.keys(files).includes(c.key)) {
+                if (Object.keys(files).includes(String(c.key))) {
                     _files({ ...files, [c.key]: null })
                 }
             }
@@ -554,6 +554,17 @@ export function mapData2Form(data, form) {
     return mappedData;
 }
 
+export function mapForm2Data(data, form) { /* TODO: vai para o getFormData, abaixo?? */
+    let mappedData = data;
+
+    // multi_autocomplete
+    for (let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
+        mappedData[f.key] = data[f.key].map(d => d.value)
+    }
+
+    return mappedData;
+}
+
 /*****************************************************************
     Create FormData: data + files
  *****************************************************************/
@@ -563,7 +574,7 @@ export function getFormData(form, entity, files) {
 
     for (let key of Object.keys(files)) if (!!files[key]) data.append(dbFieldKey(form, key), files[key])  
 
-    data.set('entity', JSON.stringify(entity))
+    data.set('entity', JSON.stringify(mapForm2Data(entity, form)))
 
     return data
 }
@@ -642,7 +653,7 @@ function OptionsField({ f, readonly, index, dataValue, onChange }) {
     return <TextField
         className="input-select"
         label={titleAndIndex(f.title, index)}
-        value={value || 'none'}
+        value={value !== undefined ? value : 'none'}
         select
         onChange={(e) => onChange(e.target.value)}
         disabled={readonly}

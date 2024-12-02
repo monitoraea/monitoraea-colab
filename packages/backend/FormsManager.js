@@ -5,6 +5,10 @@ const dayjs = require('dayjs');
 class Service {
     forms = {}
 
+    async getForms(folder) {
+        return fs.readdirSync(`../../forms/${folder}`)
+    }
+
     async getForm(form_name) {
         if (!this.forms[form_name]) {
             this.forms[form_name] = YAML.parse(fs.readFileSync(require.resolve(`../../forms/${form_name}.yml`), 'utf8'))

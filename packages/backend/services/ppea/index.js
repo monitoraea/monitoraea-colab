@@ -1,12 +1,23 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
-const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect } = require('../../utils');
+const { getSegmentedId } = require('../../utils');
 
 const dayjs = require('dayjs');
 
 const shapefile = require('shapefile');
 const simplify = require('simplify-geojson');
+
+const aws = require('aws-sdk');
+const s3BucketName = process.env.S3_BUCKET_NAME;
+
+const s3 = new aws.S3({
+  apiVersion: '2006-03-01',
+
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+
+});
 
 class Service {
   /* Entity */
@@ -62,7 +73,7 @@ class Service {
     return policy;
   }
 
-  async getDraftIndic(id) {
+  async getDraftIndic(form, indic_name, id) {
     const entity = await db.instance().query(
       `
       SELECT
@@ -77,10 +88,117 @@ class Service {
       },
     );
 
-    let policy = entity[0];
+    let indicator = entity[0].indicadores[indic_name];
 
-    return policy;
+    // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
+    for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
+      
+      if(indicator[f.key]) {
+        // recupera o arquivo
+        const fileModel = await db.models['File'].findByPk(indicator[f.key])
+        // substitui o conteudo no campo
+        indicator[f.key] = {
+          url: `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'ppea', f.key, fileModel.get('url'))}`,
+          file: { name: fileModel.get('file_name') },
+        }
+      }
+
+    }
+
+    return indicator;
   }
+
+  async saveDraftIndic(user, form, indic_name, entity, files, id) {
+
+    const ppea = await db.models['Ppea'].findOne({ where: { politica_id: id, versao: 'draft' } }, {
+      raw: true,
+      nest: true
+    })
+    const model = ppea.get({ plain: true })
+
+    // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
+    for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
+
+      if (entity[f.key] === 'remove') await this.removeFile(entity, f.key, model[f.key])
+      else if (files[f.key]) await this.updateFile(id, entity, files[f.key][0], f.key, `ppea_${f.key}`, model[f.key])
+      else entity[f.key] = model.indicadores[indic_name][f.key]
+
+    }
+
+    // gravar JSON em indics na posicao certa (indic_name)
+    await db.models['Ppea'].update({ ...model, indicadores: {...model.indicadores, [indic_name]: entity }}, {
+      where: { id: model.id }
+    })
+
+    // console.log('>>>>>>>>', { ...model, indicadores: {...model.indicadores, [indic_name]: entity }})
+
+    return entity
+  }
+
+  /* *********************** GENERALIZAR.Begin */ /* TODO */
+  async removeFile(entity, fieldName, fileId) {
+
+    entity[fieldName] = null
+
+    /* remove file */
+    db.models['File'].destroy({
+      where: { id: fileId }
+    });
+
+    /* TODO: remove from S3? */
+
+    return entity
+  }
+
+  async updateFile(id, entity, file, fieldName, document_type, existingFileId) {
+    // S3
+    await s3.putObject({
+      Bucket: s3BucketName,
+      Key: this.getFileKey(id, 'ppea', fieldName, file.originalname),
+      Body: file.buffer,
+      ACL: 'public-read',
+    }).promise()
+
+    await this.updateFileModel(
+      entity,
+      fieldName,
+      file.originalname,
+      file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`,
+      document_type,
+      existingFileId
+    )
+  }
+
+  async updateFileModel(entity, fieldName, file_name, content_type, document_type, existingFileId) {
+    let fileModel
+    if (existingFileId) fileModel = await db.models['File'].findByPk(existingFileId)
+
+    if (!!fileModel) {
+
+      fileModel.file_name = file_name;
+      fileModel.url = file_name;
+      fileModel.document_type = document_type;
+      fileModel.content_type = content_type;
+
+      fileModel.save();
+    } else {
+      const fileModel = await db.models['File'].create({
+        file_name,
+        url: file_name,
+        document_type: document_type,
+        content_type,
+      });
+
+      entity[fieldName] = fileModel.id;
+    }
+  }
+
+  getFileKey(id, main_folder, folder, filename) {
+    const segmentedId = getSegmentedId(id);
+
+    return `${main_folder}/${segmentedId}/${folder}/original/${filename}`;
+  }
+  /* *********************** GENERALIZAR.End */
 
   /* Retorna o id do projeto relacionado a uma comunidade */
   async getIdFromCommunity(community_id) {

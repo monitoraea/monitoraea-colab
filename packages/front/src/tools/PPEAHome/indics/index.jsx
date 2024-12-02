@@ -1,7 +1,7 @@
 /* forms */
-import form_indic_none from './form_indic_none.yml'
-import form_indic_1_1 from './form_indic_1_1.yml'
-import form_indic_2_1 from './form_indic_2_1.yml'
+import indic_none from '../../../../../../forms/ppea/indics/indic_none.yml'
+import indic_1_1 from '../../../../../../forms/ppea/indics/indic_1_1.yml'
+import indic_2_1 from '../../../../../../forms/ppea/indics/indic_2_1.yml'
 
 export default [
     {
@@ -13,7 +13,7 @@ export default [
                 "id": "1_1",
                 "title": "Diagnóstico para construção da PPEA",
                 "ready": false,
-                "form": form_indic_1_1
+                "form": indic_1_1
             }
         ]
     },
@@ -26,13 +26,13 @@ export default [
                 "id": "2_1",
                 "title": "Mobilização Social",
                 "ready": false,
-                "form": form_indic_2_1
+                "form": indic_2_1
             },
             {
                 "id": "2_2",
                 "title": "Existência de espaço coletivo (colegiado) para construir e implementar a PPEA",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             }
         ]
     },
@@ -45,31 +45,31 @@ export default [
                 "id": "3_1",
                 "title": "Desenvolvimento de processo formador para a construção e implementação da PPEA",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "3_2",
                 "title": "Articulação entre teoria e prática do processo formativo/pedagógico",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "3_3",
                 "title": "Diversidade de Técnicas/estratégias utilizadas nos processos formativos",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "3_4",
                 "title": "Diversidade de públicos envolvidos",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "3_5",
                 "title": "Avaliação dos processos formativos",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             }
         ]
     },
@@ -82,7 +82,7 @@ export default [
                 "id": "4_1",
                 "title": "Intervenções socioambientais geradas a partir da execução da PPEA",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             }
         ]
     },
@@ -95,19 +95,19 @@ export default [
                 "id": "5_1",
                 "title": "Elevação da autoestima dos envolvidos",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "5_2",
                 "title": "Laços e vínculos comunitários/sociais",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "5_3",
                 "title": "Valorização da cultura associada às atividades ambientais",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             }
         ]
     },
@@ -120,25 +120,25 @@ export default [
                 "id": "6_1",
                 "title": "Articulação Temática",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "6_2",
                 "title": "Articulação de Redes, Movimentos socioambientais e Coletivos Educadores",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "6_3",
                 "title": "Conexão e articulação com referências e documentos internacionais",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "6_4",
                 "title": "Apoio à Ações Afirmativas de enfrentamento às desigualdades e discriminações",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             }
         ]
     },
@@ -151,49 +151,49 @@ export default [
                 "id": "7_1",
                 "title": "Instrumento legal da PPEA",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "7_2",
                 "title": "Instrumento pedagógico participativo de base",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "7_3",
                 "title": "Gestão racional dos bens naturais, patrimoniais e bens públicos",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "7_4",
                 "title": "Suporte orçamentário",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "7_5",
                 "title": "Infraestrutura física",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "7_6",
                 "title": "Estrutura Organizacional",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "7_7",
                 "title": "Recursos humanos empregados na PPEA",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "7_8",
                 "title": "Monitoramento e Avaliação da PPEA",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             }
         ]
     },
@@ -206,19 +206,19 @@ export default [
                 "id": "8_1",
                 "title": "Plano e Ferramentas de Comunicação",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "8_2",
                 "title": "Interlocutores do processo de comunicação",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             },
             {
                 "id": "8_3",
                 "title": "Educomunicação e/ou Comunicação Social",
                 "ready": false,
-                "form": form_indic_none
+                "form": indic_none
             }
         ]
     }

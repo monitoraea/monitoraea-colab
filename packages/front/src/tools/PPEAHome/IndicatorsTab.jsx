@@ -14,6 +14,7 @@ import { Renderer, mapData2Form, getFormData } from '../../components/FormRender
 /* icons */
 import CheckCircle from '../../components/icons/CheckCircle';
 import XCircle from '../../components/icons/XCircle';
+import FilePlus from '../../components/icons/FilePlus';
 
 /* style */
 import styles from './indicators.module.scss';
@@ -43,7 +44,10 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
 
     //get policy_data
     const { data } = useQuery(['policy_info', { entityId }], {
-        queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft/indics`)).data,
+        queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft/indics/${currentIndics}`)).data,
+        enabled: !!currentIndics,
+        retry: false,
+        refetchOnWindowFocus: false,
     });
 
     useEffect(() => {
@@ -85,7 +89,66 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
         _files(files)
     }
 
-    if(!data?.indicadores?.[currentIndics]) return <></>
+    const handleSave = async () => {
+
+        /* save */
+        const data = getFormData(currentForm, entity, files) // prepare information (Renderer)
+        data.set('indic', currentIndics)
+
+        const snackKey = enqueueSnackbar('Gravando...', {
+            /* variant: 'info', */
+            /* hideIconVariant: true, */
+            persist: true,
+            anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+            },
+        });
+
+        try {
+            let method, url;
+            /* edit */
+            method = 'put';
+            url = `${server}ppea/${entityId}/draft/indics/${currentIndics}`;
+
+          /* const { data: response } =  */await axios({
+                method,
+                url,
+                data,
+                config: { headers: { 'Content-Type': 'multipart/form-data' } },
+            });
+
+            // console.log(response);
+
+            queryClient.invalidateQueries('policy_info');
+
+            // onSave(!_.isEqual(originalEntity, entity));
+
+            closeSnackbar(snackKey);
+
+            enqueueSnackbar('Registro gravado com sucesso!', {
+                variant: 'success',
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                },
+            });
+        } catch (error) {
+            closeSnackbar(snackKey);
+
+            console.error(error);
+
+            enqueueSnackbar('Erro ao gravar o registro!', {
+                variant: 'error',
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                },
+            });
+        }
+    };
+
+    if (!data) return <></>
 
     return (
         <>
@@ -123,10 +186,20 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
                         <div className="p-3">
                             {!!currentForm && <Renderer
                                 form={currentForm}
-                                data={mapData2Form(data.indicadores[currentIndics], currentForm)}
+                                data={mapData2Form(data, currentForm)}
                                 onDataChange={handleDataChange}
-                                /* readonly={true} */
+                            /* readonly={true} */
                             />}
+
+                            <div className="section-header">
+                                <div className="section-title"></div>
+                                <div className="section-actions">
+                                    <button className="button-primary" onClick={handleSave}>
+                                        <FilePlus></FilePlus>
+                                        Gravar
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </Card>
 
