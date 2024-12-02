@@ -1,7 +1,7 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
-const FormManager = require('../../FormsManager')
+// const FormManager = require('../../FormsManager')
 
 const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId } = require('../../utils');
 
@@ -221,11 +221,7 @@ class Service {
     return commission;
   }
 
-  async saveDraft(user, form, body, files, id) {
-    const form1 = await FormManager.getForm('ciea/form1')
-
-    /* Transformations */
-    const entity = FormManager.parse(form1, body.entity)    
+  async saveDraft(user, form, entity, files, id) {
 
     await db.models['Commission'].update({
       ...entity,

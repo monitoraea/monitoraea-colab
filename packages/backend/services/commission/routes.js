@@ -99,7 +99,7 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
       const result = await entity.saveDraft(
         res.locals.user,
         form1,
-        req.body,
+        FormManager.parse(form1, req.body.entity) /* Transformations */,
         req.files,
         req.params.id
       );
