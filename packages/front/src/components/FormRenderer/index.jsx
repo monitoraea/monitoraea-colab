@@ -198,8 +198,17 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataCh
 
                 function RenderBlock(k, b, index) {
                     processedBlocks.push(k);
+
+                    // insere os campos com propriedade block em elements
+                    let elements = b.elements ? [...b.elements] : []
+                    for(let f of form.fields.filter(f => f.block === k)) {   
+                        elements.push(f.key)
+                    }
+                    // SORT: block por ultimo - TODO: não é o ideal
+                    elements.sort((a,b) => a.type === 'block' ? 1 : -1)
+
                     return <Block key={`${!index ? k : `${k}.${index}`}`} block={b} data={data} basic={true} iterative={index === undefined ? undefined : { k, index, free: b.iterate.target === 'none' }} onRemoveIterative={onRemoveIterative}>
-                        {b.elements.map(e => {
+                        {elements.map(e => {
                             if (e.type === 'block') {
                                 const innerBlock = form.blocks.find(bl => bl.key === e.key);
 
@@ -373,6 +382,8 @@ function Element(props) {
 
 }
 function Row({ readonly, form, v, data, iterative, handleDataChange, onRemoveIterative, addBlock, onAddIterative }) {
+    // console.log(v.elements)
+
     return <div className="row">
         {v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} iterative={iterative} handleDataChange={handleDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}
     </div>

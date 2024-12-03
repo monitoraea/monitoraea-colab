@@ -1,6 +1,7 @@
 fields:
 
 - key: 1 # TODO - não deveríamos usar key numérico!!
+  block: main
   type: options
   title: Realizou diagnóstico?
   size: 6
@@ -11,6 +12,7 @@ fields:
       label: 'Sim'
 
 - key: 2
+  block: dependent # opção - aqui ou no elements do bloco
   type: options
   title: Quando foi realizado o diagnóstico?
   size: 6
@@ -23,11 +25,13 @@ fields:
       label: Durante todo o processo de construção, implementação e revisão da PPEA
 
 - key: 6
+  block: dependent
   type: file
   title: Insira elemento comprobatório referente a pergunta acima
   size: 12
 
 - key: 3
+  block: dependent
   type: multi_autocomplete
   title: Quais as estratégias utilizadas para realizar o diagnóstico?
   size: 12
@@ -42,11 +46,13 @@ fields:
       label: Conjunto de técnicas participativas (MAPPEA - Mínima Aproximação Prévia para elaboração de Programas de Educação Ambiental, DRP – Diagnóstico Rápido Participativo, etc.)
 
 - key: 7
+  block: dependent
   type: file
   title: Insira elemento comprobatório referente a pergunta acima
   size: 12
 
 - key: 4
+  block: dependent
   type: multi_autocomplete
   title: Quais foram os atores envolvidos no diagnóstico?
   size: 12
@@ -61,6 +67,7 @@ fields:
       label: Instituição proponente da PPEA e representantes da sociedade civil, setor privado e poder público
 
 - key: 5
+  block: dependent
   type: textarea
   rows: 8
   title: Descreva o processo de envolvimento destes atores/sujeitos
@@ -69,18 +76,10 @@ fields:
 blocks:
 
   - key: main
-    elements:
-      - 1
 
   - key: dependent
     show:
       target:
         key: 1
         value: 1
-    elements:
-      - 2
-      - 6
-      - 3
-      - 7
-      - 4
-      - 5
+    # elements: inseri nos próprios campos na propriedade block

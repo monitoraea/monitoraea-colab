@@ -28,11 +28,13 @@ fields:
   # disabled
 
 - key: instituicao_nome
+  block: inst # opção para indicar o bloco ao qual o campo pertence
   type: text
   title: Nome da Instituição Executora
   size: 6
 
 - key: instituicao_enquadramento
+  block: inst
   type: options
   title: Enquadramento da Instituição
   size: 8
@@ -130,7 +132,6 @@ blocks: # opcional
 
   - key: ppea # só é necessário se tem regras ou com view?
     title: Sobre a Política Pública # optional
-    # TODO: pode ter blocos? -> somente referencia? ou aninhar?
     elements:
       - nome
       - area
@@ -138,9 +139,6 @@ blocks: # opcional
 
   - key: inst
     title: Sobre a Instituição
-    elements:
-      - instituicao_nome
-      - instituicao_enquadramento
 
   - key: responsavel
     title: Sobre a Responsável
