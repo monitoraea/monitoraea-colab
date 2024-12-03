@@ -144,6 +144,11 @@ fields:
   type: options
   title: Tipo de documento de regimento
   size: 2
+  onchange:
+    - key: regimento_interno_arquivo
+      value:
+    - key: regimento_interno_arquivo2
+      value:
   list: 
     module: property
     key: tipo_arquivo
@@ -222,6 +227,11 @@ fields:
   type: options
   title: Tipo de documento de política pública
   size: 2
+  onchange:
+    - key: ppea_arquivo
+      value:
+    - key: ppea_arquivo2
+      value:
   list: 
     module: property
     key: tipo_arquivo
@@ -268,6 +278,11 @@ fields:
   type: options
   title: Tipo de documento de política pública
   size: 2
+  onchange:
+    - key: ppea2_arquivo
+      value:
+    - key: ppea2_arquivo2
+      value:
   list: 
     module: property
     key: tipo_arquivo
@@ -314,6 +329,11 @@ fields:
   type: options
   title: Tipo de documento
   size: 2
+  onchange:
+    - key: programa_estadual_arquivo
+      value:
+    - key: programa_estadual_arquivo2
+      value:
   list: 
     module: property
     key: tipo_arquivo
@@ -360,6 +380,11 @@ fields:
   type: options
   title: Tipo de documento
   size: 2
+  onchange:
+    - key: plano_estadual_arquivo
+      value:
+    - key: plano_estadual_arquivo2
+      value:
   list: 
     module: property
     key: tipo_arquivo
