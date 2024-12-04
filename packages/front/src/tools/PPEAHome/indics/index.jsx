@@ -2,6 +2,7 @@
 import indic_none from '../../../../../../forms/ppea/indics/indic_none.yml'
 import indic_1_1 from '../../../../../../forms/ppea/indics/indic_1_1.yml'
 import indic_2_1 from '../../../../../../forms/ppea/indics/indic_2_1.yml'
+import indic_2_2 from '../../../../../../forms/ppea/indics/indic_2_2.yml'
 
 export default [
     {
@@ -32,7 +33,7 @@ export default [
                 "id": "2_2",
                 "title": "Existência de espaço coletivo (colegiado) para construir e implementar a PPEA",
                 "ready": false,
-                "form": indic_none
+                "form": indic_2_2
             }
         ]
     },

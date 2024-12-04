@@ -43,7 +43,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
     const [files, _files] = useState({});
 
     //get policy_data
-    const { data } = useQuery(['policy_info', { entityId }], {
+    const { data } = useQuery([`policy_info_${currentIndics}`, { entityId }], {
         queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft/indics/${currentIndics}`)).data,
         enabled: !!currentIndics,
         retry: false,
@@ -194,7 +194,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
                             <div className="section-header">
                                 <div className="section-title"></div>
                                 <div className="section-actions">
-                                    <button className="button-primary" onClick={handleSave}>
+                                    <button disabled className="button-primary" onClick={handleSave}>
                                         <FilePlus></FilePlus>
                                         Gravar
                                     </button>

@@ -190,7 +190,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataCh
 
                 blocks = <>
                     {form.fields.map(f => <div key={f.key} className='row'>
-                        <div className={`col-xs-${f.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} handleDataChange={handleDataChange} /></div>
+                        <div className={`col-xs-${f.size || 12}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={f} size={f.size || 12} keyRef={f.key} data={data} handleDataChange={handleDataChange} /></div>
                     </div>)}
                 </>
 
@@ -205,7 +205,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataCh
                         elements.push(f.key)
                     }
                     // SORT: block por ultimo - TODO: não é o ideal
-                    elements.sort((a,b) => a.type === 'block' ? 1 : -1)
+                    elements.sort((a,b) => a.type === 'block' ? 1 : 0)
 
                     return <Block key={`${!index ? k : `${k}.${index}`}`} block={b} data={data} basic={true} iterative={index === undefined ? undefined : { k, index, free: b.iterate.target === 'none' }} onRemoveIterative={onRemoveIterative}>
                         {elements.map(e => {
@@ -239,7 +239,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataCh
                             inBlock.push(fKey);
                             const field = form.fields.find(fi => fi.key === fKey);
                             return <div key={field.key} className='row'>
-                                <div className={`col-xs-${field.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={field} size={field.size} keyRef={field.key} data={data} iterative={index === undefined ? undefined : { k, index }} handleDataChange={handleDataChange} /></div>
+                                <div className={`col-xs-${field.size || 12}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={field} size={field.size || 12} keyRef={field.key} data={data} iterative={index === undefined ? undefined : { k, index }} handleDataChange={handleDataChange} /></div>
                             </div>
                         })}
                     </Block>
@@ -260,7 +260,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataCh
                 // mostrar campos sem blocos
                 otherFields = <>
                     {form.fields.filter(f => !inBlock.includes(f.key)).map(f => <div key={f.key} className='row'>
-                        <div className={`col-xs-${f.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={f} size={f.size} keyRef={f.key} data={data} handleDataChange={handleDataChange} /></div>
+                        <div className={`col-xs-${f.size}`}><FieldRenderer readonly={readonly} blocks={form.blocks || []} f={f} size={f.size || 12} keyRef={f.key} data={data} handleDataChange={handleDataChange} /></div>
                     </div>)}
                 </>
             }
@@ -347,13 +347,13 @@ function Element(props) {
 
             if (!checkShow(field, data)) return null;
 
-            return <div className={`col-xs-${v.size}`}>
-                <FieldRenderer readonly={readonly} blocks={form.blocks || []} f={field} size={v.size} keyRef={field.key} data={data} iterative={iterative} handleDataChange={handleDataChange} />
+            return <div className={`col-xs-${v.size || 12}`}>
+                <FieldRenderer readonly={readonly} blocks={form.blocks || []} f={field} size={v.size || 12} keyRef={field.key} data={data} iterative={iterative} handleDataChange={handleDataChange} />
             </div>
         }
 
         if (!!v.elements) {
-            return <div className={`col-xs-${v.size}`}>{v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} iterative={iterative} handleDataChange={handleDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}</div>
+            return <div className={`col-xs-${v.size || 12}`}>{v.elements.map((v, idx) => <Element key={idx} readonly={readonly} form={form} v={v} data={data} iterative={iterative} handleDataChange={handleDataChange} onRemoveIterative={onRemoveIterative} addBlock={addBlock} onAddIterative={onAddIterative} />)}</div>
         }
 
         return null;
@@ -437,7 +437,7 @@ export function FieldRenderer({ f, size, readonly, keyRef, blocks, data, iterati
         for (let index = 0; index < data[f.iterate.target]; index++) {
             const IterateElement = cloneElement(Component, { index });
             iteration.push(<div className='row' key={`${f.key}.${index}`}>
-                <div className={`col-xs-${size}`}>
+                <div className={`col-xs-${size || 12}`}>
                     {IterateElement}
                 </div>
             </div>);

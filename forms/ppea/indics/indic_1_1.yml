@@ -4,7 +4,6 @@ fields:
   block: main
   type: options
   title: Realizou diagnóstico?
-  size: 6
   options:
     - value: 0
       label: 'Não'
@@ -15,7 +14,6 @@ fields:
   block: dependent # opção - aqui ou no elements do bloco
   type: options
   title: Quando foi realizado o diagnóstico?
-  size: 6
   options:    
     - value: 0
       label: No início, para planejar e construir a PPEA
@@ -28,13 +26,11 @@ fields:
   block: dependent
   type: file
   title: Insira elemento comprobatório referente a pergunta acima
-  size: 12
 
 - key: 3
   block: dependent
   type: multi_autocomplete
   title: Quais as estratégias utilizadas para realizar o diagnóstico?
-  size: 12
   options:
     - value: 0
       label: Dados secundários / levantamento bibliográfico
@@ -49,13 +45,11 @@ fields:
   block: dependent
   type: file
   title: Insira elemento comprobatório referente a pergunta acima
-  size: 12
 
 - key: 4
   block: dependent
   type: multi_autocomplete
   title: Quais foram os atores envolvidos no diagnóstico?
-  size: 12
   options:
     - value: 0
       label: Equipe contratada/terceirizada pela instituição proponente da PPEA
@@ -71,7 +65,6 @@ fields:
   type: textarea
   rows: 8
   title: Descreva o processo de envolvimento destes atores/sujeitos
-  size: 12
 
 blocks:
 

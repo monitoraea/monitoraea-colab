@@ -1,0 +1,31 @@
+fields:
+
+- key: 1
+  block: main
+  type: options
+  title: Pergunta principal
+  options:
+    - value: 0
+      label: 'Não'
+    - value: 1
+      label: 'Sim'
+
+- key: 2
+  block: dependent
+  type: options
+  title: Primeiro campo
+  options:    
+    - value: 0
+      label: Opção 1
+    - value: 1
+      label: Opção 1
+
+blocks:
+
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1
