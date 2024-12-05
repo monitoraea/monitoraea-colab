@@ -1,9 +1,15 @@
 import { Tab, Tabs } from '@mui/material';
 import { useEffect, useState } from 'react';
+
+import { useUser } from 'dorothy-dna-react'
+
 /* styles */
 import styles from './styles.module.scss';
 
 export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
+  
+  const { user } = useUser()
+
   const [infoIsReady, _infoIsReady] = useState(false);  
 
   const handleChange = e => {
@@ -65,11 +71,11 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             label="Abrangência"
             {...a11yProps('abrangencia')}
           />  
-          <Tab
+          {(user.membership.find(c => c.alias === 'adm_ppea')) && <Tab
             disableRipple
             label="Indicadores legados"
             {...a11yProps('indicadores')}
-          />            
+          /> }           
         </Tabs>
       </div>
     </div>
