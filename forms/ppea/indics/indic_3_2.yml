@@ -1,0 +1,46 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O(s) processo(s) de formação contempla(m) a articulação entre teoria e prática?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: TextProfileItem
+    title: Se sim, Como a relação teoria-prática é estruturada no contexto pedagógico?
+
+  - key: 3
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Quais foram os resultados da articulação da teoria e prática do processo formativo?
+    options:
+      - value: 0
+        label: "Transformação da realidade diagnosticada com problemas"
+      - value: 1
+        label: "Intervenções na realidade"
+      - value: 2
+        label: "Narrativas construídas pelos participantes do processo formativo a partir da interação entre os mesmos"
+      - value: 3
+        label: "Diálogo de saberes populares/comunitários, técnicos, acadêmicos e outros"
+      - value: 4
+        label: "Nenhum"
+    validation: at_least_one
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

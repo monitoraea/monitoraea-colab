@@ -1,0 +1,45 @@
+fields:
+  - key: 1
+    block: main
+    type: TextProfileItemArea
+    title: Qual a abordagem metodológica do processo formativo desenvolvido?
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Quais foram as principais técnicas utilizadas no processo de formação?
+    options:
+      - value: 0
+        label: "Técnicas expositivas (Aulas/palestras, etc)"
+      - value: 1
+        label: "Estudo de caso"
+      - value: 2
+        label: "Leitura compartilhada/ debates de textos"
+      - value: 3
+        label: "Oficinas, grupos de trabalho, rodas de conversa"
+      - value: 4
+        label: "Grupos de Estudo"
+      - value: 5
+        label: "Estudo do meio"
+      - value: 6
+        label: "Mostras, Feiras, Eventos diversos"
+      - value: 7
+        label: "Jogos pedagógicos e dinâmicas diversas"
+      - value: 8
+        label: "Resolução de exercícios"
+      - value: 9
+        label: "Trabalhos individuais"
+      - value: 10
+        label: "Multilinguagens (vídeo, teatro, música, fotografia, cinema, internet, rádio, etc)"
+      - value: 11
+        label: "Representação de papeis (dramatização, simulação de situações/cenários, etc)"
+    validation: at_least_one
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

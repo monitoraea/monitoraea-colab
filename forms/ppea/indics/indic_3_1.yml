@@ -1,0 +1,46 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: É realizado algum processo formador / capacitação / educativo?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Qual(is) modalidade(s) de ensino foi(ram) utilizadas no processo formativo?
+    options:
+      - value: 0
+        label: Presencial
+      - value: 1
+        label: EAD
+    validation: at_least_one
+
+  - key: 3
+    block: dependent
+    type: TextProfileItemArea
+    title: Para cada modalidade do curso, indique a carga horária, quantidade de turmas e nomes dos cursos
+
+  - key: 4
+    block: dependent
+    type: FileProfileItem
+    title: Insira elemento comprobatório referente a pergunta acima
+validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1
