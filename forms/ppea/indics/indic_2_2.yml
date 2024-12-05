@@ -5,16 +5,23 @@ fields:
   type: options
   title: Pergunta principal
   options:
+    - value: -1
+      label: Não respondido
     - value: 0
       label: 'Não'
     - value: 1
       label: 'Sim'
+  validation: 
+    - type: neq
+      value: -1
 
 - key: 2
   block: dependent
   type: options
   title: Primeiro campo
   options:    
+    - value: -1
+      label: Não respondido
     - value: 0
       label: Opção 1
     - value: 1

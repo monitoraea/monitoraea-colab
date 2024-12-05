@@ -145,11 +145,13 @@ router.post('/:id/geo-draw', async (req, res) => {
   /* INDICADORES */
 
   const indic_forms = await FormManager.getForms('ppea/indics')
+  let indic_forms_form = {}
 
   for (let form of indic_forms) {
 
     const indic_name = form.replace('indic_', '').replace('.yml', '')
     const indic_form = await FormManager.getForm(`ppea/indics/indic_${indic_name}`)
+    indic_forms_form[indic_name] = indic_form
 
     router.get(`/:id/draft/indics/${indic_name}`, async (req, res) => {
 
@@ -180,6 +182,20 @@ router.post('/:id/geo-draw', async (req, res) => {
       }
     });
   }
+
+  /* VERIFY */
+  router.get('/:id/verify', async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      /* TODO: SO MODERADOR OU ADM */
+      const result = await entity.verify(id, form1, indic_forms_form);
+
+      res.json(result);
+    } catch (ex) {
+      sendError(res, ex);
+    }
+  });
 
 })()
 /* *** FORMS.End *** */

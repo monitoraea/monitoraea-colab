@@ -5,6 +5,8 @@ fields:
   type: options
   title: Pergunta principal
   options:
+    - value: -1
+      label: Não respondido
     - value: 0
       label: 'Não'
     - value: 1
@@ -14,7 +16,9 @@ fields:
   block: dependent
   type: options
   title: Primeiro campo
-  options:    
+  options: 
+    - value: -1
+      label: Não respondido   
     - value: 0
       label: Opção 1
     - value: 1

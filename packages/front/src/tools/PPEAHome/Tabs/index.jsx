@@ -10,13 +10,18 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
   
   const { user } = useUser()
 
-  const [infoIsReady, _infoIsReady] = useState(false);  
+  const [infoIsReady, _infoIsReady] = useState(false);
+  const [conectionsIsReady, _conectionsIsReady] = useState(false);
+  const [indicatorIsReady, _indicatorIsReady] = useState(false);
+  const [atuacaoIsReady, _atuacaoIsReady] = useState(false);
+  const [indicProblemCounter, _indicProblemCounter] = useState(0);
+  const [infoProblemCounter, _infoProblemCounter] = useState(0);
 
   const handleChange = e => {
     onTabChange(e.target.id);
   };
 
-  /* useEffect(() => {
+  useEffect(() => {
     if (!analysis) return;
 
     let filterCounter = 0;
@@ -41,13 +46,12 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
       return Object.keys(obj).length === 0;
     };
 
-    _infoIsReady(isEmpty(groupByNotReady));
-    //_indicatorIsReady(analysis.ready);
-    _indicatorIsReady(Object.values(analysis.analysis.indics).reduce((acc, i) => { if (!i.ready) { return false } else { return acc } }, true));
+    _infoIsReady(isEmpty(groupByNotReady));    
+    //_indicatorIsReady(Object.values(analysis.analysis.indics).reduce((acc, i) => { if (!i.ready) { return false } else { return acc } }, true));
     _atuacaoIsReady(analysis.analysis.geo);
 
     _conectionsIsReady(analysis.analysis.connections);
-  }, [analysis]); */
+  }, [analysis]);
 
   return (
     <div className={styles['projects-tabs']}>
@@ -57,19 +61,21 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           <Tab
             disableRipple
             label="Cadastro"
-            {...a11yProps('informacao'/* , infoProblemCounter */)}
-            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} `} /* TODO: <<--${infoProblemCounter < 10 && styles['fixed-size']
-            } */
+            {...a11yProps('informacao' , infoProblemCounter)}
+            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} ${infoProblemCounter < 10 && styles['fixed-size']
+            }`}
           />
           <Tab
             disableRipple
             label="Conexões"
             {...a11yProps('conexoes')}
+            className={`${styles.indicator} ${conectionsIsReady ? styles['ready'] : styles['not-ready']}`}
           />  
           <Tab
             disableRipple
-            label="Abrangência"
-            {...a11yProps('abrangencia')}
+            label="Abrangência"className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
+            }`}
+            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '0')}
           />  
           {(user.membership.find(c => c.alias === 'adm_ppea')) && <Tab
             disableRipple

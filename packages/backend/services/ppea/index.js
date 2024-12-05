@@ -5,6 +5,8 @@ const { getSegmentedId } = require('../../utils');
 
 const dayjs = require('dayjs');
 
+const { check } = require('../../form_utils')
+
 const shapefile = require('shapefile');
 const simplify = require('simplify-geojson');
 
@@ -57,7 +59,9 @@ class Service {
         fase_ano,
         fase_descricao,
         dificuldades,
-        contemplados
+        contemplados,
+        atuacao_aplica,
+        atuacao_naplica_just
       FROM ppea.politicas p
       WHERE p.politica_id = :id
       AND versao = 'draft'
@@ -71,6 +75,50 @@ class Service {
     let policy = entity[0];
 
     return policy;
+  }
+
+  async verify(id, form, indic_forms) {
+
+    // get data
+    const data = await this.getDraftInfo(id)
+
+    if (!data) return null;
+
+    let conclusion = { ready: true };
+
+    let analysis = {
+      information: {},
+      connections: true,
+      dims: {},
+      indics: {},
+      geo: true,
+      question_problems: [],
+    };
+
+    // ATUACAO
+    if (data.atuacao_aplica === null) {
+      analysis.geo = false;
+      conclusion.ready = false;
+    }
+    if (data.atuacao_aplica === false && (!data.atuacao_naplica_just || !data.atuacao_naplica_just.length)) {
+      analysis.geo = false;
+      conclusion.ready = false;
+
+      if (!data.atuacao_naplica_just || !data.atuacao_naplica_just.length) analysis.question_problems.push('naplica_just');
+    }
+
+    // check INFORMACOES
+    const { is_form_valid, fields } = check(form, data)
+    if(!is_form_valid) conclusion.ready = false
+    analysis.information = { ...fields }
+
+    // check INDICATORES
+    // TODO: prepare response (vide ZCM)
+
+    return {
+      ready: conclusion.ready,
+      analysis,
+    }
   }
 
   async saveDraft(user, form, entity, files, id) {

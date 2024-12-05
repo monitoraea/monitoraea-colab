@@ -5,27 +5,38 @@ fields:
   type: options
   title: Realizou diagnóstico?
   options:
+    - value: -1
+      label: Não respondido
     - value: 0
       label: 'Não'
     - value: 1
       label: 'Sim'
+  validation: 
+    - type: neq
+      value: -1
 
 - key: 2
   block: dependent # opção - aqui ou no elements do bloco
   type: options
   title: Quando foi realizado o diagnóstico?
   options:    
+    - value: -1
+      label: Não respondido
     - value: 0
       label: No início, para planejar e construir a PPEA
     - value: 1
       label: Para implementar e/ou revisar a PPEA
     - value: 2
       label: Durante todo o processo de construção, implementação e revisão da PPEA
+  validation: 
+    - type: neq
+      value: -1
 
 - key: 6
   block: dependent
   type: file
   title: Insira elemento comprobatório referente a pergunta acima
+  validation: not_empty
 
 - key: 3
   block: dependent
@@ -39,12 +50,14 @@ fields:
     - value: 2
       label: Oficinas
     - value: 3
-      label: Conjunto de técnicas participativas (MAPPEA - Mínima Aproximação Prévia para elaboração de Programas de Educação Ambiental, DRP – Diagnóstico Rápido Participativo, etc.)
+      label: Conjunto de técnicas participativas (MAPPEA - Mínima Aproximação Prévia para elaboração de Programas de Educação Ambiental, DRP – Diagnóstico Rápido Participativo, etc.)  
+  validation: at_least_one
 
 - key: 7
   block: dependent
   type: file
   title: Insira elemento comprobatório referente a pergunta acima
+  validation: not_empty
 
 - key: 4
   block: dependent
@@ -59,12 +72,14 @@ fields:
       label: Equipes de toda Instituição proponente da PPEA
     - value: 3
       label: Instituição proponente da PPEA e representantes da sociedade civil, setor privado e poder público
+  validation: at_least_one
 
 - key: 5
   block: dependent
   type: textarea
   rows: 8
   title: Descreva o processo de envolvimento destes atores/sujeitos
+  validation: not_empty
 
 blocks:
 

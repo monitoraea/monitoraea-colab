@@ -23,7 +23,7 @@ import lists from '../../../../../forms/ppea/lists1.yml'
 /* style */
 // import style from './information.module.scss';
 
-export default function InformationsTab({ entityId }) {
+export default function InformationsTab({ entityId, problems }) {
   /* hooks */
   const { server } = useDorothy();
   const queryClient = useQueryClient();
@@ -73,7 +73,8 @@ export default function InformationsTab({ entityId }) {
 
       // console.log(response);
 
-      queryClient.invalidateQueries('policy_info');
+      queryClient.invalidateQueries('policy_info')
+      queryClient.invalidateQueries('policy_analysis')
 
       // onSave(!_.isEqual(originalEntity, entity));
 
@@ -116,6 +117,7 @@ export default function InformationsTab({ entityId }) {
                   view={form_view}
                   lists={lists}
                   data={mapData2Form(data, form)}
+                  problems={problems}
                   onDataChange={handleDataChange}
                 />
 

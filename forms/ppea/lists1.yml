@@ -2,6 +2,8 @@ lists:
 
   - key: enquadramentos
     options:
+    - value: -1
+      label: Não respondido
     - value: 0
       label: 'Poder Público - Nível Federal'
     - value: 1

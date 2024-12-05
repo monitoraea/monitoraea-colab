@@ -41,10 +41,10 @@ const Manager = () => {
     queryFn: async () => (await axios.get(`${server}ppea/id_from_community/${currentCommunity.id}`)).data,
   });
 
-  /* const { data: analysis } = useQuery(['project_indics', { project_id: project?.id }], {
-    queryFn: async () => (await axios.get(`${server}project/${project?.id}/verify`)).data,
-    enabled: !!project?.id,
-  }); */
+  const { data: analysis } = useQuery(['policy_analysis', { policy_id: entity?.id }], {
+    queryFn: async () => (await axios.get(`${server}ppea/${entity?.id}/verify`)).data,
+    enabled: !!entity?.id,
+  });
 
   /* const mutation = {
     publish: useMutation(() => axios.put(`${server}commission/${entityId}/publish`)),
@@ -157,12 +157,12 @@ const Manager = () => {
           )}
         </div>
       </div>
-      {tabindex && (
+      {analysis && tabindex && (
         <>
-          <Tabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} /* analysis={analysis} */ />
+          <Tabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} analysis={analysis} />
           {entityId && (
             <>
-              {tabindex === 'informacao' && <InformationsTab entityId={entityId} />}
+              {tabindex === 'informacao' && <InformationsTab entityId={entityId} problems={Object.keys(analysis.analysis.information).filter(k => analysis.analysis.information[k] === false)} />}
               {tabindex === 'conexoes' && <ConexoesTab entityId={entityId} />}
               {tabindex === 'indicadores' && <IndicatorsTab entityId={entityId} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}

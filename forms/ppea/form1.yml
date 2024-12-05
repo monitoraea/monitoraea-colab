@@ -6,16 +6,22 @@ fields:
   type: text
   title: Nome da Política Pública
   size: 12
+  client_validation: not_empty # not implemented yet
 
 - key: area
   type: options
   title: Área da Política Pública
   size: 6
   options: # options onde o value é número em sequencia, poderia ter somente uma lista de labels
+    - value: -1
+      label: Não respondido
     - value: 0
       label: 'Geral'
     - value: 1
       label: 'Temática'
+  validation: 
+    - type: neq
+      value: -1
   
 - key: area_tematica
   type: text
@@ -24,7 +30,8 @@ fields:
   show:
     target:
       key: area
-      value: 1
+      value: 1  
+  validation: not_empty # nao pode ser vazio se esta campo estiver sendo apresentado
   # disabled
 
 - key: instituicao_nome
@@ -32,6 +39,7 @@ fields:
   type: text
   title: Nome da Instituição Executora
   size: 6
+  validation: not_empty
 
 - key: instituicao_enquadramento
   block: inst
@@ -41,11 +49,15 @@ fields:
   list: 
     module: property
     key: enquadramentos
+  validation: 
+    - type: neq
+      value: -1
 
 - key: responsavel_nome
   type: text
   title: Nome
   size: 6
+  validation: not_empty
 
 - key: responsavel_cargo
   type: text
@@ -61,7 +73,7 @@ fields:
   type: text
   title: Email
   size: 6  
-  # TODO: capacidade de colocar o bloco aqui tbem? Assim, não preciso repetir a key no bloco?
+  validation: not_empty
 
 - key: link
   type: text
@@ -79,6 +91,8 @@ fields:
   title: Fase atual da Política Pública
   size: 4
   options:
+    - value: -1
+      label: Não respondido
     - value: 0
       label: 'Etapa de Formulação'
     - value: 1
@@ -87,6 +101,9 @@ fields:
       label: 'Etapa de Implementação Avançada'
     - value: 3
       label: 'Etapa de Revisão'
+  validation: 
+    - type: neq
+      value: -1
 
 - key: fase_ano
   type: yearpicker
@@ -123,7 +140,7 @@ fields:
     - value: 8
       label: 'Implementação'
 
-# 1. BasicRenderer: se houver blocks abaixo, o renderer utiliza esta informação para definir o visual e impor regras. 
+# 1. BasicRenderer: se houver blocks abaixo (ou nos campos), o renderer utiliza esta informação para definir o visual e impor regras. 
 # -- Neste caso, campo deve estar presente em block para aparecer (ou ligar showOrphan)
 
 # 2. Renderer (com view): utiliza esta informação, somente, para regras

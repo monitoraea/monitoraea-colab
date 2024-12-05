@@ -5,10 +5,15 @@ fields:
   type: options
   title: Foi utilizada alguma estratégia de mobilização social?
   options:
+    - value: -1
+      label: Não respondido
     - value: 0
       label: 'Não'
     - value: 1
       label: 'Sim'
+  validation: 
+    - type: neq
+      value: -1
 
 - key: 2
   block: dependent
@@ -23,11 +28,13 @@ fields:
       label: Campanhas permanentes utilizando-se de um conjunto de estratégias/técnicas
     - value: 3
       label: Realização de processo formativo dialógico para envolver, informar, dialogar, problematizar e construir conhecimentos sobre o assunto
+  validation: at_least_one
 
 - key: 5
   block: dependent
   type: file
   title: Insira elemento comprobatório referente a pergunta acima
+  validation: not_empty
 
 - key: 3
   block: dependent
@@ -42,11 +49,13 @@ fields:
       label: Participação Institucional     
     - value: 3
       label: Corresponsabilidade dos envolvidos
+  validation: at_least_one
 
 - key: 4
   block: dependent
   type: textarea
   title: Comente quais foram os resultados da mobilização realizada
+  validation: not_empty
 
 blocks:
 
