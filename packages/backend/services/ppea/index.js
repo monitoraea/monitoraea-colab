@@ -73,6 +73,15 @@ class Service {
     return policy;
   }
 
+  async saveDraft(user, form, entity, files, id) {
+
+    await db.models['Ppea'].update(entity, {
+      where: { politica_id: id, versao: 'draft' }
+    })
+
+    return entity;
+  }
+
   async getDraftIndic(form, indic_name, id) {
     const entity = await db.instance().query(
       `
@@ -92,8 +101,8 @@ class Service {
 
     // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
     for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
-      
-      if(indicator[f.key]) {
+
+      if (indicator[f.key]) {
         // recupera o arquivo
         const fileModel = await db.models['File'].findByPk(indicator[f.key])
         // substitui o conteudo no campo
@@ -126,7 +135,7 @@ class Service {
     }
 
     // gravar JSON em indics na posicao certa (indic_name)
-    await db.models['Ppea'].update({ ...model, indicadores: {...model.indicadores, [indic_name]: entity }}, {
+    await db.models['Ppea'].update({ ...model, indicadores: { ...model.indicadores, [indic_name]: entity } }, {
       where: { id: model.id }
     })
 

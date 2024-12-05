@@ -122,6 +122,28 @@ router.post('/:id/geo-draw', async (req, res) => {
 /* *** FORMS.Begin *** */
 (async function setupForms() {
 
+  /* INFORMAÇÃO */
+  const form1 = await FormManager.getForm('ppea/form1')
+
+  router.put("/:id/draft", upload.fields(FormManager.upFields(form1)), async (req, res) => {
+
+    try {
+      const result = await entity.saveDraft(
+        res.locals.user,
+        form1,
+        FormManager.parse(form1, req.body.entity) /* Transformations */,
+        req.files,
+        req.params.id
+      );
+
+      res.json(result);
+    } catch (ex) {
+      sendError(res, ex, 500);
+    }
+  })
+
+  /* INDICADORES */
+
   const indic_forms = await FormManager.getForms('ppea/indics')
 
   for (let form of indic_forms) {

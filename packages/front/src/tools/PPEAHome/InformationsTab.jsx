@@ -16,9 +16,9 @@ import FilePlus from '../../components/icons/FilePlus';
 
 import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer'
 
-import form from './form1.yml'
-import form_view from './form1_view.yml'
-import lists from './lists1.yml'
+import form from '../../../../../forms/ppea/form1.yml'
+import form_view from '../../../../../forms/ppea/form1_view.yml'
+import lists from '../../../../../forms/ppea/lists1.yml'
 
 /* style */
 // import style from './information.module.scss';
@@ -43,6 +43,64 @@ export default function InformationsTab({ entityId }) {
     _files(files)
   }
 
+  const handleSave = async () => {
+
+    /* save */
+    const data = getFormData(form, entity, files) // prepare information (Renderer)
+
+    const snackKey = enqueueSnackbar('Gravando...', {
+      /* variant: 'info', */
+      /* hideIconVariant: true, */
+      persist: true,
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'center',
+      },
+    });
+
+    try {
+      let method, url;
+      /* edit */
+      method = 'put';
+      url = `${server}ppea/${entityId}/draft`;
+
+      /* const { data: response } =  */await axios({
+        method,
+        url,
+        data,
+        config: { headers: { 'Content-Type': 'multipart/form-data' } },
+      });
+
+      // console.log(response);
+
+      queryClient.invalidateQueries('policy_info');
+
+      // onSave(!_.isEqual(originalEntity, entity));
+
+      closeSnackbar(snackKey);
+
+      enqueueSnackbar('Registro gravado com sucesso!', {
+        variant: 'success',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+    } catch (error) {
+      closeSnackbar(snackKey);
+
+      console.error(error);
+
+      enqueueSnackbar('Erro ao gravar o registro!', {
+        variant: 'error',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+    }
+  }
+
   if(!data) return <></>
 
   return (
@@ -64,7 +122,7 @@ export default function InformationsTab({ entityId }) {
                 <div className="section-header">
                   <div className="section-title"></div>
                   <div className="section-actions">
-                    <button className="button-primary" onClick={() => console.log(entity)}> {/* TODO: responsabilidade do Renderer */}
+                    <button className="button-primary" onClick={handleSave}>
                       <FilePlus></FilePlus>
                       Gravar
                     </button>
