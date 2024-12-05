@@ -8,7 +8,8 @@ import UploaderField from '../../components/UploaderField';
 let context_modules = {}; // TODO: context? 
 let context_lists = {}; // TODO: context? 
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid'
+import dayjs from 'dayjs'
 
 import styles from './styles.module.scss'
 
@@ -558,6 +559,16 @@ export function mapData2Form(data, form) {
 
         if (!!value) {
             const nValue = f.options.filter(o => value.includes(o.value));
+            data[f.key] = nValue;
+        }
+    }
+
+    // yearpicker
+    for (let f of form.fields.filter(f => f.type === 'yearpicker')) {
+        let value = data[String(f.key)];
+
+        if (!!value) {
+            const nValue = dayjs(`01/01/${value}`,'DD/MM/YYYY').toDate();
             data[f.key] = nValue;
         }
     }
