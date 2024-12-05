@@ -188,7 +188,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
                                 form={currentForm}
                                 data={mapData2Form(data, currentForm)}
                                 onDataChange={handleDataChange}
-                                readonly={true}
+                                /* readonly={true} */
                             />}
 
                             <div className="section-header">
