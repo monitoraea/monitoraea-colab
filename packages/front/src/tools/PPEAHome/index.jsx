@@ -165,7 +165,7 @@ const Manager = () => {
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} />}
               {tabindex === 'enquadramento' && <EnquadramentoTab entityId={entityId} />}
               {tabindex === 'indicadores' && <IndicatorsTab entityId={entityId} />}
-              {tabindex === 'atuacao' && <AtuacaoTab entityId={entityId} />}
+              {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
             </>
           )}
         </>

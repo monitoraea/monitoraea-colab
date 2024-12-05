@@ -206,7 +206,7 @@ const ProjectManager = () => {
               {tabindex === 'informacao' && <InformationsTab projectId={projectId} />}
               {tabindex === 'conexoes' && <ConectionsTab projectId={projectId} />}
               {tabindex === 'indicadores' && <IndicatorsTab analysis={analysis} />}
-              {tabindex === 'atuacao' && <ActingTab projectId={projectId} />}
+              {tabindex === 'abrangencia' && <ActingTab projectId={projectId} />}
             </>
           )}
         </>

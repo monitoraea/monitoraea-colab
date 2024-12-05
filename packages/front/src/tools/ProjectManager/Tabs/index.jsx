@@ -75,10 +75,10 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
           />
           <Tab
             disableRipple
-            label="Atuação"
+            label="Abrangência"
             className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
               }`}
-            {...a11yProps('atuacao', !atuacaoIsReady ? '1' : '0')}
+            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '0')}
           />
         </Tabs>
       </div>
