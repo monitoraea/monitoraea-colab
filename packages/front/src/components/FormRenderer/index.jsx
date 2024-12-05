@@ -149,6 +149,7 @@ export function Renderer(props) {
     }
 
     const handleAddIterative = (block) => {
+        block = mergeBlockElement(block, form)
 
         let newEmptyValue = {};
         for (let field of block.elements) newEmptyValue[field] = null;
@@ -201,13 +202,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataCh
                 function RenderBlock(k, b, index) {
                     processedBlocks.push(k);
 
-                    // insere os campos com propriedade block em elements
-                    let elements = b.elements ? [...b.elements] : []
-                    for(let f of form.fields.filter(f => f.block === k)) {   
-                        elements.push(f.key)
-                    }
-                    // SORT: block por ultimo - TODO: não é o ideal
-                    elements.sort((a,b) => a.type === 'block' ? 1 : 0)
+                    b = mergeBlockElement(b, form)
 
                     return <Block key={`${!index ? k : `${k}.${index}`}`} block={b} data={data} basic={true} iterative={index === undefined ? undefined : { k, index, free: b.iterate.target === 'none' }} onRemoveIterative={onRemoveIterative}>
                         {elements.map(e => {
@@ -225,7 +220,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataCh
                                             {childrenBlocks}
                                             <div className='row'>
                                                 <div className='col-xs-12'>
-                                                    <button className="button-outline" onClick={() => onAddIterative(innerBlock)}>
+                                                    <button className="button-outline" onClick={() => onAddIterative(innerBlock,form)}>
                                                         <Plus></Plus>
                                                         {innerBlock.iterate.add || 'Add'}
                                                     </button>
@@ -374,7 +369,7 @@ function Element(props) {
     }
 
     if (v.type === 'button') {
-        return <button className="button-outline" onClick={() => onAddIterative(addBlock)}>
+        return <button className="button-outline" onClick={() => onAddIterative(addBlock, form)}>
             <Plus></Plus>
             {v.title || 'Add'}
         </button>
@@ -822,4 +817,17 @@ function ThumbnailField({ f, readonly, index, dataValue, onChange }) {
         viewer={false}
         disabled={readonly}
     />;
+}
+
+
+function mergeBlockElement(b, form) {
+    // insere os campos com propriedade block em elements
+    let elements = b.elements ? [...b.elements] : []
+    for(let f of form.fields.filter(f => f.block === b.key)) {   
+        elements.push(f.key)
+    }
+    // SORT: block por ultimo - TODO: não é o ideal
+    elements.sort((a,b) => a.type === 'block' ? 1 : 0)
+
+    return { ...b, elements }
 }
