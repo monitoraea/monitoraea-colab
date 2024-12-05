@@ -57,8 +57,8 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           />
           <Tab
             disableRipple
-            label="Enquadramento"
-            {...a11yProps('enquadramento')}
+            label="Conexões"
+            {...a11yProps('conexoes')}
           />  
           <Tab
             disableRipple

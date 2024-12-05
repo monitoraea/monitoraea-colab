@@ -11,7 +11,7 @@ import Card from '../../components/Card';
 /* style */
 import style from './information.module.scss';
 
-export default function EnquadramentoTab({ entityId }) {
+export default function ConexoesTab({ entityId }) {
 
     return (
         <>
@@ -19,7 +19,7 @@ export default function EnquadramentoTab({ entityId }) {
                 <div className="page-body">
                     <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
                         <div className="p-3">
-                            [ENQUADRAMENTO]
+                            [CONEXÕES]
 
                         </div>
                     </Card>
