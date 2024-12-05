@@ -167,6 +167,7 @@ export function Renderer(props) {
 
     const props_ext = {
         ...props,
+        problems: props.problems || [],
         handleDataChange,
         onRemoveIterative: handleRemoveIterative,
         onAddIterative: handleAddIterative,
