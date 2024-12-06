@@ -1,34 +1,123 @@
 fields:
+  - key: 1
+    block: main
+    type: options
+    title: Foi utilizado ou criado algum espaço coletivo e/ou colegiado no processo da PPEA (formulação, implementação, revisão)?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
 
-- key: 1
-  block: main
-  type: options
-  title: Pergunta principal
-  options:
-    - value: -1
-      label: Não respondido
-    - value: 0
-      label: 'Não'
-    - value: 1
-      label: 'Sim'
-  validation: 
-    - type: neq
-      value: -1
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Qual(is) espaço(s)
+    options:
+      - value: 0
+        label: Espaços específicos de EA (CIEA, CIMEA, Núcleos de EA, Centros de EA, Observatório de Meio Ambiente e EA, Coletivos Educadores de EA, Câmara técnica de EA, Grupo de Trabalho de EA, ComVida, Fórum  da Agenda 21 Escolar, etc.)
+      - value: 1
+        label: Espaços não específicos de EA (Conselhos de Meio Ambiente, Conselhos Gestores de UC, Comitês de Bacia Hidrográfica,  Grêmio Estudantil, etc)
 
-- key: 2
-  block: dependent
-  type: options
-  title: Primeiro campo
-  options:    
-    - value: -1
-      label: Não respondido
-    - value: 0
-      label: Opção 1
-    - value: 1
-      label: Opção 1
+  - key: 3
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Caráter do espaço
+    options:
+      - value: 0
+        label: Deliberativo
+      - value: 1
+        label: Normativo
+      - value: 2
+        label: Fiscalizador
+      - value: 3
+        label: Consultivo
+
+  - key: 4
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Composição do espaço
+    options:
+      - value: 0
+        label: Paritária entre sociedade civil e poder público
+      - value: 1
+        label: Não paritária com Maior número de cadeiras para a sociedade civil
+      - value: 2
+        label: Não paritária com Maior número de cadeiras para o poder público
+      - value: 3
+        label: Aberta / livre
+
+  - key: 5
+    block: dependent
+    type: YesNoProfileItem
+    title: Instituído por instrumento normativo / legal?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 6
+    block: dependent
+    type: TextProfileItemArea
+    title: Se instituído por instrumento normativo / legal, especifique.
+
+  - key: 7
+    block: dependent
+    type: SingleSelectProfileItemRadio
+    title: Em qual momento da formação foi realizada a avaliação?
+    options:
+      - value: 0
+        label: Poder Público e Sociedade Civil em conjunto
+      - value: 1
+        label: Poder Público e Sociedade Civil rotativamente
+      - value: 2
+        label: Sociedade Civil
+      - value: 3
+        label: Poder Público
+
+  - key: 8
+    block: dependent
+    type: SingleSelectProfileItemRadio
+    title: Qual a frequência de encontros?
+    options:
+      - value: 0
+        label: Semanal
+      - value: 1
+        label: Quinzenal
+      - value: 2
+        label: Mensal
+      - value: 3
+        label: Bimestral
+      - value: 4
+        label: Trimestral
+      - value: 5
+        label: Semestral
+      - value: 6
+        label: Anual
+
+  - key: 9
+    block: dependent
+    type: TextProfileItemArea
+    title: Qual é a dinâmica / ritual da reunião / encontro?
+
+  - key: 10
+    block: dependent
+    type: FileProfileItem
+    title: Insira elemento comprobatório referente a pergunta acima
+    validation: not_empty
 
 blocks:
-
   - key: main
 
   - key: dependent

@@ -1,0 +1,73 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Existem recursos financeiros para a viabilização do processo da PPEA (formulação, implementação, revisão)?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Tipo de fontes dos recursos
+    options:
+      - value: 0
+        label: Renuncia fiscal
+      - value: 1
+        label: Financiamento Coletivo
+      - value: 2
+        label: Editais de apoio
+
+  - key: 3
+    block: dependent
+    type: TextProfileItemArea
+    title: Descreva e comente sobre as fontes de recursos.
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Qual subtipo de fonte de recurso
+    options:
+      - value: 0
+        label: Previsão Orçamentária
+      - value: 1
+        label: Recursos disponíveis
+
+  - key: 5
+    block: dependent
+    type: YesNoProfileItem
+    title: Há mecanismos de acesso aos recursos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 6
+    block: dependent
+    type: TextProfileItemArea
+    title: Se sim (há mecanismos de acesso aos recursos), comente
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

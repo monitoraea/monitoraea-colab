@@ -1,0 +1,54 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O processo da PPEA (formulação, implementação, revisão) promoveu ações socioambientais articuladas com as iniciativas culturais?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: TextProfileItemArea
+    title: Se sim (promoveu ações socioambientais articuladas com as iniciativas culturais), comente
+
+  - key: 3
+    block: dependent
+    type: TextProfileItemArea
+    title: Cite e descreva as ações
+
+  - key: 4
+    block: dependent
+    type: YesNoProfileItem
+    title: As práticas promovidas tem como princípio a valorização da cultura endógena?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 5
+    block: dependent
+    type: TextProfileItemArea
+    title: Se sim, comente
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

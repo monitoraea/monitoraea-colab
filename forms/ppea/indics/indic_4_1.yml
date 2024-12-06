@@ -1,0 +1,75 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O processo da PPEA (formulação, implementação, revisão) gera alguma intervenção socioambiental?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: TextProfileItemArea
+    title: Quais as intervenções socioambientais que a execução/ implementação da PPEA está gerando? Comente e quantifique.
+
+  - key: 3
+    block: dependent
+    type: YesNoProfileItem
+    title: As intervenções preveem ou trazem em seu desenvolvimento processos pedagógicos reflexivos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 4
+    block: dependent
+    type: TextProfileItemArea
+    title: Se Sim (as intervenções preveem ou trazem em seu desenvolvimento processos pedagógicos reflexivos), especifique
+
+  - key: 5
+    block: dependent
+    type: YesNoProfileItem
+    title: As intervenções fomentam / se desdobram em outras ações?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 6
+    block: dependent
+    type: TextProfileItemArea
+    title: Se Sim (as intervenções fomentam / se desdobram em outras ações), especifique
+
+  - key: 7
+    block: dependent
+    type: file
+    title: Insira elemento comprobatório referente a pergunta acima
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

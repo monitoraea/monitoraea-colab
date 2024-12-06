@@ -1,0 +1,23 @@
+fields:
+  - key: 1
+    block: main
+    type: SingleSelectProfileItemRadio
+    title: Quem são os interlocutores de comunicação no processo da PPEA (formulação, implementação, revisão)?
+    options:
+      - value: 0
+        label: Não há interlocutores claramente identificados
+      - value: 1
+        label: Internos a instituição (técnicos, gestores, diretores, colaboradores, etc)
+      - value: 2
+        label: Externos a instituição (sociedade em geral e integrantes de espaços de controle social)
+      - value: 3
+        label: Internos e Externos a instituição
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

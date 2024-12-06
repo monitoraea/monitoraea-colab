@@ -1,0 +1,48 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O processo da PPEA (formulação, implementação, revisão) está articulada/ integrada com alguma Rede / Coletivo / Movimento Socioambientais nas escalas de abrangência regional, nacional e/ou global?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Qual(is) escalas estão articulados ou integrados?
+    options:
+      - value: 0
+        label: Global
+      - value: 1
+        label: Nacional
+      - value: 2
+        label: Regional
+
+  - key: 3
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: De que forma ocorreu a interação do processo da PPEA (formulação, implementação, revisão) com a Rede/ Coletivo/Movimento?
+    options:
+      - value: 0
+        label: Realização conjunta de evento ou outra ação pontual pela instituição proponente e a rede/movimento/ coletivo
+      - value: 1
+        label: Planejamento conjunto de projeto, programa ou política pública
+      - value: 2
+        label: Execução do planejamento compartilhado com a produção conjunta de serviço, bem coletivo
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

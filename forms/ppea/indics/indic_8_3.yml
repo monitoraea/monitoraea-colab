@@ -1,0 +1,38 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: São utilizados processos de educomunicação e/ou Comunicação Social?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Quais os públicos envolvidos na produção dos materiais/peças de comunicação?
+    options:
+      - value: 0
+        label: Proponentes
+      - value: 1
+        label: Empresa especializada em comunicação
+      - value: 2
+        label: Proponentes + atores sociais envolvidos
+      - value: 3
+        label: Empresa especializada em comunicação + atores sociais envolvidos
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

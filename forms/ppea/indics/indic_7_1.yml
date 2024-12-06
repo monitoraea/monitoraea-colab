@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: É realizado algum processo formador / capacitação / educativo?
+    title: A PPEA está apoiada em algum instrumento legal específico para ela?
     options:
       - value: -1
         label: Não respondido
@@ -17,20 +17,20 @@ fields:
   - key: 2
     block: dependent
     type: MultipleSelectProfileItem
-    title: Qual(is) modalidade(s) de ensino foi(ram) utilizadas no processo formativo?
+    title: Quais instrumentos?
     options:
       - value: 0
-        label: Presencial
+        label: Lei
       - value: 1
-        label: EAD
-    validation: at_least_one
+        label: Decreto
+      - value: 2
+        label: Resolução
+      - value: 3
+        label: Portaria
+      - value: 4
+        label: Instrução Normativa
 
   - key: 3
-    block: dependent
-    type: TextProfileItemArea
-    title: Para cada modalidade do curso, indique a carga horária, quantidade de turmas e nomes dos cursos
-
-  - key: 4
     block: dependent
     type: FileProfileItem
     title: Insira elemento comprobatório referente a pergunta acima

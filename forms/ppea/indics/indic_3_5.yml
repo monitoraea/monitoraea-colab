@@ -20,11 +20,11 @@ fields:
     title: Em qual momento da formação foi realizada a avaliação?
     options:
       - value: 0
-        label: "Final do processo formativo"
+        label: Final do processo formativo
       - value: 1
-        label: "Início e final do processo do processo formativo"
+        label: Início e final do processo do processo formativo
       - value: 2
-        label: "Durante todo o processo formativo"
+        label: Durante todo o processo formativo
 
   - key: 3
     block: dependent
@@ -32,15 +32,15 @@ fields:
     title: Quais instrumentos de avaliação foram utilizados no processo de formação?
     options:
       - value: 0
-        label: "Provas, testes, resolução de problemas, etc"
+        label: Provas, testes, resolução de problemas, etc
       - value: 1
-        label: "Questionário / formulário"
+        label: Questionário / formulário
       - value: 2
-        label: "Entrevistas"
+        label: Entrevistas
       - value: 3
-        label: "Dinâmicas"
+        label: Dinâmicas
       - value: 4
-        label: "Reunião / Roda de conversa"
+        label: Reunião / Roda de conversa
     validation: at_least_one
 
   - key: 4

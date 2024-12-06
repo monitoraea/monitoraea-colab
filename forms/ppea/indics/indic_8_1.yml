@@ -1,0 +1,54 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Existe um Plano de Comunicação do processo da PPEA (formulação, implementação, revisão)?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Quais ferramentas são usadas para disponibilizar informações para a sociedade?
+    options:
+      - value: 0
+        label: Assessoria de imprensa (matérias, entrevistas, participação em programas de radio e tv, etc)
+      - value: 1
+        label: Produção audiovisual
+      - value: 2
+        label: Site / blog
+      - value: 3
+        label: Redes sociais
+      - value: 4
+        label: Email / mailing
+      - value: 5
+        label: Materiais gráficos (boletins, revista impressa, jornal,  etc)
+      - value: 6
+        label: Aplicativos de comunicação via celular (whatsapp ou similares)
+      - value: 7
+        label: Relatórios
+      - value: 8
+        label: Reuniões, fóruns, encontros
+
+  - key: 3
+    block: dependent
+    type: TextProfileItemArea
+    title: Especificar a periodicidade de atualização / disponibilização das informações
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

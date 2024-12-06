@@ -1,0 +1,68 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O processo da PPEA (formulação, implementação, revisão) promove ações que dialogam com temas relacionados a ações afirmativas de enfrentamento da desigualdade e qualquer tipo discriminação em seu território de atuação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Dialoga com quais temas?
+    options:
+      - value: 0
+        label: Discriminação racial / étnica
+      - value: 1
+        label: Discriminação de gênero
+      - value: 2
+        label: Discriminação social
+      - value: 3
+        label: Outro"
+
+  - key: 3
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Onde busca informações / dados para subsidiar o dialogo?
+    options:
+      - value: 0
+        label: Dados oficiais  / Censo
+      - value: 1
+        label: Pesquisa / diagnóstico
+      - value: 2
+        label: Comente onde busca as informações
+
+  - key: 4
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Onde busca informações / dados para subsidiar o dialogo?
+    options:
+      - value: 0
+        label: Ações de diagnóstico
+      - value: 1
+        label: Ações de mobilização
+      - value: 2
+        label: Ações de formação dialógica
+      - value: 3
+        label: Intervenções socioambientais
+      - value: 4
+        label: Comunicação
+      - value: 5
+        label: Outro
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1
