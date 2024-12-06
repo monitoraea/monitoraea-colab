@@ -88,6 +88,9 @@ module.exports = (sequelize, DataTypes) => {
       indicadores: {
         type: DataTypes.JSONB,
       },
+      indicadores2024: {
+        type: DataTypes.JSONB,
+      },
       versao: {
         type: DataTypes.STRING,
       },

@@ -144,16 +144,16 @@ router.post('/:id/geo-draw', async (req, res) => {
 
   /* INDICADORES */
 
-  const indic_forms = await FormManager.getForms('ppea/indics')
+  const indic_forms = await FormManager.getForms('ppea/indics2024')
   let indic_forms_form = {}
 
   for (let form of indic_forms) {
 
     const indic_name = form.replace('indic_', '').replace('.yml', '')
-    const indic_form = await FormManager.getForm(`ppea/indics/indic_${indic_name}`)
+    const indic_form = await FormManager.getForm(`ppea/indics2024/indic_${indic_name}`)
     indic_forms_form[indic_name] = indic_form
 
-    router.get(`/:id/draft/indics/${indic_name}`, async (req, res) => {
+    router.get(`/:id/draft/indicadores/${indic_name}`, async (req, res) => {
 
       try {
         const result = await entity.getDraftIndic(indic_form, indic_name, req.params.id);
@@ -164,10 +164,49 @@ router.post('/:id/geo-draw', async (req, res) => {
       }
     });
 
-    router.put(`/:id/draft/indics/${indic_name}`, upload.fields(FormManager.upFields(indic_form)), async (req, res) => {
+    router.put(`/:id/draft/indicadores/${indic_name}`, upload.fields(FormManager.upFields(indic_form)), async (req, res) => {
 
       try {
         const result = await entity.saveDraftIndic(
+          res.locals.user,
+          indic_form,
+          indic_name,
+          FormManager.parse(indic_form, req.body.entity) /* Transformations */,
+          req.files,
+          req.params.id
+        );
+
+        res.json(result);
+      } catch (ex) {
+        sendError(res, ex, 500);
+      }
+    });
+  }
+
+  /* INDICADORES LEGADOS */
+
+  const indic_forms_old = await FormManager.getForms('ppea/indics')
+
+  for (let form of indic_forms_old) {
+
+    const indic_name = form.replace('indic_', '').replace('.yml', '')
+    const indic_form = await FormManager.getForm(`ppea/indics/indic_${indic_name}`)
+
+    router.get(`/:id/draft/indics/${indic_name}`, async (req, res) => {
+
+      try {
+        const result = await entity.getDraftIndicOld(indic_form, indic_name, req.params.id);
+
+        res.json(result);
+      } catch (ex) {
+        sendError(res, ex, 500);
+      }
+    });
+
+    router.put(`/:id/draft/indics/${indic_name}`, upload.fields(FormManager.upFields(indic_form)), async (req, res) => {
+
+      try {
+        const result = await entity.saveDraftIndicOld(
           res.locals.user,
           indic_form,
           indic_name,

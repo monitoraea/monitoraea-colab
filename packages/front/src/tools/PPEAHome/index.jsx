@@ -6,7 +6,8 @@ import axios from 'axios';
 import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
 import ConexoesTab from './ConexoesTab';
-import IndicatorsTab from './IndicatorsTab';
+import IndicatorsTab from './Indicators2024Tab';
+import OldIndicatorsTab from './IndicatorsTab';
 import AtuacaoTab from './ActingTab';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
@@ -163,8 +164,9 @@ const Manager = () => {
           {entityId && (
             <>
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} problems={Object.keys(analysis.analysis.information).filter(k => analysis.analysis.information[k] === false)} />}
+              {tabindex === 'indicadores_novos' && <IndicatorsTab entityId={entityId} />}
               {tabindex === 'conexoes' && <ConexoesTab entityId={entityId} />}
-              {tabindex === 'indicadores' && <IndicatorsTab entityId={entityId} />}
+              {tabindex === 'indicadores' && <OldIndicatorsTab entityId={entityId} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
             </>
           )}

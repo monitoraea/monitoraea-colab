@@ -134,6 +134,68 @@ class Service {
     const entity = await db.instance().query(
       `
       SELECT
+        indicadores2024 as indicadores
+      FROM ppea.politicas p
+      WHERE p.politica_id = :id
+      AND versao = 'draft'
+        `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    let indicator = entity[0].indicadores[indic_name];
+
+    // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
+    for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
+
+      if (indicator?.[f.key]) {
+        // recupera o arquivo
+        const fileModel = await db.models['File'].findByPk(indicator[f.key])
+        // substitui o conteudo no campo
+        indicator[f.key] = {
+          url: `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'ppea', f.key, fileModel.get('url'))}`,
+          file: { name: fileModel.get('file_name') },
+        }
+      }
+
+    }
+
+    return indicator || {};
+  }
+
+  async saveDraftIndic(user, form, indic_name, entity, files, id) {
+
+    const ppea = await db.models['Ppea'].findOne({ where: { politica_id: id, versao: 'draft' } }, {
+      raw: true,
+      nest: true
+    })
+    const model = ppea.get({ plain: true })
+
+    // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
+    for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
+
+      if (entity[f.key] === 'remove') await this.removeFile(entity, f.key, model.indicadores2024[indic_name]?.[f.key])
+      else if (files[f.key]) await this.updateFile(id, entity, files[f.key][0], f.key, `ppea_indic_${f.key}`, model.indicadores2024[indic_name]?.[f.key])
+      else entity[f.key] = model.indicadores2024[indic_name]?.[f.key]
+
+    }
+
+    // gravar JSON em indics na posicao certa (indic_name)
+    await db.models['Ppea'].update({ ...model, indicadores2024: { ...model.indicadores2024, [indic_name]: entity } }, {
+      where: { id: model.id }
+    })
+
+    // console.log('>>>>>>>>', { ...model, indicadores: {...model.indicadores, [indic_name]: entity }})
+
+    return entity
+  }
+
+  async getDraftIndicOld(form, indic_name, id) {
+    const entity = await db.instance().query(
+      `
+      SELECT
         indicadores
       FROM ppea.politicas p
       WHERE p.politica_id = :id
@@ -165,7 +227,7 @@ class Service {
     return indicator;
   }
 
-  async saveDraftIndic(user, form, indic_name, entity, files, id) {
+  async saveDraftIndicOld(user, form, indic_name, entity, files, id) {
 
     const ppea = await db.models['Ppea'].findOne({ where: { politica_id: id, versao: 'draft' } }, {
       raw: true,
@@ -176,8 +238,8 @@ class Service {
     // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
     for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
 
-      if (entity[f.key] === 'remove') await this.removeFile(entity, f.key, model[f.key])
-      else if (files[f.key]) await this.updateFile(id, entity, files[f.key][0], f.key, `ppea_${f.key}`, model[f.key])
+      if (entity[f.key] === 'remove') await this.removeFile(entity, f.key, model.indicadores[indic_name][f.key])
+      else if (files[f.key]) await this.updateFile(id, entity, files[f.key][0], f.key, `ppea_${f.key}`, model.indicadores[indic_name][f.key])
       else entity[f.key] = model.indicadores[indic_name][f.key]
 
     }

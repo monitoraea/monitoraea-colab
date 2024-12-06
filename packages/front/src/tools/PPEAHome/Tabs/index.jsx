@@ -70,7 +70,12 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             label="Conexões"
             {...a11yProps('conexoes')}
             className={`${styles.indicator} ${conectionsIsReady ? styles['ready'] : styles['not-ready']}`}
-          />  
+          /> 
+          <Tab
+            disableRipple
+            label="Indicadores"
+            {...a11yProps('indicadores_novos')}
+          />
           <Tab
             disableRipple
             label="Abrangência"className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']

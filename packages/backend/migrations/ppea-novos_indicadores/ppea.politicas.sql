@@ -1,0 +1,1 @@
+ALTER TABLE ppea.politicas ADD indicadores2024 jsonb DEFAULT '{}'::jsonb NOT NULL;

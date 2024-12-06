@@ -205,7 +205,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataCh
                     b = mergeBlockElement(b, form)
 
                     return <Block key={`${!index ? k : `${k}.${index}`}`} block={b} data={data} basic={true} iterative={index === undefined ? undefined : { k, index, free: b.iterate.target === 'none' }} onRemoveIterative={onRemoveIterative}>
-                        {elements.map(e => {
+                        {b.elements.map(e => {
                             if (e.type === 'block') {
                                 const innerBlock = form.blocks.find(bl => bl.key === e.key);
 

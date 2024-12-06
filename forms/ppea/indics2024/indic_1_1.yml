@@ -1,0 +1,93 @@
+fields:
+
+- key: 1 # TODO - não deveríamos usar key numérico!!
+  block: main
+  type: options
+  title: Realizou diagnóstico?
+  options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Não'
+    - value: 1
+      label: 'Sim'
+  validation: 
+    - type: neq
+      value: -1
+
+- key: 2
+  block: dependent # opção - aqui ou no elements do bloco
+  type: options
+  title: Quando foi realizado o diagnóstico?
+  options:    
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: No início, para planejar e construir a PPEA
+    - value: 1
+      label: Para implementar e/ou revisar a PPEA
+    - value: 2
+      label: Durante todo o processo de construção, implementação e revisão da PPEA
+  validation: 
+    - type: neq
+      value: -1
+
+- key: 6
+  block: dependent
+  type: file
+  title: Insira elemento comprobatório referente a pergunta acima
+  validation: not_empty
+
+- key: 3
+  block: dependent
+  type: multi_autocomplete
+  title: Quais as estratégias utilizadas para realizar o diagnóstico?
+  options:
+    - value: 0
+      label: Dados secundários / levantamento bibliográfico
+    - value: 1
+      label: Entrevistas e questionários
+    - value: 2
+      label: Oficinas
+    - value: 3
+      label: Conjunto de técnicas participativas (MAPPEA - Mínima Aproximação Prévia para elaboração de Programas de Educação Ambiental, DRP – Diagnóstico Rápido Participativo, etc.)  
+  validation: at_least_one
+
+- key: 7
+  block: dependent
+  type: file
+  title: Insira elemento comprobatório referente a pergunta acima
+  validation: not_empty
+
+- key: 4
+  block: dependent
+  type: multi_autocomplete
+  title: Quais foram os atores envolvidos no diagnóstico?
+  options:
+    - value: 0
+      label: Equipe contratada/terceirizada pela instituição proponente da PPEA
+    - value: 1
+      label: Setor responsável pela PPEA da Instituição proponente
+    - value: 2
+      label: Equipes de toda Instituição proponente da PPEA
+    - value: 3
+      label: Instituição proponente da PPEA e representantes da sociedade civil, setor privado e poder público
+  validation: at_least_one
+
+- key: 5
+  block: dependent
+  type: textarea
+  rows: 8
+  title: Descreva o processo de envolvimento destes atores/sujeitos
+  validation: not_empty
+
+blocks:
+
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1
+    # elements: inseri nos próprios campos na propriedade block
