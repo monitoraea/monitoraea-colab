@@ -654,7 +654,7 @@ function StringField({ f, readonly, integer, multiline, rows, index, dataValue, 
 }
 
 function OptionsField({ f, readonly, index, dataValue, onChange, error }) {
-    const [value, _value] = useState('none');
+    const [value, _value] = useState(-1);
     const [options, _options] = useState([]);
 
     useEffect(() => {
@@ -667,13 +667,13 @@ function OptionsField({ f, readonly, index, dataValue, onChange, error }) {
     }, [f])
 
     useEffect(() => {
-        if (dataValue !== undefined) _value(dataValue);
+        if (dataValue !== undefined && dataValue !== null) _value(dataValue);
     }, [dataValue])
 
     return <TextField
         className="input-select"
         label={titleAndIndex(f.title, index)}
-        value={value !== undefined ? value : 'none'}
+        value={value !== undefined ? value : -1}
         select
         onChange={(e) => onChange(e.target.value)}
         disabled={readonly}

@@ -1,40 +1,42 @@
 module.exports.check = (form, data) => {
 
     // merge elements of blocks
-    for (let b of form.blocks) {
+    /* for (let b of form.blocks) {
         mergeBlockElement(b, form)
-    }
+    } */
 
     let is_form_valid = true
     let fields = {}
     for (let f of form.fields) {
 
-        if (!isFieldVisible(f, form, data)) { // se não está visivel, então está ok
+        /* if (!isFieldVisible(f, form, data)) { // se não está visivel, então está ok
             fields[f.key] = true
             continue
-        }
+        } */
 
         if (f.validation && f.validation.length) {
             if (!Array.isArray(f.validation)) f.validation = [f.validation]
 
+            let error = false
             for (let v of f.validation) {
                 const type = v.type || v
 
-                let error = false
                 switch (type) {
                     case 'neq':
-                        error = is_neq(data[f.key], v)
+                       if(notEmpty(data?.[f.key]) && is_neq(data[f.key], v)) error = true
                         break
                     case 'not_empty':
-                        error = is_empty(data[f.key], f.type, v)
+                        if(!notEmpty(data?.[f.key]) || is_empty(data[f.key], f.type)) error = true
+                        break
+                    case 'at_least_one':
+                        if(!notEmpty(data?.[f.key]) || at_least_one(data[f.key])) error = true
                         break
                     default:
                     // do nothing
                 }
-
-                fields[f.key] = !error
-                if (error) is_form_valid = false
             }
+            fields[f.key] = !error
+            if (error) is_form_valid = false
         }
     }
 
@@ -49,10 +51,14 @@ function is_neq(data, v) {
     return false
 }
 
-function is_empty(data, field_type, v) {
-    if (['text', 'textarea'].includes(field_type) && !data.trim().length) return true
+function is_empty(data, field_type) {
+    if (['text', 'textarea'].includes(field_type) && !data?.trim().length) return true
     if (['file', 'thumbnail'].includes(field_type) && !data) return true
     return false
+}
+
+function at_least_one(data) {
+    return !data.length
 }
 
 function mergeBlockElement(b, form) {
@@ -91,4 +97,8 @@ function checkShow(e, data) {
     }
 
     return show
+}
+
+function notEmpty(v) {
+    return (v !== null && v !== undefined)
 }

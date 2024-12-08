@@ -22,6 +22,7 @@ fields:
   validation: 
     - type: neq
       value: -1
+    - type: not_empty
   
 - key: area_tematica
   type: text
@@ -52,6 +53,7 @@ fields:
   validation: 
     - type: neq
       value: -1
+    - type: not_empty
 
 - key: responsavel_nome
   type: text
@@ -104,6 +106,7 @@ fields:
   validation: 
     - type: neq
       value: -1
+    - type: not_empty
 
 - key: fase_ano
   type: yearpicker

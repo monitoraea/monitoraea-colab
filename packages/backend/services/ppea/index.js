@@ -135,7 +135,6 @@ class Service {
       }
 
     }
-    // TODO: prepare response (vide ZCM)
 
     return {
       ready: conclusion.ready,
