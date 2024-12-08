@@ -25,18 +25,24 @@ import lists from '../../../../../forms/ppea/lists1.yml'
 
 export default function InformationsTab({ entityId, problems }) {
   /* hooks */
-  const { server } = useDorothy();
-  const queryClient = useQueryClient();
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { server } = useDorothy()
+  const queryClient = useQueryClient()
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   /* states */
-  const [entity, _entity] = useState([]);
-  const [files, _files] = useState({});
+  const [entity, _entity] = useState([])
+  const [files, _files] = useState({})
+
+  const [originalEntity, _originalEntity] = useState({})
 
   //get policy_data
   const { data } = useQuery(['policy_info', { entityId }], {
     queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft/info`)).data,
-  });
+  })
+
+  useEffect(() => {
+    if (data) _originalEntity(data)
+  }, [data])
 
   const handleDataChange = (entity, files) => {
     _entity(entity)
@@ -102,7 +108,7 @@ export default function InformationsTab({ entityId, problems }) {
     }
   }
 
-  if(!data) return <></>
+  if (!data) return <></>
 
   return (
     <>
@@ -116,7 +122,7 @@ export default function InformationsTab({ entityId, problems }) {
                   form={form}
                   view={form_view}
                   lists={lists}
-                  data={mapData2Form(data, form)}
+                  data={mapData2Form(originalEntity, form)}
                   problems={problems}
                   onDataChange={handleDataChange}
                 />

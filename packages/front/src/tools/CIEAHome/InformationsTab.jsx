@@ -33,13 +33,19 @@ export default function InformationsTab({ entityId }) {
   // const [originalEntity, _originalEntity] = useState({});
   const [entity, _entity] = useState({});
   const [files, _files] = useState({});
+  const [originalEntity, _originalEntity] = useState({})
 
   //get commission_data
   const { data } = useQuery(['commission_info', { entityId }], {
     queryFn: async () => (await axios.get(`${server}commission/${entityId}/draft`)).data,
     retry: false,
     refetchOnWindowFocus: false,
-  });
+  })
+
+
+  useEffect(() => {
+    if (data) _originalEntity(data)
+  }, [data])
 
   const handleDataChange = (entity, files) => {
     _entity(entity)
@@ -104,7 +110,7 @@ export default function InformationsTab({ entityId }) {
     }
   };
 
-  if(!data) return <></>
+  if (!data) return <></>
 
   return (
     <>
@@ -114,7 +120,7 @@ export default function InformationsTab({ entityId }) {
             <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
               <div className="p-3">
 
-              <div className="section-header">
+                <div className="section-header">
                   <div className="section-title"></div>
                   <div className="section-actions">
                     <button className="button-primary" onClick={handleSave}>
@@ -128,7 +134,7 @@ export default function InformationsTab({ entityId }) {
                   form={form}
                   view={form_view}
                   lists={lists}
-                  data={mapData2Form(data, form)}
+                  data={mapData2Form(originalEntity, form)}
                   onDataChange={handleDataChange}
                 />
 

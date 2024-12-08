@@ -42,6 +42,8 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
     const [entity, _entity] = useState([]);
     const [files, _files] = useState({});
 
+    const [originalEntity, _originalEntity] = useState({})
+
     //get policy_data
     const { data } = useQuery([`policy_info_${currentIndics}`, { entityId }], {
         queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft/indics/${currentIndics}`)).data,
@@ -49,6 +51,10 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
         retry: false,
         refetchOnWindowFocus: false,
     });
+
+    useEffect(() => {
+        if (data) _originalEntity(data)
+    }, [data])
 
     useEffect(() => {
         if (params && params[1]) _currentIndics(params[1]);
@@ -186,9 +192,9 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
                         <div className="p-3">
                             {!!currentForm && <Renderer
                                 form={currentForm}
-                                data={mapData2Form(data, currentForm)}
+                                data={mapData2Form(originalEntity, currentForm)}
                                 onDataChange={handleDataChange}
-                                /* readonly={true} */
+                            /* readonly={true} */
                             />}
 
                             <div className="section-header">
