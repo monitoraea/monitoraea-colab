@@ -64,7 +64,8 @@ class Service {
         contemplados,
         atuacao_aplica,
         atuacao_naplica_just,
-        indicadores2024
+        indicadores2024,
+        ("createdAt" = "updatedAt") as is_new
       FROM ppea.politicas p
       WHERE p.politica_id = :id
       AND versao = 'draft'
@@ -96,6 +97,7 @@ class Service {
       indics: {},
       geo: true,
       question_problems: [],
+      is_new: data.is_new,
     };
 
     // ATUACAO
