@@ -141,7 +141,7 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {/* hook
 
             // console.log(response);
 
-            queryClient.invalidateQueries('policy_info_2024')
+            queryClient.invalidateQueries(`policy_info_2024_${currentIndics}`)
             queryClient.invalidateQueries('policy_analysis')
 
             // onSave(!_.isEqual(originalEntity, entity));

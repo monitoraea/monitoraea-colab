@@ -23,6 +23,7 @@ export default function UploaderField({
   className,
   title,
   disabled,
+  error = false,
 }) {
   const fileInput = useRef();
 
@@ -69,9 +70,9 @@ export default function UploaderField({
   return (
     <>
       <div className={`uploader-wrapper ${type}`}>
-        {!!title && <div className={`uploader-title  ${disabled ? 'disabled' : ''}`}>{title}</div>}
+        {!!title && <div className={`uploader-title ${error ? 'error' : ''}  ${disabled ? 'disabled' : ''}`}>{title}</div>}
         <div
-          className={`drop_zone ${disabled ? 'disabled' : ''} ${!!className ? `uploader-${className}` : ''} ${!previewUrl ? (type !== 'file' ? 'no-image' : 'file-no-image') : ''}`}
+          className={`drop_zone  ${error ? 'error' : ''} ${disabled ? 'disabled' : ''} ${!!className ? `uploader-${className}` : ''} ${!previewUrl ? (type !== 'file' ? 'no-image' : 'file-no-image') : ''}`}
           style={{
             backgroundImage: !previewUrl && type !== 'file' ? `url(${!disabled ? uploadIcon : uploadIconDisabled})` : 'unset',
           }}

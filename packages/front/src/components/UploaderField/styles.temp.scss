@@ -27,6 +27,9 @@
   &.disabled {
     color: rgba(0, 0, 0, 0.38);
   }
+  &.error {
+    color: #d32f2f;
+  }
 }
 
 .drop_zone {
@@ -48,6 +51,8 @@
     border: 1px solid rgba($primary, .25) !important;
     color: rgba(0, 0, 0, 0.38);
   }
+
+  &.error { border: 1px solid #d32f2f !important; }
 }
 
 .uploader-wrapper.minimal .drop_zone {

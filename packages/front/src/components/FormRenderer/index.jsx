@@ -750,7 +750,7 @@ function MultiAutocompleteField({ f, readonly, index, tag = false, dataValue, on
         </form>)}
     />
 
-    return <FormControl className={`${styles.checklist} ${error && styles.error}`}>
+    return <FormControl error={error} className={`${styles.checklist} ${error && styles.error}`}>
         <FormLabel>{titleAndIndex(f.title, index)}</FormLabel>
         <FormGroup>
             {options.map(o => <FormControlLabel
@@ -784,7 +784,7 @@ function DatePickerField({ f, readonly, index, dataValue, onChange }) {
     />
 }
 
-function FileField({ f, readonly, index, dataValue, accept, onChange }) {
+function FileField({ f, readonly, index, dataValue, accept, onChange, error }) {
     const [value, _value] = useState(null);
 
     useEffect(() => {
@@ -799,10 +799,11 @@ function FileField({ f, readonly, index, dataValue, accept, onChange }) {
         accept={accept}
         title={titleAndIndex(f.title, index)}
         disabled={readonly}
+        error={error}
     />
 }
 
-function ThumbnailField({ f, readonly, index, dataValue, onChange }) {
+function ThumbnailField({ f, readonly, index, dataValue, onChange, error }) {
     const [value, _value] = useState(null);
 
     useEffect(() => {
@@ -816,6 +817,7 @@ function ThumbnailField({ f, readonly, index, dataValue, onChange }) {
         title={titleAndIndex(f.title, index)}
         viewer={false}
         disabled={readonly}
+        error={error}
     />;
 }
 
