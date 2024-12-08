@@ -39,7 +39,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       level: {
         type: DataTypes.INTEGER,
-      }    
+      },
+      show_title: {
+        type: DataTypes.BOOLEAN,
+      }   
     },
     {
       tableName: 'contents',

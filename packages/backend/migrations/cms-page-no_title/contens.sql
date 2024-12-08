@@ -1,0 +1,1 @@
+ALTER TABLE public.contents ADD show_title bool DEFAULT true NOT NULL;

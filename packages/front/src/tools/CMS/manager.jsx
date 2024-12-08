@@ -721,20 +721,23 @@ export default function CMS({ id, onClose, onSave }) {
                         />
                       </FormGroup>
                     </div>
-                    {/* <div className="col-xs-4">
-                                <AsyncAutocompleteSuggest
-                                    label="Tags"
-                                    url="content_tag/related"
-                                    urlSingle="content_tag"
-                                    query={`?communityId=${currentCommunity.id}`}
-                                    onChange={handleFieldChange('tags')}
-                                    value={entity.categories}
-                                    multiple
-                                    creatable={true}
-                                    onCreate={name => handleNewTag(name)}
-                                />
-                            </div> */}
+                    {entity.type === 'page' && (
+                      <div className="col-md-2">
+                        <FormGroup>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={entity.show_title}
+                                onChange={e => handleFieldChange('show_title')(e.target.checked)}
+                              />
+                            }
+                            label="Mostrar cabeçalho"
+                          />
+                        </FormGroup>
+                      </div>)}
                   </div>
+
+
 
                   {(['news', 'learning', 'publication'].includes(entity.type) || (entity.type === 'page' && entity.level === 1)) && (<>
 
