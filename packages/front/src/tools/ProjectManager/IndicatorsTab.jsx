@@ -31,7 +31,7 @@ import XCircle from '../../components/icons/XCircle';
 import styles from './indicators.module.scss';
 
 /* utils */
-import indicsTree from '../../utils/indicsTree';
+import { indicsTree } from '../../utils/indicsTree';
 
 const TYPES = {
   INT: 1,

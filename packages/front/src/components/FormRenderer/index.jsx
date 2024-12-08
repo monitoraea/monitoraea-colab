@@ -265,7 +265,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataCh
             _blocks(blocks);
             _otherFields(otherFields);
         }
-    }, [data, form])
+    }, [data, form, problems])
 
     return <>
         {blocks}
@@ -413,19 +413,19 @@ export function FieldRenderer({ f, size, readonly, keyRef, blocks, data, iterati
 
     if (f.type === 'label') Component = <Label f={f} />
     else if (f.type === 'read_only') Component = <ReadOnly f={f} dataValue={dataValue} />
-    else if (f.type === 'options') Component = <OptionsField readonly={readonly} error={problems.includes(f.key)} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
-    else if (f.type === 'yearpicker') Component = <DatePickerField readonly={readonly} error={problems.includes(f.key)} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
+    else if (f.type === 'options') Component = <OptionsField readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
+    else if (f.type === 'yearpicker') Component = <DatePickerField readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
     else if (f.type === 'multi_autocomplete') Component = <MultiAutocompleteField
         readonly={readonly} 
-        error={problems.includes(f.key)}
+        error={problems.includes(String(f.key))}
         f={f}
         tag={!!f.tag}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
     />
-    else if (f.type === 'file') Component = <FileField readonly={readonly} error={problems.includes(f.key)} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} accept={f.accept} />
-    else if (f.type === 'thumbnail') Component = <ThumbnailField readonly={readonly} error={problems.includes(f.key)} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
-    else Component = <StringField readonly={readonly} error={problems.includes(f.key)} integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
+    else if (f.type === 'file') Component = <FileField readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} accept={f.accept} />
+    else if (f.type === 'thumbnail') Component = <ThumbnailField readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
+    else Component = <StringField readonly={readonly} error={problems.includes(String(f.key))} integer={f.type === 'integer'} multiline={f.type === 'textarea'} rows={f.rows} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
 
     /* if (f.iterate) {
         // iterative field

@@ -1,5 +1,5 @@
 module.exports.check = (form, data) => {
-    // TODO: is visible (own show property or its block property) 
+    // TODO: is visible (own show property or its block property) - function 
     // TODO: nesting visibility (blocks inside blocks where parent has visibility rule) -> ISSUE
     
     let is_form_valid = true

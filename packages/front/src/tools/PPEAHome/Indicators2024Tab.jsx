@@ -17,17 +17,21 @@ import XCircle from '../../components/icons/XCircle';
 import FilePlus from '../../components/icons/FilePlus';
 
 /* style */
-import styles from './indicators.module.scss';
+import styles from './indicators.module.scss'
 
-import tree from './indics2024';
+/* utils */
+import { indicsTree, getDimTitle, getIndicTitle, getIndicForm, getFormProblems } from '../../utils/indicsTree'
 
-export default function IndicatorsTab({ entityId }) {/* hooks */
+import structure from './indics2024'
+
+export default function IndicatorsTab({ entityId, analysis, problems }) {/* hooks */
     const { server } = useDorothy();
     const { currentCommunity, changeRoute, params } = useRouter();
     const queryClient = useQueryClient();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-    const [currentIndics, _currentIndics] = useState(null);
+    const [tree, _tree] = useState(null)
+    const [currentIndics, _currentIndics] = useState(null)
 
     const [openedBranch, _openedBranch] = useState(null);
     const [navBranch, _navBranch] = useState(null);
@@ -37,6 +41,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
     const [changed, _changed] = useState(false);
 
     const [currentForm, _currentForm] = useState(null);
+    const [currentProblems, _currentProblems] = useState([]);
 
     /* states */
     const [entity, _entity] = useState([]);
@@ -52,9 +57,19 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
         refetchOnWindowFocus: false,
     });
 
+    useEffect(() => {
+        if (data) _originalEntity(data)
+    }, [data])
+
+    useEffect(() => {
+        if (analysis) _tree(indicsTree(analysis));
+
+        // console.log('analysis', analysis, indicsTree(analysis))
+    }, [analysis])
+
     useEffect(()=>{
-        if(data) _originalEntity(data)
-    },[data])
+        _currentProblems(problems)
+    },[problems])
 
     useEffect(() => {
         if (params && params[1]) _currentIndics(params[1]);
@@ -67,9 +82,9 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
             const branch_id = currentIndics.split('_')[0];
             _openedBranch(branch_id);
 
-            const branch = tree.find(b => b.id === branch_id);
-            const indic = branch.indics.find(i => i.id === currentIndics);
-            _currentForm(indic.form);
+            const branch = tree.find(b => b.id === branch_id)
+            const indic = branch.indics.find(i => i.id === currentIndics)
+            _currentForm(getIndicForm(structure, branch_id, indic.id));
         }
     }, [currentIndics]);
 
@@ -126,7 +141,8 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
 
             // console.log(response);
 
-            queryClient.invalidateQueries('policy_info_2024');
+            queryClient.invalidateQueries('policy_info_2024')
+            queryClient.invalidateQueries('policy_analysis')
 
             // onSave(!_.isEqual(originalEntity, entity));
 
@@ -166,7 +182,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
                                 {tree.map(d => (
                                     <li key={d.id} className={`mb-3 ${styles.li_lae_titles}`} onClick={() => handleNavBranch(d.id)}>
                                         <ListItemStatus
-                                            title={d.title}
+                                            title={getDimTitle(structure, d.id)}
                                             ready={d.ready}
                                             className={openedBranch === d.id || navBranch === d.id ? styles.strong : ''}
                                         />
@@ -174,7 +190,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
                                             {d.indics.map(i => (
                                                 <li key={i.id} className={`${styles.li_indicators}`} onClick={handleNavigation(i.id, d.id)}>
                                                     <ListItemStatus
-                                                        title={i.title}
+                                                        title={getIndicTitle(structure, d.id, i.id)}
                                                         ready={i.ready}
                                                         className={`${styles.indic} ${currentIndics === i.id ? styles.selected : ''}`}
                                                     />
@@ -193,10 +209,9 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
                             {!!currentForm && <Renderer
                                 form={currentForm}
                                 data={mapData2Form(originalEntity, currentForm)}
+                                problems={getFormProblems(currentIndics, currentProblems)}
                                 onDataChange={handleDataChange}
-                                /* readonly={true} */
                             />}
-
                             <div className="section-header">
                                 <div className="section-title"></div>
                                 <div className="section-actions">

@@ -10,6 +10,8 @@ const { check } = require('../../form_utils')
 const shapefile = require('shapefile');
 const simplify = require('simplify-geojson');
 
+const FormManager = require('../../FormsManager')
+
 const aws = require('aws-sdk');
 const s3BucketName = process.env.S3_BUCKET_NAME;
 
@@ -61,7 +63,8 @@ class Service {
         dificuldades,
         contemplados,
         atuacao_aplica,
-        atuacao_naplica_just
+        atuacao_naplica_just,
+        indicadores2024
       FROM ppea.politicas p
       WHERE p.politica_id = :id
       AND versao = 'draft'
@@ -109,10 +112,29 @@ class Service {
 
     // check INFORMACOES
     const { is_form_valid, fields } = check(form, data)
-    if(!is_form_valid) conclusion.ready = false
+    if (!is_form_valid) conclusion.ready = false
     analysis.information = { ...fields }
 
     // check INDICATORES
+    for (let dbKey of Object.keys(indic_forms)) {
+      const dim = dbKey.split('_')[0]/* DIM */
+
+      analysis.indics[dbKey] = {
+        ready: true,
+      }
+      analysis.dims[dim] = { ready: true }
+
+      const itemData = data.indicadores2024[dbKey]
+      const { is_form_valid, fields } = check(indic_forms[dbKey], itemData)
+
+      if (!is_form_valid) {
+        analysis.indics[dbKey].ready = false
+        analysis.dims[dim].ready = false
+        conclusion.ready = false
+        for(let f_key of Object.keys(fields)) if(!fields[f_key]) analysis.question_problems.push(`${dbKey}_${f_key}`)
+      }
+
+    }
     // TODO: prepare response (vide ZCM)
 
     return {

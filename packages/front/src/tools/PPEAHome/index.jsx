@@ -40,11 +40,15 @@ const Manager = () => {
   //get entity_id
   const { data: entity } = useQuery(['policy', { currentCommunity: currentCommunity.id }], {
     queryFn: async () => (await axios.get(`${server}ppea/id_from_community/${currentCommunity.id}`)).data,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   const { data: analysis } = useQuery(['policy_analysis', { policy_id: entity?.id }], {
     queryFn: async () => (await axios.get(`${server}ppea/${entity?.id}/verify`)).data,
     enabled: !!entity?.id,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   /* const mutation = {
@@ -164,7 +168,7 @@ const Manager = () => {
           {entityId && (
             <>
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} problems={Object.keys(analysis.analysis.information).filter(k => analysis.analysis.information[k] === false)} />}
-              {tabindex === 'indicadores_novos' && <IndicatorsTab entityId={entityId} />}
+              {tabindex === 'indicadores_novos' && <IndicatorsTab entityId={entityId} analysis={analysis} problems={analysis.analysis.question_problems} />}
               {tabindex === 'conexoes' && <ConexoesTab entityId={entityId} />}
               {tabindex === 'indicadores' && <OldIndicatorsTab entityId={entityId} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}

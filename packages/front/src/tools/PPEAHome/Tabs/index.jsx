@@ -47,7 +47,7 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
     };
 
     _infoIsReady(isEmpty(groupByNotReady));    
-    //_indicatorIsReady(Object.values(analysis.analysis.indics).reduce((acc, i) => { if (!i.ready) { return false } else { return acc } }, true));
+    _indicatorIsReady(Object.values(analysis.analysis.indics).reduce((acc, i) => { if (!i.ready) { return false } else { return acc } }, true));
     _atuacaoIsReady(analysis.analysis.geo);
 
     _conectionsIsReady(analysis.analysis.connections);
@@ -61,7 +61,7 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           <Tab
             disableRipple
             label="Cadastro"
-            {...a11yProps('informacao' , infoProblemCounter)}
+            {...a11yProps('informacao' , infoProblemCounter > 0 ? infoProblemCounter : '')}
             className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} ${infoProblemCounter < 10 && styles['fixed-size']
             }`}
           />
@@ -74,13 +74,15 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           <Tab
             disableRipple
             label="Indicadores"
-            {...a11yProps('indicadores_novos')}
+            {...a11yProps('indicadores_novos', indicProblemCounter > 0 ? indicProblemCounter : '')}
+            className={`${styles.indicator} ${indicatorIsReady ? styles['ready'] : styles['not-ready']} ${indicProblemCounter < 10 && styles['fixed-size']
+            }`}
           />
           <Tab
             disableRipple
             label="Abrangência"className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
             }`}
-            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '0')}
+            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
           />  
           {(user.membership.find(c => c.alias === 'adm_ppea')) && <Tab
             disableRipple
