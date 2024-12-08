@@ -56,7 +56,7 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
           <Tab
             disableRipple
             label="Informações"
-            {...a11yProps('informacao', infoProblemCounter)}
+            {...a11yProps('informacao', infoProblemCounter > 0 ? infoProblemCounter : '')}
             className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} ${infoProblemCounter < 10 && styles['fixed-size']
               }`}
           />
@@ -71,14 +71,14 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
             label="Indicadores"
             className={`${styles.indicator} ${indicatorIsReady ? styles['ready'] : styles['not-ready']} ${indicProblemCounter < 10 && styles['fixed-size']
               }`}
-            {...a11yProps('indicadores', indicProblemCounter)}
+            {...a11yProps('indicadores', indicProblemCounter > 0 ? indicProblemCounter : '')}
           />
           <Tab
             disableRipple
             label="Abrangência"
             className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
               }`}
-            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '0')}
+            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
           />
         </Tabs>
       </div>
