@@ -14,6 +14,7 @@ fields:
   validation: 
     - type: neq
       value: -1
+    - type: not_empty
 
 - key: 2
   block: dependent # opção - aqui ou no elements do bloco
@@ -31,6 +32,7 @@ fields:
   validation: 
     - type: neq
       value: -1
+    - type: not_empty
 
 - key: 6
   block: dependent

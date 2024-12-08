@@ -1,18 +1,20 @@
-module.exports.check = (form, data) => {
+module.exports.check = (oForm, data) => {
+
+    const form = {...oForm}
 
     // merge elements of blocks
-    /* for (let b of form.blocks) {
+    for (let b of form.blocks) {
         mergeBlockElement(b, form)
-    } */
+    }
 
     let is_form_valid = true
     let fields = {}
     for (let f of form.fields) {
 
-        /* if (!isFieldVisible(f, form, data)) { // se não está visivel, então está ok
+        if (!isFieldVisible(f, form, data)) { // se não está visivel, então está ok
             fields[f.key] = true
             continue
-        } */
+        }
 
         if (f.validation && f.validation.length) {
             if (!Array.isArray(f.validation)) f.validation = [f.validation]
@@ -92,8 +94,8 @@ function checkShow(e, data) {
     let show = true
 
     if (e.show?.target) {
-        if (!Array.isArray(e.show.target.value)) show = (data[e.show.target.key] === e.show.target.value);
-        else show = e.show.target.value.includes(data[e.show.target.key])
+        if (!Array.isArray(e.show.target.value)) show = (data?.[e.show.target.key] === e.show.target.value);
+        else show = e.show.target.value.includes(data?.[e.show.target.key])
     }
 
     return show
