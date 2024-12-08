@@ -133,6 +133,8 @@ export default function ActingTab() {
       geoms: geomsToSave,
     });
 
+    queryClient.invalidateQueries('policy_analysis')
+
     closeSnackbar(snackKey);
 
     enqueueSnackbar('Atuação gravado com sucesso!', {
@@ -156,8 +158,10 @@ export default function ActingTab() {
     });
 
     await axios.put(`${server}ppea/${id}/geo-draw/${checked ? (checked === 'none' ? 'none' : '1') : '0'}`);
+    
 
-    queryClient.invalidateQueries(`project_indics`);
+    queryClient.invalidateQueries('policy_analysis')
+
 
     closeSnackbar(snackKey);
 
@@ -173,9 +177,9 @@ export default function ActingTab() {
       },
     });
 
-    await axios.put(`${server}ppea/${id}/draft/justification`, { value: justification });
+    await axios.put(`${server}ppea/${id}/draft/justification`, { value: justification });    
 
-    queryClient.invalidateQueries(`project_indics`);
+    queryClient.invalidateQueries('policy_analysis')
 
     closeSnackbar(snackKey);
 
