@@ -121,4 +121,16 @@ router.get("/statistics/total_iniciatives", async (req, res) => {
     }
 });
 
+/* TODO */
+router.get("/statistics/enquadramentos", async (req, res) => {
+
+    try {
+        const result = await entity.getNumbersEnquadramentos();
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex, 500);
+    }
+});
+
 module.exports = router;

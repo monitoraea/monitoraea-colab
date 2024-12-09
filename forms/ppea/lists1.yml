@@ -11,20 +11,16 @@ lists:
     - value: 2
       label: 'Poder Público - Nível Municipal'
     - value: 3
-      label: 'Conselhos'
+      label: 'Organização da Sociedade Civil'
     - value: 4
-      label: 'Comitê de bacia hidrográfica'
+      label: 'Escolas e Universidades'
     - value: 5
       label: 'Comitê gestor de Unidade de Conservação'
     - value: 6
-      label: 'Instituição de Ensino'
+      label: 'Bacia Hidrogrãfica'
     - value: 7
-      label: 'Instituição de Pesquisa'
+      label: 'Coletivos e Redes'
     - value: 8
-      label: 'Organização da Sociedade Civil'
+      label: 'Setor Privado e outros'
     - value: 9
-      label: 'Coletivo Educador'
-    - value: 10
-      label: 'Instituição Privada'
-    - value: 11
       label: 'Outro'

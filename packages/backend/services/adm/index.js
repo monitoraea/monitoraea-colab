@@ -561,6 +561,60 @@ class Service {
 
         return result[0].total;
     }
+
+    async getNumbersEnquadramentos() {
+        // TODO: hoje, somente PPEA
+        let result = await db.instance().query(`
+            select 
+                p.instituicao_enquadramento,
+                count(*)::integer as total
+            from ppea.politicas p 
+            group by p.instituicao_enquadramento
+            `, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+
+        let consolid = {
+            poder_publico: [0, 'Poder Público'], // 0,1,2
+            soc_civil: [0, 'Sociedade Civil'], // 3
+            ensino_pesquisa: [0, 'Instituições de Ensino e Pesquisa'], // 4
+            coletivos_redes: [0, 'Instâncias, Comissões e Coletivos'], // 5,6,7
+            setor_privado: [0, 'Setor Privado e outros'], // 8, 9
+        }
+
+        for (let r of result) {
+            switch (r.instituicao_enquadramento) {
+                case 0:
+                case 1:
+                case 2:
+                    consolid['poder_publico'][0] += r.total
+                    break;
+                case 3:
+                    consolid['soc_civil'][0] += r.total
+                    break;
+                case 4:
+                    consolid['ensino_pesquisa'][0] += r.total
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    consolid['coletivos_redes'][0] += r.total
+                    break;
+                case 8:
+                case 9:
+                    consolid['setor_privado'][0] += r.total
+                    break;
+            }
+        }
+
+        let categories = Object.values(consolid).map(e => e[1])
+        let data = Object.values(consolid).map(e => e[0])
+
+        return {
+            categories, // ['South Korea', 'Canada', 'United Kingdom', 'Netherlands', 'Italy'],
+            data, // [400, 430, 448, 470, 640],
+        }
+    }
 }
 
 const base_titles = {
