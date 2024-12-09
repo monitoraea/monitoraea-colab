@@ -109,4 +109,16 @@ router.get("/statistics/participation/rank_of_members", async (req, res) => {
     }
 });
 
+/* TODO */
+router.get("/statistics/total_iniciatives", async (req, res) => {
+
+    try {
+        const result = await entity.getTotalOfInitiatives();
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex, 500);
+    }
+});
+
 module.exports = router;

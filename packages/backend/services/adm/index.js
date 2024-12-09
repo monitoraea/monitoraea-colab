@@ -547,6 +547,20 @@ class Service {
 
         return result;
     }
+
+    async getTotalOfInitiatives() {
+        // retrieve
+        let result = await db.instance().query(`
+            select 
+                count(*)::integer as total
+            from dorothy_communities dc
+            where dc.alias in ('comissao', 'projeto', 'politica')
+            `, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+
+        return result[0].total;
+    }
 }
 
 const base_titles = {
