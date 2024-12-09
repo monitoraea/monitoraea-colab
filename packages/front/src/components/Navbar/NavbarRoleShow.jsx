@@ -33,18 +33,22 @@ export default function NavbarRoleSelector({ perspectives }) {
   return (
     <div className="nav-roleselector">
       <div>
+
+
         <div
           className='nav-roleselector-btn'
           id="roleselector-btn"
           aria-controls="roleselector-menu"
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
-         /*  onClick={event => setAnchorEl(event.currentTarget)} */
+        /*  onClick={event => setAnchorEl(event.currentTarget)} */
         >
-          <PerspectiveRenderer perspectives={perspectives} community={currentCommunity} />
-          {currentCommunity ? currentCommunity.title : ''}
-        </div>
+          {!!user.membership.length && <><PerspectiveRenderer perspectives={perspectives} community={currentCommunity} />
+            {currentCommunity ? currentCommunity.title : ''}
+          </>}
 
+          {!user.membership.length && <>Minha Área</>}
+        </div>
 
         <Menu
           id="roleselector-menu"
@@ -57,7 +61,7 @@ export default function NavbarRoleSelector({ perspectives }) {
           className='nav-roleselector-menu'
         >
           <div className='nav-roleselector-menutitle'>
-              Meus grupos
+            Meus grupos
           </div>
           {/* <Box sx={{ borderBottom: '1px solid #E6E6E6' }}>
             <StyledInputBase

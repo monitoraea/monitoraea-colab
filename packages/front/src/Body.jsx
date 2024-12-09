@@ -15,7 +15,7 @@ export default function Body() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { isLogged, login, doing_login } = useUser();
+  const { isLogged, login, doing_login, user } = useUser();
 
   const handleLogin = async (email, password, next) => {
     const user = await login(email, password);
@@ -31,7 +31,7 @@ export default function Body() {
     else if(query.get('next')) window.location = query.get('next');
     else if(query.get('portal')) window.location = query.get('portal');
     else history.push('/') 
-  };
+  }
 
   return (
     <>
@@ -74,11 +74,19 @@ export default function Body() {
           </Route>
         )}
 
-        {isLogged && (
+        {isLogged && user.membership.length && (
           <Route>
             <Navbar />
             <div className="page-wrapper">
               <CommunityRouter />
+            </div>
+          </Route>
+        )}
+        {isLogged && !user.membership.length && (
+          <Route>
+            <Navbar />
+            <div className="page-wrapper">
+              [Minha Área]
             </div>
           </Route>
         )}
