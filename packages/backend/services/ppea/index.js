@@ -133,7 +133,7 @@ class Service {
         analysis.indics[dbKey].ready = false
         analysis.dims[dim].ready = false
         conclusion.ready = false
-        for(let f_key of Object.keys(fields)) if(!fields[f_key]) analysis.question_problems.push(`${dbKey}_${f_key}`)
+        for (let f_key of Object.keys(fields)) if (!fields[f_key]) analysis.question_problems.push(`${dbKey}_${f_key}`)
       }
 
     }
@@ -170,8 +170,10 @@ class Service {
 
     let indicator = entity[0].indicadores[indic_name];
 
+
     // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
     for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
+      // console.log({ indicator, key: f.key })
 
       if (indicator?.[f.key]) {
         // recupera o arquivo
@@ -196,6 +198,10 @@ class Service {
     })
     const model = ppea.get({ plain: true })
 
+    for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
+      console.log(f.key, (entity[f.key] === 'remove'), files[f.key], model.indicadores2024[indic_name]?.[f.key])
+    }
+
     // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
     for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
 
@@ -204,6 +210,8 @@ class Service {
       else entity[f.key] = model.indicadores2024[indic_name]?.[f.key]
 
     }
+
+    console.log({ entity })
 
     // gravar JSON em indics na posicao certa (indic_name)
     await db.models['Ppea'].update({ ...model, indicadores2024: { ...model.indicadores2024, [indic_name]: entity } }, {

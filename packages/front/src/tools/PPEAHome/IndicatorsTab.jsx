@@ -62,7 +62,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
     }, [params]);
 
     useEffect(() => {
-        if (!!currentIndics) {
+        if (!!currentIndics && !!data) {
             // console.log({ currentIndics })
             const branch_id = currentIndics.split('_')[0];
             _openedBranch(branch_id);
@@ -71,7 +71,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
             const indic = branch.indics.find(i => i.id === currentIndics);
             _currentForm(indic.form);
         }
-    }, [currentIndics]);
+    }, [currentIndics, data]);
 
     const handleNavBranch = id => {
         if (navBranch !== id) _navBranch(id);
@@ -79,6 +79,7 @@ export default function IndicatorsTab({ entityId }) {/* hooks */
     };
 
     const handleNavigation = (childId, rootId) => () => {
+        _originalEntity({})
         _navBranch(rootId);
         if (!changed) changeRoute({ params: ['indicadores', childId] });
         else _toNavigate(childId);
