@@ -262,4 +262,25 @@ router.post('/upload-shp', fileUpload, async (req, res) => {
   }
 });
 
+/* TODO */
+router.get('/', async (req, res) => {
+  const {
+    page,
+    limit,
+    enquads,
+  } = req.query;
+
+  try {
+    const result = await entity.list({
+      enquads: enquads ? enquads.split(',') : null, 
+      page: page ? parseInt(page) : 1,
+      limit: limit && limit !== 'none' ? parseInt(limit) : 6,      
+    });
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
 module.exports = router;

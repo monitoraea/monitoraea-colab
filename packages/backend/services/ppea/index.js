@@ -1,7 +1,7 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
-const { getSegmentedId } = require('../../utils');
+const { getSegmentedId, applyWhere } = require('../../utils');
 
 const dayjs = require('dayjs');
 
@@ -534,6 +534,57 @@ class Service {
     };
 
     return { geojson: simplify(feature, 0.001) };
+  }
+
+  async list(config) {
+    let where = ['p."deletedAt" is NULL'];
+
+    let replacements = {
+      limit: config.limit,
+      offset: config.offset || (config.page - 1) * config.limit,
+    };
+
+    if(config.enquads) {
+      where.push(`instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`)
+    }
+
+    const entities = await db.instance().query(
+      `
+    select 
+        p.id, 
+        p.politica_id,
+        p.nome,
+        p.instituicao_nome,
+        -- regiao
+        count(*) OVER() AS total_count 
+    from ppea.politicas p
+    ${applyWhere(where)}    
+    order by p.nome
+    LIMIT ${!config.all ? ':limit' : 'NULL'} 
+    OFFSET ${!config.all ? ':offset' : 'NULL'} 
+    `,
+      {
+        replacements,
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    let preparedEntities = entities;
+
+    /* pages (count), hasPrevious, hasNext */
+    const total = entities.length ? parseFloat(entities[0]['total_count']) : 0;
+    const rawPages = entities.length ? parseInt(total) / config.limit : 0;
+    let pages = rawPages === Math.trunc(rawPages) ? rawPages : Math.trunc(rawPages) + 1;
+    let hasPrevious = config.page > 1;
+    let hasNext = config.page !== pages;
+
+    return {
+      entities: preparedEntities,
+      pages: !config.all ? pages : 1,
+      total,
+      hasPrevious,
+      hasNext,
+    };
   }
 }
 
