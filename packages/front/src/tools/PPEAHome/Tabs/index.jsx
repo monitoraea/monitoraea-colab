@@ -7,7 +7,7 @@ import { useUser } from 'dorothy-dna-react'
 import styles from './styles.module.scss';
 
 export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
-  
+
   const { user } = useUser()
 
   const [infoIsReady, _infoIsReady] = useState(false);
@@ -46,7 +46,7 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
       return Object.keys(obj).length === 0;
     };
 
-    _infoIsReady(isEmpty(groupByNotReady));    
+    _infoIsReady(isEmpty(groupByNotReady));
     _indicatorIsReady(Object.values(analysis.analysis.indics).reduce((acc, i) => { if (!i.ready) { return false } else { return acc } }, true));
     _atuacaoIsReady(analysis.analysis.geo);
 
@@ -61,34 +61,39 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           <Tab
             disableRipple
             label="Cadastro"
-            {...a11yProps('informacao' , infoProblemCounter > 0 ? infoProblemCounter : '')}
+            {...a11yProps('informacao', infoProblemCounter > 0 ? infoProblemCounter : '')}
             className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} ${infoProblemCounter < 10 && styles['fixed-size']
-            }`}
+              }`}
           />
           <Tab
             disableRipple
             label="Conexões"
             {...a11yProps('conexoes')}
             className={`${styles.indicator} ${conectionsIsReady ? styles['ready'] : styles['not-ready']}`}
-          /> 
+          />
           <Tab
             disableRipple
             label="Indicadores"
             {...a11yProps('indicadores_novos', indicProblemCounter > 0 ? indicProblemCounter : '')}
             className={`${styles.indicator} ${indicatorIsReady ? styles['ready'] : styles['not-ready']} ${indicProblemCounter < 10 && styles['fixed-size']
-            }`}
+              }`}
           />
           <Tab
             disableRipple
-            label="Abrangência"className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
-            }`}
+            label="Linha do tempo"
+            {...a11yProps('timeline')}
+          />
+          <Tab
+            disableRipple
+            label="Abrangência" className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
+              }`}
             {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
-          />  
+          />
           {(user.membership.find(c => c.alias === 'adm_ppea')) && <Tab
             disableRipple
             label="Indicadores legados"
             {...a11yProps('indicadores')}
-          /> }           
+          />}
         </Tabs>
       </div>
     </div>

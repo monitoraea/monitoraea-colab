@@ -6,6 +6,7 @@ import axios from 'axios';
 import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
 import ConexoesTab from './ConexoesTab';
+import TimelineTab from './TimelineTab';
 import IndicatorsTab from './Indicators2024Tab';
 import OldIndicatorsTab from './IndicatorsTab';
 import AtuacaoTab from './ActingTab';
@@ -172,6 +173,7 @@ const Manager = () => {
               {tabindex === 'conexoes' && <ConexoesTab entityId={entityId} />}
               {tabindex === 'indicadores' && <OldIndicatorsTab entityId={entityId} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
+              {tabindex === 'timeline' && <TimelineTab entityId={entityId} />}
             </>
           )}
         </>
