@@ -34,15 +34,13 @@ fields:
         label: Incentivo ao voluntariado (programas que conectam voluntários a causas socioambientais locais, como cuidado com as áreas protegidas, espaços públicos de convivências, etc)
       - value: 6
         label: Resolução de conflitos comunitários (mediação de conflitos entre moradores, criação de comitês de diálogos, etc)
-    show:
-      target:
-        key: 1
-        value: 1
+    validation: at_least_one
 
   - key: 3
     block: dependent
     type: textarea
     title: Descreva/comente e insira evidências das estratégias utilizadas de modo geral
+    validation: not_empty
 
 blocks:
   - key: main

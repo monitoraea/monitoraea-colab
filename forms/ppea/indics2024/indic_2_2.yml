@@ -24,6 +24,7 @@ fields:
         label: Espaços específicos de EA (CIEA, CIMEA, Núcleos de EA, Centros de EA, Observatório de Meio Ambiente e EA, Coletivos Educadores de EA, Câmara técnica de EA, Grupo de Trabalho de EA, ComVida, Fórum  da Agenda 21 Escolar, etc.)
       - value: 1
         label: Espaços não específicos de EA (Conselhos de Meio Ambiente, Conselhos Gestores de UC, Comitês de Bacia Hidrográfica,  Grêmio Estudantil, etc)
+    validation: at_least_one
 
   - key: 3
     block: dependent
@@ -38,6 +39,7 @@ fields:
         label: Fiscalizador
       - value: 3
         label: Consultivo
+    validation: at_least_one
 
   - key: 4
     block: dependent
@@ -52,6 +54,7 @@ fields:
         label: Não paritária com Maior número de cadeiras para o poder público
       - value: 3
         label: Aberta / livre
+    validation: at_least_one
 
   - key: 5
     block: dependent
@@ -73,6 +76,11 @@ fields:
     block: dependent
     type: textarea
     title: Se instituído por instrumento normativo / legal, especifique.
+    validation: not_empty
+    show:
+      target: # a pergunta só aparece se a pergunta da key 6 for sim = 1
+        key: 6
+        value: 1
 
   - key: 7
     block: dependent
@@ -124,6 +132,7 @@ fields:
     block: dependent
     type: textarea
     title: Qual é a dinâmica / ritual da reunião / encontro?
+    validation: not_empty
 
   - key: 10
     block: dependent

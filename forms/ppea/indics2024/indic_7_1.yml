@@ -32,6 +32,7 @@ fields:
         label: Instrução Normativa
       - value: 5
         label: Outro
+    validation: at_least_one
 
   - key: 3
     block: dependent

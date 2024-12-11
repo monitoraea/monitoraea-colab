@@ -17,15 +17,6 @@ fields:
 
   - key: 2
     block: dependent
-    type: textarea
-    title: Se Sim, especifique
-    show:
-      target:
-        key: 1
-        value: 1
-
-  - key: 3
-    block: dependent
     type: options
     title: Existem critérios para favorecer a diversidade dentro desse público específico?
     options:
@@ -39,17 +30,21 @@ fields:
       - type: neq
         value: -1
       - type: not_empty
-
-  - key: 4
-    block: dependent
-    type: textarea
-    title: Quais? Especificar.
     show:
-      target:
-        key: 3
+      target: # a pergunta só aparece se a pergunta da key 1 for sim = 1
+        key: 1
         value: 1
 
-  - key: 5
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Se Sim, especifique
+    show:
+      target:
+        key: 2
+        value: 1
+
+  - key: 4
     block: dependent
     type: options
     title: Existe um equilíbrio das categorias de público envolvido nas formações realizadas?
@@ -64,15 +59,19 @@ fields:
       - type: neq
         value: -1
       - type: not_empty
+    show:
+      target: # a pergunta só aparece se a pergunta da key 1 for não
+        key: 1
+        value: 0
 
-  - key: 4
+  - key: 5
     block: dependent
     type: textarea
-    title: Quais? Especificar.
+    title: Se Sim, especifique
     show:
       target:
-        key: 5
-        value: 1
+        key: 4
+        value: 0
 
 blocks:
   - key: main

@@ -28,6 +28,7 @@ fields:
         label: Plano de gestão ambiental ou similar
       - value: 3
         label: Não há
+    validation: at_least_one
 
   - key: 3
     block: dependent
@@ -58,12 +59,17 @@ fields:
         label: Combate ao desperdício
       - value: 3
         label: Gestão adequada dos resíduos gerados
+    validation: at_least_one
 
   - key: 5
     block: dependent
     type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
+    show:
+      target:
+        key: 3
+        value: 1
 
 blocks:
   - key: main

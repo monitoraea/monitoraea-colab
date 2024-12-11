@@ -79,8 +79,9 @@ fields:
 
   - key: 7
     block: dependent
-    type: TextArea
+    type: textArea
     title: Se foi desenvolvido no processo de mobilização, comente.
+    validation: not_empty
     show:
       target: # a pergunta só aparece se a pergunta da key 6 for sim = 1
         key: 6

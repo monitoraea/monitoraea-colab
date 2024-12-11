@@ -26,13 +26,15 @@ fields:
         label: Regional
       - value: 2
         label: Nacional
-      - value: 2
+      - value: 3
         label: Global
+    validation: at_least_one
 
   - key: 3
     block: dependent
     type: textarea
     title: Descreva/comente.
+    validation: not_empty
 
   - key: 4
     block: dependent
@@ -45,6 +47,7 @@ fields:
         label: Planejamento conjunto de projeto, programa ou política pública
       - value: 2
         label: Execução do planejamento compartilhado com a produção conjunta de serviço, bem coletivo
+    validation: at_least_one
 
 blocks:
   - key: main

@@ -18,7 +18,8 @@ fields:
   - key: 2
     block: dependent
     type: textarea
-    title: Quais as intervenções socioambientais geradas? Comente e quantifique.
+    title: Quais as intervenções socioambientais geradas? Comente e quantifique os resultados.
+    validation: not_empty
 
   - key: 3
     block: dependent
@@ -39,9 +40,24 @@ fields:
   - key: 4
     block: dependent
     type: textarea
-    title: Se Sim (as intervenções preveem ou trazem em seu desenvolvimento processos pedagógicos reflexivos), especifique
+    title: Se Sim (as intervenções preveem ou trazem em seu desenvolvimento processos pedagógicos reflexivos), descreva / comente.
+    validation: not_empty
+    show:
+      target: # a pergunta só aparece se a pergunta da key 1 for sim = 1
+        key: 3
+        value: 1
 
   - key: 5
+    block: dependent
+    type: file
+    title: Insira elemento comprobatório referente a pergunta acima
+    validation: not_empty
+    show:
+      target: # a pergunta só aparece se a pergunta da key 1 for sim = 1
+        key: 3
+        value: 1
+
+  - key: 6
     block: dependent
     type: options
     title: As intervenções fomentam ou se desdobram em outras ações?
@@ -57,18 +73,27 @@ fields:
         value: -1
       - type: not_empty
 
-  - key: 6
+  - key: 7
     block: dependent
     type: textarea
     title: Se Sim (as intervenções fomentam / se desdobram em outras ações), especifique
+    validation: not_empty
+    show:
+      target: # a pergunta só aparece se a pergunta da key 1 for sim = 1
+        key: 6
+        value: 1
 
-  - key: 7
+  - key: 8
     block: dependent
     type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
+    show:
+      target: # a pergunta só aparece se a pergunta da key 1 for sim = 1
+        key: 3
+        value: 1
 
-  - key: 8
+  - key: 9
     block: dependent
     type: options
     title: As intervenções envolveram temas relacionados à mudanças do clima?

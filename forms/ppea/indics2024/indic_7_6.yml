@@ -19,6 +19,7 @@ fields:
     block: dependent
     type: integer
     title: Qual o número de pessoas da equipe?
+    validation: not_empty
 
   - key: 3
     block: dependent
@@ -29,6 +30,7 @@ fields:
         label: Vínculo efetivo / concursado
       - value: 1
         label: Vínculo temporário / contratado
+    validation: at_least_one
 
   - key: 4
     block: dependent
@@ -50,6 +52,7 @@ fields:
     block: dependent
     type: integer
     title: Qual é a base / número de pessoas a que esta política pública se destina?
+    validation: not_empty
 
 blocks:
   - key: main

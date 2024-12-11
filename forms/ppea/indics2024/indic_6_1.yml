@@ -30,11 +30,13 @@ fields:
         label: Rural
       - value: 4
         label: Urbano
+    validation: at_least_one
 
   - key: 3
     block: dependent
     type: textarea
     title: Articulação gerou algum tipo de ação conjunta? Comente.
+    validation: not_empty
 
   - key: 4
     block: dependent

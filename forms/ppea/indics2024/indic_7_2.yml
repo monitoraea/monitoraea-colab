@@ -28,6 +28,7 @@ fields:
         label: Plano
       - value: 3
         label: Normas Internas
+    validation: at_least_one
 
   - key: 3
     block: dependent
@@ -40,6 +41,7 @@ fields:
         label: Entrevistas /questionários
       - value: 2
         label: Oficinas participativas
+    validation: at_least_one
 
   - key: 4
     block: dependent
@@ -52,6 +54,7 @@ fields:
         label: Setor responsável da instituição proponente
       - value: 2
         label: Especialista contratado – responsável único
+    validation: at_least_one
 
   - key: 5
     block: dependent

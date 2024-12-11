@@ -17,13 +17,14 @@ fields:
 
   - key: 2
     block: dependent
-    type: multi_autocomplete
+    type: options
     title: Tipo de fontes dos recursos
     options:
       - value: 0
         label: Interna
       - value: 1
         label: Externa
+    validation: not_empty
 
   - key: 3
     block: dependent
@@ -34,6 +35,7 @@ fields:
         label: Previsão Orçamentária
       - value: 1
         label: Recursos disponíveis na instituição
+    validation: at_least_one
     show:
       target:
         key: 2
@@ -54,6 +56,7 @@ fields:
         label: Emendas parlamentares
       - value: 4
         label: Outros
+    validation: at_least_one
     show:
       target:
         key: 2

@@ -17,16 +17,6 @@ fields:
 
   - key: 2
     block: dependent
-    type: textarea
-    title: Se sim (promoveu ações socioambientais articuladas com as iniciativas culturais), comente
-
-  - key: 3
-    block: dependent
-    type: textarea
-    title: Cite e descreva as ações
-
-  - key: 4
-    block: dependent
     type: options
     title: As práticas promovidas têm como princípio a valorização da cultura local/tradicional/popular?
     options:
@@ -41,10 +31,15 @@ fields:
         value: -1
       - type: not_empty
 
-  - key: 5
+  - key: 3
     block: dependent
     type: textarea
-    title: Descreva/comente.
+    title: Se sim (promoveu ações socioambientais articuladas com as iniciativas culturais), descreva / comente.
+    validation: not_empty
+    show:
+      target:
+        key: 2
+        value: 1
 
 blocks:
   - key: main

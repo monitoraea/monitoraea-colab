@@ -28,6 +28,7 @@ fields:
         label: Discriminação social
       - value: 3
         label: Outro"
+    validation: at_least_one
 
   - key: 3
     block: dependent
@@ -40,6 +41,7 @@ fields:
         label: Pesquisa / diagnóstico
       - value: 2
         label: Comente onde busca as informações
+    validation: at_least_one
 
   - key: 4
     block: dependent
@@ -58,6 +60,7 @@ fields:
         label: Comunicação
       - value: 5
         label: Outro
+    validation: at_least_one
 
 blocks:
   - key: main

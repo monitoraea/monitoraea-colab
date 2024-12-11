@@ -4,6 +4,8 @@ fields:
     type: options
     title: Qual posição da EA na estrutura administrativa/organizacional da instituição?
     options:
+      - value: -1
+        label: Não respondido
       - value: 0
         label: Nível 1 – (PPEA alocada como uma Diretoria/Coordenação (ou outra nomenclatura que indique amaior proximidade com o nível estratégico da instituição)
       - value: 1
@@ -26,10 +28,6 @@ fields:
     type: textarea
     title: Descreva / comente
     validation: not_empty
-    show:
-      target:
-        key: 5
-        value: 1
 
 blocks:
   - key: main
@@ -38,4 +36,10 @@ blocks:
     show:
       target:
         key: 1
-        value: 1
+        value:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5

@@ -17,8 +17,9 @@ fields:
 
   - key: 2
     block: dependent
-    type: TextProfileItemInline
+    type: text
     title: Quantos processos formativos foram realizados a partir da iniciativa cadastrada?
+    validation: not_empty
 
   - key: 3
     block: dependent
@@ -51,8 +52,9 @@ fields:
 
   - key: 5
     block: dependent
-    type: TextArea
+    type: textArea
     title: Como a relação teoria-prática é estruturada no contexto pedagógico?
+    validation: not_empty
     show:
       target: # a pergunta só aparece se a pergunta da key 4 for sim = 1
         key: 4
@@ -73,6 +75,7 @@ fields:
         label: nenhum
       - value: 4
         label: Outros
+    validation: at_least_one
     show:
       target: # a pergunta só aparece se a pergunta da key 4 for sim = 1
         key: 4
@@ -80,8 +83,9 @@ fields:
 
   - key: 7
     block: dependent
-    type: TextArea
+    type: textarea
     title: Qual a abordagem metodológica do processo formativo desenvolvido?
+    validation: not_empty
 
   - key: 8
     block: dependent
@@ -96,6 +100,7 @@ fields:
         label: Diálogo de saberes populares/comunitários, técnicos, acadêmicos e outros
       - value: 3
         label: nenhum
+    validation: at_least_one
 
   - key: 9
     block: dependent
@@ -144,6 +149,7 @@ fields:
         label: nenhum
       - value: 4
         label: Outros
+    validation: at_least_one
     show:
       target:
         key: 10
@@ -162,21 +168,13 @@ fields:
         label: Diálogo de saberes populares/comunitários, técnicos, acadêmicos e outros
       - value: 3
         label: nenhum
+    validation: at_least_one
     show:
       target:
         key: 10
         value: 1
 
   - key: 13
-    block: dependent
-    type: TextArea
-    title: Quais instrumentos de avaliação foram utilizados no processo de formação?
-    show:
-      target:
-        key: 10
-        value: 1
-
-  - key: 14
     block: dependent
     type: options
     title: O processo formativo gerou algum produto coletivo?
