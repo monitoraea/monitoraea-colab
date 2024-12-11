@@ -1,0 +1,52 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A iniciativa está articulada com outras temáticas?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais temas estão articulados?
+    options:
+      - value: 0
+        label: Ambiental
+      - value: 1
+        label: Social
+      - value: 2
+        label: Desenvolvimento Econômico
+      - value: 3
+        label: Rural
+      - value: 4
+        label: Urbano
+
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Articulação gerou algum tipo de ação conjunta? Comente.
+
+  - key: 4
+    block: dependent
+    type: file
+    title: Insira elemento comprobatório referente a pergunta acima
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

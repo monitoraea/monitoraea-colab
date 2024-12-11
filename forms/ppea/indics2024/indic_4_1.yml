@@ -1,0 +1,94 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A iniciativa cadastrada está gerando alguma intervenção socioambiental?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: textarea
+    title: Quais as intervenções socioambientais geradas? Comente e quantifique.
+
+  - key: 3
+    block: dependent
+    type: options
+    title: As intervenções preveem ou trazem em seu desenvolvimento processos pedagógicos reflexivos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 4
+    block: dependent
+    type: textarea
+    title: Se Sim (as intervenções preveem ou trazem em seu desenvolvimento processos pedagógicos reflexivos), especifique
+
+  - key: 5
+    block: dependent
+    type: options
+    title: As intervenções fomentam ou se desdobram em outras ações?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 6
+    block: dependent
+    type: textarea
+    title: Se Sim (as intervenções fomentam / se desdobram em outras ações), especifique
+
+  - key: 7
+    block: dependent
+    type: file
+    title: Insira elemento comprobatório referente a pergunta acima
+    validation: not_empty
+
+  - key: 8
+    block: dependent
+    type: options
+    title: As intervenções envolveram temas relacionados à mudanças do clima?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

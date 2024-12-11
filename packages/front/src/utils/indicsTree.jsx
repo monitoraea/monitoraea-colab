@@ -42,7 +42,7 @@ export function getFormProblems(indic, problems) {
     return relevantProblems
 }
 
-function getDimension(structure, id) {
+export function getDimension(structure, id) {
     return structure.find(d => d.id === id)
 }
 function getIndicFromDim(dim,  id) {

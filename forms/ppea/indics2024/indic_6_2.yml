@@ -1,0 +1,56 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A iniciativa está articulada / integrada com alguma Rede / Coletivo / Movimento Socioambientais nas escalas de abrangência regional, nacional e/ou global?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Qual(is) escalas estão articulados ou integrados?
+    options:
+      - value: 0
+        label: Local
+      - value: 1
+        label: Regional
+      - value: 2
+        label: Nacional
+      - value: 2
+        label: Global
+
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Descreva/comente.
+
+  - key: 4
+    block: dependent
+    type: multi_autocomplete
+    title: De que forma ocorreu a interação da iniciativa com a Rede / Coletivo / Movimento?
+    options:
+      - value: 0
+        label: Realização conjunta de evento ou outra ação pontual pela instituição proponente e a rede/movimento/ coletivo
+      - value: 1
+        label: Planejamento conjunto de projeto, programa ou política pública
+      - value: 2
+        label: Execução do planejamento compartilhado com a produção conjunta de serviço, bem coletivo
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

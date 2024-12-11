@@ -13,6 +13,7 @@ fields:
     validation:
       - type: neq
         value: -1
+      - type: not_empty
 
   - key: 2
     block: dependent
@@ -29,13 +30,13 @@ fields:
         label: Realização de processo formativo dialógico para envolver, informar, dialogar, problematizar e construir conhecimentos sobre o assunto
     validation: at_least_one
 
-  - key: 5
+  - key: 3
     block: dependent
     type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
 
-  - key: 3
+  - key: 4
     block: dependent
     type: multi_autocomplete
     title: Quais foram os resultados da mobilização realizada?
@@ -47,14 +48,43 @@ fields:
       - value: 2
         label: Participação Institucional
       - value: 3
-        label: Corresponsabilidade dos envolvidos
+        label: Entrevistas e aplicação de questionários
+      - value: 4
+        label: Corresponsabilidade dos  envolvidos
+      - value: 5
+        label: Outros
     validation: at_least_one
 
-  - key: 4
+  - key: 5
     block: dependent
     type: textarea
     title: Comente quais foram os resultados da mobilização realizada
     validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: options
+    title: O tema mudanças do clima foi desenvolvido no processo de mobilização?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Se foi desenvolvido no processo de mobilização, comente.
+    show:
+      target: # a pergunta só aparece se a pergunta da key 6 for sim = 1
+        key: 6
+        value: 1
 
 blocks:
   - key: main

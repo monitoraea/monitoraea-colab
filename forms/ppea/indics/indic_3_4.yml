@@ -1,0 +1,64 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Existe um público específico que é atendido pela PPEA?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: TextProfileItemArea
+    title: Quais são os públicos envolvidos no processo formativo / cursos?
+
+  - key: 3
+    block: dependent
+    type: YesNoProfileItem
+    title: Se não há um público específico, existe um equilíbrio das categorias de público envolvido nas formações realizadas?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 4
+    block: dependent
+    type: YesNoProfileItem
+    title: Se há um público específico, existem critérios para favorecer a diversidade dentro deste público específico?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 5
+    block: dependent
+    type: TextProfileItemArea
+    title: Se Sim, especifique
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

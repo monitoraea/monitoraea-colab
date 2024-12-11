@@ -1,0 +1,202 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: É realizado algum processo formador / capacitação / educativo?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: TextProfileItemInline
+    title: Quantos processos formativos foram realizados a partir da iniciativa cadastrada?
+
+  - key: 3
+    block: dependent
+    type: multi_autocomplete
+    title: Qual(is) modalidade(s) de ensino foi(ram) utilizadas no processo formativo?
+    options:
+      - value: 0
+        label: Presencial
+      - value: 1
+        label: EAD
+      - value: 2
+        label: Híbrido
+    validation: at_least_one
+
+  - key: 4
+    block: dependent
+    type: options
+    title: Os processos de formação contemplam articulação entre teoria e prática?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 5
+    block: dependent
+    type: TextArea
+    title: Como a relação teoria-prática é estruturada no contexto pedagógico?
+    show:
+      target: # a pergunta só aparece se a pergunta da key 4 for sim = 1
+        key: 4
+        value: 1
+
+  - key: 6
+    block: dependent
+    type: multi_autocomplete
+    title: Quais foram os resultados da articulação da teoria e prática do processo formativo?
+    options:
+      - value: 0
+        label: Intervenções na realidade
+      - value: 1
+        label: Narrativas construídas pelos participantes do processo
+      - value: 2
+        label: Diálogo de saberes populares/comunitários, técnicos, acadêmicos e outros
+      - value: 3
+        label: nenhum
+      - value: 4
+        label: Outros
+    show:
+      target: # a pergunta só aparece se a pergunta da key 4 for sim = 1
+        key: 4
+        value: 1
+
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Qual a abordagem metodológica do processo formativo desenvolvido?
+
+  - key: 8
+    block: dependent
+    type: multi_autocomplete
+    title: Quais foram as principais técnicas utilizadas no processo de formação?
+    options:
+      - value: 0
+        label: Intervenções na realidade
+      - value: 1
+        label: Narrativas construídas pelos participantes do processo
+      - value: 2
+        label: Diálogo de saberes populares/comunitários, técnicos, acadêmicos e outros
+      - value: 3
+        label: nenhum
+
+  - key: 9
+    block: dependent
+    type: options
+    title: O processo formativo envolveu temas relativos à mudanças do clima?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 10
+    block: dependent
+    type: options
+    title: Houve processo de avaliação relacionado à formação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 11
+    block: dependent
+    type: multi_autocomplete
+    title: Em qual momento da formação foi realizada a avaliação?
+    options:
+      - value: 0
+        label: Intervenções na realidade
+      - value: 1
+        label: Narrativas construídas pelos participantes do processo
+      - value: 2
+        label: Diálogo de saberes populares/comunitários, técnicos, acadêmicos e outros
+      - value: 3
+        label: nenhum
+      - value: 4
+        label: Outros
+    show:
+      target:
+        key: 10
+        value: 1
+
+  - key: 12
+    block: dependent
+    type: multi_autocomplete
+    title: Quais instrumentos de avaliação foram utilizados no processo de formação?
+    options:
+      - value: 0
+        label: Intervenções na realidade
+      - value: 1
+        label: Narrativas construídas pelos participantes do processo
+      - value: 2
+        label: Diálogo de saberes populares/comunitários, técnicos, acadêmicos e outros
+      - value: 3
+        label: nenhum
+    show:
+      target:
+        key: 10
+        value: 1
+
+  - key: 13
+    block: dependent
+    type: TextArea
+    title: Quais instrumentos de avaliação foram utilizados no processo de formação?
+    show:
+      target:
+        key: 10
+        value: 1
+
+  - key: 14
+    block: dependent
+    type: options
+    title: O processo formativo gerou algum produto coletivo?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

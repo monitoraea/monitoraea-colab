@@ -13,6 +13,7 @@ fields:
     validation:
       - type: neq
         value: -1
+      - type: not_empty
 
   - key: 2
     block: dependent
@@ -66,6 +67,7 @@ fields:
     validation:
       - type: neq
         value: -1
+      - type: not_empty
 
   - key: 6
     block: dependent
@@ -90,6 +92,7 @@ fields:
     validation:
       - type: neq
         value: -1
+      - type: not_empty
 
   - key: 8
     block: dependent
@@ -115,6 +118,7 @@ fields:
     validation:
       - type: neq
         value: -1
+      - type: not_empty
 
   - key: 9
     block: dependent

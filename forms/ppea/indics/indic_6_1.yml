@@ -1,0 +1,51 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O processo da PPEA (formulação, implementação, revisão) está articulada com outra(s) ações e/ou políticas públicas?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Quais temas estão articulados?
+    options:
+      - value: 0
+        label: Ambiental
+      - value: 1
+        label: Social
+      - value: 2
+        label: Desenvolvimento Econômico
+      - value: 3
+        label: Rural
+      - value: 4
+        label: Urbano
+
+  - key: 3
+    block: dependent
+    type: TextProfileItemArea
+    title: A articulação gerou algum tipo de ação conjunta? Comente
+
+  - key: 4
+    block: dependent
+    type: FileProfileItem
+    title: Insira elemento comprobatório referente a pergunta acima
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

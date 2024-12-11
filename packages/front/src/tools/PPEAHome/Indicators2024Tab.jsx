@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useSnackbar } from 'notistack';
 import { useDorothy } from 'dorothy-dna-react';
@@ -20,7 +20,7 @@ import FilePlus from '../../components/icons/FilePlus';
 import styles from './indicators.module.scss'
 
 /* utils */
-import { indicsTree, getDimTitle, getIndicTitle, getIndicForm, getFormProblems } from '../../utils/indicsTree'
+import { indicsTree, getDimTitle, getIndicTitle, getIndicForm, getFormProblems, getDimension } from '../../utils/indicsTree'
 
 import structure from './indics2024'
 
@@ -67,9 +67,9 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {/* hook
         // console.log('analysis', analysis, indicsTree(analysis))
     }, [analysis])
 
-    useEffect(()=>{
+    useEffect(() => {
         _currentProblems(problems)
-    },[problems])
+    }, [problems])
 
     useEffect(() => {
         if (params && params[1]) _currentIndics(params[1]);
@@ -96,12 +96,12 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {/* hook
     const handleNavigation = (childId, rootId) => () => {
         _originalEntity({})
         _navBranch(rootId);
-        if (!changed) changeRoute({ params: ['indicadores', childId] });
+        if (!changed) changeRoute({ params: ['indicadores_novos', childId] });
         else _toNavigate(childId);
     };
 
     const handleConfirmation = async action => {
-        if (action === 'confirm') changeRoute({ params: ['indicadores', toNavigate] });
+        if (action === 'confirm') changeRoute({ params: ['indicadores_novos', toNavigate] });
 
         _toNavigate(null);
     };
@@ -180,26 +180,32 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {/* hook
                     <div className={`sidebar-body ${styles.tree}`}>
                         {tree && (
                             <ul>
-                                {tree.map(d => (
-                                    <li key={d.id} className={`mb-3 ${styles.li_lae_titles}`} onClick={() => handleNavBranch(d.id)}>
-                                        <ListItemStatus
-                                            title={getDimTitle(structure, d.id)}
-                                            ready={d.ready}
-                                            className={openedBranch === d.id || navBranch === d.id ? styles.strong : ''}
-                                        />
-                                        <ul className={`${openedBranch === d.id || navBranch === d.id ? styles.show : styles.hide}`}>
-                                            {d.indics.map(i => (
-                                                <li key={i.id} className={`${styles.li_indicators}`} onClick={handleNavigation(i.id, d.id)}>
-                                                    <ListItemStatus
-                                                        title={getIndicTitle(structure, d.id, i.id)}
-                                                        ready={i.ready}
-                                                        className={`${styles.indic} ${currentIndics === i.id ? styles.selected : ''}`}
-                                                    />
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </li>
-                                ))}
+                                {tree.map(d => {
+                                    let hasDim = getDimension(structure, d.id);
+
+                                    return <Fragment key={d.id}>                                        
+
+                                        {hasDim && <li className={`mb-3 ${styles.li_lae_titles}`} onClick={() => handleNavBranch(d.id)}>
+                                            <ListItemStatus
+                                                title={getDimTitle(structure, d.id)}
+                                                ready={d.ready}
+                                                className={openedBranch === d.id || navBranch === d.id ? styles.strong : ''}
+                                            />
+                                            <ul className={`${openedBranch === d.id || navBranch === d.id ? styles.show : styles.hide}`}>
+                                                {d.indics.map(i => (
+                                                    <li key={i.id} className={`${styles.li_indicators}`} onClick={handleNavigation(i.id, d.id)}>
+                                                        <ListItemStatus
+                                                            title={getIndicTitle(structure, d.id, i.id)}
+                                                            ready={i.ready}
+                                                            className={`${styles.indic} ${currentIndics === i.id ? styles.selected : ''}`}
+                                                        />
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </li>}
+
+                                    </Fragment>
+                                })}
                             </ul>
                         )}
                     </div>

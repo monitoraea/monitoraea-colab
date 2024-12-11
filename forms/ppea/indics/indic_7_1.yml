@@ -1,0 +1,46 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A PPEA está apoiada em algum instrumento legal específico para ela?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Quais instrumentos?
+    options:
+      - value: 0
+        label: Lei
+      - value: 1
+        label: Decreto
+      - value: 2
+        label: Resolução
+      - value: 3
+        label: Portaria
+      - value: 4
+        label: Instrução Normativa
+
+  - key: 3
+    block: dependent
+    type: FileProfileItem
+    title: Insira elemento comprobatório referente a pergunta acima
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

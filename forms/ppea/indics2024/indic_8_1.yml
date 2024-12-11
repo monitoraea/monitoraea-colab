@@ -1,0 +1,89 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Existe um Plano de Comunicação da iniciativa?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais ferramentas são usadas para disponibilizar informações para a sociedade?
+    options:
+      - value: 0
+        label: Assessoria de imprensa (matérias, entrevistas, participação em programas de radio e tv, etc)
+      - value: 1
+        label: Produção audiovisual
+      - value: 2
+        label: Site / blog / portal
+      - value: 3
+        label: Redes sociais
+      - value: 4
+        label: Email / mailing
+      - value: 5
+        label: Materiais gráficos (boletins, revista impressa, jornal,  etc)
+      - value: 6
+        label: Aplicativos de comunicação via celular (whatsapp ou similares)
+      - value: 7
+        label: Publicação de relatórios
+      - value: 8
+        label: Realização de reuniões, fóruns, encontros
+      - value: 9
+        label: Outros
+
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Especique
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: multi_autocomplete
+    title: Qual é a periodicidade de atualização / disponibilização de informações?
+    options:
+      - value: 0
+        label: Semanal
+      - value: 1
+        label: Mensal
+      - value: 2
+        label: Trimestral
+      - value: 3
+        label: Semestral
+      - value: 4
+        label: Anual
+      - value: 5
+        label: Bianual ou mais
+
+  - key: 5
+    block: dependent
+    type: multi_autocomplete
+    title: Quem são os interlocutores no processo de comunicação da iniciativa?
+    options:
+      - value: 0
+        label: Não há interlocutores claramente identificados
+      - value: 1
+        label: Internos a instituição (técnicos, gestores, diretores, colaboradores, etc)
+      - value: 2
+        label: Externos a instituição (sociedade em geral e integrantes de espaços de controle social)
+      - value: 3
+        label: Internos e Externos a instituição
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

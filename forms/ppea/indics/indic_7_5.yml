@@ -1,0 +1,34 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Existe infraestrutura física para o processo da PPEA (formulação, implementação, revisão)?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Quem oferece a infraestrutura?
+    options:
+      - value: 0
+        label: Infraestrutura própria
+      - value: 1
+        label: Infraestrutura de terceiros / parceiros
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

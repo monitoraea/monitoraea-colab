@@ -1,0 +1,80 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Existe um público específico que é atendido pelo processo formativo?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: textarea
+    title: Se Sim, especifique
+    show:
+      target:
+        key: 1
+        value: 1
+
+  - key: 3
+    block: dependent
+    type: options
+    title: Existem critérios para favorecer a diversidade dentro desse público específico?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 4
+    block: dependent
+    type: textarea
+    title: Quais? Especificar.
+    show:
+      target:
+        key: 3
+        value: 1
+
+  - key: 5
+    block: dependent
+    type: options
+    title: Existe um equilíbrio das categorias de público envolvido nas formações realizadas?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 4
+    block: dependent
+    type: textarea
+    title: Quais? Especificar.
+    show:
+      target:
+        key: 5
+        value: 1
+
+blocks:
+  - key: main
+
+  - key: dependent

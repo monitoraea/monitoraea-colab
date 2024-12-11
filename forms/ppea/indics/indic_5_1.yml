@@ -1,0 +1,80 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O processo da PPEA (formulação, implementação, revisão) prevê(iu) algum elemento para identificar a elevação da autoestima dos envolvidos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Indique os elementos utilizados para identificar a elevação da autoestima dos envolvidos
+    options:
+      - value: 0
+        label: Pesquisa
+      - value: 1
+        label: Relatos/depoimentos
+    validation: at_least_one
+
+  - key: 3
+    block: dependent
+    type: SingleSelectProfileItemRadio
+    title: Qual é a percepção da elevação da autoestima dos envolvidos diagnosticada?
+    options:
+      - value: 0
+        label: Alta
+      - value: 1
+        label: Média
+      - value: 2
+        label: Baixa
+      - value: 3
+        label: Muito baixa
+
+  - key: 4
+    block: dependent
+    type: TextProfileItemArea
+    title: Insira elemento comprobatório referente a pergunta acima
+
+  - key: 5
+    block: dependent
+    type: YesNoProfileItem
+    title: As intervenções fomentam / se desdobram em outras ações?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 6
+    block: dependent
+    type: TextProfileItemArea
+    title: Se Sim (as intervenções fomentam / se desdobram em outras ações), especifique
+
+  - key: 7
+    block: dependent
+    type: file
+    title: Insira elemento comprobatório referente a pergunta acima
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

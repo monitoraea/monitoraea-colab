@@ -1,0 +1,61 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Há equipe dedicada à implementação da PPEA?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: integer
+    title: Qual o número de pessoas da equipe?
+
+  - key: 3
+    block: dependent
+    type: multi_autocomplete
+    title: Vinculo dos membros da equipe
+    options:
+      - value: 0
+        label: Vínculo efetivo / concursado
+      - value: 1
+        label: Vínculo temporário / contratado
+
+  - key: 4
+    block: dependent
+    type: options
+    title: A equipe tem natureza
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: Multidisciplinar
+      - value: 1
+        label: Disciplinar
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 5
+    block: dependent
+    type: integer
+    title: Qual é a base / número de pessoas a que esta política pública se destina?
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

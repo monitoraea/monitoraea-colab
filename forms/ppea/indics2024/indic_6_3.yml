@@ -1,0 +1,34 @@
+fields:
+  - key: 1
+    block: main
+    type: multi_autocomplete
+    title: A iniciativa dialoga com os seguintes documentos internacionais de referência?
+    options:
+      - value: 0
+        label: Tratado de EA para Sociedades Sustentáveis e Responsabilidade Global
+      - value: 1
+        label: Carta da Terra
+      - value: 2
+        label: Objetivos de Desenvolvimento Sustentável – ODS
+      - value: 3
+        label: Convenção sobre Diversidade Biológica
+      - value: 4
+        label: Relatórios de Avaliação do IPCC sobre mudanças do clima
+      - value: 5
+        label: Nenhuma das anteriores
+    validation: at_least_one
+
+  - key: 2
+    block: dependent
+    type: textarea
+    title: Qual relatório? Comente.
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

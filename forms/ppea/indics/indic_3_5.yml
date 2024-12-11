@@ -1,0 +1,58 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Houve processo de avaliação relacionado à formação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+
+  - key: 2
+    block: dependent
+    type: SingleSelectProfileItemRadio
+    title: Em qual momento da formação foi realizada a avaliação?
+    options:
+      - value: 0
+        label: Final do processo formativo
+      - value: 1
+        label: Início e final do processo do processo formativo
+      - value: 2
+        label: Durante todo o processo formativo
+
+  - key: 3
+    block: dependent
+    type: MultipleSelectProfileItem
+    title: Quais instrumentos de avaliação foram utilizados no processo de formação?
+    options:
+      - value: 0
+        label: Provas, testes, resolução de problemas, etc
+      - value: 1
+        label: Questionário / formulário
+      - value: 2
+        label: Entrevistas
+      - value: 3
+        label: Dinâmicas
+      - value: 4
+        label: Reunião / Roda de conversa
+    validation: at_least_one
+
+  - key: 4
+    block: dependent
+    type: TextProfileItem
+    title: Com quem (qual público) estes instrumentos foram utilizados?
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

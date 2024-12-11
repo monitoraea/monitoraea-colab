@@ -1,0 +1,69 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Foi construído algum instrumento pedagógico que oriente a política?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais instrumentos?
+    options:
+      - value: 0
+        label: Projeto Político Pedagógico (PPP)
+      - value: 1
+        label: Programa
+      - value: 2
+        label: Plano
+      - value: 3
+        label: Normas Internas
+
+  - key: 3
+    block: dependent
+    type: multi_autocomplete
+    title: Quais estratégias são utilizadas para a construção do instrumento pedagógico de base?
+    options:
+      - value: 0
+        label: Levantamento bibliográfico
+      - value: 1
+        label: Entrevistas /questionários
+      - value: 2
+        label: Oficinas participativas
+
+  - key: 4
+    block: dependent
+    type: multi_autocomplete
+    title: Quais os atores envolvidos na construção do instrumento pedagógico?
+    options:
+      - value: 0
+        label: Instituição proponente em conjunto com consultor/especialista e grupo/público alvo
+      - value: 1
+        label: Setor responsável da instituição proponente
+      - value: 2
+        label: Especialista contratado – responsável único
+
+  - key: 5
+    block: dependent
+    type: file
+    title: Insira elemento comprobatório referente a pergunta acima
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1
