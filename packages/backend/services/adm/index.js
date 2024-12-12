@@ -548,6 +548,21 @@ class Service {
         return result;
     }
 
+    async getTotalInitiativesInPerspectives(alias) {
+        // retrieve
+        let result = await db.instance().query(`
+            select 
+                count(*)::integer as total
+            from dorothy_communities dc
+            where dc.alias = :alias
+            `, {
+            type: Sequelize.QueryTypes.SELECT,
+            replacements: { alias }
+        });
+
+        return result[0].total;
+    }
+
     async getTotalOfInitiatives() {
         // retrieve
         let result = await db.instance().query(`

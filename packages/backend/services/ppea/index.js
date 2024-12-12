@@ -544,7 +544,7 @@ class Service {
       offset: config.offset || (config.page - 1) * config.limit,
     };
 
-    if(config.enquads) {
+    if (config.enquads) {
       where.push(`instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`)
     }
 
@@ -585,6 +585,18 @@ class Service {
       hasPrevious,
       hasNext,
     };
+  }
+
+  async total_institutions() {
+    // retrieve
+    let result = await db.instance().query(`
+      select count(distinct p.instituicao_nome)::integer as total
+      from ppea.politicas p
+      `, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    return result[0].total;
   }
 }
 

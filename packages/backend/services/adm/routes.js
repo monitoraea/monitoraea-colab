@@ -122,6 +122,18 @@ router.get("/statistics/total_iniciatives", async (req, res) => {
 });
 
 /* TODO */
+router.get("/statistics/iniciatives_in_perspectives/:alias", async (req, res) => {
+
+    try {
+        const result = await entity.getTotalInitiativesInPerspectives(req.params.alias);
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex, 500);
+    }
+});
+
+/* TODO */
 router.get("/statistics/enquadramentos", async (req, res) => {
 
     try {

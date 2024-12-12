@@ -262,6 +262,17 @@ router.post('/upload-shp', fileUpload, async (req, res) => {
   }
 });
 
+router.get('/statistics/institutions', async (req, res) => {
+
+  try {
+    const result = await entity.total_institutions();
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+})
+
 /* TODO */
 router.get('/', async (req, res) => {
   const {
