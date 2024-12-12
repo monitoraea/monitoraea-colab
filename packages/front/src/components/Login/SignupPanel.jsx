@@ -6,6 +6,8 @@ import { Box, TextField, FormControl, FormLabel, FormControlLabel, Checkbox, For
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
 
+import { useUser } from 'dorothy-dna-react';
+
 import { useDorothy, useQuery } from 'dorothy-dna-react';
 import {
   useHistory,
@@ -22,6 +24,7 @@ const perspectives_options = [
 
 const SignupPanel = ({ next }) => {
 
+  const { login } = useUser();
   const query = useQuery();
   const { server } = useDorothy();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -37,13 +40,19 @@ const SignupPanel = ({ next }) => {
   const [status, _status] = useState('signup');
 
   const mutations = {
-    signup: useMutation((entity) => {
-      return axios.post(`${server}user/signup`, entity);
-    }),
+    signup: useMutation((entity) => axios.post(`${server}user/signup`, entity),
+      {
+        onSuccess: async () => {
+          // auto login
+          const user = await login(email, password);
+          history.push('/')
+        },
+      },
+    )
   }
 
   const handlePerspectiveChange = (e) => {
-    _perspectives({...perspectives, [e.target.name]: e.target.checked });
+    _perspectives({ ...perspectives, [e.target.name]: e.target.checked });
   }
 
   const handleSignup = async () => {
@@ -62,19 +71,6 @@ const SignupPanel = ({ next }) => {
 
     if (password !== password_conf) {
       enqueueSnackbar('As senhas devem ser idênticas!', {
-        variant: 'error',
-        anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
-        },
-      });
-
-      return;
-    }
-
-    const hasPerspectiveSelected = Object.values(perspectives).find(p_selected => !!p_selected);
-    if (!hasPerspectiveSelected) {
-      enqueueSnackbar('Ao menos uma perspectiva deve ser selecionada!', {
         variant: 'error',
         anchorOrigin: {
           vertical: 'top',
@@ -158,26 +154,6 @@ const SignupPanel = ({ next }) => {
                   </div>
                   <div className='row mb-3'>
                     <TextField className="input-text" type="password" id="text-pass" label="Confirmação de senha" value={password_conf} onChange={(e) => _password_conf(e.target.value)} />
-                  </div>
-
-                  <hr style={{ border: 'solid 1px #eee' }} />
-
-                  <div className='row mb-3'>
-                    <Box>
-                      
-                      <FormControl component="fieldset" variant="standard">
-                        <FormLabel component="legend"><span style={{ fontWeight: 'bold' }}>Em qual perspectiva deseja participar? <span style={{ fontSize: '0.75em'}}>(pelo menos uma deve ser selecionada)</span></span></FormLabel>
-                        <FormGroup sx={{ display: 'flex' }}>
-                          {perspectives_options.map(([key, title]) => <FormControlLabel
-                            key={key}
-                            control={
-                              <Checkbox checked={perspectives[key] || false} onChange={handlePerspectiveChange} name={key} />
-                            }
-                            label={title}
-                          />)}
-                        </FormGroup>
-                      </FormControl>
-                    </Box>
                   </div>
                 </>}
 

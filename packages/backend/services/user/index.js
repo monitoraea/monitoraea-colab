@@ -102,8 +102,8 @@ class Service {
 
     /* Torna o usuario membro das redes das perspectivas selecionadas */
 
-    for(let p of perspectives)
-      await require('../gt').addMember(perspectives_networks[p], newUserId, 'member', 1);
+    // for(let p of perspectives)
+    //   await require('../gt').addMember(perspectives_networks[p], newUserId, 'member', 1);
 
     return { success: true };
   }
