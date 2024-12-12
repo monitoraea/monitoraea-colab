@@ -537,7 +537,7 @@ class Service {
   }
 
   async list(config) {
-    let where = ['p."deletedAt" is NULL'];
+    let where = ['p."deletedAt" is NULL',"p.versao = 'current'"];
 
     let replacements = {
       limit: config.limit,
@@ -569,7 +569,32 @@ class Service {
       },
     );
 
-    let preparedEntities = entities;
+    // bboxes
+    for (let i = 0; i < entities.length; i++) {
+      const p = entities[i];
+
+      const [bbox] = await db.instance().query(
+        `
+            with bounds as (
+              select ST_Extent(geom) as bbox
+              from ppea.politicas_atuacao pa
+              inner join ppea.politicas p on p.id = pa.politica_versao_id and p.versao = 'draft'
+              where p.politica_id = :politica_id 
+              and pa.geom is not null
+            )
+            select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+            from bounds
+        `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+          replacements: { politica_id: p.politica_id }
+        },
+      );
+
+      p.bbox = bbox && bbox.y1 && bbox.x1 && bbox.y2 && bbox.x2 ? bbox : null;
+    }
+
+
 
     /* pages (count), hasPrevious, hasNext */
     const total = entities.length ? parseFloat(entities[0]['total_count']) : 0;
@@ -579,7 +604,7 @@ class Service {
     let hasNext = config.page !== pages;
 
     return {
-      entities: preparedEntities,
+      entities,
       pages: !config.all ? pages : 1,
       total,
       hasPrevious,
