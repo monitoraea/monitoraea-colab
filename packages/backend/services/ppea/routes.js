@@ -107,6 +107,18 @@ router.post('/:id/geo-draw', async (req, res) => {
   }
 });
 
+router.post('/', async (req, res) => {
+  try {
+    const { nome } = req.body;
+
+    const result = await entity.createInitiative(nome, res.locals.user);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 /* router.get('/:id/draft/indics', async (req, res) => {
   const { id } = req.params;
 

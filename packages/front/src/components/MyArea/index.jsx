@@ -1,3 +1,17 @@
+import { useState, useEffect } from 'react';
+import { TextField } from '@mui/material';
+
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import { useDorothy, useRouter } from 'dorothy-dna-react';
+import axios from 'axios';
+import { PageTitle } from '../../components/PageTitle/PageTitle';
+import { useSnackbar } from 'notistack';
+
+import { useMutation } from 'react-query';
 
 import styles from './styles.module.scss'
 
@@ -6,6 +20,62 @@ import Lollipop from '../../images/mj-lollipop.png'
 import Arrows from '../../images/mj-v-arrows.png'
 
 export default function MyArea() {
+
+    const { server } = useDorothy();
+
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+    const [showNIDialog, _showNIDialog] = useState(false);
+
+    const mutation = {
+      create: useMutation(name => axios.post(`${server}ppea`, { nome: name }), {
+        onSuccess: () => {
+          //
+        },
+      }),
+    };
+
+    const handleNInitiative = async name => {
+      if (!name || !name.length) return;
+
+      const snackKey = enqueueSnackbar('Criando a iniciativa..', {
+        persist: true,
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
+      });
+
+      /* save */
+      try {
+        const { data } = await mutation.create.mutateAsync(name);
+
+        closeSnackbar(snackKey);
+
+        enqueueSnackbar('Iniciativa gravada com sucesso!', {
+          variant: 'success',
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+        });
+
+        _showNIDialog(false);
+        window.location = `/colabora/politica/${data.communityId}`; /* TODO: melhorar */
+      } catch (error) {
+        closeSnackbar(snackKey);
+
+        console.error(error);
+
+        enqueueSnackbar('Erro ao gravar a iniciativa!', {
+          variant: 'error',
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+        });
+      }
+    };
 
     const goTo = (where) => () => {
         document.getElementById(where).scrollIntoView({ behavior: "smooth" })
@@ -124,7 +194,7 @@ export default function MyArea() {
             </div>
 
             <div className={styles.options}>
-                <button>Cadastrar uma nova <span>PPEA</span></button>
+                <button onClick={() => _showNIDialog('ppea')}>Cadastrar uma nova <span>PPEA</span></button>
                 <button>Cadastrar novo <span>Projeto ou Ação</span> de EA</button>
                 <button>Cadastrar nova iniciativa vinculada ao <span>PPPZCM</span></button>
                 <button>Cadastrar nova <span>instância</span> de EA</button>
@@ -183,5 +253,50 @@ export default function MyArea() {
                 <button>Proponha novos recursos e ajude a moldar o futuro do sistema</button>
             </div>
         </div>
+
+        <NewInitiativeDialog open={!!showNIDialog} type={showNIDialog} onCreate={handleNInitiative} onClose={() => _showNIDialog(false)} />
     </div>)
+}
+
+function NewInitiativeDialog({ open, type, onCreate, onClose }) {
+    const [name, _name] = useState('');
+
+    useEffect(() => {
+        if (open) _name('');
+    }, [open]);
+
+    return (
+        <div>
+            <Dialog
+                open={open}
+                onClose={onClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+                maxWidth="md"
+                fullWidth
+            >
+                <DialogTitle id="alert-dialog-title">Nova iniciativa de {type === 'ppea' ? 'PPEA': '?'}</DialogTitle>
+                <DialogContent>
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <TextField
+                                className="input-text"
+                                label="Nome da nova iniciativa"
+                                value={name}
+                                onChange={e => _name(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => onClose()} autoFocus>
+                        Cancelar
+                    </Button>
+                    <button className="button-primary" onClick={() => onCreate(name)}>
+                        Criar
+                    </button>
+                </DialogActions>
+            </Dialog>
+        </div>
+    );
 }

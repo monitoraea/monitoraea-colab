@@ -473,6 +473,72 @@ class Service {
     return { ok: true };
   }
 
+  async createInitiative(nome, user) {
+    let query, result;
+
+    /* community for project */
+    result = await db.instance().query(
+      `
+    select * from dorothy_community_recipes where name = 'policy'
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const communityRecipe = result[0];
+
+    result = await db.instance().query(
+      `
+    INSERT INTO dorothy_communities(
+      descriptor_json,
+      "createdAt",
+      "updatedAt",
+      alias,
+      type
+    ) 
+    VALUES( 
+        '${JSON.stringify(communityRecipe['descriptor_json']).replace('%TITLE%', nome.replace(/"/g, ''))}', 
+        NOW(),
+        NOW(),
+        '${communityRecipe['alias']}', 
+        '${communityRecipe['type']}'
+    ) RETURNING id
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const community_id = result[0].id;
+
+    result = await db.instance().query(
+      `
+    SELECT MAX(politica_id)+1 as next from ppea.politicas
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    )
+
+    const politica_id = result[0].next;
+
+    result = await db.instance().query(
+      `
+    INSERT into ppea.politicas(nome, community_id, politica_id, versao, "createdAt", "updatedAt") values(:nome, :community_id, :politica_id, 'draft', NOW(), NOW())
+    `,
+      {
+        replacements: { nome, community_id, politica_id },
+        type: Sequelize.QueryTypes.INSERT,
+      },
+    );
+
+    /* torna o criador membro da iniciativa */
+    await require('../gt').addMember(community_id, user.id);
+
+    return { communityId: community_id };
+  }
+
   async getGeoDrawSave(id, geoms) {
 
     // encontra a versao draft desta politica
