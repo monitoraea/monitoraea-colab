@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Qual(is) escalas estão articulados ou integrados?
     options:
       - value: 0
@@ -28,7 +28,7 @@ fields:
 
   - key: 3
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: De que forma ocorreu a interação do processo da PPEA (formulação, implementação, revisão) com a Rede/ Coletivo/Movimento?
     options:
       - value: 0

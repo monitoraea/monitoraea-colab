@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Há alguma referência que defina os critérios de tais práticas?
     options:
       - value: 0
@@ -30,7 +30,7 @@ fields:
 
   - key: 3
     block: dependent
-    type: YesNoProfileItem
+    type: options
     title: Existência de grupo organizado/comissão responsável pelo planejamento e implementação das práticas sustentáveis?
     options:
       - value: -1
@@ -45,7 +45,7 @@ fields:
 
   - key: 4
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais ações são realizadas?
     options:
       - value: 0
@@ -59,13 +59,13 @@ fields:
 
   - key: 5
     block: dependent
-    type: FileProfileItem
+    type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
 
   - key: 6
     block: dependent
-    type: FileProfileItem
+    type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
 

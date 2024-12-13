@@ -1,7 +1,7 @@
 fields:
   - key: 1
     block: main
-    type: SingleSelectProfileItemRadio
+    type: options
     title: Qual posição da EA na estrutura administrativa/organizacional da instituição?
     options:
       - value: 0

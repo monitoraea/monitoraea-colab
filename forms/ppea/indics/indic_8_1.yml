@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais ferramentas são usadas para disponibilizar informações para a sociedade?
     options:
       - value: 0
@@ -40,7 +40,7 @@ fields:
 
   - key: 3
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Especificar a periodicidade de atualização / disponibilização das informações
     validation: not_empty
 

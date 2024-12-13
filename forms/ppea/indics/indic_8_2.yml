@@ -1,7 +1,7 @@
 fields:
   - key: 1
     block: main
-    type: SingleSelectProfileItemRadio
+    type: options
     title: Quem são os interlocutores de comunicação no processo da PPEA (formulação, implementação, revisão)?
     options:
       - value: 0

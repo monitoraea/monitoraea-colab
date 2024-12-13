@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Dialoga com quais temas?
     options:
       - value: 0
@@ -30,7 +30,7 @@ fields:
 
   - key: 3
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Onde busca informações / dados para subsidiar o dialogo?
     options:
       - value: 0
@@ -42,7 +42,7 @@ fields:
 
   - key: 4
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Onde busca informações / dados para subsidiar o dialogo?
     options:
       - value: 0

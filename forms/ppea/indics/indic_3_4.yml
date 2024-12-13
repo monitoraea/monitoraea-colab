@@ -16,12 +16,12 @@ fields:
 
   - key: 2
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Quais são os públicos envolvidos no processo formativo / cursos?
 
   - key: 3
     block: dependent
-    type: YesNoProfileItem
+    type: options
     title: Se não há um público específico, existe um equilíbrio das categorias de público envolvido nas formações realizadas?
     options:
       - value: -1
@@ -36,7 +36,7 @@ fields:
 
   - key: 4
     block: dependent
-    type: YesNoProfileItem
+    type: options
     title: Se há um público específico, existem critérios para favorecer a diversidade dentro deste público específico?
     options:
       - value: -1
@@ -51,7 +51,7 @@ fields:
 
   - key: 5
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Se Sim, especifique
 
 blocks:

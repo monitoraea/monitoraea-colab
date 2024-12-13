@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais os públicos envolvidos na produção dos materiais/peças de comunicação?
     options:
       - value: 0

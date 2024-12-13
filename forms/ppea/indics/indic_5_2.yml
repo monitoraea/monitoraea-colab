@@ -16,12 +16,12 @@ fields:
 
   - key: 2
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Cite as estratégias para estimular o fortalecimento dos laços comunitários?
 
   - key: 3
     block: dependent
-    type: YesNoProfileItem
+    type: options
     title: O processo da PPEA (formulação, implementação, revisão) conseguiu criar grupos e coletivos de ação socioambiental em seu territorio de atuação?
     options:
       - value: -1
@@ -36,12 +36,12 @@ fields:
 
   - key: 4
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Se sim (conseguiu criar grupos e coletivos de ação socioambiental em seu território de atuação), comente
 
   - key: 5
     block: dependent
-    type: YesNoProfileItem
+    type: options
     title: São realizados eventos socioambientais organizados pela própria comunidade em seu territorio de atuação com apoio da PPEA?
     options:
       - value: -1
@@ -56,7 +56,7 @@ fields:
 
   - key: 6
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Se sim (são realizados eventos socioambientais organizados pela própria comunidade em seu territorio de atuação com apoio da PPEA), comente
 
 blocks:

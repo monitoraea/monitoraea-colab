@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Tipo de fontes dos recursos
     options:
       - value: 0
@@ -28,13 +28,13 @@ fields:
 
   - key: 3
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Descreva e comente sobre as fontes de recursos.
     validation: not_empty
 
   - key: 4
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Qual subtipo de fonte de recurso
     options:
       - value: 0
@@ -44,7 +44,7 @@ fields:
 
   - key: 5
     block: dependent
-    type: YesNoProfileItem
+    type: options
     title: Há mecanismos de acesso aos recursos?
     options:
       - value: -1
@@ -59,7 +59,7 @@ fields:
 
   - key: 6
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Se sim (há mecanismos de acesso aos recursos), comente
     validation: not_empty
 

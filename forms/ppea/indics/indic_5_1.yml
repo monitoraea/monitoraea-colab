@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Indique os elementos utilizados para identificar a elevação da autoestima dos envolvidos
     options:
       - value: 0
@@ -27,7 +27,7 @@ fields:
 
   - key: 3
     block: dependent
-    type: SingleSelectProfileItemRadio
+    type: options
     title: Qual é a percepção da elevação da autoestima dos envolvidos diagnosticada?
     options:
       - value: 0
@@ -41,12 +41,12 @@ fields:
 
   - key: 4
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Insira elemento comprobatório referente a pergunta acima
 
   - key: 5
     block: dependent
-    type: YesNoProfileItem
+    type: options
     title: As intervenções fomentam / se desdobram em outras ações?
     options:
       - value: -1
@@ -61,7 +61,7 @@ fields:
 
   - key: 6
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Se Sim (as intervenções fomentam / se desdobram em outras ações), especifique
 
   - key: 7

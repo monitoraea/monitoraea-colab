@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Qual(is) modalidade(s) de ensino foi(ram) utilizadas no processo formativo?
     options:
       - value: 0
@@ -27,12 +27,12 @@ fields:
 
   - key: 3
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Para cada modalidade do curso, indique a carga horária, quantidade de turmas e nomes dos cursos
 
   - key: 4
     block: dependent
-    type: FileProfileItem
+    type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
 

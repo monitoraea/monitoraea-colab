@@ -16,17 +16,17 @@ fields:
 
   - key: 2
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Se sim (promoveu ações socioambientais articuladas com as iniciativas culturais), comente
 
   - key: 3
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Cite e descreva as ações
 
   - key: 4
     block: dependent
-    type: YesNoProfileItem
+    type: options
     title: As práticas promovidas tem como princípio a valorização da cultura endógena?
     options:
       - value: -1
@@ -41,7 +41,7 @@ fields:
 
   - key: 5
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Se sim, comente
 
 blocks:

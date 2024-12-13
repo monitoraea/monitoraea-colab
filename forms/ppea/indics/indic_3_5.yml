@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: SingleSelectProfileItemRadio
+    type: options
     title: Em qual momento da formação foi realizada a avaliação?
     options:
       - value: 0
@@ -28,7 +28,7 @@ fields:
 
   - key: 3
     block: dependent
-    type: MultipleSelectProfileItem
+    type: options
     title: Quais instrumentos de avaliação foram utilizados no processo de formação?
     options:
       - value: 0
@@ -45,7 +45,7 @@ fields:
 
   - key: 4
     block: dependent
-    type: TextProfileItem
+    type: text
     title: Com quem (qual público) estes instrumentos foram utilizados?
 
 blocks:

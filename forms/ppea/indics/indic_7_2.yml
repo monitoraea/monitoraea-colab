@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais instrumentos?
     options:
       - value: 0
@@ -30,7 +30,7 @@ fields:
 
   - key: 3
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais estratégias são utilizadas para a construção do instrumento pedagógico de base?
     options:
       - value: 0
@@ -42,7 +42,7 @@ fields:
 
   - key: 4
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais os atores envolvidos na construção do instrumento pedagógico?
     options:
       - value: 0
@@ -54,19 +54,19 @@ fields:
 
   - key: 5
     block: dependent
-    type: FileProfileItem
+    type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
 
   - key: 6
     block: dependent
-    type: FileProfileItem
+    type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
 
   - key: 7
     block: dependent
-    type: FileProfileItem
+    type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
 

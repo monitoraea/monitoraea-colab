@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais temas estão articulados?
     options:
       - value: 0
@@ -32,12 +32,12 @@ fields:
 
   - key: 3
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: A articulação gerou algum tipo de ação conjunta? Comente
 
   - key: 4
     block: dependent
-    type: FileProfileItem
+    type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
 

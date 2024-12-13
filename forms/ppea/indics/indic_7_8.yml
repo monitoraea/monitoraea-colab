@@ -16,13 +16,13 @@ fields:
 
   - key: 2
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Por meio de quais processos?
     validation: not_empty
 
   - key: 3
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Como os mecanismos de avaliação e monitoramento foram construídos?
     options:
       - value: 0
@@ -32,7 +32,7 @@ fields:
 
   - key: 4
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais os atores envolvidos na implementação dos processos de avaliação e monitoramento?
     options:
       - value: 0
@@ -42,7 +42,7 @@ fields:
 
   - key: 5
     block: dependent
-    type: TextProfileItemInline
+    type: text
     title: Qual é a base / número de pessoas a que esta política pública se destina?
 
 blocks:

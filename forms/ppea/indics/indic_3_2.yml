@@ -16,12 +16,12 @@ fields:
 
   - key: 2
     block: dependent
-    type: TextProfileItem
+    type: text
     title: Se sim, Como a relação teoria-prática é estruturada no contexto pedagógico?
 
   - key: 3
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais foram os resultados da articulação da teoria e prática do processo formativo?
     options:
       - value: 0

@@ -1,7 +1,7 @@
 fields:
   - key: 1
     block: main
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: O processo da PPEA (formulação, implementação, revisão) dialoga com os seguintes documentos internacionais de referência?
     options:
       - value: 0
@@ -19,7 +19,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: TextProfileItemArea
+    type: textarea
     title: Especifique a(s) relação(ões) selecionada(s)
     validation: not_empty
 

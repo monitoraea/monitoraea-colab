@@ -16,7 +16,7 @@ fields:
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais instrumentos?
     options:
       - value: 0
@@ -32,7 +32,7 @@ fields:
 
   - key: 3
     block: dependent
-    type: FileProfileItem
+    type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
 

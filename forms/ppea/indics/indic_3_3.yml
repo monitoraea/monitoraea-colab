@@ -1,12 +1,12 @@
 fields:
   - key: 1
     block: main
-    type: TextProfileItemArea
+    type: textarea
     title: Qual a abordagem metodológica do processo formativo desenvolvido?
 
   - key: 2
     block: dependent
-    type: MultipleSelectProfileItem
+    type: multi_autocomplete
     title: Quais foram as principais técnicas utilizadas no processo de formação?
     options:
       - value: 0
