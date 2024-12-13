@@ -9,6 +9,7 @@ $verde: #409a4d; //verde da paleta
 $azul: #3c6dbc; //azul da paleta 
 $chumbo: #070707; //cor da letra - chumbo da paleta 
 $disabled: #737373;
+$white: #fff;
 
 $primary: $indigo;
 $secondary: $anil;
@@ -30,3 +31,13 @@ $status-orange: #b98a32;
 $status-red: #A70D11;
 
 $gradient: linear-gradient(90deg, rgba($primary, 0) 0%, rgba($primary, 0.05) 100%);
+
+$super-smallest-font: 0.70rem;
+$smallest-font: 0.8rem;
+$small-font: 0.95rem;
+$less-than-medium-font: 1rem;
+$medium-font: 1.1rem;
+$big-font: 1.25rem;
+$big-enough-font: 1.50rem;
+$super-big-font: 2rem;
+$insane-big-font: 3.5rem;

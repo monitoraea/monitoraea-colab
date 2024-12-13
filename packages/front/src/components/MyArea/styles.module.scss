@@ -1,0 +1,135 @@
+@use '../../sass/theme/app_variables' as *;
+
+.my-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: $indigo;
+
+    .header-title {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px;
+
+        .journey {
+            font-size: $big-enough-font;
+            font-weight: 600;
+        }
+
+        .logo {
+            img {
+                width: 320px;
+            }
+        }
+    }
+
+    .bar {
+        height: 30px;
+        background-color: $indigo;
+        width: 100%;
+    }
+
+    .width-limiter {
+        max-width: 991px;
+        width: 100%;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        row-gap: 1rem;
+    }
+
+    .menu {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: start;
+        padding-bottom: 40px;
+        box-shadow: 0 20px 20px -20px #eee;
+
+        &:not(.first) {
+            padding-bottom: 80px;
+        }
+    }
+
+    .banner {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 13vw;
+        max-width: 220px;
+
+        &.clickable {
+            cursor: pointer;
+        }
+
+        .lollipop {
+            margin: -22px 0 0 0;
+            z-index: 10;
+        }
+
+        .text-box {
+            display: flex;
+            align-items: center;
+            
+            margin: -30px 0 -20px 0;
+            background-color: $cristal;
+            padding: 30px 25px;
+            border-radius: 8px;
+            min-height: 250px;
+
+            &>div {
+                text-align: center;
+                font-size: $medium-font;
+
+                span {
+                    font-weight: bold;
+                }
+            }
+        }
+    }
+
+    .options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        justify-content: center;
+        height: 100%;
+        margin: 25px 0 0 25px;
+
+        button {
+            border: none;
+            background-color: $anil;
+            width: 55vw;
+            max-width: 40vw;
+            border-radius: 20px;
+            color: $white;
+            font-size: $medium-font;
+            padding: 10px 0;
+            cursor: pointer;
+            border: solid 3px $white;
+
+            span {
+                font-weight: bold;
+            }
+
+            &:hover {
+                background-color: $white;
+                color: $anil;
+                border: solid 3px $anil;
+            }
+
+            &.outline {
+                background: none;
+                border: solid 3px $anil;
+                color: $anil;
+
+                &:hover {
+                    background-color: $anil;
+                    color: $white;
+                }
+            }
+        }
+    }
+}

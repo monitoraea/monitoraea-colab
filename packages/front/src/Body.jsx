@@ -7,6 +7,7 @@ import LoginPanel from './components/Login';
 import InvitePanel from './components/Login/InvitePanel';
 import SignupPanel from './components/Login/SignupPanel';
 import ParticipatePanel from './components/Login/ParticipatePanel';
+import MyArea from './components/MyArea';
 
 export default function Body() {
   const history = useHistory();
@@ -28,9 +29,9 @@ export default function Body() {
           horizontal: 'center',
         },
       });
-    else if(query.get('next')) window.location = query.get('next');
-    else if(query.get('portal')) window.location = query.get('portal');
-    else history.push('/') 
+    else if (query.get('next')) window.location = query.get('next');
+    else if (query.get('portal')) window.location = query.get('portal');
+    else history.push('/')
   }
 
   return (
@@ -68,9 +69,19 @@ export default function Body() {
           {!isLogged && <Redirect to={`/login/?next=${location.pathname}`} />}
         </Route>
 
+        <Route path="/minha_area">
+          {isLogged && (<>
+            <Navbar />
+            <div className="page-wrapper">
+              <MyArea />
+            </div>
+          </>)}
+          {!isLogged && <Redirect to={`/login/?next=${location.pathname}`} />}
+        </Route>
+
         {!isLogged && (
           <Route>
-            <Redirect to={`${location.pathname.length && location.pathname !== '/' ? `/login/?next=${location.pathname}` : 'login' }`} />
+            <Redirect to={`${location.pathname.length && location.pathname !== '/' ? `/login/?next=${location.pathname}` : 'login'}`} />
           </Route>
         )}
 
@@ -86,7 +97,7 @@ export default function Body() {
           <Route>
             <Navbar />
             <div className="page-wrapper">
-              [Minha Área]
+              <MyArea />
             </div>
           </Route>
         )}
