@@ -473,6 +473,53 @@ class Service {
     return { ok: true };
   }
 
+  async participate(user, id, isADM) {
+    /* Recupera o id da comunidade, a partir do id da politica */
+    const community = await db.instance().query(
+      `
+      select 
+        c.community_id,
+        dc.descriptor_json->>'title' as "nome"
+      from ppea.politicas c 
+      inner join dorothy_communities dc on dc.id = c.community_id 
+      where c.id = :id
+      `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!community) throw new Error('Commission without community');
+
+    const communityId = community[0].community_id;
+    const policyName = community[0].nome;
+
+    return require('../gt').participate(user, communityId, policyName, isADM);
+  }
+
+  async enterInInitiative(user) {
+    /* descobre o id da comunidade rede de ppea */
+    const result = await db.instance().query(
+      `
+      select id
+      from dorothy_communities dc 
+      where alias = 'rede_ppea'
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const community_id = result[0].id;
+
+    /* torna o criador membro da iniciativa */
+    await require('../gt').addMember(community_id, user.id, 'member', 99);
+
+    /* retorna id da comunidade */
+    return { communityId: community_id }
+  }
+
   async createInitiative(nome, user) {
     let query, result;
 
@@ -539,6 +586,42 @@ class Service {
     return { communityId: community_id };
   }
 
+  async getListForUser(user, config) {
+    const entities = await db.instance().query(`
+    with policies as (
+      select 
+        c.id,
+        dc.id as "community_id",
+        dc.descriptor_json->>'title' as "name",
+        count(dm.*) > 0 as "has_members"
+      from ppea.politicas c 
+      inner join dorothy_communities dc on dc.id = c.community_id 
+      left join dorothy_members dm on dm."communityId" = dc.id
+      where c.versao = 'draft'
+      group by c.id, dc.id
+    )
+    select 
+      c.id,
+      c.community_id,
+      c."name",
+      dm."createdAt" is not null as "is_member",
+      c."has_members",
+      p.id is not null as "is_requesting",
+      count(*) OVER() AS total_count 
+    from policies c 
+    left join dorothy_members dm on dm."communityId" = c.community_id and dm."userId" = :userId
+    left join participar p on p."communityId" = c.community_id and p."userId" = :userId and p."resolvedAt" is null 
+    order by c."name" ${config.direction || 'asc'}
+    `,
+      {
+        replacements: { userId: user.id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return { entities, total: entities[0].total_count };
+  }
+
   async getGeoDrawSave(id, geoms) {
 
     // encontra a versao draft desta politica
@@ -603,7 +686,7 @@ class Service {
   }
 
   async list(config) {
-    let where = ['p."deletedAt" is NULL',"p.versao = 'current'"];
+    let where = ['p."deletedAt" is NULL', "p.versao = 'current'"];
 
     let replacements = {
       limit: config.limit,

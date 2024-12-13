@@ -33,6 +33,19 @@ router.get('/:id/draft/info', async (req, res) => {
 });
 
 /* TODO */
+router.get('/mine', async (req, res) => {
+  const { direction } = req.query;
+
+  try {
+    const result = await entity.getListForUser(res.locals.user, { direction });
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+/* TODO */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -104,6 +117,30 @@ router.post('/:id/geo-draw', async (req, res) => {
     res.json(result);
   } catch (error) {
     sendError(res, error);
+  }
+});
+
+router.post('/:id/participate', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isADM } = req.body;
+
+    const result = await entity.participate(res.locals.user, id, isADM);
+
+    res.json(result);
+  } catch (error) {
+    res.json({ error: error.message });
+  }
+});
+
+router.post('/enter_in_network', async (req, res) => {
+  try {
+
+    const result = await entity.enterInInitiative(res.locals.user);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
   }
 });
 
@@ -295,9 +332,9 @@ router.get('/', async (req, res) => {
 
   try {
     const result = await entity.list({
-      enquads: enquads ? enquads.split(',') : null, 
+      enquads: enquads ? enquads.split(',') : null,
       page: page ? parseInt(page) : 1,
-      limit: limit && limit !== 'none' ? parseInt(limit) : 6,      
+      limit: limit && limit !== 'none' ? parseInt(limit) : 6,
     });
 
     res.json(result);

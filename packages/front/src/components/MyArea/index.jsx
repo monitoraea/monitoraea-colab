@@ -28,54 +28,91 @@ export default function MyArea() {
     const [showNIDialog, _showNIDialog] = useState(false);
 
     const mutation = {
-      create: useMutation(name => axios.post(`${server}ppea`, { nome: name }), {
-        onSuccess: () => {
-          //
-        },
-      }),
+        create: useMutation(name => axios.post(`${server}ppea`, { nome: name }), {
+            onSuccess: () => {
+                //
+            },
+        }),
+        enterPPEA: useMutation(() => axios.post(`${server}ppea/enter_in_network`), {
+            onSuccess: () => {
+                //
+            },
+        }),
     };
 
     const handleNInitiative = async name => {
-      if (!name || !name.length) return;
+        if (!name || !name.length) return;
 
-      const snackKey = enqueueSnackbar('Criando a iniciativa..', {
-        persist: true,
-        anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'right',
-        },
-      });
-
-      /* save */
-      try {
-        const { data } = await mutation.create.mutateAsync(name);
-
-        closeSnackbar(snackKey);
-
-        enqueueSnackbar('Iniciativa gravada com sucesso!', {
-          variant: 'success',
-          anchorOrigin: {
-            vertical: 'top',
-            horizontal: 'right',
-          },
+        const snackKey = enqueueSnackbar('Criando a iniciativa..', {
+            persist: true,
+            anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'right',
+            },
         });
 
-        _showNIDialog(false);
-        window.location = `/colabora/politica/${data.communityId}`; /* TODO: melhorar */
-      } catch (error) {
-        closeSnackbar(snackKey);
+        /* save */
+        try {
+            const { data } = await mutation.create.mutateAsync(name);
 
-        console.error(error);
+            closeSnackbar(snackKey);
 
-        enqueueSnackbar('Erro ao gravar a iniciativa!', {
-          variant: 'error',
-          anchorOrigin: {
-            vertical: 'top',
-            horizontal: 'right',
-          },
-        });
-      }
+            enqueueSnackbar('Iniciativa gravada com sucesso!', {
+                variant: 'success',
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                },
+            });
+
+            _showNIDialog(false);
+            window.location = `/colabora/politica/${data.communityId}`; /* TODO: melhorar */
+        } catch (error) {
+            closeSnackbar(snackKey);
+
+            console.error(error);
+
+            enqueueSnackbar('Erro ao gravar a iniciativa!', {
+                variant: 'error',
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                },
+            });
+        }
     };
+
+    const handleAskPPEA = async () => {
+        const snackKey = enqueueSnackbar('Acessando a rede de PPEA..', {
+            persist: true,
+            anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'right',
+            },
+        });
+
+        /* save */
+        try {
+            const { data } = await mutation.enterPPEA.mutateAsync();
+
+            closeSnackbar(snackKey);
+
+            _showNIDialog(false);
+            window.location = `/colabora/rede_ppea/${data.communityId}`; /* TODO: melhorar */
+        } catch (error) {
+            closeSnackbar(snackKey);
+
+            console.error(error);
+
+            enqueueSnackbar('Erro ao acessar a rede de PPEA!', {
+                variant: 'error',
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right',
+                },
+            });
+        }
+    }
 
     const goTo = (where) => () => {
         document.getElementById(where).scrollIntoView({ behavior: "smooth" })
@@ -165,7 +202,7 @@ export default function MyArea() {
             </div>
 
             <div className={styles.options}>
-                <button>Pedir para colaborar com uma <span>PPEA</span> cadastrada</button>
+                <button onClick={handleAskPPEA}>Pedir para colaborar com uma <span>PPEA</span> cadastrada</button>
                 <button>Pedir para colaborar com um <span>Projeto ou Ação</span> de EA cadastrada</button>
                 <button>Pedir para colaborar com uma iniciativa vinculada ao <span>PPPZCM</span></button>
                 <button>Pedir para colaborar uma <span>instância</span> de EA cadastrada</button>
@@ -275,7 +312,7 @@ function NewInitiativeDialog({ open, type, onCreate, onClose }) {
                 maxWidth="md"
                 fullWidth
             >
-                <DialogTitle id="alert-dialog-title">Nova iniciativa de {type === 'ppea' ? 'PPEA': '?'}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">Nova iniciativa de {type === 'ppea' ? 'PPEA' : '?'}</DialogTitle>
                 <DialogContent>
                     <div className="row">
                         <div className="col-xs-12">

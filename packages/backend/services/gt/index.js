@@ -935,7 +935,7 @@ class Service {
 
     // verifica se já é membro da comunidade em questão
     // se já é membro da comunidade, retorna
-    if (communities[0].communities.includes(communityId)) return { error: 'already_in_community' }
+    if (communities[0].communities.includes(String(communityId))) return { error: 'already_in_community' }
 
     // inclui como membro da comunidade em questao
     await db.instance().query(
