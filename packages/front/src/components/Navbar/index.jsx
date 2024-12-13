@@ -166,11 +166,11 @@ export default function Navbar() {
     setAnchorEl(null);
     _showProfileImage(true);
   }
-  144
-  const openPerspectives = () => {
+  
+  /* const openPerspectives = () => {
     setAnchorEl(null);
     _showPerspectives(true);
-  }
+  } */
 
   const handleChangePasswwordRequest = () => {
     setAnchorEl(null);
@@ -418,10 +418,11 @@ export default function Navbar() {
               'aria-labelledby': 'profile-btn',
             }}
           >
+            <MenuItem onClick={()=>history.push("/minha_area")}>Minha área</MenuItem>
             <MenuItem onClick={openProfile}>Informações de perfil</MenuItem>
             <MenuItem onClick={openProfileImage}>{hasThumb ? <>Alterar a</> : <>Enviar</>} foto do perfil</MenuItem>
             <MenuItem onClick={handleChangePasswwordRequest}>Trocar senha</MenuItem>
-            <MenuItem onClick={openPerspectives}>Perspectivas</MenuItem>
+            {/* <MenuItem onClick={openPerspectives}>Perspectivas</MenuItem> */}
             <MenuItem onClick={handleLogout}>Sair</MenuItem>
 
             <div className={`${styles.version_number}`}>
@@ -569,15 +570,15 @@ export default function Navbar() {
       </DialogActions>
     </Dialog>
 
-    <PerspectivesDialog
+    {/* <PerspectivesDialog
       show={showPerspectives}
       onClose={() => _showPerspectives(false)}
-    />
+    /> */}
 
   </>);
 }
 
-function PerspectivesDialog({ show, onClose }) {
+/* function PerspectivesDialog({ show, onClose }) {
   const { server } = useDorothy();
   const { changeRoute } = useRouter();
   const queryClient = useQueryClient();
@@ -669,4 +670,4 @@ function PerspectivesDialog({ show, onClose }) {
       <Button onClick={handleClose}>fechar</Button>
     </DialogActions>
   </Dialog>
-}
+} */
