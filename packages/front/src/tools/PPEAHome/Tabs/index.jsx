@@ -67,9 +67,9 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           />
           <Tab
             disableRipple
-            label="Conexões"
-            {...a11yProps('conexoes')}
-            className={`${styles.indicator} ${conectionsIsReady ? styles['ready'] : styles['not-ready']}`}
+            label="Abrangência" className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
+              }`}
+            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
           />
           <Tab
             disableRipple
@@ -80,14 +80,13 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           />
           <Tab
             disableRipple
-            label="Linha do tempo"
-            {...a11yProps('timeline')}
+            label="Conexões"
+            {...a11yProps('conexoes')}
           />
           <Tab
             disableRipple
-            label="Abrangência" className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
-              }`}
-            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
+            label="Linha do tempo"
+            {...a11yProps('timeline')}
           />
           {(user.membership.find(c => c.alias === 'adm_ppea')) && <Tab
             disableRipple
