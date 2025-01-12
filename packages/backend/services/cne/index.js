@@ -5,6 +5,8 @@ const Sequelize = require('sequelize');
 
 const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId } = require('../../utils');
 
+const { check } = require('../../form_utils')
+
 class Service {
     /* Entity */
     async getListForUser(user) {
@@ -64,6 +66,92 @@ class Service {
         const entityName = community[0].nome;
 
         return require('../gt').participate(user, communityId, entityName, isADM);
+    }
+
+    /* Retorna o id do projeto relacionado a uma comunidade */
+    async getIdFromCommunity(community_id) {
+        const sequelize = db.instance();
+
+        let result;
+
+        result = await sequelize.query(
+            ` select  c.id
+            from cne.cnes c
+            where c.community_id = :community_id`,
+            {
+                replacements: { community_id },
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+
+        if (!result.length) return null;
+
+        const id = result[0].id;
+
+        return { id };
+    }
+
+    async getDraftInfo(id) {
+        const entity = await db.instance().query(
+            `
+          SELECT
+            p.nome,
+            ("createdAt" = "updatedAt") as is_new
+          FROM cne.cnes p
+          WHERE p.cne_id = :id
+          AND versao = 'draft'
+            `,
+            {
+                replacements: { id },
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+
+        let policy = entity[0];
+
+        return policy;
+    }
+
+    async verify(id, form) {
+
+        // get data
+        const data = await this.getDraftInfo(id)
+
+        if (!data) return null;
+
+        let conclusion = { ready: true };
+
+        let analysis = {
+            information: {},
+            connections: true,
+            dims: {},
+            indics: {},
+            geo: true,
+            question_problems: [],
+            is_new: data.is_new,
+        };
+
+        // ATUACAO
+        if (data.atuacao_aplica === null) {
+            analysis.geo = false;
+            conclusion.ready = false;
+        }
+        if (data.atuacao_aplica === false && (!data.atuacao_naplica_just || !data.atuacao_naplica_just.length)) {
+            analysis.geo = false;
+            conclusion.ready = false;
+
+            if (!data.atuacao_naplica_just || !data.atuacao_naplica_just.length) analysis.question_problems.push('naplica_just');
+        }
+
+        // check INFORMACOES
+        const { is_form_valid, fields } = check(form, data)
+        if (!is_form_valid) conclusion.ready = false
+        analysis.information = { ...fields }
+
+        return {
+            ready: conclusion.ready,
+            analysis,
+        }
     }
 }
 

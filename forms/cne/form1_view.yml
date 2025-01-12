@@ -1,0 +1,9 @@
+# We can build a Layout Builder to create files like this one
+- type: row
+  block: cne # opcional
+  elements:
+  - type: row
+    elements:
+    - type: column
+      size: 12
+      key: nome

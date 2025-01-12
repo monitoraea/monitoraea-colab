@@ -1,0 +1,14 @@
+fields:
+
+- key: nome
+  type: text
+  title: Nome
+  size: 12
+  client_validation: not_empty # not implemented yet
+
+blocks: # opcional
+
+  - key: cne
+    title: Sobre a Iniciativa
+    elements:
+      - nome
