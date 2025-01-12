@@ -17,7 +17,7 @@ import FilePlus from '../../components/icons/FilePlus';
 import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer'
 
 import form from '../../../../../forms/cne/form1.yml'
-import form_view from '../../../../../forms/cne/form1_view.yml'
+// import form_view from '../../../../../forms/cne/form1_view.yml'
 
 /* style */
 // import style from './information.module.scss';
@@ -119,7 +119,7 @@ export default function InformationsTab({ entityId, problems }) {
 
                 <Renderer
                   form={form}
-                  view={form_view}
+                  // view={form_view}
                   data={mapData2Form(originalEntity, form)}
                   problems={problems}
                   onDataChange={handleDataChange}
