@@ -29,4 +29,5 @@ module.exports = [
   'form',
   'institution-home',
   'na-midia',
+  'cne',
 ];

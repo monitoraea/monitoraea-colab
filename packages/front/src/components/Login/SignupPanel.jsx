@@ -20,6 +20,7 @@ const perspectives_options = [
   ['ppea', 'M&A de Políticas Públicas de Educação Ambiental'],
   ['pppzcm', 'M&A de Iniciativas Vinculadas ao PPPZCM'],
   ['ciea', 'Comissões Interinstitucional de Educação Ambiental'],
+  ['cne', 'Centros/Núcleos/Equipamentos'],
 ]
 
 const SignupPanel = ({ next }) => {

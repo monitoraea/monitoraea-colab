@@ -14,6 +14,7 @@ const logos = {
     'zcm': 'pppzcm',
     'ciea': 'ciea',
     'ppea': 'ppea',
+    'cne': 'centros/núcleos/equipamentos',
 }
 
 export default function perspectiveRenderer({ perspectives, community }) {
