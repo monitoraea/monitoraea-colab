@@ -772,6 +772,36 @@ class Service {
 
     return result[0].total;
   }
+
+  async getDraftTimeline(id) {
+      const cneTLs = await db.instance().query(
+          `
+              SELECT
+                  lt.id, 
+                  lt."date",
+                  lt.texto,
+                  f.url,
+                  f.file_name,
+                  p.id as politica_versao_id
+              FROM ppea.linhas_do_tempo lt
+              left join files f on f.id = lt.timeline_arquivo
+              inner join ppea.politicas p on p.id = lt.politica_versao_id
+              where p.politica_id = :id
+              and p.versao = 'draft'
+              order by lt."date"
+          `,
+          {
+              replacements: { id },
+              type: Sequelize.QueryTypes.SELECT,
+          },
+      );
+
+      for (let tl of cneTLs) {
+          if (!!tl.url) tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(tl.politica_versao_id, 'timeline_arquivo', tl.url)}`;
+      }
+
+      return cneTLs;
+  }
 }
 
 const singletonInstance = new Service();
