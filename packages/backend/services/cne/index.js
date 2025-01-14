@@ -5,6 +5,17 @@ const Sequelize = require('sequelize');
 
 const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId } = require('../../utils');
 
+const aws = require('aws-sdk');
+const s3BucketName = process.env.S3_BUCKET_NAME;
+
+const s3 = new aws.S3({
+    apiVersion: '2006-03-01',
+
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+
+});
+
 const { check } = require('../../form_utils')
 
 class Service {
@@ -254,25 +265,30 @@ class Service {
 
         return { ok: true };
     }
-    async getGeoDrawSave(id, geoms) {
 
+    async getCNEDraftId(cne_id) {
         // encontra a versao draft desta cne
         const p_draft = await db.instance().query(
             `
             select id
             from cne.cnes p
-            where p.cne_id = :id
+            where p.cne_id = :cne_id
             and p.versao = 'draft'
         `,
             {
-                replacements: { id },
+                replacements: { cne_id },
                 type: Sequelize.QueryTypes.SELECT,
             },
         )
 
         if (!p_draft.length) throw new Error('Unknow draft!')
 
-        const cne_versao_id = p_draft[0].id
+        return p_draft[0].id;
+    }
+
+    async getGeoDrawSave(id, geoms) {
+
+        const cne_versao_id = await this.getCNEDraftId(id);
 
         /* apaga os registro para este projeto id */
         await db.instance().query(
@@ -315,6 +331,145 @@ class Service {
         };
 
         return { geojson: simplify(feature, 0.001) };
+    }
+
+    async getDraftTimeline(id) {
+        const cneTLs = await db.instance().query(
+            `
+                SELECT
+                    lt.id, 
+                    lt."date",
+                    lt.texto,
+                    f.url,
+                    f.file_name,
+                    p.id as cne_versao_id
+                FROM cne.linhas_do_tempo lt
+                left join files f on f.id = lt.timeline_arquivo
+                inner join cne.cnes p on p.id = lt.cne_versao_id
+                where p.cne_id = :id
+                and p.versao = 'draft'
+                order by lt."date"
+            `,
+            {
+                replacements: { id },
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+
+        for (let tl of cneTLs) {
+            if (!!tl.url) tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(tl.cne_versao_id, 'timeline_arquivo', tl.url)}`;
+        }
+
+        return cneTLs;
+    }
+
+    async saveDraftTimeline(user, entity, timeline_arquivo, id, tlid) {
+
+        const cne_versao_id = await this.getCNEDraftId(id);
+
+        let entityModel;
+        if (!tlid) {
+            entityModel = await db.models['Cne_timeline'].create({
+                ...entity,
+                cne_versao_id,
+                timeline_arquivo: undefined,
+            });
+        } else {
+            // recupera
+            entityModel = await db.models['Cne_timeline'].findByPk(tlid);
+            // atualiza
+            entityModel.date = entity.date;
+            entityModel.texto = entity.texto;
+            // salva
+            entityModel.save();
+        }
+
+        if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
+        else if (timeline_arquivo) await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', entityModel.get('cne_versao_id'));
+
+        return entityModel;
+    }
+
+    async removeDraftTimeline(id, tlId) {
+        const timeline = await db.models['Cne_timeline'].findByPk(tlId);
+        const cne_versao_id = await this.getCNEDraftId(id);
+
+        if (timeline.get('timeline_arquivo')) {
+            /* remove file */
+            await db.models['File'].destroy({
+                where: { id: timeline.get('timeline_arquivo') }
+            });
+        }
+
+        await db.models['Cne_timeline'].destroy({
+            where: {
+                id: tlId,
+                cne_versao_id,
+            }
+        })
+
+        return true;
+    }
+
+    async removeFile(entityModel, fieldName) {
+
+        let fileId = entityModel.get(fieldName);
+        entityModel.set(fieldName, null);
+
+        entityModel.save();
+
+        /* remove file */
+        db.models['File'].destroy({
+            where: { id: fileId }
+        });
+
+        /* TODO: remove from S3? */
+    }
+
+    async updateFile(entityModel, file, fieldName, entityId) {
+        // S3
+        await s3.putObject({
+            Bucket: s3BucketName,
+            Key: this.getFileKey(entityId || entityModel.get('cne_versao_id'), fieldName, file.originalname),
+            Body: file.buffer,
+            ACL: 'public-read',
+        }).promise()
+
+        await this.updateFileModel(entityModel, fieldName, file.originalname, file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`)
+    }
+
+    async updateFileModel(entityModel, fieldName, file_name, content_type) {
+        let fileModel;
+        if (!!entityModel[fieldName]) {
+            fileModel = await db.models['File'].findByPk(entityModel[fieldName]);
+        }
+
+        if (!!fileModel) {
+
+            fileModel.file_name = file_name;
+            fileModel.url = file_name;
+            fileModel.document_type = `cne_${fieldName}`;
+            fileModel.content_type = content_type;
+
+            fileModel.save();
+        } else {
+            const fileModel = await db.models['File'].create({
+                file_name,
+                url: file_name,
+                document_type: `cne_${fieldName}`,
+                content_type,
+            });
+
+            entityModel.set(fieldName, fileModel.id);
+
+            await entityModel.save();
+        }
+    }
+
+    getFileKey(id, folder, filename) {
+        const segmentedId = getSegmentedId(id);
+
+        return `cne/${segmentedId}/${folder}/original/${filename}`;
     }
 }
 

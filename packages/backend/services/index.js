@@ -30,4 +30,5 @@ module.exports = [
   'institution-home',
   'na-midia',
   'cne',
+  'cne_timeline',
 ];

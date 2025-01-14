@@ -3,9 +3,14 @@ const router = express.Router();
 const { sendError } = require('dorothy-dna-services').util;
 const entity = require('./index');
 
+const multer = require('multer');
+const upload = multer(); // Memory
+
 const FormManager = require('../../FormsManager')
 
-
+const upTimelineImage = upload.fields([
+  { name: 'imagem', maxCount: 1 },
+]);
 
 /* TODO */
 router.get('/:id/draft/info', async (req, res) => {
@@ -43,8 +48,6 @@ router.get('/id_from_community/:community_id', async (req, res) => {
     sendError(res, ex);
   }
 });
-
-
 
 router.get('/:id/geo-draw/has-geo', async (req, res) => {
   try {
@@ -115,6 +118,70 @@ router.post('/:id/participate', async (req, res) => {
     res.json(result);
   } catch (error) {
     res.json({ error: error.message });
+  }
+});
+
+/* TODO */
+router.delete('/:id/draft/timeline/:tlId', async (req, res) => {
+  const { id, tlId } = req.params;
+
+  try {
+    const result = await entity.removeDraftTimeline(id, tlId);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
+/* TODO */
+router.get('/:id/draft/timeline', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await entity.getDraftTimeline(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
+router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
+  const { id, tlid } = req.params;
+  const { entity: entityData } = req.body;
+
+  const { imagem } = req.files;
+
+  try {
+    const result = await entity.saveDraftTimeline(res.locals.user,
+      JSON.parse(entityData),
+      imagem && imagem.length ? imagem[0] : null,
+      id,
+      tlid
+    );
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
+  const { id } = req.params;
+  const { entity: entityData } = req.body;
+
+  const { imagem } = req.files;
+
+  try {
+    const result = await entity.saveDraftTimeline(res.locals.user,
+      JSON.parse(entityData),
+      imagem && imagem.length ? imagem[0] : null,
+      id
+    );
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
   }
 });
 
