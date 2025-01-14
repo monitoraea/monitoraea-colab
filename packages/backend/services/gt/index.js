@@ -100,6 +100,8 @@ class Service {
           case
             when TRIM(dc.type) = 'policy' then 'Política'
             when TRIM(dc.type) = 'project' then 'Projeto'
+            when TRIM(dc.type) = 'commission' then 'Comissão'
+            when TRIM(dc.type) = 'cne' then 'Centro/Núcleo/Equipamento'
             else 'Facilitador'
           end as "typeName",
           dc.descriptor_json->'title' as "name",
@@ -272,7 +274,7 @@ class Service {
           id, 
           alias, 
           TRIM(type) as "type", 
-          'Comissão' as "typeName",
+          'Centro/Núcleo/Equipamento' as "typeName",
           descriptor_json->'title' as "name",
           count(*) OVER() AS total_count 
         from dorothy_communities
