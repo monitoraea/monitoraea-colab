@@ -33,8 +33,7 @@ class Service {
     from contents c
     left join helpboxes h on h.content_id = c.id
     ${applyWhere(where)}
-    group by c.id, c.title, hb_type, hb_key_ref
-    order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'p."updatedAt" desc'
+    order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}, c.title` : 'p."updatedAt" desc'
       }
     ${!config.last && config.order === 'type' ? ', title' : ''}
     LIMIT ${!config.all ? ':limit' : 'NULL'} 
