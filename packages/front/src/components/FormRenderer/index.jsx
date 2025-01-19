@@ -766,7 +766,7 @@ function MultiAutocompleteField({ f, readonly, index, tag = false, dataValue, on
 
 }
 
-function DatePickerField({ f, type, readonly, index, dataValue, onChange }) {
+function DatePickerField({ f, type, readonly, index, dataValue, onChange, error }) {
     const [value, _value] = useState(null);
     const [views, _views] = useState(['year']);
     const [inputFormat, _inputFormat] = useState("yyyy");
@@ -793,6 +793,7 @@ function DatePickerField({ f, type, readonly, index, dataValue, onChange }) {
         views={views}
         inputFormat={inputFormat}
         disabled={readonly}
+        error={error}
     />
 }
 
