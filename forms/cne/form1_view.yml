@@ -1,9 +1,108 @@
-# We can build a Layout Builder to create files like this one
 - type: row
-  block: cne # opcional
+  block: main
   elements:
+  - type: column
+    size: 12
+    elements:
+    - type: row
+      elements:
+      - type: column
+        size: 2
+        key: logo_arquivo    
   - type: row
     elements:
     - type: column
-      size: 12
+      size: 6
       key: nome
+    - type: column
+      size: 3
+      key: tipologia
+
+- type: row
+  block: managers
+  elements:
+  - type: row
+    block: managers_it
+    elements:
+      - type: column
+        size: 3
+        key: nome_gestor
+      - type: column
+        size: 3
+        key: email_gestor
+      - type: column
+        size: 3
+        key: telefone_gestor
+      - type: column
+        size: 1
+        elements:
+          - type: remove
+  - type: add
+    block: managers_it
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar gestor
+- type: row
+  block: inst
+  elements:
+    - type: column
+      size: 3
+      key: data_criacao
+    - type: column
+      size: 3
+      key: data_inst    
+    - type: column
+      size: 3
+      key: cnpj
+
+- type: row
+  block: strategy
+  elements:
+    - type: column
+      size: 6
+      key: estrategia_desc    
+    - type: column
+      size: 6
+      elements:
+      - type: row
+        elements:
+        - type: column
+          size: 6
+          key: estrategia_link        
+      - type: row
+        elements:
+        - type: column
+          size: 6
+          key: estrategia_data
+
+- type: row
+  block: outcomes
+  elements:
+  - type: row
+    block: outcomes_it
+    elements:
+      - type: column
+        size: 3
+        key: resultado_tipo
+      - type: column
+        size: 3
+        key: resultado_data
+      - type: column
+        size: 1
+        elements:
+          - type: remove
+  - type: add
+    block: outcomes_it
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar resultado ou produto

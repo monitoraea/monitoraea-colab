@@ -1,14 +1,149 @@
 fields:
 
+- key: logo_arquivo
+  block: main
+  type: thumbnail
+  title: Logotipo
+  db_field: logo_arquivo
+  size: 2
+
 - key: nome
+  block: main
   type: text
   title: Nome
   size: 12
   client_validation: not_empty # not implemented yet
+  validation:
+    - type: not_empty
+
+- key: tipologia
+  block: main
+  type: options
+  title: Tipologia
+  size: 4
+  options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Centro'
+    - value: 1
+      label: 'Núcleo'
+    - value: 2
+      label: 'Equipamento'
+    - value: 3
+      label: 'Outro'
+  validation: 
+    - type: neq
+      value: -1
+    - type: not_empty
+
+- key: nome_gestor
+  block: managers_it
+  type: text
+  title: Nome %index%
+  size: 4
+
+- key: email_gestor
+  block: managers_it
+  type: text
+  title: E-mail %index%
+  size: 4
+
+- key: telefone_gestor
+  block: managers_it
+  type: text
+  title: Telefone %index%
+  size: 4
+
+- key: data_criacao
+  block: inst
+  type: monthpicker
+  title: Data da criação
+  size: 3
+
+- key: data_inst
+  block: inst
+  type: monthpicker
+  title: Data da institucionalização
+  size: 3
+  
+- key: cnpj
+  block: inst
+  type: text
+  title: CNPJ do CECSA
+  size: 4
+
+- key: estrategia_desc
+  block: strategy
+  type: textarea
+  rows: 3
+  title: Descrição
+  size: 12
+
+- key: estrategia_link
+  block: strategy
+  type: text
+  title: Link para o documento
+  size: 4
+
+- key: estrategia_data
+  block: strategy
+  type: monthpicker
+  title: Data da versão mais atual
+  size: 4
+
+- key: resultado_tipo
+  block: outcomes_it
+  type: options
+  options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Formação'
+    - value: 1
+      label: 'Educomunicação'
+    - value: 2
+      label: 'Articulação'
+  title: Tipo %index%
+  size: 4
+
+- key: resultado_data
+  block: outcomes_it
+  type: monthpicker
+  title: Data da versão mais atual
+  size: 4
 
 blocks: # opcional
 
-  - key: cne
+  - key: main
     title: Sobre a Iniciativa
+
+  - key: managers
+    title: Gestores responsáveis
     elements:
-      - nome
+      - type: block
+        key: managers_it
+
+  - key: managers_it
+    iterate:
+      target: none
+      index: default
+      add: Adicionar gestor
+
+  - key: inst
+    title: Institucional
+
+  - key: strategy
+    title: Estratégia de sustentabilidade
+
+  - key: outcomes
+    title: Resultados e Produtos gerados
+    elements:
+      - type: block
+        key: outcomes_it
+
+  - key: outcomes_it
+    iterate:
+      target: none
+      index: default
+      add: Adicionar resultado ou produto

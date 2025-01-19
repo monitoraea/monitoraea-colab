@@ -414,7 +414,7 @@ export function FieldRenderer({ f, size, readonly, keyRef, blocks, data, iterati
     if (f.type === 'label') Component = <Label f={f} />
     else if (f.type === 'read_only') Component = <ReadOnly f={f} dataValue={dataValue} />
     else if (f.type === 'options') Component = <OptionsField readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
-    else if (f.type === 'yearpicker') Component = <DatePickerField readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
+    else if (['yearpicker', 'monthpicker'].includes(f.type)) Component = <DatePickerField type={f.type} readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
     else if (f.type === 'multi_autocomplete') Component = <MultiAutocompleteField
         readonly={readonly} 
         error={problems.includes(String(f.key))}
@@ -766,20 +766,32 @@ function MultiAutocompleteField({ f, readonly, index, tag = false, dataValue, on
 
 }
 
-function DatePickerField({ f, readonly, index, dataValue, onChange }) {
+function DatePickerField({ f, type, readonly, index, dataValue, onChange }) {
     const [value, _value] = useState(null);
+    const [views, _views] = useState(['year']);
+    const [inputFormat, _inputFormat] = useState("yyyy");
 
     useEffect(() => {
         if (!!dataValue) _value(dataValue);
     }, [dataValue])
+
+    useEffect(()=>{
+        if(type==='monthpicker') {
+            _views(['month', 'year']);
+            _inputFormat('MM/yyyy');
+        } else {
+            _views(['year']);
+            _inputFormat('yyyy');
+        }
+    }, [type])
 
     return <DatePicker
         className="input-datepicker"
         label={titleAndIndex(f.title, index)}
         value={value || ''}
         onChange={onChange}
-        views={['year']}
-        inputFormat="yyyy"
+        views={views}
+        inputFormat={inputFormat}
         disabled={readonly}
     />
 }
