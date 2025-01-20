@@ -177,18 +177,18 @@ class Service {
         else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo[0], 'logo_arquivo', entityModel.get('id'));
 
         files = { /* TODO: recuperar em form - nem precisa existir, pode ser resolvido abaixo */
-          logo_arquivo: files.logo_arquivo && files.logo_arquivo.length ? files.logo_arquivo[0] : null,
-          estrategia_arquivo: files.estrategia_arquivo && files.estrategia_arquivo.length ? files.estrategia_arquivo[0] : null,
+            logo_arquivo: files.logo_arquivo && files.logo_arquivo.length ? files.logo_arquivo[0] : null,
+            estrategia_arquivo: files.estrategia_arquivo && files.estrategia_arquivo.length ? files.estrategia_arquivo[0] : null,
         }
-    
+
         // !!!!! form.link_or_file_fields <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form
         /* TODO: GENERALIZAR: recuperar em form.yml - updateFile deveria ser único (util?) */
         for (let wFile of ['estrategia']) {
-          if (entity[`${wFile}_tipo`] === 'link') await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
-          else if (entity[`${wFile}_tipo`] === 'file') {
-            if (entity[`${wFile}_arquivo2`] === 'remove') await this.removeFile(entityModel, `${wFile}_arquivo`);
-            else if (files[`${wFile}_arquivo`]) await this.updateFile(entityModel, files[`${wFile}_arquivo`], `${wFile}_arquivo`, entityModel.get('id'));
-          }
+            if (entity[`${wFile}_tipo`] === 'link') await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
+            else if (entity[`${wFile}_tipo`] === 'file') {
+                if (entity[`${wFile}_arquivo2`] === 'remove') await this.removeFile(entityModel, `${wFile}_arquivo`);
+                else if (files[`${wFile}_arquivo`]) await this.updateFile(entityModel, files[`${wFile}_arquivo`], `${wFile}_arquivo`, entityModel.get('id'));
+            }
         }
 
         return entity;
@@ -402,6 +402,23 @@ class Service {
         };
 
         return { geojson: simplify(feature, 0.001) };
+    }
+
+    async total_cnes() {
+        // retrieve
+        let result = await db.instance().query(`
+            with institutions_list as (
+                select distinct jsonb_array_elements(jsonb_path_query_array(c.intitutions_it, '$.nome_inst')) as institutions
+                from cne.cnes c
+                order by institutions
+            )
+            select count(*) as total
+            from institutions_list
+      `, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+
+        return result[0].total;
     }
 
     async getDraftTimeline(id) {

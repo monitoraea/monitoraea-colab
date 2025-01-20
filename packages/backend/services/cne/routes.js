@@ -108,6 +108,17 @@ router.post('/upload-shp', fileUpload, async (req, res) => {
   }
 });
 
+router.get('/statistics/cnes', async (req, res) => {
+
+  try {
+    const result = await entity.total_cnes();
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+})
+
 router.post('/:id/participate', async (req, res) => {
   try {
     const { id } = req.params;
