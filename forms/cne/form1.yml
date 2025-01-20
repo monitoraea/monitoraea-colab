@@ -37,6 +37,18 @@ fields:
       value: -1
     - type: not_empty
 
+- key: nome_inst
+  block: intitutions_it
+  type: text
+  title: Nome %index%
+  size: 4
+
+- key: segmento_inst
+  block: intitutions_it
+  type: text
+  title: Segmento %index%
+  size: 4
+
 - key: nome_gestor
   block: managers_it
   type: text
@@ -60,6 +72,8 @@ fields:
   type: monthpicker
   title: Data da criação
   size: 3
+  validation: 
+    - type: not_empty
 
 - key: data_inst
   block: inst
@@ -80,17 +94,47 @@ fields:
   title: Descrição
   size: 12
 
-- key: estrategia_link
-  block: strategy
-  type: text
-  title: Link para o documento
-  size: 4
-
 - key: estrategia_data
   block: strategy
   type: monthpicker
   title: Data da versão mais atual
   size: 4
+
+- key: estrategia_tipo
+  block: strategy
+  type: options
+  title: Tipo de documento de estrategia
+  size: 2
+  onchange:
+    - key: estrategia_arquivo
+      value:
+    - key: estrategia_arquivo2
+      value:
+  list: 
+    module: property
+    key: tipo_arquivo
+
+- key: estrategia_arquivo
+  block: strategy
+  type: text
+  title: Link para o estrategia interno
+  size: 6
+  show:
+    target:
+      key: estrategia_tipo
+      value: link
+
+- key: estrategia_arquivo2
+  block: estrategia_tem_block
+  type: file
+  accept: application/pdf
+  title: Arquivo de estrategia
+  db_field: estrategia_arquivo
+  size: 6
+  show:
+    target:
+      key: estrategia_tipo
+      value: file
 
 - key: resultado_tipo
   block: outcomes_it
@@ -105,6 +149,12 @@ fields:
     - value: 2
       label: 'Articulação'
   title: Tipo %index%
+  size: 4
+
+- key: resultado_link
+  block: outcomes_it
+  type: text
+  title: Link
   size: 4
 
 - key: resultado_data
@@ -128,7 +178,19 @@ blocks: # opcional
     iterate:
       target: none
       index: default
-      add: Adicionar gestor
+      add: Adicionar gestor  
+
+  - key: institutions
+    title: Instituições proponentes
+    elements:
+      - type: block
+        key: intitutions_it
+
+  - key: intitutions_it
+    iterate:
+      target: none
+      index: default
+      add: Adicionar instituição    
 
   - key: inst
     title: Institucional

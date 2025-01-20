@@ -15,7 +15,10 @@ export const dynamicContents = {
     ],
     risco: [
       ['risco.intro','Introdução ao MonitoraEA-Risco Climático'],
-    ],
+    ],/* 
+    cne: [
+      ['risco.intro','Introdução ao MonitoraEA-Risco Climático'],
+    ], */
   }
 
   export const portals = {
@@ -25,6 +28,7 @@ export const dynamicContents = {
     'pppzcm': 'MonitoraEA-PPPZCM',
     'ciea': 'MonitoraEA-CIEA',
     'risco': 'MonitoraEA-Risco Climático',
+    'cne': 'MonitoraEA-CECSA',
     'anppea': 'ANPPEA',
   };
 

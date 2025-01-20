@@ -417,6 +417,7 @@ export default function CMS({ id, onClose, onSave }) {
                       { value: 'pppzcm', title: 'MonitoraEA-PPPZCM' },
                       { value: 'ciea', title: 'MonitoraEA-CIEA' },
                       { value: 'risco', title: 'MonitoraEA-Risco Climático' },
+                      { value: 'cecsa', title: 'MonitoraEA-CECSA' },
                       { value: 'anppea', title: 'ANPPEA' },
                     ]}
                     error={errors.portal}

@@ -19,6 +19,33 @@
       key: tipologia
 
 - type: row
+  block: institutions
+  elements:
+  - type: row
+    block: intitutions_it
+    elements:
+      - type: column
+        size: 3
+        key: nome_inst
+      - type: column
+        size: 3
+        key: segmento_inst
+      - type: column
+        size: 1
+        elements:
+          - type: remove
+  - type: add
+    block: intitutions_it
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar instituição
+
+- type: row
   block: managers
   elements:
   - type: row
@@ -63,22 +90,26 @@
 - type: row
   block: strategy
   elements:
-    - type: column
-      size: 6
-      key: estrategia_desc    
-    - type: column
-      size: 6
+    - type: row
       elements:
-      - type: row
-        elements:
+      - type: column
+        size: 9
+        key: estrategia_desc
+    - type: row
+      elements:    
         - type: column
-          size: 6
-          key: estrategia_link        
-      - type: row
-        elements:
+          size: 3
+          key: estrategia_tipo
         - type: column
-          size: 6
+          size: 3
+          key: estrategia_arquivo      
+        - type: column
+          size: 3
+          key: estrategia_arquivo2
+        - type: column
+          size: 3
           key: estrategia_data
+          
 
 - type: row
   block: outcomes
@@ -89,6 +120,9 @@
       - type: column
         size: 3
         key: resultado_tipo
+      - type: column
+        size: 3
+        key: resultado_link
       - type: column
         size: 3
         key: resultado_data

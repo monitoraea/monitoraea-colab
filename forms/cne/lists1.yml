@@ -1,0 +1,15 @@
+lists:
+
+  - key: sim_nao
+    options:
+    - value: true
+      label: 'Sim'
+    - value: false
+      label: 'Não'
+
+  - key: tipo_arquivo
+    options:
+    - value: 'link'
+      label: 'Link'
+    - value: 'file'
+      label: 'Arquivo'

@@ -107,6 +107,17 @@ class Service {
             `
           SELECT
             p.nome,
+            p.logo_arquivo,
+            p.tipologia,
+            p.intitutions_it,
+            p.managers_it,
+            p.data_criacao,
+            p.data_inst,
+            p.cnpj,
+            p.estrategia_desc,
+            p.estrategia_arquivo,
+            p.estrategia_data,
+            p.outcomes_it,
             ("createdAt" = "updatedAt") as is_new
           FROM cne.cnes p
           WHERE p.cne_id = :id
@@ -118,9 +129,69 @@ class Service {
             },
         );
 
-        let policy = entity[0];
+        let cne = entity[0];
 
-        return policy;
+        /* TODO: dá para simplificar com FormManager */
+        for (let document of ['logo', 'estrategia']) {
+            if (document !== 'logo') cne[`${document}_tipo`] = null;
+
+            if (!!entity[0][`${document}_arquivo`]) {
+                const file_entity = await db.instance().query(
+                    `select f.url, f.file_name, f.content_type from files f where f.id = :file_id`,
+                    { replacements: { file_id: entity[0][`${document}_arquivo`] }, type: Sequelize.QueryTypes.SELECT }
+                );
+
+                if (file_entity.length) {
+                    if (document === 'logo' || file_entity[0].content_type !== 'text/uri-list') {
+                        cne[`${document}_arquivo${document !== 'logo' ? 2 : ''}`] = {
+                            url: `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, `${document}_arquivo`, file_entity[0].url)}`,
+                            file: { name: file_entity[0].file_name },
+                        };
+                    } else {
+                        cne[`${document}_arquivo`] = file_entity[0].file_name;
+                    }
+
+                    if (document !== 'logo') cne[`${document}_tipo`] = file_entity[0].content_type === 'text/uri-list' ? 'link' : 'file';
+                }
+            }
+        }
+
+        return cne;
+    }
+
+    async saveDraft(user, form, entity, files, id) {
+
+        await db.models['Cne'].update({
+            ...entity,
+
+            logo_arquivo: undefined, /* TODO: files/thumbnail except those in link_or_file */
+            estrategia_arquivo: entity.estrategia_tipo === null ? null : undefined,
+
+        }, {
+            where: { id }
+        });
+
+        const entityModel = await db.models['Cne'].findByPk(id);
+
+        if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
+        else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo[0], 'logo_arquivo', entityModel.get('id'));
+
+        files = { /* TODO: recuperar em form - nem precisa existir, pode ser resolvido abaixo */
+          logo_arquivo: files.logo_arquivo && files.logo_arquivo.length ? files.logo_arquivo[0] : null,
+          estrategia_arquivo: files.estrategia_arquivo && files.estrategia_arquivo.length ? files.estrategia_arquivo[0] : null,
+        }
+    
+        // !!!!! form.link_or_file_fields <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form
+        /* TODO: GENERALIZAR: recuperar em form.yml - updateFile deveria ser único (util?) */
+        for (let wFile of ['estrategia']) {
+          if (entity[`${wFile}_tipo`] === 'link') await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
+          else if (entity[`${wFile}_tipo`] === 'file') {
+            if (entity[`${wFile}_arquivo2`] === 'remove') await this.removeFile(entityModel, `${wFile}_arquivo`);
+            else if (files[`${wFile}_arquivo`]) await this.updateFile(entityModel, files[`${wFile}_arquivo`], `${wFile}_arquivo`, entityModel.get('id'));
+          }
+        }
+
+        return entity;
     }
 
     async verify(id, form) {

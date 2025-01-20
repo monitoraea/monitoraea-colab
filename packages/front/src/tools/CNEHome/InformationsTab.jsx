@@ -18,6 +18,7 @@ import { Renderer, mapData2Form, getFormData } from '../../components/FormRender
 
 import form from '../../../../../forms/cne/form1.yml'
 import form_view from '../../../../../forms/cne/form1_view.yml'
+import lists from '../../../../../forms/cne/lists1.yml'
 
 /* style */
 // import style from './information.module.scss';
@@ -120,6 +121,7 @@ export default function InformationsTab({ entityId, problems }) {
                 <Renderer
                   form={form}
                   view={form_view}
+                  lists={lists}
                   data={mapData2Form(originalEntity, form)}
                   problems={problems}
                   onDataChange={handleDataChange}
