@@ -2564,9 +2564,11 @@ class Service {
     let result = await db.instance().query(
       ` select          
           p.*,
-          pr.id as pr_id
+          pr.id as pr_id,
+          pro.publicacao
         from projetos_rascunho p
         left join projetos_relacoes pr on pr.projeto_rascunho_id = p.id
+        left join projetos pro on pro.id = p.projeto_id
         where projeto_id = :id`,
       {
         replacements: { id },
@@ -2587,6 +2589,7 @@ class Service {
       indics: {},
       geo: true,
       question_problems: [],
+      published: project.publicacao || false,
     };
 
     // ATUACAO
