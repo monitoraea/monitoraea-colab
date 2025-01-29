@@ -49,10 +49,9 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id/out', async (req, res) => {
   const { id } = req.params;
-  const { order } = req.body;
 
   try {
-    const result = await service.moveOut(id, order);
+    const result = await service.moveOut(id);
     res.json(result);
   } catch (ex) {
     sendError(res, ex, 500);

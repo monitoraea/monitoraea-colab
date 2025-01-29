@@ -2,6 +2,8 @@ const Sequelize = require('sequelize');
 const db = require('../database');
 const { move } = require('dorothy-dna-services/router');
 
+const MAX_LEVEL = 2;
+
 class Service {
   async list() {
     const entities = await db.instance().query(
@@ -16,17 +18,27 @@ class Service {
       },
     );
 
-    let menu = entities;
-    for (let i of menu) {
-      if (!!i.parent_id) {
-        const parent = menu.find(item => item.id === i.parent_id);
-        if (!parent.total_children) parent.total_children = 0;
-        parent.total_children++;
-        i.total_children = 0;
-      } else if (!i.total_children) i.total_children = 0;
-    }
+    function getLevel(data, level, current_item) {
 
-    return menu;
+      let first = true;
+      let lastItem = null;
+      for (let item of data.filter(i => !!current_item.id ? i.parent_id === current_item.id : !i.parent_id)) {
+        let i = { ...item, first, last: false, level, can_children: level < MAX_LEVEL, children: [] };
+        first = false;
+        lastItem = i;
+
+        // itera filhos
+        getLevel(data, level+1, i);
+
+        current_item.children.push(i)
+      }
+      if(lastItem) lastItem.last = true;
+
+    }
+    let root_item = { children: [], id: null };
+    getLevel(entities, 0, root_item);
+
+    return root_item;
   }
 
   async get(id) {
@@ -166,7 +178,7 @@ class Service {
     return { success: true };
   }
 
-  async moveOut(id, order) {
+  async moveOut(id) {
 
     const entities = await db.instance().query(
       `
@@ -180,23 +192,54 @@ class Service {
       },
     );
 
+    const parent_id = entities[0].parent_id;
+
+    const parent_entities = await db.instance().query(
+      `
+      SELECT parent_id FROM menu_portal WHERE id = :parent_id
+      `,
+      {
+        replacements: {
+          parent_id,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const grand_parent_id = parent_entities[0].parent_id;
+
+    const parent_children = await db.instance().query(
+      `
+      SELECT count(*) as total FROM menu_portal WHERE parent_id = :grand_parent_id
+      `,
+      {
+        replacements: {
+          grand_parent_id,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const total_children = parent_children[0].total;
+
     await db.instance().query(
       `
         UPDATE menu_portal 
         SET "order" = :order,
-            parent_id = NULL
+            parent_id = :grand_parent_id
         WHERE id = :id
       `,
       {
         replacements: {
           id,
-          order,
+          grand_parent_id,
+          order: total_children+1,
         },
         type: Sequelize.QueryTypes.UPDATE,
       },
     );
 
-    await this.stabilizeSiblingsOrder(entities[0].parent_id);
+    await this.stabilizeSiblingsOrder(parent_id);
   }
 
   async stabilizeSiblingsOrder(parent_id) {

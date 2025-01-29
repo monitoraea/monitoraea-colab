@@ -72,44 +72,12 @@ export default function MenuManager() {
 
     useEffect(() => {
         if (!!data) {
-            let menu = []
-
-            let rc = 0;
-            // somente dois niveis
-            for (let item of data.filter(i => !i.parent_id)) { /* root */
-                rc++;
-                menu.push({
-                    ...item,
-                    children: data.filter(i => i.parent_id === item.id)
-                })
-            }
-
-            _menu(menu);
-            _root_count(rc);
+            
+            _menu(data);
+            _root_count(data.children.length);
         }
     }, [data])
 
-    /* useEffect(() => {
-        if (!!data && !!root_count) {
-            console.log({ data, root_count })
-        }
-    }, [data, root_count]) */
-
-    useEffect(() => {
-        if (!!selected) {
-            if (!selected.parent_id) {
-                const idx = menu.findIndex(i => i.id === selected.id);
-                _isFirst(idx === 0);
-                _isLast(idx === (root_count - 1));
-                _isFirst(idx === 0);
-            } else {
-                const parent = menu.find(i => i.id === selected.parent_id);
-                const idx = parent.children.findIndex(i => i.id === selected.id);
-                _isFirst(idx === 0);
-                _isLast(idx === (parent.total_children - 1));
-            }
-        }
-    }, [selected, menu, root_count]);
 
     const mutations = {
         remove: useMutation(
@@ -126,15 +94,33 @@ export default function MenuManager() {
         ),
         moveOut: useMutation(
             (root_count) => {
-                return axios.put(`${server}menu_portal/${selected.id}/out`, { order: root_count });
+                return axios.put(`${server}menu_portal/${selected.id}/out`);
             },
             { onSuccess: () => queryClient.invalidateQueries('menu_tree') },
         ),
     };
 
+    const getItemById = (id) => {
+         function findChildren(current_item, id) {
+            let found = null;
+            for(let c of current_item.children) {
+
+                if(String(c.id) === id) {
+                    found = c;
+                    break;
+                }
+
+                found = findChildren(c, id);
+                if(found) break;
+            }
+            return found;
+         }
+         return findChildren(menu, id);
+    }
+
     const handleSelect = (e, id) => {
-        const item = data.find(i => String(i.id) === id);
-        _selected(item)
+        const item = getItemById(id);
+        _selected(item);
     }
 
     const handleAdd = (relation) => () => {
@@ -209,7 +195,7 @@ export default function MenuManager() {
 
                             <Tooltip title="Criar filho">
                                 <div>
-                                    <IconButton onClick={handleAdd('child')} disabled={!selected || !!selected?.parent_id}>
+                                    <IconButton onClick={handleAdd('child')} disabled={!selected || !selected?.can_children}>
                                         <Plus />
                                         <CurvedArraw />
                                     </IconButton>
@@ -234,7 +220,7 @@ export default function MenuManager() {
 
                             <Tooltip title="Para cima">
                                 <div>
-                                    <IconButton onClick={handleMove('up')} disabled={!selected || isFirst}>
+                                    <IconButton onClick={handleMove('up')} disabled={!selected || selected.first}>
                                         <Up />
                                     </IconButton>
                                 </div>
@@ -242,13 +228,13 @@ export default function MenuManager() {
 
                             <Tooltip title="Para baixo">
                                 <div>
-                                    <IconButton onClick={handleMove('down')} disabled={!selected || isLast}>
+                                    <IconButton onClick={handleMove('down')} disabled={!selected || selected.last}>
                                         <Down />
                                     </IconButton>
                                 </div>
                             </Tooltip> {/* nao ultimo */}
 
-                            <Tooltip title="Para raiz">
+                            <Tooltip title="Para o nível superior">
                                 <div>
                                     <IconButton onClick={handleMoveOut} disabled={!selected?.parent_id}>
                                         <Out />
@@ -259,7 +245,7 @@ export default function MenuManager() {
 
                         <hr />
 
-                        {menu && (<Box sx={{ minHeight: 180, flexGrow: 1, maxWidth: 300 }}>
+                        {menu && (<Box sx={{ minHeight: 180, flexGrow: 1, maxWidth: '80vh' }}>
                             <TreeView /* 2 niveis somente! */
                                 aria-label="file system navigator"
                                 defaultCollapseIcon={<ExpandMoreIcon />}
@@ -267,9 +253,7 @@ export default function MenuManager() {
                                 selected={selected?.id || ''}
                                 onNodeSelect={handleSelect}
                             >
-                                {menu.map(i => <TreeItem key={i.id} nodeId={String(i.id)} label={i.title}>
-                                    {!!i.children.length && i.children.map(c => <TreeItem key={c.id} nodeId={String(c.id)} label={c.title} />)}
-                                </TreeItem>)}
+                                <TreeLevel level={menu} />
                             </TreeView>
                         </Box>)}
                     </div>
@@ -294,3 +278,11 @@ export default function MenuManager() {
         </>
     );
 };
+
+function TreeLevel({ level }) {
+    return (<>
+        {level.children.map(i => <TreeItem key={i.id} nodeId={String(i.id)} label={i.title}>
+            {!!i.children.length && <TreeLevel key={i.id} level={i} />}
+        </TreeItem>)}
+    </>)
+}
