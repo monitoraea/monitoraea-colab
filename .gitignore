@@ -10,3 +10,6 @@ docker_postgres_backup.sql
 *-lock.*
 .gitmodules
 .vscode/
+# VENVS
+*.venv*
+**/data/
