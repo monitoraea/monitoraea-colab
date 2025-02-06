@@ -1040,7 +1040,7 @@ class Service {
     });
 
     return {
-      projects,
+      entities: projects,
       pages,
       hasPrevious,
       hasNext,
@@ -1219,7 +1219,7 @@ class Service {
     /* se all, recupera todas as opcoes e nao somente aquelas que participam de projetos */
     const sequelize = db.instance();
 
-    const modalidades = await sequelize.query(
+    /* const modalidades = await sequelize.query(
       `
         select id as value, upper(nome) as "label"  
         from modalidades 
@@ -1228,7 +1228,7 @@ class Service {
       {
         type: Sequelize.QueryTypes.SELECT,
       },
-    );
+    ); */
 
     const linhas_acao = await sequelize.query(
       `
@@ -1272,11 +1272,23 @@ class Service {
       },
     );
 
+    const segmentos = await sequelize.query(
+      `
+        select id as value, nome as "label"  
+        from segmentos
+        order by nome
+        `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
     return {
-      modalidades,
+      /* modalidades, */
       linhas_acao,
       regioes,
       instituicoes,
+      segmentos,
     };
   }
 

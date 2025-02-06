@@ -534,8 +534,8 @@ router.get('/from_map', async (req, res) => {
 
 function buildFiltersWhere(filters, where = [], exclude = []) {
   let whereArray = [...where];
-  if (filters['f_modalidades'] && !exclude.includes('f_modalidades'))
-    whereArray.push(`p.modalidade_id IN (${filters['f_modalidades']})`);
+  // if (filters['f_modalidades'] && !exclude.includes('f_modalidades'))
+  //   whereArray.push(`p.modalidade_id IN (${filters['f_modalidades']})`);
   if (filters['f_linhas_acao'] && !exclude.includes('f_linhas_acao'))
     whereArray.push(`pla.linha_acao_id IN (${filters['f_linhas_acao']})`);
   if (filters['f_regioes'] && !exclude.includes('f_regioes'))
