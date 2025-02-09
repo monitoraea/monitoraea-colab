@@ -78,7 +78,7 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
 
 /* *** FORMS.Begin *** */
 (async function setupForms() {
-  
+
   const form1 = await FormManager.getForm('ciea/form1')
 
   router.get('/:id/draft', async (req, res) => {
@@ -91,7 +91,7 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
     } catch (ex) {
       sendError(res, ex, 500);
     }
-  }); 
+  });
 
   router.put("/:id/draft", upload.fields(FormManager.upFields(form1)), async (req, res) => {
 
@@ -124,19 +124,6 @@ router.get('/mine', async (req, res) => {
 });
 
 /* TODO */
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const result = await entity.get(id);
-
-    res.json(result);
-  } catch (ex) {
-    sendError(res, ex, 500);
-  }
-});
-
-/* TODO */
 router.get('/id_from_community/:community_id', async (req, res) => {
   try {
     const { community_id } = req.params;
@@ -159,6 +146,88 @@ router.post('/:id/participate', async (req, res) => {
     res.json(result);
   } catch (error) {
     res.json({ error: error.message });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const { page, f_id, limit } = req.query;
+
+    const where = buildFiltersWhere(req.query, ["versao = 'draft'"]); // TODO: 'current'
+
+    const result = await entity.list(page ? parseInt(page) : 1, f_id, where, limit);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/geo', async (req, res) => {
+  try {
+    const { f_id } = req.query;
+
+    const where = buildFiltersWhere(req.query, ["versao = 'draft'"]); // TODO: 'current'
+
+    const result = await entity.listIDs(f_id, where);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/ufs', async (req, res) => {
+  try {
+    const { f_regioes } = req.query;
+
+    const result = await entity.getUFs(f_regioes);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+
+
+router.get('/options', async (req, res) => {
+  const { all } = req.query;
+
+  try {
+    const result = await entity.getOptions(all && all === 1);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+function buildFiltersWhere(filters, where = [], exclude = []) {
+  let whereArray = [...where];
+
+  if (filters['f_regioes'] && !exclude.includes('f_regioes'))
+    whereArray.push(
+      `u.nm_regiao IN (${filters['f_regioes']
+        .split(',')
+        .map(r => `'${r}'`)
+        .join(',')})`,
+    );
+  if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`u.id IN (${filters['f_ufs']})`);
+
+  return whereArray.length ? `WHERE ${whereArray.join(' AND ')}` : '';
+}
+
+/* TODO */
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await entity.get(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
   }
 });
 

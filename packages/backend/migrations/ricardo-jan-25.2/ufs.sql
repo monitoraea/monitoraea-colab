@@ -1,0 +1,1 @@
+ALTER TABLE public.ufs ADD sigla char(2) NULL;
