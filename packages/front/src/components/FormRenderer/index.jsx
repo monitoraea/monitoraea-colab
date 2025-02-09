@@ -1,5 +1,6 @@
 import { useEffect, useState, cloneElement, Fragment } from 'react';
 import { TextField, MenuItem, Autocomplete, Chip, FormGroup, FormControl, FormLabel, FormControlLabel, Checkbox, Tooltip, IconButton } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import Plus from '../icons/Plus';
 import Trash from '../icons/Trash';
 import DatePicker from '../DatePicker';
@@ -13,7 +14,13 @@ import dayjs from 'dayjs'
 
 import styles from './styles.module.scss'
 
+import axios from 'axios';
+
+import { useDorothy } from 'dorothy-dna-react';
+import { useQuery } from 'react-query';
+
 export function Renderer(props) {
+
     const { form, view, data, lists } = props;
     const [imported, _imported] = useState(false)
     const [imported_lists, _imported_lists] = useState(false)
@@ -220,7 +227,7 @@ function BasicRenderer({ form, readonly, showOrphans = false, data, handleDataCh
                                             {childrenBlocks}
                                             <div className='row'>
                                                 <div className='col-xs-12'>
-                                                    <button className="button-outline" onClick={() => onAddIterative(innerBlock,form)}>
+                                                    <button className="button-outline" onClick={() => onAddIterative(innerBlock, form)}>
                                                         <Plus></Plus>
                                                         {innerBlock.iterate.add || 'Add'}
                                                     </button>
@@ -415,13 +422,29 @@ export function FieldRenderer({ f, size, readonly, keyRef, blocks, data, iterati
     else if (f.type === 'read_only') Component = <ReadOnly f={f} dataValue={dataValue} />
     else if (f.type === 'options') Component = <OptionsField readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
     else if (['yearpicker', 'monthpicker'].includes(f.type)) Component = <DatePickerField type={f.type} readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
-    else if (f.type === 'multi_autocomplete') Component = <MultiAutocompleteField
-        readonly={readonly} 
+    else if (f.type === 'async_autocomplete') Component = <AsyncAutocompleteField
+        readonly={readonly}
+        error={problems.includes(String(f.key))}
+        f={f}
+        dataValue={dataValue}
+        onChange={onChange(keyRef, iterative)}
+        data={data}
+    />
+    else if (f.type === 'autocomplete') Component = <AutocompleteField
+        readonly={readonly}
+        error={problems.includes(String(f.key))}
+        f={f}
+        dataValue={dataValue}
+        onChange={onChange(keyRef, iterative)}
+    />
+    else if (f.type === 'multi_autocomplete') Component = <AutocompleteField
+        readonly={readonly}
         error={problems.includes(String(f.key))}
         f={f}
         tag={!!f.tag}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
+        multiple
     />
     else if (f.type === 'file') Component = <FileField readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} accept={f.accept} />
     else if (f.type === 'thumbnail') Component = <ThumbnailField readonly={readonly} error={problems.includes(String(f.key))} f={f} dataValue={dataValue} onChange={onChange(keyRef, iterative)} />
@@ -565,7 +588,7 @@ export function mapData2Form(data, form) {
         let value = data[String(f.key)];
 
         if (!!value) {
-            const nValue = dayjs(`01/01/${value}`,'DD/MM/YYYY').toDate();
+            const nValue = dayjs(`01/01/${value}`, 'DD/MM/YYYY').toDate();
             data[f.key] = nValue;
         }
     }
@@ -591,7 +614,7 @@ export function mapForm2Data(data, form) { /* TODO: vai para o getFormData, abai
 export function getFormData(form, entity, files) {
     let data = new FormData()
 
-    for (let key of Object.keys(files)) if (!!files[key]) data.append(dbFieldKey(form, key), files[key])  
+    for (let key of Object.keys(files)) if (!!files[key]) data.append(dbFieldKey(form, key), files[key])
 
     data.set('entity', JSON.stringify(mapForm2Data(entity, form)))
 
@@ -654,15 +677,32 @@ function StringField({ f, readonly, integer, multiline, rows, index, dataValue, 
 }
 
 function OptionsField({ f, readonly, index, dataValue, onChange, error }) {
+
+    const { server } = useDorothy();
+
     const [value, _value] = useState(-1);
     const [options, _options] = useState([]);
+    const [ready, _ready] = useState(false);
 
     useEffect(() => {
+        async function retrieveOptions() {
+            const { data } = await axios.get(`${server}${f.remote}/?${f.query ? f.query : ''}`);
+
+            _options(data.list);
+            _ready(true);
+        }
+
         if (f.options) _options(f.options);
 
         if (f.list) {
             // console.log(context_lists, f.list.module, context_lists[f.list.module])
             _options(context_lists[f.list.module]?.find(l => l.key === f.list.key)?.options || []);
+        }
+
+        if (f.remote) {
+            retrieveOptions();
+        } else {
+            _ready(true);
         }
     }, [f])
 
@@ -676,23 +716,137 @@ function OptionsField({ f, readonly, index, dataValue, onChange, error }) {
         value={value !== undefined ? value : -1}
         select
         onChange={(e) => onChange(e.target.value)}
-        disabled={readonly}
+        disabled={readonly || !ready}
         error={error}
     >
-        {options.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
-    </TextField>
+        {!ready && <MenuItem value={-1} disabled>
+            Carregando...
+        </MenuItem>}
+        {ready && options.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
+    </TextField >
 }
 
-function MultiAutocompleteField({ f, readonly, index, tag = false, dataValue, onChange, error }) {
-    const [value, _value] = useState([]);
+let timer;
+function buildFilter(data, filters) {
+    let filterQuery = ''; 
+    for(let f of filters) filterQuery = `${filterQuery}&${f}=${data[f]}`
+    return filterQuery;
+}
+function AsyncAutocompleteField({ f, readonly, index, dataValue, onChange, error, /* multiple, */ data: formData }) {
+    const { server } = useDorothy();
+
+    const [open, _open] = useState(false);
+    const [value, _value] = useState(dataValue); // []
     const [options, _options] = useState([]);
+    const [searchValue, _searchValue] = useState('');
+
+    const { data: selected, isLoading: isLoadingSelected } = useQuery(`${f.remote_single ? f.remote_single : f.remote_list}/${value?.id}`, {
+        enabled: !!value?.id,
+    });
+
+    const { data, isLoading: isLoadingList } = useQuery(`${f.remote_list}/?${f.query ? f.query : ''}${searchValue?.length ? `&search=${searchValue}` : ''}${f.filter && Array.isArray(f.filter) ? buildFilter(formData, f.filter) : ''}`, { enabled: open });
 
     useEffect(() => {
+        if (!data) _options([]);
+        else _options(data.list);
+    }, [data]);
+
+    useEffect(() => {
+        if (!dataValue) _value(null);
+    }, [dataValue]);
+
+    useEffect(() => {
+
+        if (!selected) return;
+
+
+        _value(selected);
+    }, [selected?.id]);
+
+    const handleChange = (_, value) => {
+        _value(value);
+
+        console.log({ value })
+
+        onChange(value ? value.id : null);
+    };
+
+    const handleInputChange = (e) => {
+        if(!e) return;
+
+        if(timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+            _searchValue(e.target.value);
+        }, 500);
+    }
+
+    return <Autocomplete
+        className="input-autocomplete"
+        id="asynchronous-demo"
+        open={open}
+        onOpen={() => {
+            _open(true);
+        }}
+        onClose={() => {
+            _open(false);
+        }}
+        disabled={readonly}
+        filterOptions={(x) => x}
+        /* multiple={multiple} */
+        onChange={handleChange}
+        onInputChange={handleInputChange}
+        value={value}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        getOptionLabel={option => (f.title_field ? option[f.title_field] : option.name || '')}
+        options={options}
+        noOptionsText="Nenhuma opção"
+        loading={isLoadingSelected || isLoadingList}
+        renderInput={params => (
+            <TextField
+                {...params}
+                label={titleAndIndex(f.title, index)}
+                error={error}
+                InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                        <Fragment>
+                            {isLoadingSelected || isLoadingList ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                        </Fragment>
+                    ),
+                }}
+            />
+        )}
+    />
+}
+
+function AutocompleteField({ f, readonly, index, tag = false, dataValue, onChange, error, multiple }) {
+
+    const { server } = useDorothy();
+
+    const [value, _value] = useState([]);
+    const [options, _options] = useState([]);
+    const [ready, _ready] = useState(false);
+
+    useEffect(() => {
+        async function retrieveOptions() {
+            const { data } = await axios.get(`${server}${f.remote}`);
+
+            _options(data.list);
+            _ready(true);
+        }
+
         if (f.options) _options(f.options);
 
         if (f.list) {
             // console.log(context_lists, f.list.module, context_lists[f.list.module])
             _options(context_lists[f.list.module]?.find(l => l.key === f.list.key)?.options || []);
+        }
+
+        if (f.remote) {
+            retrieveOptions();
+        } else {
+            _ready(true);
         }
     }, [f])
 
@@ -710,8 +864,8 @@ function MultiAutocompleteField({ f, readonly, index, tag = false, dataValue, on
 
     }
 
-    if (tag) return <Autocomplete
-        multiple
+    if (!multiple || tag) return <Autocomplete
+        multiple={multiple}
         id="fixed-tags"
         className="input-autocomplete"
         value={value}
@@ -775,8 +929,8 @@ function DatePickerField({ f, type, readonly, index, dataValue, onChange, error 
         if (!!dataValue) _value(dataValue);
     }, [dataValue])
 
-    useEffect(()=>{
-        if(type==='monthpicker') {
+    useEffect(() => {
+        if (type === 'monthpicker') {
             _views(['month', 'year']);
             _inputFormat('MM/yyyy');
         } else {
@@ -838,11 +992,11 @@ function ThumbnailField({ f, readonly, index, dataValue, onChange, error }) {
 function mergeBlockElement(b, form) {
     // insere os campos com propriedade block em elements
     let elements = b.elements ? [...b.elements] : []
-    for(let f of form.fields.filter(f => f.block === b.key)) {   
+    for (let f of form.fields.filter(f => f.block === b.key)) {
         elements.push(f.key)
     }
     // SORT: block por ultimo - TODO: não é o ideal
-    elements.sort((a,b) => a.type === 'block' ? 1 : 0)
+    elements.sort((a, b) => a.type === 'block' ? 1 : 0)
 
     return { ...b, elements }
 }
