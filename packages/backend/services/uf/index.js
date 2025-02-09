@@ -26,6 +26,25 @@ class Service {
     return { list: ufs };
   }
 
+  async getAll(config) {
+    const sequelize = db.instance();
+
+    const query = `select distinct u.id, u.nm_estado as "label", CONCAT(u.id,'_',u.cd_geocuf) as "value"
+        from ufs u
+        order by "label"`;
+
+    const ufs = await sequelize.query(query, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    let list = [...ufs];
+    if(config.empty) {
+      list = [{id: -1, label: 'Não respondido', value: '0_0'}, ...list];
+    }
+
+    return { list };
+  }
+
   async get(id) {
     const entities = await db.instance().query(`
     select 

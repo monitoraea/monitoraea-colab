@@ -51,6 +51,12 @@ module.exports = (sequelize, DataTypes) => {
         atuacao_naplica_just: {
           type: DataTypes.TEXT,
         },
+        uf: {
+          type: DataTypes.INTEGER,
+        },
+        municipio: {
+          type: DataTypes.INTEGER,
+        },
       },
       {
         tableName: 'cnes',

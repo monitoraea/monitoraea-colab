@@ -37,6 +37,27 @@ fields:
       value: -1
     - type: not_empty
 
+- key: uf
+  block: main
+  type: options
+  title: Estado
+  size: 4
+  remote: uf/all
+  query: empty=1
+  onchange:
+    - key: municipio
+      value:
+
+- key: municipio
+  block: main
+  type: async_autocomplete
+  title: Município
+  size: 4
+  remote_list: municipio/related
+  remote_single: municipio/single
+  filter:
+    - uf
+
 - key: nome_inst
   block: intitutions_it
   type: text

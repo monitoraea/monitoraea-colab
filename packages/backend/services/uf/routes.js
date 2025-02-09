@@ -16,6 +16,19 @@ router.get("/related", async (req, res) => {
     }
 });
 
+router.get("/all", async (req, res) => {
+    const { empty } = req.query;
+
+    try { 
+
+        const result = await entity.getAll({ empty });
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex);
+    }
+});
+
 router.get('/regions/:region', async (req, res) => {
     const { region } = req.params;
 

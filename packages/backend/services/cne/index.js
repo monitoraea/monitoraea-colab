@@ -118,6 +118,8 @@ class Service {
             p.estrategia_arquivo,
             p.estrategia_data,
             p.outcomes_it,
+            (select CONCAT(u.id,'_',u.cd_geocuf) from ufs u where u.id = p.uf) as uf,
+            p.municipio,
             ("createdAt" = "updatedAt") as is_new
           FROM cne.cnes p
           WHERE p.cne_id = :id
@@ -130,6 +132,15 @@ class Service {
         );
 
         let cne = entity[0];
+
+        if(!cne.uf) cne.uf = '0_0';
+        if(cne.municipio) {
+            // cria objeto para o municipio
+            cne.municipio = {
+                id: cne.municipio,
+                name: "",
+            };
+        }
 
         /* TODO: dá para simplificar com FormManager */
         for (let document of ['logo', 'estrategia']) {
@@ -160,6 +171,8 @@ class Service {
     }
 
     async saveDraft(user, form, entity, files, id) {
+
+        if(entity.uf) entity.uf = entity.uf.split('_')[0];
 
         await db.models['Cne'].update({
             ...entity,

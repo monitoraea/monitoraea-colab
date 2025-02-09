@@ -17,6 +17,14 @@
     - type: column
       size: 3
       key: tipologia
+  - type: row
+    elements:
+    - type: column
+      size: 2
+      key: uf    
+    - type: column
+      size: 4
+      key: municipio
 
 - type: row
   block: institutions
