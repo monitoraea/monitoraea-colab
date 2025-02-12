@@ -133,8 +133,8 @@ class Service {
 
         let cne = entity[0];
 
-        if(!cne.uf) cne.uf = '0_0';
-        if(cne.municipio) {
+        if (!cne.uf) cne.uf = '0_0';
+        if (cne.municipio) {
             // cria objeto para o municipio
             cne.municipio = {
                 id: cne.municipio,
@@ -172,7 +172,7 @@ class Service {
 
     async saveDraft(user, form, entity, files, id) {
 
-        if(entity.uf) entity.uf = entity.uf.split('_')[0];
+        if (entity.uf) entity.uf = entity.uf.split('_')[0];
 
         await db.models['Cne'].update({
             ...entity,
@@ -565,6 +565,225 @@ class Service {
 
             await entityModel.save();
         }
+    }
+
+    async list(page, f_id, where, limit) {
+        const sequelize = db.instance();
+
+        const specificLimit = limit || defaultLimit;
+
+        let query;
+
+        if (f_id) where = `${where} AND c.id = ${f_id}`;
+
+        query = `
+              select c.id, c.nome, u.nm_regiao, c.uf,
+            count(*) OVER() AS total_count
+            from cne.cnes c
+            left join ufs u on u.id = c.uf
+            ${where}
+            order by c.nome
+              LIMIT ${specificLimit}
+              OFFSET ${(page - 1) * specificLimit}
+          `;
+
+        const instance = await sequelize.query(query, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+
+        // bboxes & instituicoes
+        for (let i = 0; i < instance.length; i++) {
+            const c = instance[i];
+
+            const [bbox] = await sequelize.query(
+                `
+            with bounds as (
+                select ST_Extent(geom) as bbox
+                from cne.cnes_atuacao ca
+                inner join cne.cnes c on c.id = ca.cne_versao_id and c.versao = 'draft'
+                where c.cne_id = :cne_id
+                and ca.geom is not null
+            )
+            select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+            from bounds
+            `,
+                {
+                    type: Sequelize.QueryTypes.SELECT,
+                    replacements: { cne_id: c.id }
+                },
+            );
+
+            const instituicoes = await sequelize.query(
+                `
+            select jsonb_agg(elem->>'nome_inst') AS instituicoes
+            from cne.cnes c, jsonb_array_elements(c.intitutions_it) AS elem
+            where id = :cne_id
+            `,
+                {
+                    type: Sequelize.QueryTypes.SELECT,
+                    replacements: { cne_id: c.id }
+                },
+            );
+            
+
+            instance[i].bbox = bbox && bbox.y1 && bbox.x1 && bbox.y2 && bbox.x2 ? bbox : null;
+            instance[i].instituicao_nome = instituicoes[0].instituicoes.join(',');
+        }
+
+        const rawPages = instance.length ? parseInt(instance[0]['total_count']) / specificLimit : 0;
+        let pages = rawPages === Math.trunc(rawPages) ? rawPages : Math.trunc(rawPages) + 1;
+        let hasPrevious = page > 1;
+        let hasNext = page !== pages;
+
+        /* instance and members */
+        for (let i = 0; i < instance.length; i++) {
+            const c = instance[i];
+
+            query = `
+        select count(*)::integer as total 
+        from dorothy_members m 
+        inner join cne.cnes c on c.community_id = m."communityId"
+        where c.id = ${c.id}
+        `;
+            const members = await sequelize.query(query, {
+                type: Sequelize.QueryTypes.SELECT,
+            });
+
+            c.total_members = !members || !members.length ? 0 : members[0].total;
+        }
+
+        return {
+            entities: instance,
+            pages,
+            hasPrevious,
+            hasNext,
+            currentPage: page,
+            total: parseInt(instance.length ? instance[0]['total_count'] : 0),
+        };
+    }
+
+    async listIDs(f_id, where) {
+        const sequelize = db.instance();
+
+        if (f_id) where = `${where} AND c.id = ${f_id}`;
+
+        const query = `
+            select distinct c.id
+            from cne.cnes c
+            left join ufs u on u.id = c.uf
+            ${where}
+            and u.geom is not null
+        `;
+
+        const enitities = await sequelize.query(query, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+
+        return enitities.map(e => e.id);
+    }
+
+    async getUFs(f_regioes) {
+        const sequelize = db.instance();
+
+        let where = '';
+        if (f_regioes)
+            where = `where u.nm_regiao IN (${f_regioes
+                .split(',')
+                .map(r => `'${r}'`)
+                .join(',')})`;
+
+        const query = `
+          select distinct u.id as value, upper(u.nm_estado) as "label"  
+          from cne.cnes c 
+          inner join ufs u on u.id = c.uf
+          ${where}
+          order by "label"`;
+
+        const ufs = await sequelize.query(query, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+
+        return ufs;
+    }
+
+    async getOptions(all = false) {
+        /* se all, recupera todas as opcoes e nao somente aquelas que participam de projetos */
+        const sequelize = db.instance();
+
+        let regioes;
+        if (!all) {
+            regioes = await sequelize.query(
+                `
+          select distinct u.nm_regiao as value, upper(u.nm_regiao) as "label"  
+          from cne.cnes c 
+          inner join ufs u on u.id = c.uf
+          where u.nm_regiao <> 'NACIONAL'
+          order by "label"`,
+                {
+                    type: Sequelize.QueryTypes.SELECT,
+                },
+            );
+        } else {
+            let regions = await this.getAllRegions();
+
+            regioes = regions.list;
+        }
+
+        return {
+            regioes,
+        };
+    }
+
+    async listMunicipiosByName(where) {
+        const sequelize = db.instance();
+
+        const query = `
+                select distinct m.cd_mun as value, upper(m.nm_mun) as "label"  
+                from cne.cnes c        
+                inner join municipios m on m.cd_mun = c.municipio   
+                ${where}
+                order by "label"
+            `;
+
+        const municipios = await sequelize.query(query, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+
+        return municipios;
+    }
+
+    async listByName(where) {
+        const sequelize = db.instance();
+
+        const query = `
+                select distinct c.id as value, c.nome as "label"
+                from cne.cnes c
+                ${where}
+                order by "label"
+            `;
+
+        const entities = await sequelize.query(query, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+
+        return entities;
+    }
+
+    async listIntituicoesByName(nome) {
+      const sequelize = db.instance();
+  
+      const query = `
+              select distinct i.id as value, i.nome as "label"
+              from instituicoes i
+              ${where}
+              order by "label"
+          `;
+  
+      const intituicoes = await sequelize.query(query, {
+        type: Sequelize.QueryTypes.SELECT,
+      });
+  
+      return intituicoes;
     }
 
     getFileKey(id, folder, filename) {

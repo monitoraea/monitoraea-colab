@@ -249,4 +249,123 @@ router.put('/:id/draft/justification', async (req, res) => {
   }
 });
 
+router.get('/', async (req, res) => {
+  try {
+    const { page, f_id, limit } = req.query;
+
+    const where = buildFiltersWhere(req.query, ["versao = 'draft'"]); // TODO: 'current'
+
+    const result = await entity.list(page ? parseInt(page) : 1, f_id, where, limit);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/geo', async (req, res) => {
+  try {
+    const { f_id } = req.query;
+
+    const where = buildFiltersWhere(req.query, ["versao = 'draft'"]); // TODO: 'current'
+
+    const result = await entity.listIDs(f_id, where);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/ufs', async (req, res) => {
+  try {
+    const { f_regioes } = req.query;
+
+    const result = await entity.getUFs(f_regioes);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/options', async (req, res) => {
+  const { all } = req.query;
+
+  try {
+    const result = await entity.getOptions(all && all === 1);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/municipios', async (req, res) => {
+  try {
+    const { nome } = req.query;
+
+    const where = buildFiltersWhere(
+      req.query,
+      [`LOWER(unaccent(m.nm_mun)) like '%${nome.toLowerCase()}%'`,"versao = 'draft'"], // TODO: 'current'
+      ['f_municipios'],
+    );
+
+    const result = await entity.listMunicipiosByName(where);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/list', async (req, res) => {
+  try {
+    const { nome } = req.query;
+
+    const where = buildFiltersWhere(req.query, [
+      `LOWER(unaccent(nome)) like '%${nome.toLowerCase()}%'`,
+      "versao = 'draft'", // TODO: 'current'
+    ]); 
+
+    const result = await entity.listByName(where);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/instiuicao/list', async (req, res) => {
+  try {
+    const { nome } = req.query;
+
+    const where = buildFiltersWhere(req.query, [
+      `LOWER(unaccent(nome)) like '%${nome.toLowerCase()}%'`,
+      "versao = 'draft'", // TODO: 'current'
+    ]); 
+
+    const result = await entity.listIntituicoesByName(where);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+function buildFiltersWhere(filters, where = [], exclude = []) {
+  let whereArray = [...where];
+
+  if (filters['f_regioes'] && !exclude.includes('f_regioes'))
+    whereArray.push(
+      `u.nm_regiao IN (${filters['f_regioes']
+        .split(',')
+        .map(r => `'${r}'`)
+        .join(',')})`,
+    );
+  if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`u.id IN (${filters['f_ufs']})`);
+
+  return whereArray.length ? `WHERE ${whereArray.join(' AND ')}` : '';
+}
+
 module.exports = router;
