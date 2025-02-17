@@ -1049,6 +1049,22 @@ class Service {
     // Messagery.command('update_user', { userId })
     return result;
   }
+
+  async getTotalMembersInPerspective(perspective_id) {
+    const members = await db.instance().query(`
+      select count(distinct dm."userId")::integer as total 
+      from dorothy_communities dc
+      inner join dorothy_members dm on dm."communityId" = dc.id
+      where dc.descriptor_json->>'perspective' = :perspective_id
+    `,
+      {
+        replacements: { perspective_id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return members[0].total;
+  }
 }
 
 const singletonInstance = new Service();

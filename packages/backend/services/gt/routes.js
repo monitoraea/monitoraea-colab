@@ -18,6 +18,16 @@ router.get('/perspectives/user', async (req, res) => {
   res.json(result);
 });
 
+router.get('/perspectives/:perspective_id/members', async (req, res) => {
+
+  const { perspective_id } = req.params;
+
+  const result = await entity.getTotalMembersInPerspective(perspective_id);
+
+  res.json(result);
+});
+  
+
 router.get('/:communityId', async (req, res) => {
   const { communityId } = req.params;
   const { alias, order, direction } = req.query;
