@@ -798,6 +798,39 @@ class Service {
     return project;
   }
 
+  async getTotalInstitutions() {
+    const institutions = await db.instance().query(
+      `
+    select count(distinct p.instituicao_id)::integer as total
+    from projetos p
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return institutions[0].total
+  }
+
+  async getStatisticsLinhas() {
+    const institutions = await db.instance().query(
+      `
+    select la.id, la.nome, count(*)::integer as total 
+    from linhas_acao la 
+    inner join projetos__linhas_acao pla on pla.linha_acao_id = la.id
+    group by la.id, la.nome
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const data = institutions.map(i => ({ x: i.nome, y: i.total }))
+
+    return data
+  }
+
+
   /* Recupera os dados de um determinado projeto */
   async getProject(id) {
     const sequelize = db.instance();

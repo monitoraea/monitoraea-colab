@@ -974,6 +974,30 @@ router.get('/for_participation/:id', async (req, res) => {
   }
 });
 
+router.get('/total_institutions', async (req, res) => {
+  try {
+
+    const result = await service.getTotalInstitutions();
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/statistics/linhas', async (req, res) => {
+  try {
+
+    const result = await service.getStatisticsLinhas();
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+
+
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
