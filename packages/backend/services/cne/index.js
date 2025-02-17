@@ -117,6 +117,9 @@ class Service {
             p.estrategia_desc,
             p.estrategia_arquivo,
             p.estrategia_data,
+            p.detalhamento_desc,
+            p.detalhamento_arquivo,
+            p.detalhamento_data,
             p.outcomes_it,
             (select CONCAT(u.id,'_',u.cd_geocuf) from ufs u where u.id = p.uf) as uf,
             p.municipio,
@@ -143,7 +146,7 @@ class Service {
         }
 
         /* TODO: dá para simplificar com FormManager */
-        for (let document of ['logo', 'estrategia']) {
+        for (let document of ['logo', 'estrategia', 'detalhamento']) {
             if (document !== 'logo') cne[`${document}_tipo`] = null;
 
             if (!!entity[0][`${document}_arquivo`]) {
@@ -179,6 +182,7 @@ class Service {
 
             logo_arquivo: undefined, /* TODO: files/thumbnail except those in link_or_file */
             estrategia_arquivo: entity.estrategia_tipo === null ? null : undefined,
+            detalhamento_arquivo: entity.detalhamento_tipo === null ? null : undefined,
 
         }, {
             where: { id }
@@ -192,11 +196,12 @@ class Service {
         files = { /* TODO: recuperar em form - nem precisa existir, pode ser resolvido abaixo */
             logo_arquivo: files.logo_arquivo && files.logo_arquivo.length ? files.logo_arquivo[0] : null,
             estrategia_arquivo: files.estrategia_arquivo && files.estrategia_arquivo.length ? files.estrategia_arquivo[0] : null,
+            detalhamento_arquivo: files.detalhamento_arquivo && files.detalhamento_arquivo.length ? files.detalhamento_arquivo[0] : null,
         }
 
         // !!!!! form.link_or_file_fields <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form
         /* TODO: GENERALIZAR: recuperar em form.yml - updateFile deveria ser único (util?) */
-        for (let wFile of ['estrategia']) {
+        for (let wFile of ['estrategia','detalhamento']) {
             if (entity[`${wFile}_tipo`] === 'link') await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
             else if (entity[`${wFile}_tipo`] === 'file') {
                 if (entity[`${wFile}_arquivo2`] === 'remove') await this.removeFile(entityModel, `${wFile}_arquivo`);

@@ -58,6 +58,55 @@ fields:
   filter:
     - uf
 
+- key: detalhamento_desc
+  block: details
+  type: textarea
+  rows: 3
+  title: Descrição
+  size: 12
+
+- key: detalhamento_data
+  block: details
+  type: monthpicker
+  title: Data da versão mais atual
+  size: 4
+
+- key: detalhamento_tipo
+  block: details
+  type: options
+  title: Tipo de documento de detalhamento
+  size: 2
+  onchange:
+    - key: detalhamento_arquivo
+      value:
+    - key: detalhamento_arquivo2
+      value:
+  list: 
+    module: property
+    key: tipo_arquivo
+
+- key: detalhamento_arquivo
+  block: details
+  type: text
+  title: Link para o detalhamento interno
+  size: 6
+  show:
+    target:
+      key: detalhamento_tipo
+      value: link
+
+- key: detalhamento_arquivo2
+  block: detalhamento_tem_block
+  type: file
+  accept: application/pdf
+  title: Arquivo de detalhamento
+  db_field: detalhamento_arquivo
+  size: 6
+  show:
+    target:
+      key: detalhamento_tipo
+      value: file
+
 - key: nome_inst
   block: intitutions_it
   type: text
@@ -214,7 +263,10 @@ blocks: # opcional
       add: Adicionar instituição    
 
   - key: inst
-    title: Institucional
+    title: Institucional  
+
+  - key: details
+    title: Detalhamento
 
   - key: strategy
     title: Estratégia de sustentabilidade

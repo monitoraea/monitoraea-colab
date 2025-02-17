@@ -39,6 +39,12 @@ module.exports = (sequelize, DataTypes) => {
         estrategia_data: {
           type: DataTypes.STRING,
         },
+        detalhamento_desc: {
+          type: DataTypes.STRING,
+        },
+        detalhamento_data: {
+          type: DataTypes.STRING,
+        },
         outcomes_it: {
           type: DataTypes.JSONB,
         },
@@ -73,7 +79,11 @@ module.exports = (sequelize, DataTypes) => {
 
       CNE.belongsTo(models["File"], {
         foreignKey: "estrategia_arquivo",
-      })
+      });
+
+      CNE.belongsTo(models["File"], {
+        foreignKey: "detalhamento_arquivo",
+      });
       
     }
   
