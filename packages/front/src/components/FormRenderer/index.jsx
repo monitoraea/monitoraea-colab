@@ -597,7 +597,7 @@ export function mapData2Form(data, form) {
 }
 
 export function mapForm2Data(data, form) { /* TODO: vai para o getFormData, abaixo?? */
-    let mappedData = data;
+    let mappedData = {...data};
 
     // multi_autocomplete
     for (let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
@@ -606,7 +606,7 @@ export function mapForm2Data(data, form) { /* TODO: vai para o getFormData, abai
 
     // async_autocomplete
     for (let f of form.fields.filter(f => f.type === 'async_autocomplete')) {
-        mappedData[f.key] = data[f.key]?.id
+        mappedData[f.key] = data[f.key].id || data[f.key];
     }
 
     return mappedData;
@@ -618,6 +618,8 @@ export function mapForm2Data(data, form) { /* TODO: vai para o getFormData, abai
 
 export function getFormData(form, entity, files) {
     let data = new FormData()
+
+    console.log({entity},mapForm2Data(entity, form))
 
     for (let key of Object.keys(files)) if (!!files[key]) data.append(dbFieldKey(form, key), files[key])
 
