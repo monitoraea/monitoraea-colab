@@ -604,6 +604,11 @@ export function mapForm2Data(data, form) { /* TODO: vai para o getFormData, abai
         mappedData[f.key] = data[f.key].map(d => d.value)
     }
 
+    // async_autocomplete
+    for (let f of form.fields.filter(f => f.type === 'async_autocomplete')) {
+        mappedData[f.key] = data[f.key]?.id
+    }
+
     return mappedData;
 }
 
@@ -736,7 +741,7 @@ function AsyncAutocompleteField({ f, readonly, index, dataValue, onChange, error
     const { server } = useDorothy();
 
     const [open, _open] = useState(false);
-    const [value, _value] = useState(dataValue); // []
+    const [value, _value] = useState(dataValue || null);
     const [options, _options] = useState([]);
     const [searchValue, _searchValue] = useState('');
 
