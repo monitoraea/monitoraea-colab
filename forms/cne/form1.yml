@@ -209,15 +209,9 @@ fields:
 - key: resultado_tipo
   block: outcomes_it
   type: options
-  options:
-    - value: -1
-      label: Não respondido
-    - value: 0
-      label: 'Formação'
-    - value: 1
-      label: 'Educomunicação'
-    - value: 2
-      label: 'Articulação'
+  list: 
+    module: property
+    key: tipo_resultados
   title: Tipo %index%
   size: 4
 

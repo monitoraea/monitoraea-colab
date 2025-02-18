@@ -13,3 +13,14 @@ lists:
       label: 'Link'
     - value: 'file'
       label: 'Arquivo'
+
+  - key: tipo_resultados
+    options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Formação'
+    - value: 1
+      label: 'Educomunicação'
+    - value: 2
+      label: 'Articulação'

@@ -27,7 +27,7 @@ const s3 = new AWS.S3({
 const { Messagery } = require('dorothy-dna-services');
 
 const sgMail = require('@sendgrid/mail');
-const { applyWhere } = require('../../utils');
+const { applyWhere, parseBBOX } = require('../../utils');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const defaultLimit = 5;
@@ -1404,22 +1404,6 @@ class Service {
     return { projects };
   }
 
-  parseBBOX(bbox) {
-    let parsed_bbox = null;
-    try {
-      const {
-        coordinates: [values],
-      } = JSON.parse(bbox);
-
-      parsed_bbox = [
-        [values[0][1], values[0][0]],
-        [values[2][1], values[2][0]],
-      ];
-    } finally {
-      return parsed_bbox;
-    }
-  }
-
   async getProjectGeo(id) {
     const sequelize = db.instance();
 
@@ -1435,7 +1419,7 @@ class Service {
     );
 
     atuacoes = atuacoes.map(a => {
-      a.bounds = this.parseBBOX(a.bbox);
+      a.bounds = parseBBOX(a.bbox);
 
       return a;
     });

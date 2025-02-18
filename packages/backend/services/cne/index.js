@@ -3,7 +3,10 @@ const Sequelize = require('sequelize');
 
 // const FormManager = require('../../FormsManager')
 
-const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId } = require('../../utils');
+const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId, parseBBOX } = require('../../utils');
+
+var fs = require('fs')
+const YAML = require('yaml')
 
 const aws = require('aws-sdk');
 const s3BucketName = process.env.S3_BUCKET_NAME;
@@ -17,6 +20,8 @@ const s3 = new aws.S3({
 });
 
 const { check } = require('../../form_utils')
+
+const lists_file = fs.readFileSync(require.resolve(`../../../../forms/cne/lists1.yml`), 'utf8')
 
 class Service {
     /* Entity */
@@ -201,7 +206,7 @@ class Service {
 
         // !!!!! form.link_or_file_fields <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form
         /* TODO: GENERALIZAR: recuperar em form.yml - updateFile deveria ser único (util?) */
-        for (let wFile of ['estrategia','detalhamento']) {
+        for (let wFile of ['estrategia', 'detalhamento']) {
             if (entity[`${wFile}_tipo`] === 'link') await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
             else if (entity[`${wFile}_tipo`] === 'file') {
                 if (entity[`${wFile}_arquivo2`] === 'remove') await this.removeFile(entityModel, `${wFile}_arquivo`);
@@ -629,7 +634,7 @@ class Service {
                     replacements: { cne_id: c.id }
                 },
             );
-            
+
 
             instance[i].bbox = bbox && bbox.y1 && bbox.x1 && bbox.y2 && bbox.x2 ? bbox : null;
             instance[i].instituicao_nome = instituicoes[0].instituicoes.join(',');
@@ -775,26 +780,132 @@ class Service {
     }
 
     async listIntituicoesByName(nome) {
-      const sequelize = db.instance();
-  
-      const query = `
+        const sequelize = db.instance();
+
+        const query = `
               select distinct i.id as value, i.nome as "label"
               from instituicoes i
               ${where}
               order by "label"
           `;
-  
-      const intituicoes = await sequelize.query(query, {
-        type: Sequelize.QueryTypes.SELECT,
-      });
-  
-      return intituicoes;
+
+        const intituicoes = await sequelize.query(query, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+
+        return intituicoes;
     }
 
     getFileKey(id, folder, filename) {
         const segmentedId = getSegmentedId(id);
 
         return `cne/${segmentedId}/${folder}/original/${filename}`;
+    }
+
+    async getEntity(id) {
+        const sequelize = db.instance();
+
+        let result;
+
+        result = await sequelize.query(
+            `
+            select 
+                c.id, 
+                c.cne_id, 
+                c.nome, 
+                c.intitutions_it, 
+                c."createdAt" as published,
+                c.data_criacao,
+                c.data_inst,
+                f.url as estrategia_url,
+	            c.outcomes_it
+            from cne.cnes c
+            left join files f on f.id = c.estrategia_arquivo
+            where c.cne_id = ${parseInt(id)}      
+            and c.versao = 'draft' -- TODO: current`,
+            {
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+
+        if (!result.length) return null;
+
+        let entity = result[0];
+
+        // arquivo de sustentabilidade
+        if(entity.estrategia_url) {
+            entity.estrategia_link = `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'estrategia_arquivo', entity.estrategia_url)}`;
+            delete entity.estrategia_url;
+        }
+
+        try {
+            const { lists } = YAML.parse(lists_file)
+            const tipo_resultados = lists.find(i => i.key === 'tipo_resultados').options.filter(o => o.value !== -1)
+
+            for(let r of entity.outcomes_it) {
+                r.resultado_tipo = tipo_resultados.find(tr => tr.value === r.resultado_tipo)?.label
+            }
+        } catch(e) { console.log(e) }
+
+        const members = await sequelize.query(
+            `
+          select count(*)::integer as total 
+          from dorothy_members m 
+          inner join projetos p on p.community_id = m."communityId"
+          where p.id = ${parseInt(id)}
+          `,
+            {
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+
+        entity.total_members = !members || !members.length ? 0 : members[0].total;
+
+        return entity;
+    }
+
+    async getGeo(id) {
+        const sequelize = db.instance();
+
+        let atuacoes = await sequelize.query(
+            ` 
+            select ca.id, ST_AsGeoJSON(ca.geom) as geojson, ST_AsGeoJSON(ST_Envelope(ca.geom)) as bbox
+            from cne.cnes_atuacao ca
+            inner join cne.cnes c on c.id = ca.cne_versao_id and c.versao = 'draft'
+            where c.cne_id = ${parseInt(id)}
+            and ca.geom is not null
+            `,
+            {
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+
+        atuacoes = atuacoes.map(a => {
+            a.bounds = parseBBOX(a.bbox);
+
+            return a;
+        });
+
+        const bbox = await sequelize.query(
+            `
+            with bounds as (
+                select ST_Extent(geom) as bbox
+                from cne.cnes_atuacao ca
+                inner join cne.cnes c on c.id = ca.cne_versao_id and c.versao = 'draft'
+                where c.cne_id = ${parseInt(id)}
+                and ca.geom is not null
+            )
+            select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+            from bounds`,
+            {
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+
+        return {
+            atuacoes,
+            bbox: bbox[0],
+        };
     }
 }
 

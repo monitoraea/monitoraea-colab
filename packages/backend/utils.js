@@ -54,3 +54,19 @@ module.exports.getSegmentedId = (id) => {
 
     return segmentedId.match(/.{1,3}/g).join('/');
 }
+
+module.exports.parseBBOX = (bbox) => {
+    let parsed_bbox = null;
+    try {
+        const {
+            coordinates: [values],
+        } = JSON.parse(bbox);
+
+        parsed_bbox = [
+            [values[0][1], values[0][0]],
+            [values[2][1], values[2][0]],
+        ];
+    } finally {
+        return parsed_bbox;
+    }
+}
