@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 
 // const FormManager = require('../../FormsManager')
 
-const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId } = require('../../utils');
+const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId, parseBBOX } = require('../../utils');
 
 const dayjs = require('dayjs');
 
@@ -18,6 +18,10 @@ const s3 = new aws.S3({
 
 });
 
+var fs = require('fs')
+const YAML = require('yaml')
+const lists_file = fs.readFileSync(require.resolve(`../../../../forms/ciea/lists1.yml`), 'utf8')
+
 const { v4: uuidv4 } = require('uuid');
 
 const defaultLimit = 5;
@@ -25,36 +29,44 @@ const defaultLimit = 5;
 class Service {
   /* Entity */
   async get(id) {
-    const entity = await db.instance().query(
+    const result = await db.instance().query(
       `
-      SELECT
-        u.nm_estado,
-        u.nm_regiao,
-        c.link,
+      select 
+        CONCAT('CIEA-',u.sigla) as nome, 
+        u.nm_estado, 
         c.data_criacao,
-        c.documento_criacao,
-        (select f.url from files f where f.id = c.documento_criacao_arquivo) as documento_criacao_arquivo,
-        c.regimento_interno,
-        (select f.url from files f where f.id = c.regimento_interno_arquivo) as regimento_interno_arquivo,
-        c.ppea_tem = 1 as ppea_tem,
-        c.ppea_decreto,
-        c.ppea_lei,
-        (select f.url from files f where f.id = c.ppea_arquivo) as ppea_arquivo,
-        c.ppea2_tem = 1 as ppea2_tem,
-        c.ppea2_decreto,
-        c.ppea2_lei,
-        (select f.url from files f where f.id = c.ppea2_arquivo) as ppea2_arquivo,
-        c.programa_estadual_tem = 1 as programa_estadual_tem,
-        c.programa_estadual_decreto,
-        c.programa_estadual_lei,
-        (select f.url from files f where f.id = c.programa_estadual_arquivo) as programa_estadual_arquivo,
-        c.plano_estadual_tem = 1 as plano_estadual_tem,
-        c.plano_estadual_decreto,
-        c.plano_estadual_lei,
-        (select f.url from files f where f.id = c.plano_estadual_arquivo) as plano_estadual_arquivo
-      FROM ciea.comissoes c
+        c.coordenacao,
+        c.coordenacao_especifique,
+        c.composicao_cadeiras_soc_civ,
+        c.composicao_cadeiras_set_pub,
+        c.composicao_cadeiras_outros,
+        ppea_tem,
+        ppea_decreto,
+        ppea_lei,
+        ppea_arquivo,
+        programa_estadual_tem,
+        programa_estadual_decreto,
+        programa_estadual_lei,
+        programa_estadual_arquivo,
+        ppea2_tem,
+        ppea2_decreto,
+        ppea2_lei,
+        ppea2_arquivo,
+        plano_estadual_tem,
+        plano_estadual_decreto,
+        plano_estadual_lei,
+        plano_estadual_arquivo,
+        f1.url as ppea_link,
+        f2.url as ppea2_link,
+        f3.url as plano_estadual_link,
+        f4.url as programa_estadual_link
+      from ciea.comissoes c 
       inner join ufs u on u.id = c.uf
-      WHERE c.id = :id
+      left join files f1 on f1.id = c.ppea_arquivo
+      left join files f2 on f2.id = c.ppea2_arquivo 
+      left join files f3 on f3.id = c.plano_estadual_arquivo 
+      left join files f4 on f4.id = c.programa_estadual_arquivo 
+      where c.id = :id
         `,
       {
         replacements: { id },
@@ -62,7 +74,17 @@ class Service {
       },
     );
 
-    return entity[0];
+    let entity = result[0];
+
+    try {
+      const { lists } = YAML.parse(lists_file)
+      const tipo_coordenacao = lists.find(i => i.key === 'tipo_coordenacao').options.filter(o => o.value !== -1)
+
+      entity.coordenacao_name = tipo_coordenacao.find(tc => tc.value === entity.coordenacao).label;
+      
+    } catch (e) { console.log(e) }
+
+    return entity;
   }
 
   async removeDraftTimeline(id, tlId) {
@@ -445,12 +467,15 @@ class Service {
       const [bbox] = await sequelize.query(
         `
         with bounds as (
-          select ST_SetSRID(ST_Extent(geom),3857) as bbox
-          from ufs u
-          where u.id = ${c.uf} and geom is not null
+            select ST_Extent(ST_Transform(geom,4326)) as bbox
+            from ufs u
+            inner join ciea.comissoes c on c.uf = u.id
+            where c.id = ${parseInt(c.id)}
+            and u.geom is not null
         )
         select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
-        from bounds`,
+        from bounds
+        `,
         {
           type: Sequelize.QueryTypes.SELECT,
         },
@@ -560,6 +585,51 @@ class Service {
 
     return {
       regioes,
+    };
+  }
+
+  async getGeo(id) {
+    const sequelize = db.instance();
+
+    let atuacoes = await sequelize.query(
+      ` 
+        select u.id, ST_AsGeoJSON(ST_Transform(u.geom,4326)) as geojson, ST_AsGeoJSON(ST_Envelope(ST_Transform(u.geom,4326))) as bbox
+        from ufs u 
+        inner join ciea.comissoes c on c.uf = u.id
+        where c.id = ${parseInt(id)}
+        and u.geom is not null
+        `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    atuacoes = atuacoes.map(a => {
+      a.bounds = parseBBOX(a.bbox);
+
+      return a;
+    });
+
+    const bbox = await sequelize.query(
+      `
+        with bounds as (
+            select ST_Extent(ST_Transform(geom,4326)) as bbox
+            from ufs u
+            inner join ciea.comissoes c on c.uf = u.id
+            where c.id = ${parseInt(id)}
+            and u.geom is not null
+        )
+        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+        from bounds
+        `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return {
+      atuacoes,
+      bbox: bbox[0],
     };
   }
 }

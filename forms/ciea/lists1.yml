@@ -13,3 +13,18 @@ lists:
       label: 'Link'
     - value: 'file'
       label: 'Arquivo'
+
+  - key: tipo_coordenacao    
+    options:
+    - value: 1
+      label: Secretarias Estaduais de Meio Ambiente (ou correlatas) e de Educação
+    - value: 2
+      label: Apenas Secretaria de Estado de Meio Ambiente (ou correlatas)
+    - value: 3
+      label: Apenas Secretaria de Estado de Educação
+    - value: 4
+      label: Outra Pasta do Estado
+    - value: 5
+      label: Instituição da Sociedade Civil
+    - value: 6
+      label: Instituição de outro segmento

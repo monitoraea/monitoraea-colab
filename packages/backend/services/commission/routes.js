@@ -217,6 +217,17 @@ function buildFiltersWhere(filters, where = [], exclude = []) {
 
   return whereArray.length ? `WHERE ${whereArray.join(' AND ')}` : '';
 }
+router.get('/:id/atuacoes', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await entity.getGeo(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
 
 /* TODO */
 router.get('/:id', async (req, res) => {
