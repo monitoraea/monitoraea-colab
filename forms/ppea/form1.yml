@@ -12,13 +12,9 @@ fields:
   type: options
   title: Área da Política Pública
   size: 6
-  options: # options onde o value é número em sequencia, poderia ter somente uma lista de labels
-    - value: -1
-      label: Não respondido
-    - value: 0
-      label: 'Geral'
-    - value: 1
-      label: 'Temática'
+  list: 
+    module: property
+    key: areas  
   validation: 
     - type: neq
       value: -1
@@ -92,17 +88,9 @@ fields:
   type: options
   title: Fase atual da Política Pública
   size: 4
-  options:
-    - value: -1
-      label: Não respondido
-    - value: 0
-      label: 'Etapa de Formulação'
-    - value: 1
-      label: 'Etapa Inicial de Implementação'
-    - value: 2
-      label: 'Etapa de Implementação Avançada'
-    - value: 3
-      label: 'Etapa de Revisão'
+  list: 
+    module: property
+    key: fases 
   validation: 
     - type: neq
       value: -1

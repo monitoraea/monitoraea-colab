@@ -1,7 +1,7 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
-const { getSegmentedId, applyWhere } = require('../../utils');
+const { getSegmentedId, applyWhere, parseBBOX } = require('../../utils');
 
 const dayjs = require('dayjs');
 
@@ -23,13 +23,24 @@ const s3 = new aws.S3({
 
 });
 
+var fs = require('fs')
+const YAML = require('yaml')
+const lists_file = fs.readFileSync(require.resolve(`../../../../forms/ppea/lists1.yml`), 'utf8')
+
 class Service {
   /* Entity */
   async get(id) {
-    const entity = await db.instance().query(
+    const result = await db.instance().query(
       `
       SELECT
-        * -- TODO
+        p.id,
+        p.nome,
+        p.instituicao_nome,
+        p.area,
+        p.area_tematica,
+        p.link,
+        p.fase,
+        p.fase_ano
       FROM ppea.politicas p
       WHERE p.politica_id = :id
       AND versao = 'draft'
@@ -40,7 +51,65 @@ class Service {
       },
     );
 
-    return entity[0];
+    let entity = result[0];
+
+    try {
+      const { lists } = YAML.parse(lists_file)
+
+      const tipo_areas = lists.find(i => i.key === 'areas').options.filter(o => o.value !== -1)
+      entity.area_name = tipo_areas.find(ta => ta.value === entity.area).label;
+
+      const tipo_fases = lists.find(i => i.key === 'fases').options.filter(o => o.value !== -1)
+      entity.fase_name = tipo_fases.find(tf => tf.value === entity.fase).label;
+
+    } catch (e) { console.log(e) }
+
+    return entity;
+  }
+
+  async getGeo(id) {
+    const sequelize = db.instance();
+
+    let atuacoes = await sequelize.query(
+      ` 
+        select pa.id, ST_AsGeoJSON(pa.geom) as geojson, ST_AsGeoJSON(ST_Envelope(pa.geom)) as bbox
+        from ppea.politicas_atuacao pa
+        inner join ppea.politicas p on p.id = pa.politica_versao_id and p.versao = 'current'
+        where p.politica_id = ${parseInt(id)}
+        and pa.geom is not null
+        `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    atuacoes = atuacoes.map(a => {
+      a.bounds = parseBBOX(a.bbox);
+
+      return a;
+    });
+
+    const bbox = await sequelize.query(
+      `
+        with bounds as (
+            select ST_Extent(geom) as bbox
+            from ppea.politicas_atuacao pa
+            inner join ppea.politicas p on p.id = pa.politica_versao_id and p.versao = 'current'
+            where p.politica_id = ${parseInt(id)}
+            and pa.geom is not null
+        )
+        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+        from bounds
+        `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return {
+      atuacoes,
+      bbox: bbox[0],
+    };
   }
 
   async getDraftInfo(id) {
@@ -774,8 +843,8 @@ class Service {
   }
 
   async getDraftTimeline(id) {
-      const cneTLs = await db.instance().query(
-          `
+    const cneTLs = await db.instance().query(
+      `
               SELECT
                   lt.id, 
                   lt."date",
@@ -790,17 +859,17 @@ class Service {
               and p.versao = 'draft'
               order by lt."date"
           `,
-          {
-              replacements: { id },
-              type: Sequelize.QueryTypes.SELECT,
-          },
-      );
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
-      for (let tl of cneTLs) {
-          if (!!tl.url) tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(tl.politica_versao_id, 'timeline_arquivo', tl.url)}`;
-      }
+    for (let tl of cneTLs) {
+      if (!!tl.url) tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(tl.politica_versao_id, 'timeline_arquivo', tl.url)}`;
+    }
 
-      return cneTLs;
+    return cneTLs;
   }
 }
 

@@ -24,3 +24,25 @@ lists:
       label: 'Setor Privado e outros'
     - value: 9
       label: 'Outro'
+
+  - key: areas
+    options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Geral'
+    - value: 1
+      label: 'Temática'
+      
+  - key: fases
+    options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Etapa de Formulação'
+    - value: 1
+      label: 'Etapa Inicial de Implementação'
+    - value: 2
+      label: 'Etapa de Implementação Avançada'
+    - value: 3
+      label: 'Etapa de Revisão'
