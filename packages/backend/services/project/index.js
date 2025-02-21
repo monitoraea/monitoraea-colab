@@ -1369,6 +1369,50 @@ class Service {
     return { list: ufs.map(i => ({ id: i.value, name: i.label, value: i.value })) };
   }
 
+  async listFacilitatorsStates() {
+    const items = await db.instance().query(`
+      select 
+        distinct u.id as "value",
+        u.nm_estado as "label"
+      from ufs u
+      inner join facilitators f on f.state = u.sigla 
+      order by u.nm_estado
+      `, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    return items;
+  }
+
+  async listFacilitators(config) {
+    let where = []; 
+    let replacements = {};
+
+    if(config.uf) {
+      where.push('u.id = :uf');
+      replacements.uf = config.uf;
+    }
+
+    const items = await db.instance().query(`
+      select 
+        f.id,
+        f.photo,
+        f.name,
+        f.institution,
+        f.email,
+        f.state
+      from facilitators f
+      inner join ufs u on u.sigla = f.state
+      ${applyWhere(where)}
+      order by f.name
+      `, {
+      type: Sequelize.QueryTypes.SELECT,
+      replacements,
+    });
+
+    return items;
+  }
+
   async listProjectsByFacilitator(community_id) {
     const sequelize = db.instance();
 

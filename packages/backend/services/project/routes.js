@@ -138,6 +138,32 @@ router.get('/instiuicao/list', async (req, res) => {
   }
 });
 
+router.get('/facilitators_states', async (req, res) => {
+
+  try {
+
+    const result = await service.listFacilitatorsStates();
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/facilitators', async (req, res) => {
+
+  const { uf } = req.query;
+
+  try {
+
+    const result = await service.listFacilitators({ uf });
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.get('/facilitator', async (req, res) => {
   try {
     const { community_id } = req.query;
