@@ -31,4 +31,7 @@ module.exports = [
   'na-midia',
   'cne',
   'cne_timeline',
+  'publication',
+  'publication_category',
+  'publication_type',
 ];
