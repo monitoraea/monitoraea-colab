@@ -34,4 +34,5 @@ module.exports = [
   'publication',
   'publication_category',
   'publication_type',
+  'equipe',
 ];
