@@ -705,7 +705,7 @@ class Service {
 
 
             instance[i].bbox = bbox && bbox.y1 && bbox.x1 && bbox.y2 && bbox.x2 ? bbox : null;
-            instance[i].instituicao_nome = instituicoes[0].instituicoes.join(',');
+            instance[i].instituicao_nome = instituicoes[0].instituicoes ? instituicoes[0].instituicoes.join(',') : '';
         }
 
         const rawPages = instance.length ? parseInt(instance[0]['total_count']) / specificLimit : 0;
