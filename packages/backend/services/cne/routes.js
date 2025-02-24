@@ -132,6 +132,18 @@ router.post('/:id/participate', async (req, res) => {
   }
 });
 
+router.post('/', async (req, res) => {
+  try {
+    const { nome } = req.body;
+
+    const result = await entity.createInitiative(nome, res.locals.user);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 /* TODO */
 router.delete('/:id/draft/timeline/:tlId', async (req, res) => {
   const { id, tlId } = req.params;

@@ -32,7 +32,8 @@ class Service {
                 c.id,
                 dc.id as "community_id",
                 dc.descriptor_json->>'title' as "name",
-                count(dm.*) > 0 as "has_members"
+                count(dm.*) > 0 as "has_members",
+                count(*) OVER() AS total_count 
             from cne.cnes c 
             inner join dorothy_communities dc on dc.id = c.community_id 
             left join dorothy_members dm on dm."communityId" = dc.id
@@ -56,7 +57,7 @@ class Service {
             },
         );
 
-        return entities;
+        return { entities, total: entities[0].total_count };
     }
 
     async participate(user, id, isADM) {
@@ -105,6 +106,73 @@ class Service {
         const id = result[0].id;
 
         return { id };
+    }
+
+    async createInitiative(nome, user) {
+        let query, result;
+
+        /* community for project */
+        result = await db.instance().query(
+            `
+        select * from dorothy_community_recipes where name = 'cne'
+        `,
+            {
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+
+        const communityRecipe = result[0];
+
+        result = await db.instance().query(
+            `
+        INSERT INTO dorothy_communities(
+          descriptor_json,
+          "createdAt",
+          "updatedAt",
+          alias,
+          type
+        ) 
+        VALUES( 
+            '${JSON.stringify(communityRecipe['descriptor_json']).replace('%TITLE%', nome.replace(/"/g, ''))}', 
+            NOW(),
+            NOW(),
+            '${communityRecipe['alias']}', 
+            '${communityRecipe['type']}'
+        ) RETURNING id
+        `,
+            {
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+
+        const community_id = result[0].id;
+
+        result = await db.instance().query(
+            `
+        SELECT MAX(cne_id)+1 as next from cne.cnes
+        `,
+            {
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        )
+
+        const cne_id = result[0].next;
+
+        result = await db.instance().query(
+            `
+        INSERT INTO cne.cnes(nome, community_id, cne_id, versao, "createdAt", "updatedAt")
+        values(:nome, :community_id, :cne_id, 'draft', NOW(), NOW())
+        `,
+            {
+                replacements: { nome, community_id, cne_id },
+                type: Sequelize.QueryTypes.INSERT,
+            },
+        );
+
+        /* torna o criador membro da iniciativa */
+        await require('../gt').addMember(community_id, user.id);
+
+        return { communityId: community_id };
     }
 
     async getDraftInfo(id) {
@@ -833,7 +901,7 @@ class Service {
         let entity = result[0];
 
         // arquivo de sustentabilidade
-        if(entity.estrategia_url) {
+        if (entity.estrategia_url) {
             entity.estrategia_link = `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'estrategia_arquivo', entity.estrategia_url)}`;
             delete entity.estrategia_url;
         }
@@ -842,10 +910,10 @@ class Service {
             const { lists } = YAML.parse(lists_file)
             const tipo_resultados = lists.find(i => i.key === 'tipo_resultados').options.filter(o => o.value !== -1)
 
-            for(let r of entity.outcomes_it) {
+            for (let r of entity.outcomes_it) {
                 r.resultado_tipo = tipo_resultados.find(tr => tr.value === r.resultado_tipo)?.label
             }
-        } catch(e) { console.log(e) }
+        } catch (e) { console.log(e) }
 
         const members = await sequelize.query(
             `

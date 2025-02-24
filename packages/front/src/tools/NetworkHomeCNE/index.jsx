@@ -1,3 +1,6 @@
+import { useState, useEffect, useRef } from 'react';
+import { TextField } from '@mui/material';
+
 import { useDorothy, useRouter } from 'dorothy-dna-react';
 
 import axios from 'axios';
@@ -5,22 +8,83 @@ import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import { useQuery, useQueryClient } from 'react-query';
 
+import { InputBase, TableSortLabel, Box } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+
+import removeAccents from 'remove-accents';
+
 import styles from './styles.module.scss'
 
+import Search from '../../components/icons/Search';
+import { PageTitle } from '../../components/PageTitle/PageTitle';
+
+import { useMutation } from 'react-query';
+
+let timer
 export default function NetworkHomeCIEA() {
   const { server } = useDorothy();
   const { changeRoute } = useRouter();
   const queryClient = useQueryClient();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const InputBaseStyled = InputBase;
+  const searchInputRef = useRef(null);
+
+  const [searchField, _searchField] = useState('');
+  const [searchFieldFilter, _searchFieldFilter] = useState('');
+
+  const [order, _order] = useState('name');
+  const [direction, _direction] = useState('asc');
+  const [total, _total] = useState(0);
+
+  const [cnes, _cnes] = useState(null);
+
+  const [showNIDialog, _showNIDialog] = useState(false);
 
   const { data } = useQuery(
-    ['user_cnes_list'],
+    ['user_cnes_list', { order, direction }],
     {
-      queryFn: async () => (await axios.get(`${server}cne/mine`)).data,
+      queryFn: async () => (await axios.get(`${server}cne/mine?direction=${direction}`)).data,
     }
   );
 
-  const doParticipate = async (isADM, cneId) => {
+  useEffect(() => {
+    if (!data) return;
+
+    let prepared = [...data.entities];
+
+    if (searchFieldFilter.trim().length) {
+      prepared = prepared.filter(po =>
+        removeAccents(po.name.toLowerCase()).includes(removeAccents(searchFieldFilter.trim().toLocaleLowerCase())),
+      );
+    }
+
+    _total(prepared.length);
+
+    // filters
+    _cnes(prepared);
+  }, [data, searchFieldFilter])
+
+  const mutation = {
+    create: useMutation(name => axios.post(`${server}cne`, { nome: name }), {
+        onSuccess: () => {
+          queryClient.invalidateQueries(`user_cnes_list`)
+        },
+    }),
+};
+
+  const orderBy = columnName => {
+    if (order === columnName) _direction(direction === 'asc' ? 'desc' : 'asc');
+    else {
+      _order(columnName);
+      _direction('desc');
+    }
+  };
+
+  const doParticipate = async (isADM, entityId) => {
     const snackKey = enqueueSnackbar('Enviando pedido de participação...', {
       persist: true,
       anchorOrigin: {
@@ -30,7 +94,7 @@ export default function NetworkHomeCIEA() {
     });
 
     const { data } = await axios.post(
-      `${server}cne/${cneId}/participate`,
+      `${server}cne/${entityId}/participate`,
       {
         isADM,
       },
@@ -77,41 +141,194 @@ export default function NetworkHomeCIEA() {
     }
   };
 
+  const handleSearch = (e) => {
+    _searchField(e.target.value)
+
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => _searchFieldFilter(e.target.value), 500);
+  }
+
+  const handleNInitiative = async name => {
+    if (!name || !name.length) return;
+
+    const snackKey = enqueueSnackbar('Criando a iniciativa..', {
+      persist: true,
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'right',
+      },
+    });
+
+    /* save */
+    try {
+      const { data } = await mutation.create.mutateAsync(name);
+
+      closeSnackbar(snackKey);
+
+      enqueueSnackbar('Iniciativa gravada com sucesso!', {
+        variant: 'success',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
+      });
+
+      _showNIDialog(false);
+      window.location = `/colabora/cne/${data.communityId}`; /* TODO: melhorar */
+    } catch (error) {
+      closeSnackbar(snackKey);
+
+      console.error(error);
+
+      enqueueSnackbar('Erro ao gravar a iniciativa!', {
+        variant: 'error',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
+      });
+    }
+  };
+
   return (
     <>
-      <div className="page width-limiter">
+
+      <div className="page width-limiter tbox-fixed">
+        <div className="page-header">
+          <PageTitle title={'Centros/Núcleos/Equipamentos (' + total + ')'} />
+          <div className="page-header-buttons">
+            <button className="button-primary" onClick={()=>_showNIDialog(true)}>
+
+              Novo Centros/Núcleos/Equipamentos
+            </button>
+          </div>
+        </div>
         <div className="page-content">
           <div className="page-body">
-            <div className="tablebox" style={{ padding: '20px' }}>
-              <h4>A Rede de Comunidades de Aprendizagens dos Centros/Núcleos/Equipamentos é composta pelas seguintes comissões:</h4>
-              <ul className={styles['cne_list']}>
-                {!data && <>Carregando...</>}
-                {data && data.map(c => <li key={c.id} className={styles['cne']}>
-                  <div className={styles.name}>{c.name}</div>
-                  <div className={styles.actions}>
-                    {c.is_requesting && <div className={styles.sent}>Solicitação enviada</div>}
-                    {!c.is_requesting && <>
-                      {c.is_member && <>
-                        <button className="button-primary" onClick={() => changeRoute({ community: c.community_id })}>
-                          Acessar
-                        </button>
-                      </>}
-                      {!c.is_member && <>
-                        {!c.has_members && <button className="button-outline" onClick={() => doParticipate(true, c.id)}>
-                          Participar como responsável
-                        </button>}
-                        <button className="button-primary" onClick={() => doParticipate(false, c.id)}>
-                          Participar como colaborador
-                        </button>
-                      </>}
-                    </>}
-                  </div>
-                </li>)}
-              </ul>
+            <div className="tablebox limit-height">
+              <div className="tbox-header">
+                <InputBaseStyled
+                  spellCheck="false"
+                  className="tbox-search"
+                  startAdornment={<Search onClick={() => searchInputRef.current?.focus()} />}
+                  inputRef={searchInputRef}
+                  placeholder="Pesquisar..."
+                  inputProps={{ 'aria-label': 'pesquisar grupos' }}
+                  value={searchField}
+                  onChange={handleSearch}
+                />
+              </div>
+              <div className="tbox-body">
+                <table className="tbox-table">
+                  <thead>
+                    <tr>
+                      <th>
+                        <TableSortColumn
+                          text="Centros/Núcleos/Equipamentos"
+                          column="name"
+                          order={order}
+                          direction={direction}
+                          onClick={orderBy}
+                        />
+                      </th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    {cnes && cnes.map(row => (
+                      <tr className="tbox-row" key={row.id}>
+                        <td>{row.name}</td>
+                        <td className={`tbox-table-actions ${styles.actions}`}>
+                          {row.is_requesting && <div className={styles.sent}>Solicitação enviada</div>}
+                          {!row.is_requesting && <>
+                            {row.is_member && <>
+                              <button className={`button-primary ${styles.action}`} onClick={() => changeRoute({ community: row.community_id })}>
+                                Acessar
+                              </button>
+                            </>}
+                            {!row.is_member && <>
+                              {!row.has_members && <button className={`button-outline ${styles.action}`} onClick={() => doParticipate(true, row.id)}>
+                                sou o responsável
+                              </button>}
+                              <button className={`button-primary ${styles.action}`} onClick={() => doParticipate(false, row.id)}>
+                                colaborar
+                              </button>
+                            </>}
+                          </>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
+        <Box display="flex" justifyContent="space-between"></Box>
       </div>
+
+      <NewInitiativeDialog open={!!showNIDialog} type={showNIDialog} onCreate={handleNInitiative} onClose={() => _showNIDialog(false)} />
     </>
+  );
+}
+
+function TableSortColumn({ text, column, order, direction, onClick }) {
+  return (
+    <>
+      <TableSortLabel
+        className="tbox-table-sortlabel"
+        active={order === column}
+        direction={direction === 'desc' ? 'asc' : 'desc'}
+        onClick={() => onClick(column)}
+      >
+        {text}
+      </TableSortLabel>
+    </>
+  );
+}
+
+
+
+function NewInitiativeDialog({ open, type, onCreate, onClose }) {
+  const [name, _name] = useState('');
+
+  useEffect(() => {
+    if (open) _name('');
+  }, [open]);
+
+  return (
+    <div>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle id="alert-dialog-title">Nova iniciativa de Centros/Núcleos/Equipamento</DialogTitle>
+        <DialogContent>
+          <div className="row">
+            <div className="col-xs-12">
+              <TextField
+                className="input-text"
+                label="Nome da nova iniciativa"
+                value={name}
+                onChange={e => _name(e.target.value)}
+              />
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => onClose()} autoFocus>
+            Cancelar
+          </Button>
+          <button className="button-primary" onClick={() => onCreate(name)}>
+            Criar
+          </button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 }
