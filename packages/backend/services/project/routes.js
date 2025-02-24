@@ -1013,6 +1013,17 @@ router.get('/for_participation/:id', async (req, res) => {
   }
 });
 
+router.post('/enter_in_network', async (req, res) => {
+  try {
+
+    const result = await service.enterInInitiative(res.locals.user);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.get('/total_institutions', async (req, res) => {
   try {
 

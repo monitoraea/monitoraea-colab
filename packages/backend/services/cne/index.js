@@ -1016,6 +1016,28 @@ class Service {
         return project;
     }
 
+    async enterInInitiative(user) {
+        /* descobre o id da comunidade rede */
+        const result = await db.instance().query(
+            `
+          select id
+          from dorothy_communities dc 
+          where alias = 'rede_cne'
+        `,
+            {
+                type: Sequelize.QueryTypes.SELECT,
+            },
+        );
+
+        const community_id = result[0].id;
+
+        /* torna o criador membro da iniciativa */
+        await require('../gt').addMember(community_id, user.id, 'member', 99);
+
+        /* retorna id da comunidade */
+        return { communityId: community_id }
+    }
+
     async sendContact(id, name, email, message) {
         // descobre o id do gt
         let entities;

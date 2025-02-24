@@ -121,6 +121,17 @@ router.post('/:id/send_contact', async (req, res) => {
   }
 });
 
+router.post('/enter_in_network', async (req, res) => {
+  try {
+
+    const result = await entity.enterInInitiative(res.locals.user);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.get('/statistics/cnes', async (req, res) => {
 
   try {

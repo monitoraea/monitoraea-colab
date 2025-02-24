@@ -797,6 +797,28 @@ class Service {
     return draft;
   }
 
+  async enterInInitiative(user) {
+    /* descobre o id da comunidade rede */
+    const result = await db.instance().query(
+      `
+      select id
+      from dorothy_communities dc 
+      where alias = 'rede_zcm'
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const community_id = result[0].id;
+
+    /* torna o criador membro da iniciativa */
+    await require('../gt').addMember(community_id, user.id, 'member', 99);
+
+    /* retorna id da comunidade */
+    return { communityId: community_id }
+  }
+
   async getProjectForParticipation(id) {
     const sequelize = db.instance();
 

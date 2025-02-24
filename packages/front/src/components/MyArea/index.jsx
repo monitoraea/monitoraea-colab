@@ -19,6 +19,14 @@ import Logo from '../../images/logo.png'
 import Lollipop from '../../images/mj-lollipop.png'
 import Arrows from '../../images/mj-v-arrows.png'
 
+const mapPerspective = {
+    //key: ['TEXT', 'TOOL URL', 'NETWORK PATH']
+    ppea: ['Políticas Públicas', 'politica', 'rede_ppea'],
+    project: ['Iniciativa', 'projeto', 'rede_zcm'],
+    commission: ['Comissão', 'comissao', 'rede_ciea'],
+    cne: ['Centro', 'cne', 'rede_cne'],
+}
+
 export default function MyArea() {
 
     const { server } = useDorothy();
@@ -28,19 +36,19 @@ export default function MyArea() {
     const [showNIDialog, _showNIDialog] = useState(false);
 
     const mutation = {
-        create: useMutation(name => axios.post(`${server}ppea`, { nome: name }), {
+        create: useMutation(({name, perspective}) => axios.post(`${server}${perspective}`, { nome: name }), {
             onSuccess: () => {
                 //
             },
         }),
-        enterPPEA: useMutation(() => axios.post(`${server}ppea/enter_in_network`), {
+        enterNetwork: useMutation((perspective) => axios.post(`${server}${perspective}/enter_in_network`), {
             onSuccess: () => {
                 //
             },
         }),
     };
 
-    const handleNInitiative = async name => {
+    const handleNInitiative = async (name, perspective) => {
         if (!name || !name.length) return;
 
         const snackKey = enqueueSnackbar('Criando a iniciativa..', {
@@ -53,7 +61,7 @@ export default function MyArea() {
 
         /* save */
         try {
-            const { data } = await mutation.create.mutateAsync(name);
+            const { data } = await mutation.create.mutateAsync({name, perspective});
 
             closeSnackbar(snackKey);
 
@@ -66,7 +74,7 @@ export default function MyArea() {
             });
 
             _showNIDialog(false);
-            window.location = `/colabora/politica/${data.communityId}`; /* TODO: melhorar */
+            window.location = `/colabora/${mapPerspective[perspective][1]}/${data.communityId}`;
         } catch (error) {
             closeSnackbar(snackKey);
 
@@ -82,8 +90,8 @@ export default function MyArea() {
         }
     };
 
-    const handleAskPPEA = async () => {
-        const snackKey = enqueueSnackbar('Acessando a rede de PPEA..', {
+    const handleAsk = (perspective) => async () => {
+        const snackKey = enqueueSnackbar(`Acessando a rede de ${mapPerspective[perspective][0]}..`, {
             persist: true,
             anchorOrigin: {
                 vertical: 'top',
@@ -93,18 +101,18 @@ export default function MyArea() {
 
         /* save */
         try {
-            const { data } = await mutation.enterPPEA.mutateAsync();
+            const { data } = await mutation.enterNetwork.mutateAsync(perspective);
 
             closeSnackbar(snackKey);
 
             _showNIDialog(false);
-            window.location = `/colabora/rede_ppea/${data.communityId}`; /* TODO: melhorar */
+            window.location = `/colabora/${mapPerspective[perspective][2]}/${data.communityId}`;
         } catch (error) {
             closeSnackbar(snackKey);
 
             console.error(error);
 
-            enqueueSnackbar('Erro ao acessar a rede de PPEA!', {
+            enqueueSnackbar(`Erro ao acessar a rede de ${mapPerspective[perspective][0]}!`, {
                 variant: 'error',
                 anchorOrigin: {
                     vertical: 'top',
@@ -202,10 +210,10 @@ export default function MyArea() {
             </div>
 
             <div className={styles.options}>
-                <button onClick={handleAskPPEA}>Pedir para colaborar com uma <span>PPEA</span> cadastrada</button>
-                <button>Pedir para colaborar com um <span>Projeto ou Ação</span> de EA cadastrada</button>
-                <button>Pedir para colaborar com uma iniciativa vinculada ao <span>PPPZCM</span></button>
-                <button>Pedir para colaborar uma <span>instância</span> de EA cadastrada</button>
+                <button onClick={handleAsk('ppea')}>Colaborar com uma <span>Políticas Públicas de EA (PPEA)</span> cadastrada</button>
+                <button onClick={handleAsk('project')}>Colaborar com um Projeto ou Ações vinculados ao  <span>PPPZCM</span> cadastrada</button>
+                <button onClick={handleAsk('commission')}>Colaborar com uma <span>Instância</span> de Acompanhamento e Controle Social de EA cadastrada</button>
+                <button onClick={handleAsk('cne')}>Colaborar um <span>Centro de Educação</span> e Cooperação Socioambiental cadastrado</button>
             </div>
         </div>
 
@@ -231,10 +239,10 @@ export default function MyArea() {
             </div>
 
             <div className={styles.options}>
-                <button onClick={() => _showNIDialog('ppea')}>Cadastrar uma nova <span>PPEA</span></button>
-                <button>Cadastrar novo <span>Projeto ou Ação</span> de EA</button>
-                <button>Cadastrar nova iniciativa vinculada ao <span>PPPZCM</span></button>
-                <button>Cadastrar nova <span>instância</span> de EA</button>
+                <button onClick={() => _showNIDialog('ppea')}>Cadastrar uma nova <span>Políticas Públicas de EA (PPEA)</span></button>
+                <button onClick={() => _showNIDialog('project')}>Cadastrar um novo Projeto ou Ação vinculados ao  <span>PPPZCM</span></button>
+                <button onClick={() => _showNIDialog('commission')}>Cadastrar uma nova <span>Instância</span> de Acompanhamento e Controle Social de EA</button>
+                <button onClick={() => _showNIDialog('cne')}>Cadastrar um novo <span>Centro de Educação</span> e Cooperação Socioambiental </button>
             </div>
         </div>
 
@@ -312,7 +320,7 @@ function NewInitiativeDialog({ open, type, onCreate, onClose }) {
                 maxWidth="md"
                 fullWidth
             >
-                <DialogTitle id="alert-dialog-title">Nova iniciativa de {type === 'ppea' ? 'PPEA' : '?'}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">Nova iniciativa de {mapPerspective[type || 'ppea'][0]}</DialogTitle>
                 <DialogContent>
                     <div className="row">
                         <div className="col-xs-12">
@@ -329,7 +337,7 @@ function NewInitiativeDialog({ open, type, onCreate, onClose }) {
                     <Button onClick={() => onClose()} autoFocus>
                         Cancelar
                     </Button>
-                    <button className="button-primary" onClick={() => onCreate(name)}>
+                    <button className="button-primary" onClick={() => onCreate(name, type)}>
                         Criar
                     </button>
                 </DialogActions>
