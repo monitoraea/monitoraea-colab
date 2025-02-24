@@ -229,6 +229,20 @@ router.get('/:id/atuacoes', async (req, res) => {
   }
 });
 
+
+
+router.get('/for_participation/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await entity.getInfoForParticipation(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 /* TODO */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;

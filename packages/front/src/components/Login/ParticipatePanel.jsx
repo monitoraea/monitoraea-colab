@@ -13,6 +13,14 @@ import {
 
 import { useQuery } from 'react-query';
 
+const mapPerspectives = {
+//'entity':'single_path'
+  'project': 'pppzcm',
+  'ppea': 'ppea',
+  'comission': 'pppzcm',
+  'cne': 'cecsa',
+}
+
 const ParticipatePanel = () => {
   const params = useParams();
 
@@ -22,10 +30,10 @@ const ParticipatePanel = () => {
   const [status, _status] = useState('participate');
 
   const { data } = useQuery(
-    ['participate', { project_id: params.project_id }],
+    ['participate', { initiative_id: params.initiative_id }],
     {
-      queryFn: async () => (await axios.get(`${server}project/for_participation/${params.project_id}`)).data,
-      enabled: !!params.project_id
+      queryFn: async () => (await axios.get(`${server}${params.perspective}/for_participation/${params.initiative_id}`)).data,
+      enabled: !!params.initiative_id
     },
   );
 
@@ -39,7 +47,7 @@ const ParticipatePanel = () => {
     });
 
     const { data } = await axios.post(
-      `${server}project/${params.project_id}/participate`,
+      `${server}${params.perspective}/${params.initiative_id}/participate`,
       {
         isADM,
       },
@@ -123,7 +131,7 @@ const ParticipatePanel = () => {
                 </>}
 
                 <div className='row mb-3' style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div><a href={`${import.meta.env.VITE_PORTAL_URL}projeto-single/${params.project_id}`} style={{ color: 'inherit', fontWeight: '600' }}>« Voltar à página da iniciativa</a></div>
+                  <div><a href={`${import.meta.env.VITE_PORTAL_URL}iniciativa/${mapPerspectives[params.perspective]}/${params.initiative_id}`} style={{ color: 'inherit', fontWeight: '600' }}>« Voltar à página da iniciativa</a></div>
                   <div><Link to="/" style={{ color: 'inherit', fontWeight: '600' }}>Acessar a área colaborativa »</Link></div>
                 </div>
 

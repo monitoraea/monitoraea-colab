@@ -632,6 +632,45 @@ class Service {
       bbox: bbox[0],
     };
   }
+
+  async getInfoForParticipation(id) {
+    const sequelize = db.instance();
+
+    let result;
+
+    result = await sequelize.query(
+      `
+        select p.id, CONCAT('CIEA-',u.sigla) as nome 
+        from ciea.comissoes p
+        inner join ufs u on u.id = p.uf
+        where p.id = ${parseInt(id)}
+        and p.versao = 'draft'`,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!result.length) return null;
+
+    let project = result[0];
+
+    const members = await sequelize.query(
+      `
+      select count(*)::integer as total 
+      from dorothy_members m 
+      inner join ciea.comissoes p on p.community_id = m."communityId"  
+      where p.versao = 'draft'
+      and p.id = ${parseInt(id)}
+      `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    project.total_members = !members || !members.length ? 0 : members[0].total;
+
+    return project;
+  }
 }
 
 const singletonInstance = new Service();

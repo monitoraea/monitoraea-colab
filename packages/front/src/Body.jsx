@@ -60,7 +60,7 @@ export default function Body() {
           {isLogged && <Redirect to="/" />}
         </Route>
 
-        <Route path="/participate/:project_id">
+        <Route path="/participate/:perspective/:initiative_id">
           {isLogged && (
             <div className="page-wrapper login">
               <ParticipatePanel />

@@ -842,6 +842,44 @@ class Service {
     return result[0].total;
   }
 
+  async getInfoForParticipation(id) {
+    const sequelize = db.instance();
+
+    let result;
+
+    result = await sequelize.query(
+      `
+        select p.id, p.nome
+        from ppea.politicas p
+        where p.politica_id = ${parseInt(id)}
+        and p.versao = 'current'`,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!result.length) return null;
+
+    let project = result[0];
+
+    const members = await sequelize.query(
+      `
+      select count(*)::integer as total 
+      from dorothy_members m 
+      inner join ppea.politicas p on p.community_id = m."communityId"  
+      where p.versao = 'current'
+      and p.politica_id = ${parseInt(id)}
+      `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    project.total_members = !members || !members.length ? 0 : members[0].total;
+
+    return project;
+  }
+
   async getDraftTimeline(id) {
     const cneTLs = await db.instance().query(
       `
