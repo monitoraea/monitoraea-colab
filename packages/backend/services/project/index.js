@@ -629,6 +629,41 @@ class Service {
     return { ok: true };
   }
 
+  async getListForUser(user, config) {
+    const entities = await db.instance().query(`
+    with iniciatives as (
+      select 
+        c.id,
+        dc.id as "community_id",
+        dc.descriptor_json->>'title' as "name",
+        count(dm.*) > 0 as "has_members"
+      from projetos c 
+      inner join dorothy_communities dc on dc.id = c.community_id 
+      left join dorothy_members dm on dm."communityId" = dc.id
+      group by c.id, dc.id
+    )
+    select 
+      c.id,
+      c.community_id,
+      c."name",
+      dm."createdAt" is not null as "is_member",
+      c."has_members",
+      p.id is not null as "is_requesting",
+      count(*) OVER() AS total_count 
+    from iniciatives c 
+    left join dorothy_members dm on dm."communityId" = c.community_id and dm."userId" = :userId
+    left join participar p on p."communityId" = c.community_id and p."userId" = :userId and p."resolvedAt" is null
+    order by c."name" ${config.direction || 'asc'}
+    `,
+      {
+        replacements: { userId: user.id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return { entities, total: entities[0].total_count };
+  }
+
   async saveProjectJustDraft(id, value) {
     await db.instance().query(
       `
@@ -1385,10 +1420,10 @@ class Service {
   }
 
   async listFacilitators(config) {
-    let where = []; 
+    let where = [];
     let replacements = {};
 
-    if(config.uf) {
+    if (config.uf) {
       where.push('u.id = :uf');
       replacements.uf = config.uf;
     }

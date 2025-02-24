@@ -363,6 +363,19 @@ router.put('/:id/draft/justification', async (req, res) => {
   }
 });
 
+/* TODO */
+router.get('/mine', async (req, res) => {
+  const { direction } = req.query;
+
+  try {
+    const result = await service.getListForUser(res.locals.user, { direction });
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.get('/:id/atuacoes', async (req, res) => {
   try {
     const { id } = req.params;
