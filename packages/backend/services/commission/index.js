@@ -18,6 +18,8 @@ const s3 = new aws.S3({
 
 });
 
+const { Messagery } = require('dorothy-dna-services');
+
 var fs = require('fs')
 const YAML = require('yaml')
 const lists_file = fs.readFileSync(require.resolve(`../../../../forms/ciea/lists1.yml`), 'utf8')
@@ -81,7 +83,7 @@ class Service {
       const tipo_coordenacao = lists.find(i => i.key === 'tipo_coordenacao').options.filter(o => o.value !== -1)
 
       entity.coordenacao_name = tipo_coordenacao.find(tc => tc.value === entity.coordenacao).label;
-      
+
     } catch (e) { console.log(e) }
 
     return entity;
@@ -586,6 +588,72 @@ class Service {
     return {
       regioes,
     };
+  }
+
+  async sendContact(id, name, email, message) {
+    // descobre o id do gt
+    let entities;
+
+    entities = await db.instance().query(
+      `
+      select CONCAT('CIEA-',u.sigla) as nome,
+          p.community_id
+      from ciea.comissoes p
+      inner join ufs u on u.id = p.uf
+      where p.id = :id			
+      `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const projectName = entities[0].nome;
+    const communityId = entities[0].community_id;
+
+    // se gt tem membros, envia para gt
+    entities = await db.instance().query(
+      `
+      select count(*) as total 
+      from dorothy_members dm
+      where dm."communityId" = :communityId			
+      `,
+      {
+        replacements: { communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const hasMembers = entities[0].total > 0;
+
+    // se gt nao tem membros, envia para adm (referindo o GT)
+    let room;
+    if (hasMembers) room = `room_c${communityId}_t1`;
+    else room = `room_c1_t1`;
+
+    /* NOTIFICACAO */
+
+    let content = {
+      projectName,
+      communityId,
+      name,
+      email,
+      message,
+      isADM: !hasMembers,
+    }
+
+    await Messagery.sendNotification({ id: 0 }, room, {
+      content,
+      userId: 0,
+      tool: {
+        type: "native",
+        element: "NewContactFromSite"
+      },
+    });
+
+    return {
+      success: true,
+    }
   }
 
   async getGeo(id) {

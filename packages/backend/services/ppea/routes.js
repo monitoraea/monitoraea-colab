@@ -136,6 +136,19 @@ router.post('/:id/geo-draw', async (req, res) => {
   }
 });
 
+router.post('/:id/send_contact', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, message } = req.body;
+
+    const result = await entity.sendContact(id, name, email, message);
+
+    res.json(result);
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
 router.post('/:id/participate', async (req, res) => {
   try {
     const { id } = req.params;
