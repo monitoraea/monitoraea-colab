@@ -289,7 +289,7 @@ router.get('/', async (req, res) => {
   try {
     const { page, f_id, limit } = req.query;
 
-    const where = buildFiltersWhere(req.query, ["versao = 'draft'"]); // TODO: 'current'
+    const where = buildFiltersWhere(req.query, ["versao = 'current'"]);
 
     const result = await entity.list(page ? parseInt(page) : 1, f_id, where, limit);
 
@@ -303,7 +303,7 @@ router.get('/geo', async (req, res) => {
   try {
     const { f_id } = req.query;
 
-    const where = buildFiltersWhere(req.query, ["versao = 'draft'"]); // TODO: 'current'
+    const where = buildFiltersWhere(req.query, ["versao = 'current'"]);
 
     const result = await entity.listIDs(f_id, where);
 
@@ -343,7 +343,7 @@ router.get('/municipios', async (req, res) => {
 
     const where = buildFiltersWhere(
       req.query,
-      [`LOWER(unaccent(m.nm_mun)) like '%${nome.toLowerCase()}%'`,"versao = 'draft'"], // TODO: 'current'
+      [`LOWER(unaccent(m.nm_mun)) like '%${nome.toLowerCase()}%'`,"versao = 'current'"],
       ['f_municipios'],
     );
 
@@ -361,7 +361,7 @@ router.get('/list', async (req, res) => {
 
     const where = buildFiltersWhere(req.query, [
       `LOWER(unaccent(nome)) like '%${nome.toLowerCase()}%'`,
-      "versao = 'draft'", // TODO: 'current'
+      "versao = 'current'",
     ]); 
 
     const result = await entity.listByName(where);
@@ -378,7 +378,7 @@ router.get('/instiuicao/list', async (req, res) => {
 
     const where = buildFiltersWhere(req.query, [
       `LOWER(unaccent(nome)) like '%${nome.toLowerCase()}%'`,
-      "versao = 'draft'", // TODO: 'current'
+      "versao = 'current'",
     ]); 
 
     const result = await entity.listIntituicoesByName(where);

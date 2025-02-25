@@ -36,9 +36,10 @@ class Service {
                 dc.descriptor_json->>'title' as "name",
                 count(dm.*) > 0 as "has_members",
                 count(*) OVER() AS total_count 
-            from cne.cnes c 
+            from cne.cnes c
             inner join dorothy_communities dc on dc.id = c.community_id 
             left join dorothy_members dm on dm."communityId" = dc.id
+            where c.versao = 'draft' 
             group by c.id, dc.id
             )
             select 
@@ -94,7 +95,7 @@ class Service {
         let result;
 
         result = await sequelize.query(
-            ` select  c.id
+            ` select  c.cne_id as id
             from cne.cnes c
             where c.community_id = :community_id`,
             {
@@ -657,7 +658,7 @@ class Service {
         if (f_id) where = `${where} AND c.id = ${f_id}`;
 
         query = `
-              select c.id, c.nome, u.nm_regiao, c.uf,
+              select c.id, c.nome, u.nm_regiao, c.uf, c.cne_id,
             count(*) OVER() AS total_count
             from cne.cnes c
             left join ufs u on u.id = c.uf
@@ -680,8 +681,8 @@ class Service {
             with bounds as (
                 select ST_Extent(geom) as bbox
                 from cne.cnes_atuacao ca
-                inner join cne.cnes c on c.id = ca.cne_versao_id and c.versao = 'draft'
-                where c.cne_id = :cne_id
+                inner join cne.cnes c on c.id = ca.cne_versao_id and c.versao = 'current'
+                where c.id = :cne_id
                 and ca.geom is not null
             )
             select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
@@ -748,7 +749,7 @@ class Service {
         if (f_id) where = `${where} AND c.id = ${f_id}`;
 
         const query = `
-            select distinct c.id
+            select distinct c.cne_id
             from cne.cnes c
             left join ufs u on u.id = c.uf
             ${where}
@@ -759,7 +760,7 @@ class Service {
             type: Sequelize.QueryTypes.SELECT,
         });
 
-        return enitities.map(e => e.id);
+        return enitities.map(e => e.cne_id);
     }
 
     async getUFs(f_regioes) {
@@ -892,7 +893,7 @@ class Service {
             from cne.cnes c
             left join files f on f.id = c.estrategia_arquivo
             where c.cne_id = ${parseInt(id)}      
-            and c.versao = 'draft' -- TODO: current`,
+            and c.versao = 'current'`,
             {
                 type: Sequelize.QueryTypes.SELECT,
             },
@@ -941,7 +942,7 @@ class Service {
             ` 
             select ca.id, ST_AsGeoJSON(ca.geom) as geojson, ST_AsGeoJSON(ST_Envelope(ca.geom)) as bbox
             from cne.cnes_atuacao ca
-            inner join cne.cnes c on c.id = ca.cne_versao_id and c.versao = 'draft'
+            inner join cne.cnes c on c.id = ca.cne_versao_id and c.versao = 'current'
             where c.cne_id = ${parseInt(id)}
             and ca.geom is not null
             `,
@@ -988,7 +989,7 @@ class Service {
             select p.id, p.nome
             from cne.cnes p
             where p.cne_id = ${parseInt(id)}
-            and p.versao = 'draft'`,
+            and p.versao = 'current'`,
             {
                 type: Sequelize.QueryTypes.SELECT,
             },
