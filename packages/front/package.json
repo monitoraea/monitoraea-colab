@@ -75,5 +75,15 @@
     "sass": "^1.71.0",
     "vite": "^5.1.0",
     "vite-plugin-svgr": "^4.2.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@ckeditor/ckeditor5-react",
+      "core-js",
+      "core-js-pure",
+      "ejs",
+      "es5-ext",
+      "esbuild"
+    ]
   }
 }

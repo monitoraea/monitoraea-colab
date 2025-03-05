@@ -38,5 +38,11 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon --config nodemon.json"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "aws-sdk",
+      "nodemon"
+    ]
   }
 }
