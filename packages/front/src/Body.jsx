@@ -8,6 +8,7 @@ import InvitePanel from './components/Login/InvitePanel';
 import SignupPanel from './components/Login/SignupPanel';
 import ParticipatePanel from './components/Login/ParticipatePanel';
 import MyArea from './components/MyArea';
+import Home from './components/Home';
 
 export default function Body() {
   const history = useHistory();
@@ -85,14 +86,21 @@ export default function Body() {
           </Route>
         )}
 
-        {isLogged && user.membership.length && (
-          <Route>
+        {isLogged && user.membership.length && (<>
+          <Route path="/" exact>
+            <Navbar />
+            <div className="page-wrapper">
+              <Home />
+            </div>
+          </Route>
+
+          <Route path="/:community/:community_id">
             <Navbar />
             <div className="page-wrapper">
               <CommunityRouter />
             </div>
           </Route>
-        )}
+        </>)}
         {isLogged && !user.membership.length && (
           <Route>
             <Navbar />
