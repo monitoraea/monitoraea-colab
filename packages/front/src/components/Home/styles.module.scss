@@ -55,6 +55,8 @@ $color_5: #f9ad23;
             border-radius: 15px;
             font-weight: bold;
             padding: 2px 15px;
+            text-align: center;
+            min-width: 125px;
 
             /* perspectivas */
             &.color_1 { border-color: $color_1; }
