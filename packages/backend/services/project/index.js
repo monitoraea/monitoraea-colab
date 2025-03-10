@@ -896,19 +896,24 @@ class Service {
 
     result = await sequelize.query(
       `
-        select p.id, p.nome, p.objetivos_txt, p.aspectos_gerais_txt, p.publico_txt, p.periodo_txt, p.parceiros_txt, 
+        select distinct p.id, p.nome, p.objetivos_txt, p.aspectos_gerais_txt, p.publico_txt, p.periodo_txt, p.parceiros_txt, 
         i.nome as instituicao_nome, m2.nome as modalidade_nome,
-        array_agg(distinct la.nome) as linhas, 
-        array_agg(distinct m.nm_regiao) as regioes
+        (
+          select distinct array_agg(la.nome)
+          from projetos__linhas_acao pla  
+          left join linhas_acao la on la.id = pla.linha_acao_id
+          where pla.projeto_id = p.id
+        ) as linhas,
+        (
+          select array_agg(distinct m.nm_regiao)
+          from municipios m
+          where m.cd_mun = pa.cd_mun
+        ) as regioes
         from projetos p
         left join instituicoes i on i.id = p.instituicao_id 
         left join modalidades m2 on m2.id = p.modalidade_id 
-        left join projetos_atuacao pa on pa.projeto_id = p.id
-        left join municipios m on m.cd_mun = pa.cd_mun
-        left join projetos__linhas_acao pla on pla.projeto_id = p.id 
-        left join linhas_acao la on la.id = pla.linha_acao_id 
-        where p.id = ${parseInt(id)}
-        group by p.id, i.nome, m2.nome`,
+        left join projetos_atuacao pa on pa.projeto_id = p.id 
+        where p.id = ${parseInt(id)}`,
       {
         type: Sequelize.QueryTypes.SELECT,
       },
@@ -1062,7 +1067,7 @@ class Service {
             left join projetos_atuacao pa on pa.projeto_id = p.id
             left join municipios m on m.cd_mun = pa.cd_mun
             ${where}
-            group by p.id, i.nome
+            group by p.id, p.nome, i.nome
             order by p.nome
             LIMIT ${specificLimit}
             OFFSET ${(page - 1) * specificLimit}
@@ -2769,7 +2774,7 @@ class Service {
     analysis.connections = true;
     if (!project.pr_id) {
       analysis.connections = false;
-      conclusion.ready = false;
+      // ATENÇÃO: em março de 2022, a verificação está ignorando conexões //  conclusion.ready = false;
     }
 
     // INDICADORES
@@ -2793,7 +2798,7 @@ class Service {
         if (!itemStatus.result) {
           analysis.indics[dbKey].ready = false;
           analysis.dims[lae.id].ready = false;
-          conclusion.ready = false;
+          // ATENÇÃO: em março de 2022, a verificação está ignorando indicadores // conclusion.ready = false;
           analysis.question_problems = [...analysis.question_problems, ...itemStatus.problems];
         }
       }
@@ -2861,6 +2866,7 @@ class Service {
     const draft = await this.retrieveProjectDraft(id);
 
     // verifica, se nao ready, retorna com erro
+    // ATENÇÃO: em março de 2025, a verificação desconsidera indicadores e conexões
     let verification = await this.verify(id);
 
     if (!verification.ready)
