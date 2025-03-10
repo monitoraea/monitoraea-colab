@@ -244,9 +244,9 @@ export default function InformationsTab({ projectId }) {
                         onChange={e => handleFieldChange('instituicao_porte')(e.target.value)}
                       >
                         <MenuItem value="none">Não respondido</MenuItem>
-                        <MenuItem value="pequeno">Pequeno</MenuItem>
-                        <MenuItem value="medio">Médio</MenuItem>
-                        <MenuItem value="grande">Grande</MenuItem>
+                        <MenuItem value="pequeno">Pequeno - até 10 colaboradores</MenuItem>
+                        <MenuItem value="medio">Médio - até 50 colaboradores</MenuItem>
+                        <MenuItem value="grande">Grande - mais de 50 colaboradores</MenuItem>
                       </TextField>
                       <HelpBoxButton keyRef={['porte']} openHelpbox={_contentText} />
                     </div>
