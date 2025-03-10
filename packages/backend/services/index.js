@@ -35,4 +35,6 @@ module.exports = [
   'publication_category',
   'publication_type',
   'equipe',
+  'publico',
+  'tematica_socioambiental',
 ];

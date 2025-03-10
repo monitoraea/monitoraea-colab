@@ -1924,8 +1924,12 @@ class Service {
         pr.contatos,	
         pr.objetivos_txt,
         pr.aspectos_gerais_txt,
-        pr.publico_txt,
+        -- pr.publico_txt,
         pr.periodo_txt,
+        pr.publicos,
+        pr.tematicas,
+        pr.publicos_especificar,
+        pr.tematicas_especificar,
         pr.parceiros_txt,
         pr.atuacao,
         pr.relacionado_ppea,
@@ -2089,6 +2093,42 @@ class Service {
       );
     }
 
+    if (!!entity[0].publicos && entity[0].publicos.length) {
+      const publicos = await db.instance().query(
+        `
+        select 
+          e.id,
+          e.id as "value",
+          e.nome as "label"
+        from publicos e
+        where e.id in (${entity[0].publicos.join(',')})`,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+        },
+      );
+
+      if(entity[0].publicos.includes(-1)) publicos.push({ id: -1, value: -1, label: 'Outros - especificar' })
+      entity[0].publicos = publicos;
+    }
+
+    if (!!entity[0].tematicas && entity[0].tematicas.length) {
+      const tematicas = await db.instance().query(
+        `
+        select 
+          e.id,
+          e.id as "value",
+          e.nome as "label"
+        from tematicas_socioambientais e
+        where e.id in (${entity[0].tematicas.join(',')})`,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+        },
+      );
+
+      if(entity[0].tematicas.includes(-1)) tematicas.push({ id: -1, value: -1, label: 'Outros - especificar' })
+      entity[0].tematicas = tematicas;
+    }
+
     return entity[0];
   }
 
@@ -2140,11 +2180,16 @@ class Service {
 
             atuacao = :atuacao,
             objetivos_txt = :objetivos_txt,
-            aspectos_gerais_txt = :aspectos_gerais_txt,
-            publico_txt = :publico_txt,
+            aspectos_gerais_txt = :aspectos_gerais_txt,            
             periodo_txt = :periodo_txt,
             parceiros_txt = :parceiros_txt,
             contatos = :contatos,
+
+            publicos = '{${!!data.publicos?.length ? data.publicos.map(p => p.id).join(',') : ''}}',
+            tematicas = '{${!!data.tematicas?.length ? data.tematicas.map(t => t.id).join(',') : ''}}',
+
+            publicos_especificar = :publicos_especificar,
+            tematicas_especificar = :tematicas_especificar,
 
             ufs = '{${!!data.ufs?.length ? data.ufs.map(u => u.id).join(',') : ''}}',
             status_desenvolvimento = :status_desenvolvimento,
@@ -2169,9 +2214,11 @@ class Service {
 
           objetivos_txt: cleanItems(data.objetivos_txt),
           aspectos_gerais_txt: cleanItems(data.aspectos_gerais_txt),
-          publico_txt: cleanItems(data.publico_txt),
           periodo_txt: cleanItems(data.periodo_txt),
           parceiros_txt: cleanItems(data.parceiros_txt),
+
+          publicos_especificar: data.publicos_especificar,
+          tematicas_especificar: data.tematicas_especificar,
 
           contatos: JSON.stringify(data.contatos),
 
@@ -2746,10 +2793,12 @@ class Service {
       'nome',
       'objetivos_txt',
       'aspectos_gerais_txt',
-      'publico_txt',
+      /* 'publico_txt', */
       'periodo_txt',
       'parceiros_txt',
       'atuacao',
+      'publicos',
+      'tematicas',
     ])
       analysis.information[item] = this.check(!!project[item] && project[item].length > 0, conclusion);
 
@@ -2764,6 +2813,15 @@ class Service {
         project.contatos[0].tel.length > 0),
       conclusion,
     );
+
+    if(project['publicos'] && project['publicos'].includes(-1) && !project['publicos_especificar']) {
+      analysis.information.publicos_especificar = false;
+      conclusion.ready = false;
+    }
+    if(project['tematicas'] && project['tematicas'].includes(-1) && !project['tematicas_especificar']) {
+      analysis.information.tematicas_especificar = false; 
+      conclusion.ready = false;
+    }
 
     // analysis.information.relacionado_ppea = this.check(!!project.relacionado_ppea && project.relacionado_ppea !== 'none', conclusion);
     analysis.information.qual_ppea = this.check(!!project.qual_ppea || project.relacionado_ppea !== 'sim', conclusion);

@@ -208,7 +208,7 @@ export default function InformationsTab({ projectId }) {
                       <button className="button-primary" onClick={() => handleSave()}>
                         <FilePlus></FilePlus>
                         Gravar
-                      </button>                      
+                      </button>
                     </div>
                   </div>
                   <div className="row">
@@ -392,11 +392,64 @@ export default function InformationsTab({ projectId }) {
                 </section>
                 <hr className="hr-spacer my-4" />
                 <section id="public">
-                  <FreeMultiple
+                  {/* <FreeMultiple
                     data={entity.publico_txt}
                     onChange={handleFieldChange('publico_txt')}
                     sectionTitle={<TitleAndHelpbox title="Público" keyRef={['publico_txt']} openHelpbox={_contentText} />}
-                  />
+                  /> */}
+                  <div className="row">
+                    <div className="col-xs-6">
+                      <AsyncAutocompleteMultiple
+                        label="Públicos"
+                        url="publico"
+                        query="?others=-1"
+                        titleField="label"
+                        onChange={handleFieldChange('publicos')}
+                        value={entity.publicos}
+                        multiple
+                      />
+                      <HelpBoxButton keyRef={['publicos']} openHelpbox={_contentText} />
+                    </div>
+                    
+                    {entity.publicos?.find(p => String(p.id) === '-1') && (
+                      <div className="col-xs-6">
+                        <TextField
+                          className="input-text"
+                          label="Especifique"
+                          value={entity.publicos_especificar || ''}
+                          onChange={e => handleFieldChange('publicos_especificar')(e.target.value)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </section>
+                <hr className="hr-spacer my-4" />
+                <section id="public">
+                  <div className="row">
+                    <div className="col-xs-6">
+                      <AsyncAutocompleteMultiple
+                        label="Temáticas socioambientais"
+                        url="tematica_socioambiental"
+                        query="?others=-1"
+                        titleField="label"
+                        onChange={handleFieldChange('tematicas')}
+                        value={entity.tematicas}
+                        multiple
+                      />
+                      <HelpBoxButton keyRef={['tematicas']} openHelpbox={_contentText} />
+                    </div>
+                    
+                    {entity.tematicas?.find(p => String(p.id) === '-1') && (
+                      <div className="col-xs-6">
+                        <TextField
+                          className="input-text"
+                          label="Especifique"
+                          value={entity.tematicas_especificar || ''}
+                          onChange={e => handleFieldChange('tematicas_especificar')(e.target.value)}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </section>
                 <hr className="hr-spacer my-4" />
                 <section id="partners">
@@ -417,14 +470,14 @@ export default function InformationsTab({ projectId }) {
                 <hr className="hr-spacer my-4" />
                 <section id="politics">
                   <div className="section-header">
-                    <div className="section-title" style={{  display: 'flex' }}>Políticas públicas <HelpBoxButton keyRef={['relacionado_ppea']} openHelpbox={_contentText} /></div>
+                    <div className="section-title" style={{ display: 'flex' }}>Políticas públicas <HelpBoxButton keyRef={['relacionado_ppea']} openHelpbox={_contentText} /></div>
                   </div>
                   <div className="row">
                     <div className="col-xs-12">
                       <small>
                         A ação/projeto está vinculada, é decorrente ou é parte de alguma política pública de educação
                         ambiental (federal, estadual, municipal ou de outro segmento não público)?
-                        
+
                         <FormGroup>
                           <Stack direction="row" spacing={1} alignItems="center">
                             <div>Não</div>
