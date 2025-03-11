@@ -593,6 +593,9 @@ function buildFiltersWhere(filters, where = [], exclude = []) {
   if (filters['f_instituicao_segmento'] && !exclude.includes('f_instituicao_segmento'))
     whereArray.push(`ARRAY[${filters['f_instituicao_segmento']}] && i.segmentos`);
 
+  if (filters['f_ids'] && !exclude.includes('f_ids'))
+    whereArray.push(`p.id IN (${filters['f_ids']})`);
+
   return whereArray.length ? `WHERE ${whereArray.join(' AND ')}` : '';
 }
 
