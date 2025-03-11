@@ -143,15 +143,13 @@ class Service {
     const whereNacional = result[0].qtd > 0 ? "OR pa.nm_regiao = 'NACIONAL'" : '';
 
     let query1 = `
-    select p."community_id"
+    select distinct p."community_id"
     from projetos p
     left join projetos_atuacao pa on pa.projeto_id = p.id
     left join municipios m on m.cd_mun = pa.cd_mun
     where m.nm_uf in (select unnest(atuacao) from facilitadores f where f."communityId" = :communityId)
     ${whereNacional}
     or p.facilitador_community_id = :communityId
-    group by p.id
-    order by p.nome
     `;
 
     const entities = await db.instance().query(

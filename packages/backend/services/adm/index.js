@@ -222,15 +222,18 @@ class Service {
         if (filters['f_modalidades'] && !exclude.includes('f_modalidades'))
             whereArray.push(`p.modalidade_id IN (${filters['f_modalidades']})`);
 
-        if (filters['f_regioes'] && !exclude.includes('f_regioes'))
-            whereArray.push(
-                `pa.nm_regiao IN (${filters['f_regioes']
-                    .split(',')
-                    .map(r => `'${r}'`)
-                    .join(',')})`,
-            );
+        if (filters['f_regioes'] && !exclude.includes('f_regioes')) {
+            const regioes = filters['f_regioes']
+            .split(',')
+            .map(r => `'${r}'`)
+            .join(',');
 
-        if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`m.cd_uf IN (${filters['f_ufs']})`);
+            whereArray.push(
+                `(u.nm_regiao IN (${regioes}) or pa.nm_regiao IN (${regioes}))`,
+            );
+        }
+
+        if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`array[${filters['f_ufs']}] && p.ufs`);
         if (filters['f_municipios'] && !exclude.includes('f_municipios'))
             whereArray.push(`m.cd_mun IN (${filters['f_municipios']})`);
 
@@ -255,6 +258,7 @@ class Service {
         from projetos p
         left join projetos_atuacao pa on pa.projeto_id = p.id
         left join municipios m on m.cd_mun = pa.cd_mun
+        left join ufs u on u.id = any(p.ufs)
         ${where}
         `;
 

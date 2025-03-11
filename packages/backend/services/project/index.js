@@ -1406,15 +1406,15 @@ class Service {
 
     let where = '';
     if (f_regioes)
-      where = `where m.nm_regiao IN (${f_regioes
+      where = `where u.nm_regiao IN (${f_regioes
         .split(',')
         .map(r => `'${r}'`)
         .join(',')})`;
 
-    const query = `select distinct m.cd_uf as value, upper(m.nm_uf) as "label"  
-        from projetos p 
-        inner join projetos_atuacao pa on pa.projeto_id = p.id 
-        inner join municipios m on m.cd_mun = pa.cd_mun
+    const query = `
+        select distinct u.id as value, u.nm_estado as "label"  
+        from projetos p
+        inner join ufs u on u.id = any(p.ufs)
         ${where}
         order by "label"`;
 
@@ -2943,6 +2943,9 @@ class Service {
       tel_contatos.push(tel ? tel : '');
     });
 
+    const mes_inicio = dayjs(draft.mes_inicio).isValid() ? dayjs(draft.mes_inicio).format('YYYY-MM-DD') : null;
+    const mes_fim = dayjs(draft.mes_fim).isValid() ? dayjs(draft.mes_fim).format('YYYY-MM-DD') : null;
+
     /* Update project*/
     await db.instance().query(
       `
@@ -2951,7 +2954,7 @@ class Service {
         modalidade_id = :modalidade_id,
         objetivos_txt = :objetivos_txt,
         aspectos_gerais_txt = :aspectos_gerais_txt,
-        publico_txt = :publico_txt,
+        
         periodo_txt = :periodo_txt,
         parceiros_txt = :parceiros_txt,
         indicadores = :indicadores,
@@ -2968,7 +2971,12 @@ class Service {
         ufs = :ufs,
         status_desenvolvimento = :status_desenvolvimento,
         mes_inicio = :mes_inicio,
-        mes_fim = :mes_fim
+        mes_fim = :mes_fim,
+
+        publicos = :publicos,
+        tematicas = :tematicas,
+        publicos_especificar = :publicos_especificar,
+        tematicas_especificar = :tematicas_especificar
 
         where id = :id
       `,
@@ -2979,7 +2987,7 @@ class Service {
           modalidade_id: draft.modalidade_id,
           objetivos_txt: draft.objetivos_txt,
           aspectos_gerais_txt: draft.aspectos_gerais_txt,
-          publico_txt: draft.publico_txt,
+          
           periodo_txt: draft.periodo_txt,
           parceiros_txt: draft.parceiros_txt,
           indicadores: JSON.stringify(draft.indicadores),
@@ -2994,8 +3002,13 @@ class Service {
 
           ufs: `{${draft.ufs.join(',')}}`,
           status_desenvolvimento: draft.status_desenvolvimento,
-          mes_inicio: dayjs(draft.mes_inicio).format('YYYY-MM-DD'),
-          mes_fim: dayjs(draft.mes_fim).format('YYYY-MM-DD'),
+          mes_inicio,
+          mes_fim,
+
+          publicos: `{${draft.publicos.join(',')}}`,
+          tematicas: `{${draft.tematicas.join(',')}}`,
+          publicos_especificar: draft.publicos_especificar || '',
+          tematicas_especificar: draft.tematicas_especificar || '',
         },
         type: Sequelize.QueryTypes.UPDATE,
       },
