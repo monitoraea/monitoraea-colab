@@ -3260,6 +3260,9 @@ class Service {
       'nome da acao',
       'instituicao',
       'modalidade',
+      'estados',
+      'segmentos',
+      'status desenvolvimento',      
       'regioes',
       'objetivos',
       'aspectos gerais',
@@ -3308,7 +3311,12 @@ class Service {
         p.nome_ponto_focal,
         p.email_contatos,
         p.tel_contatos,
-        p.indicadores 
+        p.indicadores,
+        p.status_desenvolvimento,
+        p.mes_inicio,
+        p.mes_fim,
+        (select array_agg(distinct s.nome) from segmentos s where s.id = any(i.segmentos)) as segmentos,
+        (select array_agg(distinct u.nm_estado) from ufs u where u.id = any(p.ufs)) as ufs
       from projetos p
       left join instituicoes i on i.id = p.instituicao_id  
       left join modalidades m on m.id = p.modalidade_id
@@ -3329,6 +3337,22 @@ class Service {
       project_data.push(p.nome); // nome da acao
       project_data.push(p.instituicao); // instituicao
       project_data.push(p.modalidade); // modalidade
+
+      project_data.push(p.ufs?.length ? p.ufs.join(', ') : ''); // estados
+      project_data.push(p.segmentos?.length ? p.segmentos.join(', ') : ''); // segmentos
+
+      let status = '';
+      if(p.status_desenvolvimento) {
+        switch(p.status_desenvolvimento) {
+          case 'nao_iniciada': status = 'Não iniciada'; break;
+          case 'em_desenvolvimento': status = `Em desenvolvimento (${dayjs(p.mes_inicio).format('MM/YYYY')})`; break;
+          case 'finalizada': status = `Finalizada  (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`; break;
+          case 'interrompida': status = `Interrompida(${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')}`; break;
+          default: status = 'Não respondido'; break;
+        }
+      }
+      project_data.push(status); // status desenvolvimento
+
       project_data.push(p.regioes.filter(r => !!r).join(', ')); // regioes
       project_data.push(!!p.objetivos_txt ? p.objetivos_txt.replace(/(?:\r\n|\r|\n)/g, ' | ') : ''); // objetivos
       project_data.push(!!p.aspectos_gerais_txt ? p.aspectos_gerais_txt.replace(/(?:\r\n|\r|\n)/g, ' | ') : ''); // aspectos gerais
