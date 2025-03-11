@@ -40,16 +40,33 @@ class Service {
       `
       select p.id, p.nome, p.objetivos_txt, p.aspectos_gerais_txt, p.publico_txt, p.periodo_txt, p.parceiros_txt, 
       i.nome as instituicao_nome, m2.nome as modalidade_nome,
-      array_agg(distinct la.nome) as linhas,
-      p.nome_ponto_focal, p.email_contatos, p.tel_contatos 
+      (
+      	select array_agg(distinct la.nome) 
+      	from linhas_acao la
+	    inner join projetos__linhas_acao pla on pla.linha_acao_id = la.id
+	    where pla.projeto_id = p.id 
+      ) as linhas,
+      p.nome_ponto_focal, p.email_contatos, p.tel_contatos,
+        p.status_desenvolvimento,
+        p.mes_inicio,
+        p.mes_fim,
+        (select array_agg(distinct s.nome) from segmentos s where s.id = any(i.segmentos)) as segmentos,
+        (select array_agg(distinct u.nm_estado) from ufs u where u.id = any(p.ufs)) as ufs,
+      (
+      	select array_agg(distinct pu.nome) 
+      	from publicos pu
+	    where pu.id = any(p.publicos)
+      ) as publicos,      
+      (
+      	select array_agg(distinct ts.nome) 
+      	from tematicas_socioambientais ts
+	    where ts.id = any(p.tematicas)
+      ) as tematicas
       from projetos p
       left join instituicoes i on i.id = p.instituicao_id 
       left join modalidades m2 on m2.id = p.modalidade_id 
-      left join projetos_atuacao pa on pa.projeto_id = p.id
-      left join projetos__linhas_acao pla on pla.projeto_id = p.id 
-      left join linhas_acao la on la.id = pla.linha_acao_id 
+      --left join projetos_atuacao pa on pa.projeto_id = p.id
       where p.id = :id
-      group by p.id, i.nome, m2.nome
       `,
       {
         replacements: { id },
@@ -3262,7 +3279,9 @@ class Service {
       'modalidade',
       'estados',
       'segmentos',
-      'status desenvolvimento',      
+      'status desenvolvimento',  
+      'publicos',
+      'tematicas',    
       'regioes',
       'objetivos',
       'aspectos gerais',
@@ -3316,7 +3335,17 @@ class Service {
         p.mes_inicio,
         p.mes_fim,
         (select array_agg(distinct s.nome) from segmentos s where s.id = any(i.segmentos)) as segmentos,
-        (select array_agg(distinct u.nm_estado) from ufs u where u.id = any(p.ufs)) as ufs
+        (select array_agg(distinct u.nm_estado) from ufs u where u.id = any(p.ufs)) as ufs,
+        (
+      	select array_agg(distinct pu.nome) 
+      	from publicos pu
+	    where pu.id = any(p.publicos)
+      ) as publicos,      
+      (
+      	select array_agg(distinct ts.nome) 
+      	from tematicas_socioambientais ts
+	    where ts.id = any(p.tematicas)
+      ) as tematicas
       from projetos p
       left join instituicoes i on i.id = p.instituicao_id  
       left join modalidades m on m.id = p.modalidade_id
@@ -3352,7 +3381,8 @@ class Service {
         }
       }
       project_data.push(status); // status desenvolvimento
-
+      project_data.push(p.publicos?.length ? p.publicos.join(', ') : ''); // publicos
+      project_data.push(p.tematicas?.length ? p.tematicas.join(', ') : ''); // tematicas
       project_data.push(p.regioes.filter(r => !!r).join(', ')); // regioes
       project_data.push(!!p.objetivos_txt ? p.objetivos_txt.replace(/(?:\r\n|\r|\n)/g, ' | ') : ''); // objetivos
       project_data.push(!!p.aspectos_gerais_txt ? p.aspectos_gerais_txt.replace(/(?:\r\n|\r|\n)/g, ' | ') : ''); // aspectos gerais
