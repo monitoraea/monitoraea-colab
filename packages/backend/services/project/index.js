@@ -925,7 +925,20 @@ class Service {
           select array_agg(distinct m.nm_regiao)
           from municipios m
           where m.cd_mun = pa.cd_mun
-        ) as regioes
+        ) as regioes,
+        (
+          select array_agg(distinct pu.nome)
+          from publicos pu
+          where pu.id = any(p.publicos)
+        ) as publicos,
+        (
+          select array_agg(distinct ts.nome)
+          from tematicas_socioambientais ts
+          where ts.id = any(p.tematicas)
+        ) as tematicas,
+        status_desenvolvimento,
+        mes_inicio,
+        mes_fim
         from projetos p
         left join instituicoes i on i.id = p.instituicao_id 
         left join modalidades m2 on m2.id = p.modalidade_id 
