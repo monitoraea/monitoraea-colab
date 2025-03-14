@@ -165,10 +165,10 @@ const WorkingGroups = () => {
         <div className="page-header">
           <PageTitle title={'Grupos de trabalho (' + total + ')'} />
           <div className="page-header-buttons">
-            <button className="button-primary" onClick={() => _showNPDialog(true)}>
+            {currentCommunity.id === 1 && <button className="button-primary" onClick={() => _showNPDialog(true)}>
               {/* <CheckCircle></CheckCircle> */}
               Nova iniciativa
-            </button>
+            </button>}
 
             {currentCommunity.id === 1 && <button className="button-outline" onClick={() =>  window.open(`${server}project/spreadsheet`, '_blank')}>
               Baixar planilha
