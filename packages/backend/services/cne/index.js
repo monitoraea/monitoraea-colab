@@ -19,6 +19,9 @@ const s3 = new aws.S3({
 
 });
 
+const shapefile = require('shapefile');
+const simplify = require('simplify-geojson');
+
 const { Messagery } = require('dorothy-dna-services');
 
 const { check } = require('../../form_utils')
@@ -30,28 +33,28 @@ class Service {
     async getListForUser(user) {
         const entities = await db.instance().query(`
         with entities as (
-            select 
+            select
                 c.id,
                 dc.id as "community_id",
                 dc.descriptor_json->>'title' as "name",
                 count(dm.*) > 0 as "has_members",
-                count(*) OVER() AS total_count 
+                count(*) OVER() AS total_count
             from cne.cnes c
-            inner join dorothy_communities dc on dc.id = c.community_id 
+            inner join dorothy_communities dc on dc.id = c.community_id
             left join dorothy_members dm on dm."communityId" = dc.id
-            where c.versao = 'draft' 
+            where c.versao = 'draft'
             group by c.id, dc.id
             )
-            select 
+            select
             c.id,
             c.community_id,
             c."name",
             dm."createdAt" is not null as "is_member",
             c."has_members",
             p.id is not null as "is_requesting"
-            from entities c 
+            from entities c
             left join dorothy_members dm on dm."communityId" = c.community_id and dm."userId" = 1
-            left join participar p on p."communityId" = c.community_id and p."userId" = 1 and p."resolvedAt" is null 
+            left join participar p on p."communityId" = c.community_id and p."userId" = 1 and p."resolvedAt" is null
             order by c."name"
         `,
             {
@@ -67,11 +70,11 @@ class Service {
         /* Recupera o id da comunidade, a partir do id da comissao */
         const community = await db.instance().query(
             `
-            select 
+            select
                 c.community_id,
                 dc.descriptor_json->>'title' as "nome"
-            from cne.cnes c 
-            inner join dorothy_communities dc on dc.id = c.community_id 
+            from cne.cnes c
+            inner join dorothy_communities dc on dc.id = c.community_id
             where c.id = :id
           `,
             {
@@ -134,12 +137,12 @@ class Service {
           "updatedAt",
           alias,
           type
-        ) 
-        VALUES( 
-            '${JSON.stringify(communityRecipe['descriptor_json']).replace('%TITLE%', nome.replace(/"/g, ''))}', 
+        )
+        VALUES(
+            '${JSON.stringify(communityRecipe['descriptor_json']).replace('%TITLE%', nome.replace(/"/g, ''))}',
             NOW(),
             NOW(),
-            '${communityRecipe['alias']}', 
+            '${communityRecipe['alias']}',
             '${communityRecipe['type']}'
         ) RETURNING id
         `,
@@ -353,7 +356,7 @@ class Service {
                 st_ymin(bb) as bbymin,
                 st_xmax(bb) as bbxmax,
                 st_ymax(bb) as bbymax
-            from (select ST_Extent(geom) as bb 
+            from (select ST_Extent(geom) as bb
                           from cne.cnes_atuacao pa
                   inner join cne.cnes p on p.id = pa.cne_versao_id
                   where p.cne_id = :id
@@ -380,7 +383,7 @@ class Service {
 
         const [{ atuacao_aplica, atuacao_naplica_just }] = await sequelize.query(
             `
-            select atuacao_aplica, atuacao_naplica_just 
+            select atuacao_aplica, atuacao_naplica_just
             from cne.cnes pa
             where pa.cne_id = :id`,
             {
@@ -471,7 +474,7 @@ class Service {
 
             await db.instance().query(
                 `
-                insert into cne.cnes_atuacao(cne_versao_id, geom) 
+                insert into cne.cnes_atuacao(cne_versao_id, geom)
                 values(:cne_versao_id, ST_GeomFromGeoJSON(:geom))`,
                 {
                     replacements: { cne_versao_id, geom: JSON.stringify(geom) },
@@ -519,7 +522,7 @@ class Service {
         const cneTLs = await db.instance().query(
             `
                 SELECT
-                    lt.id, 
+                    lt.id,
                     lt."date",
                     lt.texto,
                     f.url,
@@ -685,7 +688,7 @@ class Service {
                 where c.id = :cne_id
                 and ca.geom is not null
             )
-            select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+            select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
             from bounds
             `,
                 {
@@ -721,8 +724,8 @@ class Service {
             const c = instance[i];
 
             query = `
-        select count(*)::integer as total 
-        from dorothy_members m 
+        select count(*)::integer as total
+        from dorothy_members m
         inner join cne.cnes c on c.community_id = m."communityId"
         where c.id = ${c.id}
         `;
@@ -774,8 +777,8 @@ class Service {
                 .join(',')})`;
 
         const query = `
-          select distinct u.id as value, upper(u.nm_estado) as "label"  
-          from cne.cnes c 
+          select distinct u.id as value, upper(u.nm_estado) as "label"
+          from cne.cnes c
           inner join ufs u on u.id = c.uf
           ${where}
           order by "label"`;
@@ -795,8 +798,8 @@ class Service {
         if (!all) {
             regioes = await sequelize.query(
                 `
-          select distinct u.nm_regiao as value, upper(u.nm_regiao) as "label"  
-          from cne.cnes c 
+          select distinct u.nm_regiao as value, upper(u.nm_regiao) as "label"
+          from cne.cnes c
           inner join ufs u on u.id = c.uf
           where u.nm_regiao <> 'NACIONAL'
           order by "label"`,
@@ -819,9 +822,9 @@ class Service {
         const sequelize = db.instance();
 
         const query = `
-                select distinct m.cd_mun as value, upper(m.nm_mun) as "label"  
-                from cne.cnes c        
-                inner join municipios m on m.cd_mun = c.municipio   
+                select distinct m.cd_mun as value, upper(m.nm_mun) as "label"
+                from cne.cnes c
+                inner join municipios m on m.cd_mun = c.municipio
                 ${where}
                 order by "label"
             `;
@@ -880,11 +883,11 @@ class Service {
 
         result = await sequelize.query(
             `
-            select 
-                c.id, 
-                c.cne_id, 
-                c.nome, 
-                c.intitutions_it, 
+            select
+                c.id,
+                c.cne_id,
+                c.nome,
+                c.intitutions_it,
                 c."createdAt" as published,
                 c.data_criacao,
                 c.data_inst,
@@ -892,7 +895,7 @@ class Service {
 	            c.outcomes_it
             from cne.cnes c
             left join files f on f.id = c.estrategia_arquivo
-            where c.cne_id = ${parseInt(id)}      
+            where c.cne_id = ${parseInt(id)}
             and c.versao = 'current'`,
             {
                 type: Sequelize.QueryTypes.SELECT,
@@ -920,8 +923,8 @@ class Service {
 
         const members = await sequelize.query(
             `
-          select count(*)::integer as total 
-          from dorothy_members m 
+          select count(*)::integer as total
+          from dorothy_members m
           inner join projetos p on p.community_id = m."communityId"
           where p.id = ${parseInt(id)}
           `,
@@ -939,7 +942,7 @@ class Service {
         const sequelize = db.instance();
 
         let atuacoes = await sequelize.query(
-            ` 
+            `
             select ca.id, ST_AsGeoJSON(ca.geom) as geojson, ST_AsGeoJSON(ST_Envelope(ca.geom)) as bbox
             from cne.cnes_atuacao ca
             inner join cne.cnes c on c.id = ca.cne_versao_id and c.versao = 'current'
@@ -966,7 +969,7 @@ class Service {
                 where c.cne_id = ${parseInt(id)}
                 and ca.geom is not null
             )
-            select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+            select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
             from bounds`,
             {
                 type: Sequelize.QueryTypes.SELECT,
@@ -1001,9 +1004,9 @@ class Service {
 
         const members = await sequelize.query(
             `
-          select count(*)::integer as total 
-            from dorothy_members m 
-            inner join cne.cnes p on p.community_id = m."communityId"  
+          select count(*)::integer as total
+            from dorothy_members m
+            inner join cne.cnes p on p.community_id = m."communityId"
             where p.versao = 'draft'
             and p.cne_id = ${parseInt(id)}
           `,
@@ -1022,7 +1025,7 @@ class Service {
         const result = await db.instance().query(
             `
           select id
-          from dorothy_communities dc 
+          from dorothy_communities dc
           where alias = 'rede_cne'
         `,
             {
@@ -1048,7 +1051,7 @@ class Service {
             select p.nome,
                 p.community_id
             from cne.cnes p
-            where p.versao = 'draft' and p.id = :id			
+            where p.versao = 'draft' and p.id = :id
           `,
             {
                 replacements: { id },
@@ -1062,9 +1065,9 @@ class Service {
         // se gt tem membros, envia para gt
         entities = await db.instance().query(
             `
-          select count(*) as total 
+          select count(*) as total
           from dorothy_members dm
-          where dm."communityId" = :communityId			
+          where dm."communityId" = :communityId
           `,
             {
                 replacements: { communityId },

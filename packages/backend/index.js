@@ -13,7 +13,7 @@ const app = express();
 
 app.use(cors());
 
-app.use(express.json());
+app.use(express.json({ limit: '10MB' }));
 
 app.use(express.static(path.join(__dirname, '..', 'portal', 'dist')));
 app.use('/colabora', express.static(path.join(__dirname, '..', 'front', 'dist')));
