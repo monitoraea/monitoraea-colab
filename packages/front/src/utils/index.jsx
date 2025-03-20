@@ -1,3 +1,5 @@
+import { reject } from "lodash";
+
 export function coalesce(list) {
     return list.find(text => !!text);
 }
@@ -11,4 +13,12 @@ export const secureFindIndex = (arr, value, idx) => {
     if(!!find) return find[idx];
 
     return null;
+}
+
+export async function copyToClipboard(text) {
+  return new Promise((resolver, reject)=>{
+    navigator.clipboard.writeText(text)
+      .then(resolver)
+      .catch(reject)
+  })
 }

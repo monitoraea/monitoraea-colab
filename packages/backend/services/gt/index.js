@@ -14,13 +14,13 @@ const config = require('../../config');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const baseURL = process.env.BASE_URL || 'https://pppzcm.monitoraea.com.br';
+const baseURL = process.env.BASE_URL || 'https://www.monitoraea.org.br';
 
 class Service {
   async getPerspectives() {
     return await db.instance().query(
       `
-    select * 
+    select *
     from perspectives
     `,
       {
@@ -33,17 +33,17 @@ class Service {
 
     return await db.instance().query(
       `
-    select 
+    select
     p.id,
     p.name,
     p.network_community_id,
     p.id in (
-      select 
+      select
         distinct p.id
-      from dorothy_members dm 
+      from dorothy_members dm
       inner join dorothy_communities dc on dc.id = dm."communityId"
       inner join community_types ct on ct.alias = trim(dc.alias)
-      inner join perspectives p on p.id = ct.perspective_id 
+      inner join perspectives p on p.id = ct.perspective_id
       where dm."userId" = :userId
     ) as "participate"
     from perspectives p
@@ -60,7 +60,7 @@ class Service {
     // what type of community is this?
     const community = await db.instance().query(
       `
-    select type 
+    select type
     from ${process.env.DB_PREFIX}communities c
     where c.id = :communityId
     `,
@@ -93,9 +93,9 @@ class Service {
 
     let entities = await db.instance().query(
       `
-        select 
-          dc.id, 
-          dc.alias, 
+        select
+          dc.id,
+          dc.alias,
           TRIM(dc.type) as "type",
           case
             when TRIM(dc.type) = 'policy' then 'Política'
@@ -106,7 +106,7 @@ class Service {
           end as "typeName",
           dc.descriptor_json->'title' as "name",
           p."name" as "pespectiveName",
-          count(*) OVER() AS total_count 
+          count(*) OVER() AS total_count
         from dorothy_communities dc
         left join perspectives p on p.id::text = descriptor_json->>'perspective'
         where type not in ('network','adm')
@@ -154,17 +154,17 @@ class Service {
 
     const entities = await db.instance().query(
       `
-    select 
-      id, 
-      alias, 
-      TRIM(type) as "type", 
+    select
+      id,
+      alias,
+      TRIM(type) as "type",
       case
         when TRIM(type) = 'project' then 'Projeto'
         else 'Facilitador'
       end as "typeName",
       descriptor_json->'title' as "name",
       count(*) OVER() AS total_count
-    from dorothy_communities 
+    from dorothy_communities
     where type not in ('network','adm')
     and id in (${query1})
     order by "${config.order}" ${config.direction}
@@ -184,13 +184,13 @@ class Service {
   async list4AdmCIEA(communityId, config) {
     let entities = await db.instance().query(
       `
-        select 
-          id, 
-          alias, 
-          TRIM(type) as "type", 
+        select
+          id,
+          alias,
+          TRIM(type) as "type",
           'Comissão' as "typeName",
           descriptor_json->'title' as "name",
-          count(*) OVER() AS total_count 
+          count(*) OVER() AS total_count
         from dorothy_communities
         where type not in ('network','adm_ciea')
         and descriptor_json->>'perspective' = '3'
@@ -211,13 +211,13 @@ class Service {
   async list4AdmPPEA(communityId, config) {
     let entities = await db.instance().query(
       `
-        select 
-          id, 
-          alias, 
-          TRIM(type) as "type", 
+        select
+          id,
+          alias,
+          TRIM(type) as "type",
           'Política Pública' as "typeName",
           descriptor_json->'title' as "name",
-          count(*) OVER() AS total_count 
+          count(*) OVER() AS total_count
         from dorothy_communities
         where type not in ('network','adm_ppea')
         and descriptor_json->>'perspective' = '4'
@@ -238,16 +238,16 @@ class Service {
   async list4AdmZCM(communityId, config) {
     let entities = await db.instance().query(
       `
-        select 
-          id, 
-          alias, 
-          TRIM(type) as "type", 
+        select
+          id,
+          alias,
+          TRIM(type) as "type",
           case
             when TRIM(type) = 'project' then 'Projeto'
             else 'Facilitador'
           end as "typeName",
           descriptor_json->'title' as "name",
-          count(*) OVER() AS total_count 
+          count(*) OVER() AS total_count
         from dorothy_communities
         where type not in ('network','adm_zcm')
         and descriptor_json->>'perspective' = '2'
@@ -268,13 +268,13 @@ class Service {
   async list4AdmCNE(communityId, config) {
     let entities = await db.instance().query(
       `
-        select 
-          id, 
-          alias, 
-          TRIM(type) as "type", 
+        select
+          id,
+          alias,
+          TRIM(type) as "type",
           'Centro/Núcleo/Equipamento' as "typeName",
           descriptor_json->'title' as "name",
-          count(*) OVER() AS total_count 
+          count(*) OVER() AS total_count
         from dorothy_communities
         where type not in ('network','adm_cne')
         and descriptor_json->>'perspective' = '5'
@@ -303,12 +303,12 @@ class Service {
 
     const entities = await db.instance().query(
       `
-        select 
-            du.id, 
-            du.email, 
+        select
+            du.id,
+            du.email,
             du."name",
 
-            count(*) OVER() AS total_count 
+            count(*) OVER() AS total_count
         from dorothy_users du
         inner join dorothy_members dm on dm."userId" = du.id
         ${applyWhere(where)}
@@ -316,7 +316,7 @@ class Service {
         ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}`
         : 'i."updatedAt" desc'
       }
-        LIMIT :limit 
+        LIMIT :limit
         OFFSET :offset
         `,
       {
@@ -351,16 +351,17 @@ class Service {
 
     const entities = await db.instance().query(
       `
-    select 
-        i.id, 
-        i.email, 
+    select
+        i.id,
+        i.email,
         i."name",
-        count(*) OVER() AS total_count 
-    from invites i 
+        concat('${`${baseURL}/colabora/convite/`}',i."uuid") as link,
+        count(*) OVER() AS total_count
+    from invites i
     ${applyWhere(where)}
     order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'i."updatedAt" desc'
       }
-    LIMIT :limit 
+    LIMIT :limit
     OFFSET :offset
     `,
       {
@@ -390,7 +391,7 @@ class Service {
     // what type of community is this?
     const community = await db.instance().query(
       `
-    select type 
+    select type
     from ${process.env.DB_PREFIX}communities c
     where c.id = :communityId
     `,
@@ -431,14 +432,14 @@ class Service {
     const entities = await db.instance().query(
       `
     select p.id, p."createdAt", p."communityId", du."name", p.adm, dc.descriptor_json->>'title' as "community_name",
-    count(*) OVER() AS total_count   
-    from participar p 
+    count(*) OVER() AS total_count
+    from participar p
     inner join ${process.env.DB_PREFIX}users du on du.id = p."userId"
-    inner join ${process.env.DB_PREFIX}communities dc on dc.id = p."communityId" 
+    inner join ${process.env.DB_PREFIX}communities dc on dc.id = p."communityId"
     ${applyWhere(where)}
     order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'p."updatedAt" desc'
       }
-    LIMIT :limit 
+    LIMIT :limit
     OFFSET :offset
     `,
       {
@@ -465,7 +466,7 @@ class Service {
   async remove(communityId, userId) {
     await db.instance().query(
       `
-    delete from dorothy_members 
+    delete from dorothy_members
     where "communityId" = :communityId and "userId" = :userId
     `,
       {
@@ -480,7 +481,7 @@ class Service {
   async removeInvite(communityId, id) {
     await db.instance().query(
       `
-    delete from invites 
+    delete from invites
     where "communityId" = :communityId and id = :id
     `,
       {
@@ -498,7 +499,7 @@ class Service {
     // what type of community is this?
     const community = await db.instance().query(
       `
-    select type 
+    select type
     from ${process.env.DB_PREFIX}communities c
     where c.id = :communityId
     `,
@@ -515,8 +516,8 @@ class Service {
 
     await db.instance().query(
       `
-    delete from participar 
-    ${applyWhere(where)} 
+    delete from participar
+    ${applyWhere(where)}
     `,
       {
         replacements: { communityId, id },
@@ -530,9 +531,9 @@ class Service {
   async approveParticipacion(id) {
     /* recupera os dados da participacao e do usuario */
     const participation = await db.instance().query(
-      `select p.id, "userId", "communityId", initiative_name, u.id as user_id, u."name" as user_name, u.email as user_email, adm  
-      from participar p 
-      inner join dorothy_users u on u.id = p."userId" 
+      `select p.id, "userId", "communityId", initiative_name, u.id as user_id, u."name" as user_name, u.email as user_email, adm
+      from participar p
+      inner join dorothy_users u on u.id = p."userId"
       where p.id = :id and "resolvedAt" is null`,
       {
         replacements: { id },
@@ -602,7 +603,7 @@ class Service {
     let result;
 
     result = await db.instance().query(
-      ` 
+      `
         select *
         from invites i
         where i."communityId" = :communityId
@@ -616,7 +617,7 @@ class Service {
     if (result.length) return { ok: true }; /* Ja tem convite para este email, para esta comunidade */
 
     result = await db.instance().query(
-      ` 
+      `
       select descriptor_json::json->>'title' as title
       from dorothy_communities c
       where c.id = :communityId`,
@@ -631,7 +632,7 @@ class Service {
     const uuid = uuidv4();
 
     result = await db.instance().query(
-      ` 
+      `
         insert into invites("communityId", name, email, uuid, "createdAt", "updatedAt")
         values(:communityId, :name, :email, :uuid, NOW(), NOW())
         `,
@@ -737,7 +738,7 @@ class Service {
     else where.push(`dc."type" <> 'adm'`);
 
     const entities = await db.instance().query(
-      `    
+      `
       select dc.id, dc.descriptor_json->>'title' as "name"
       from dorothy_communities dc
       ${applyWhere(where)}
@@ -844,7 +845,7 @@ class Service {
     /* Verifica se o user ja e' membro da comunidade */
     const [{ count: countMembership }] = await db.instance().query(
       `
-      select count(*)::integer from dorothy_members 
+      select count(*)::integer from dorothy_members
       where "userId" = :userId and "communityId" = :communityId
       `,
       {
@@ -858,7 +859,7 @@ class Service {
     /* verifica se ja existe registro user_id, id */
     const [{ count: countParticipate }] = await db.instance().query(
       `
-      select count(*)::integer from participar 
+      select count(*)::integer from participar
       where "userId" = :userId and "communityId" = :communityId and "resolvedAt" is null
       `,
       {
@@ -872,7 +873,7 @@ class Service {
     /* cadastra participacao */
     await db.instance().query(
       `
-          insert into participar("communityId", "userId", adm, initiative_name, "createdAt", "updatedAt") 
+          insert into participar("communityId", "userId", adm, initiative_name, "createdAt", "updatedAt")
           values(:communityId, :userId, :adm, :initiativeName, NOW(), NOW())`,
       {
         replacements: { userId: user.id, communityId, adm: isADM, initiativeName },
@@ -880,7 +881,7 @@ class Service {
       },
     );
 
-    /**************** 
+    /****************
      * NOTIFICACAO
     *****************/
 
@@ -916,11 +917,11 @@ class Service {
     if (to === 'sec') {
       // descobre a comunidade adm da comunidade referida
       const adms = await db.instance().query(`
-      select 
+      select
         p.adm_community_id
-      from community_types ct 
-      inner join perspectives p on p.id = ct.perspective_id 
-      inner join dorothy_communities dc on trim(dc.alias) = ct.alias 
+      from community_types ct
+      inner join perspectives p on p.id = ct.perspective_id
+      inner join dorothy_communities dc on trim(dc.alias) = ct.alias
       where dc.id = :communityId
       `,
         {
@@ -949,10 +950,10 @@ class Service {
 
     // recupera as comunidades do usuário
     const communities = await db.instance().query(`
-    select 
+    select
       coalesce(array_agg(dm."communityId"::text), '{}') as communities,
 	    coalesce(max(dm."order"),0)::integer as "max_order"
-    from dorothy_members dm 
+    from dorothy_members dm
     where dm."userId" = :userId
     `,
       {
@@ -1007,9 +1008,9 @@ class Service {
     // recupera a rede da comunidade em questão
     const networks = await db.instance().query(`
     select p.network_community_id::text
-    from dorothy_communities dc 
+    from dorothy_communities dc
     inner join community_types ct on ct.alias = trim(dc.alias)
-    inner join perspectives p on p.id = ct.perspective_id 
+    inner join perspectives p on p.id = ct.perspective_id
     where dc.id <> p.network_community_id and dc.id = :communityId
     `,
       {
@@ -1050,7 +1051,7 @@ class Service {
 
   async getTotalMembersInPerspective(perspective_id) {
     const members = await db.instance().query(`
-      select count(distinct dm."userId")::integer as total 
+      select count(distinct dm."userId")::integer as total
       from dorothy_communities dc
       inner join dorothy_members dm on dm."communityId" = dc.id
       where dc.descriptor_json->>'perspective' = :perspective_id
