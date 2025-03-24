@@ -3296,6 +3296,8 @@ class Service {
       'publicos',
       'tematicas',
       'regioes',
+      'data cadastro',
+      'data ultima atualizacao',
       'objetivos',
       'aspectos gerais',
       'publico',
@@ -3358,11 +3360,14 @@ class Service {
       	select array_agg(distinct ts.nome)
       	from tematicas_socioambientais ts
 	    where ts.id = any(p.tematicas)
-      ) as tematicas
+      ) as tematicas,
+      pr2."createdAt" as dt_cadastro,
+      pr2."updatedAt" as dt_ultima_atualizacao
       from projetos p
       left join instituicoes i on i.id = p.instituicao_id
       left join modalidades m on m.id = p.modalidade_id
       left join projeto_regioes pr on pr.id = p.id
+      left join projetos_rascunho pr2 on pr2.projeto_id = p.id
       order by id
       `,
       {
@@ -3397,6 +3402,10 @@ class Service {
       project_data.push(p.publicos?.length ? p.publicos.join(', ') : ''); // publicos
       project_data.push(p.tematicas?.length ? p.tematicas.join(', ') : ''); // tematicas
       project_data.push(p.regioes.filter(r => !!r).join(', ')); // regioes
+
+      project_data.push(dayjs(p.dt_cadastro).format('MM/YYYY'));
+      project_data.push(dayjs(p.dt_ultima_atualizacao).format('MM/YYYY'));
+
       project_data.push(!!p.objetivos_txt ? p.objetivos_txt.replace(/(?:\r\n|\r|\n)/g, ' | ') : ''); // objetivos
       project_data.push(!!p.aspectos_gerais_txt ? p.aspectos_gerais_txt.replace(/(?:\r\n|\r|\n)/g, ' | ') : ''); // aspectos gerais
       project_data.push(!!p.publico_txt ? p.publico_txt.replace(/(?:\r\n|\r|\n)/g, ' | ') : ''); // publico
