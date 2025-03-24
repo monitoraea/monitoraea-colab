@@ -33,7 +33,7 @@ export default function InformationsTab({ projectId }) {
   const [errors, _errors] = useState({});
   const [regioes, _regioes] = useState([]);
 
-  const [contentText, _contentText] = useState(null);
+  const [contentData, _contentData] = useState(null);
 
   //get project_data
   const { data } = useQuery(['project_info', { projectId }], {
@@ -221,7 +221,7 @@ export default function InformationsTab({ projectId }) {
                         onCreate={handleFieldCreate('institution', ['instituicao_id'])}
                         value={entity.instituicao_id}
                       />
-                      <HelpBoxButton keyRef={['instituicao_id']} openHelpbox={_contentText} />
+                      <HelpBoxButton keyRef={['instituicao_id']} openHelpbox={_contentData} />
                     </div>
                     <div className="col-xs-4" style={{ display: 'flex' }}>
                       <AsyncAutocompleteMultiple
@@ -232,7 +232,7 @@ export default function InformationsTab({ projectId }) {
                         value={entity.instituicao_segmentos}
                         multiple
                       />
-                      <HelpBoxButton keyRef={['segmento']} openHelpbox={_contentText} />
+                      <HelpBoxButton keyRef={['segmento']} openHelpbox={_contentData} />
                     </div>
                     <div className="col-xs-2" style={{ display: 'flex' }}>
                       <TextField
@@ -248,7 +248,7 @@ export default function InformationsTab({ projectId }) {
                         <MenuItem value="medio">Médio - até 50 colaboradores</MenuItem>
                         <MenuItem value="grande">Grande - mais de 50 colaboradores</MenuItem>
                       </TextField>
-                      <HelpBoxButton keyRef={['porte']} openHelpbox={_contentText} />
+                      <HelpBoxButton keyRef={['porte']} openHelpbox={_contentData} />
                     </div>
                   </div>
                 </section>
@@ -279,7 +279,7 @@ export default function InformationsTab({ projectId }) {
 
                         error={!editing && errors.nome}
                       />
-                      <HelpBoxButton keyRef={['nome']} openHelpbox={_contentText} />
+                      <HelpBoxButton keyRef={['nome']} openHelpbox={_contentData} />
                     </div>
                   </div>
                   <div className="row">
@@ -291,7 +291,7 @@ export default function InformationsTab({ projectId }) {
                         onChange={handleFieldChange('modalidade_id')}
                         value={entity.modalidade_id}
                       />
-                      <HelpBoxButton keyRef={['modalidade_id']} openHelpbox={_contentText} />
+                      <HelpBoxButton keyRef={['modalidade_id']} openHelpbox={_contentData} />
 
                     </div>
                     <div className="col-xs-4" style={{ display: 'flex' }}>
@@ -303,7 +303,7 @@ export default function InformationsTab({ projectId }) {
                         value={regioes}
                         multiple
                       />
-                      <HelpBoxButton keyRef={['atuacao']} openHelpbox={_contentText} />
+                      <HelpBoxButton keyRef={['atuacao']} openHelpbox={_contentData} />
                     </div>
                     <div className="col-xs-4" style={{ display: 'flex' }}>
                       <AsyncAutocompleteMultiple
@@ -316,7 +316,7 @@ export default function InformationsTab({ projectId }) {
                         value={entity.ufs}
                         multiple
                       />
-                      <HelpBoxButton keyRef={['ufs']} openHelpbox={_contentText} />
+                      <HelpBoxButton keyRef={['ufs']} openHelpbox={_contentData} />
                     </div>
                   </div>
 
@@ -336,7 +336,7 @@ export default function InformationsTab({ projectId }) {
                         <MenuItem value="finalizada">Finalizada</MenuItem>
                         <MenuItem value="interrompida">Interrompida</MenuItem>
                       </TextField>
-                      <HelpBoxButton keyRef={['status_desenvolvimento']} openHelpbox={_contentText} />
+                      <HelpBoxButton keyRef={['status_desenvolvimento']} openHelpbox={_contentData} />
                     </div>
                     <div className="col-xs-3" style={{ display: 'flex' }}>
                       {['em_desenvolvimento', 'finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && <DatePicker
@@ -370,7 +370,7 @@ export default function InformationsTab({ projectId }) {
                   <FreeMultipleContacts
                     data={entity.contatos}
                     onChange={handleFieldChange('contatos')}
-                    sectionTitle={<TitleAndHelpbox title="Contatos" keyRef={['contatos']} openHelpbox={_contentText} />}
+                    sectionTitle={<TitleAndHelpbox title="Contatos" keyRef={['contatos']} openHelpbox={_contentData} />}
                   />
                 </section>
                 <hr className="hr-spacer my-4" />
@@ -378,7 +378,7 @@ export default function InformationsTab({ projectId }) {
                   <FreeMultiple
                     data={entity.objetivos_txt}
                     onChange={handleFieldChange('objetivos_txt')}
-                    sectionTitle={<TitleAndHelpbox title="Objetivos" keyRef={['objetivos_txt']} openHelpbox={_contentText} />}
+                    sectionTitle={<TitleAndHelpbox title="Objetivos" keyRef={['objetivos_txt']} openHelpbox={_contentData} />}
                   />
                 </section>
                 <hr className="hr-spacer my-4" />
@@ -387,7 +387,7 @@ export default function InformationsTab({ projectId }) {
                   <FreeMultiple
                     data={entity.aspectos_gerais_txt}
                     onChange={handleFieldChange('aspectos_gerais_txt')}
-                    sectionTitle={<TitleAndHelpbox title="Aspectos gerais" keyRef={['aspectos_gerais_txt']} openHelpbox={_contentText} />}
+                    sectionTitle={<TitleAndHelpbox title="Aspectos gerais" keyRef={['aspectos_gerais_txt']} openHelpbox={_contentData} />}
                   />
                 </section>
                 <hr className="hr-spacer my-4" />
@@ -395,7 +395,7 @@ export default function InformationsTab({ projectId }) {
                   {/* <FreeMultiple
                     data={entity.publico_txt}
                     onChange={handleFieldChange('publico_txt')}
-                    sectionTitle={<TitleAndHelpbox title="Público" keyRef={['publico_txt']} openHelpbox={_contentText} />}
+                    sectionTitle={<TitleAndHelpbox title="Público" keyRef={['publico_txt']} openHelpbox={_contentData} />}
                   /> */}
                   <div className="row">
                     <div className="col-xs-6">
@@ -408,7 +408,7 @@ export default function InformationsTab({ projectId }) {
                         value={entity.publicos}
                         multiple
                       />
-                      <HelpBoxButton keyRef={['publicos']} openHelpbox={_contentText} />
+                      <HelpBoxButton keyRef={['publicos']} openHelpbox={_contentData} />
                     </div>
 
                     {entity.publicos?.find(p => String(p.id) === '-1') && (
@@ -436,7 +436,7 @@ export default function InformationsTab({ projectId }) {
                         value={entity.tematicas}
                         multiple
                       />
-                      <HelpBoxButton keyRef={['tematicas']} openHelpbox={_contentText} />
+                      <HelpBoxButton keyRef={['tematicas']} openHelpbox={_contentData} />
                     </div>
 
                     {entity.tematicas?.find(p => String(p.id) === '-1') && (
@@ -456,13 +456,13 @@ export default function InformationsTab({ projectId }) {
                   <FreeMultiple
                     data={entity.parceiros_txt}
                     onChange={handleFieldChange('parceiros_txt')}
-                    sectionTitle={<TitleAndHelpbox title="Parceiros" keyRef={['parceiros_txt']} openHelpbox={_contentText} />}
+                    sectionTitle={<TitleAndHelpbox title="Parceiros" keyRef={['parceiros_txt']} openHelpbox={_contentData} />}
                   />
                 </section>
                 <hr className="hr-spacer my-4" />
                 <section id="politics">
                   <div className="section-header">
-                    <div className="section-title" style={{ display: 'flex' }}>Políticas públicas <HelpBoxButton keyRef={['relacionado_ppea']} openHelpbox={_contentText} /></div>
+                    <div className="section-title" style={{ display: 'flex' }}>Políticas públicas <HelpBoxButton keyRef={['relacionado_ppea']} openHelpbox={_contentData} /></div>
                   </div>
                   <div className="row">
                     <div className="col-xs-12">
@@ -510,7 +510,7 @@ export default function InformationsTab({ projectId }) {
               </div>
             </Card>
 
-            <Helpbox content={contentText} onClose={() => _contentText(null)} />
+            <Helpbox content={contentData} onClose={() => _contentData(null)} />
           </div>
         </div>
       )}
