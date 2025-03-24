@@ -38,13 +38,13 @@ class Service {
 
     let rows = await db.instance().query(
       `
-      select p.id, p.nome, p.objetivos_txt, p.aspectos_gerais_txt, p.publico_txt, p.periodo_txt, p.parceiros_txt, 
+      select p.id, p.nome, p.objetivos_txt, p.aspectos_gerais_txt, p.publico_txt, p.periodo_txt, p.parceiros_txt,
       i.nome as instituicao_nome, m2.nome as modalidade_nome,
       (
-      	select array_agg(distinct la.nome) 
+      	select array_agg(distinct la.nome)
       	from linhas_acao la
 	    inner join projetos__linhas_acao pla on pla.linha_acao_id = la.id
-	    where pla.projeto_id = p.id 
+	    where pla.projeto_id = p.id
       ) as linhas,
       p.nome_ponto_focal, p.email_contatos, p.tel_contatos,
         p.status_desenvolvimento,
@@ -53,18 +53,18 @@ class Service {
         (select array_agg(distinct s.nome) from segmentos s where s.id = any(i.segmentos)) as segmentos,
         (select array_agg(distinct u.nm_estado) from ufs u where u.id = any(p.ufs)) as ufs,
       (
-      	select array_agg(distinct pu.nome) 
+      	select array_agg(distinct pu.nome)
       	from publicos pu
 	    where pu.id = any(p.publicos)
-      ) as publicos,      
+      ) as publicos,
       (
-      	select array_agg(distinct ts.nome) 
+      	select array_agg(distinct ts.nome)
       	from tematicas_socioambientais ts
 	    where ts.id = any(p.tematicas)
       ) as tematicas
       from projetos p
-      left join instituicoes i on i.id = p.instituicao_id 
-      left join modalidades m2 on m2.id = p.modalidade_id 
+      left join instituicoes i on i.id = p.instituicao_id
+      left join modalidades m2 on m2.id = p.modalidade_id
       --left join projetos_atuacao pa on pa.projeto_id = p.id
       where p.id = :id
       `,
@@ -163,8 +163,8 @@ class Service {
                   objetivos_txt, aspectos_gerais_txt, publico_txt, periodo_txt, parceiros_txt,
                   linhas_acao,
                   atuacao,
-                  "createdAt", "updatedAt" 
-          ) 
+                  "createdAt", "updatedAt"
+          )
           select p.id, p.nome, p.instituicao_id, p.modalidade_id,
                   p.objetivos_txt, p.aspectos_gerais_txt, p.publico_txt, p.periodo_txt, p.parceiros_txt,
                   array_agg(distinct pla.linha_acao_id)::int[] as linhas_acao,
@@ -188,8 +188,8 @@ class Service {
               objetivos_txt, aspectos_gerais_txt, publico_txt, periodo_txt, parceiros_txt,
               linhas_acao,
               atuacao,
-              "createdAt", "updatedAt" 
-        ) 
+              "createdAt", "updatedAt"
+        )
         select p.id, p.nome, null, null,
                 null, null, null, null, null,
                 null,
@@ -211,7 +211,7 @@ class Service {
     /* Adiciona os contatos */
     result = await db.instance().query(
       `
-    select p.nome_ponto_focal, p.email_contatos, p.tel_contatos 
+    select p.nome_ponto_focal, p.email_contatos, p.tel_contatos
     from projetos p
     where p.id = ${parseInt(id)}
     `,
@@ -278,12 +278,12 @@ class Service {
       "updatedAt",
       alias,
       type
-    ) 
-    VALUES( 
-        '${JSON.stringify(communityRecipe['descriptor_json']).replace('%TITLE%', nome.replace(/"/g, ''))}', 
+    )
+    VALUES(
+        '${JSON.stringify(communityRecipe['descriptor_json']).replace('%TITLE%', nome.replace(/"/g, ''))}',
         NOW(),
         NOW(),
-        '${communityRecipe['alias']}', 
+        '${communityRecipe['alias']}',
         '${communityRecipe['type']}'
     ) RETURNING id
     `,
@@ -328,7 +328,7 @@ class Service {
         :field,
         :data,
         NOW(), NOW()
-      ) 
+      )
       RETURNING id`;
 
     result = await sequelize.query(query, {
@@ -433,8 +433,8 @@ class Service {
         text: `promoveu uma sugestão como novo valor para este campo`,
         sender: sender.name,
       },
-    ); 
-    
+    );
+
     MessageService.sendCommand(`room_${communityId}_ProjectField_${field}`, 'promoted'); */
 
     return { ok: true };
@@ -606,7 +606,7 @@ class Service {
   async saveProjectDraftIndic(project_id, lae_id, indic, question, value) {
     const sequelize = db.instance();
 
-    /* 
+    /*
     console.log(projeto_id, lae_id, indic, question, value);
     13 2 3 1 { items: [ 6, 9, 4 ], other: 'Outro valor' }
     */
@@ -614,7 +614,7 @@ class Service {
     let query, result;
 
     query = `
-    select indicadores 
+    select indicadores
     from projetos_rascunho pr
     where pr.projeto_id = :project_id
     `;
@@ -633,7 +633,7 @@ class Service {
     else indicadores[`${lae_id}_${indic}`][question] = value;
 
     query = `
-    update projetos_rascunho pr 
+    update projetos_rascunho pr
     set indicadores = :indicadores
     where pr.projeto_id = :project_id
     `;
@@ -649,25 +649,25 @@ class Service {
   async getListForUser(user, config) {
     const entities = await db.instance().query(`
     with iniciatives as (
-      select 
+      select
         c.id,
         dc.id as "community_id",
         dc.descriptor_json->>'title' as "name",
         count(dm.*) > 0 as "has_members"
-      from projetos c 
-      inner join dorothy_communities dc on dc.id = c.community_id 
+      from projetos c
+      inner join dorothy_communities dc on dc.id = c.community_id
       left join dorothy_members dm on dm."communityId" = dc.id
       group by c.id, dc.id
     )
-    select 
+    select
       c.id,
       c.community_id,
       c."name",
       dm."createdAt" is not null as "is_member",
       c."has_members",
       p.id is not null as "is_requesting",
-      count(*) OVER() AS total_count 
-    from iniciatives c 
+      count(*) OVER() AS total_count
+    from iniciatives c
     left join dorothy_members dm on dm."communityId" = c.community_id and dm."userId" = :userId
     left join participar p on p."communityId" = c.community_id and p."userId" = :userId and p."resolvedAt" is null
     order by c."name" ${config.direction || 'asc'}
@@ -708,7 +708,7 @@ class Service {
       `
         update projetos_rascunho
         set nome = :nome,
-            modalidade_id = :modalidade_id,   
+            modalidade_id = :modalidade_id,
 
             instituicao_id = :instituicao_id,
             instituicao_nova = :instituicao_nova,
@@ -786,8 +786,8 @@ class Service {
     if (draft.atuacao_aplica) {
       result = await db.instance().query(
         `
-      select count(*)::integer as total 
-      from projetos_atuacao pa 
+      select count(*)::integer as total
+      from projetos_atuacao pa
       where pa.projeto_id = :id`,
         {
           replacements: { id },
@@ -799,7 +799,7 @@ class Service {
 
       result = await db.instance().query(
         `
-      select count(*)::integer as total 
+      select count(*)::integer as total
       from projetos_atuacao_rascunho par
       where par.projeto_id = :id`,
         {
@@ -819,7 +819,7 @@ class Service {
     const result = await db.instance().query(
       `
       select id
-      from dorothy_communities dc 
+      from dorothy_communities dc
       where alias = 'rede_zcm'
     `,
       {
@@ -857,8 +857,8 @@ class Service {
 
     const members = await sequelize.query(
       `
-      select count(*)::integer as total 
-      from dorothy_members m 
+      select count(*)::integer as total
+      from dorothy_members m
       inner join projetos p on p.community_id = m."communityId"
       where p.id = ${parseInt(id)}
       `,
@@ -889,8 +889,8 @@ class Service {
   async getStatisticsLinhas() {
     const institutions = await db.instance().query(
       `
-    select la.id, la.nome, count(*)::integer as total 
-    from linhas_acao la 
+    select la.id, la.nome, count(*)::integer as total
+    from linhas_acao la
     inner join projetos__linhas_acao pla on pla.linha_acao_id = la.id
     group by la.id, la.nome
     `,
@@ -913,11 +913,11 @@ class Service {
 
     result = await sequelize.query(
       `
-        select distinct p.id, p.nome, p.objetivos_txt, p.aspectos_gerais_txt, p.publico_txt, p.periodo_txt, p.parceiros_txt, 
+        select distinct p.id, p.nome, p.objetivos_txt, p.aspectos_gerais_txt, p.publico_txt, p.periodo_txt, p.parceiros_txt,
         i.nome as instituicao_nome, m2.nome as modalidade_nome,
         (
           select distinct array_agg(la.nome)
-          from projetos__linhas_acao pla  
+          from projetos__linhas_acao pla
           left join linhas_acao la on la.id = pla.linha_acao_id
           where pla.projeto_id = p.id
         ) as linhas,
@@ -940,9 +940,9 @@ class Service {
         mes_inicio,
         mes_fim
         from projetos p
-        left join instituicoes i on i.id = p.instituicao_id 
-        left join modalidades m2 on m2.id = p.modalidade_id 
-        left join projetos_atuacao pa on pa.projeto_id = p.id 
+        left join instituicoes i on i.id = p.instituicao_id
+        left join modalidades m2 on m2.id = p.modalidade_id
+        left join projetos_atuacao pa on pa.projeto_id = p.id
         where p.id = ${parseInt(id)}`,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -954,10 +954,10 @@ class Service {
     let project = result[0];
 
     result = await sequelize.query(
-      `select m.cd_mun, m.nm_regiao, m.nm_uf, m.nm_mun 
-        from projetos p 
+      `select m.cd_mun, m.nm_regiao, m.nm_uf, m.nm_mun
+        from projetos p
         inner join projetos_atuacao pa ON pa.projeto_id = p.id
-        inner join municipios m on m.cd_mun = pa.cd_mun 
+        inner join municipios m on m.cd_mun = pa.cd_mun
         where p.id = ${parseInt(id)}`,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -968,8 +968,8 @@ class Service {
 
     const members = await sequelize.query(
       `
-      select count(*)::integer as total 
-      from dorothy_members m 
+      select count(*)::integer as total
+      from dorothy_members m
       inner join projetos p on p.community_id = m."communityId"
       where p.id = ${parseInt(id)}
       `,
@@ -990,7 +990,7 @@ class Service {
     entities = await db.instance().query(`
     select count(*)::int as total
     from projetos p
-    where p.publicacao is not null        
+    where p.publicacao is not null
     `, {
       type: Sequelize.QueryTypes.SELECT,
     });
@@ -1037,8 +1037,8 @@ class Service {
     const query = `
             select distinct p.id
             from projetos p
-            left join projetos__linhas_acao pla on pla.projeto_id = p.id 
-            left join instituicoes i on i.id = p.instituicao_id 
+            left join projetos__linhas_acao pla on pla.projeto_id = p.id
+            left join instituicoes i on i.id = p.instituicao_id
             left join projetos_atuacao pa on pa.projeto_id = p.id
             left join municipios m on m.cd_mun = pa.cd_mun
             ${where}
@@ -1059,8 +1059,8 @@ class Service {
     select p.id, p.nome, i.nome as instituicao_nome, array_agg(distinct pa.nm_regiao) as regioes,
     count(*) OVER() AS total_count
     from projetos p
-    left join projetos__linhas_acao pla on pla.projeto_id = p.id 
-    left join instituicoes i on i.id = p.instituicao_id 
+    left join projetos__linhas_acao pla on pla.projeto_id = p.id
+    left join instituicoes i on i.id = p.instituicao_id
     left join projetos_atuacao pa on pa.projeto_id = p.id
     left join municipios m on m.cd_mun = pa.cd_mun
             where p.id in (${ids
@@ -1092,8 +1092,8 @@ class Service {
             select p.id, p.nome, i.nome as instituicao_nome, array_agg(distinct pa.nm_regiao) as regioes,
             count(*) OVER() AS total_count
             from projetos p
-            left join projetos__linhas_acao pla on pla.projeto_id = p.id 
-            left join instituicoes i on i.id = p.instituicao_id 
+            left join projetos__linhas_acao pla on pla.projeto_id = p.id
+            left join instituicoes i on i.id = p.instituicao_id
             left join projetos_atuacao pa on pa.projeto_id = p.id
             left join municipios m on m.cd_mun = pa.cd_mun
             ${where}
@@ -1118,7 +1118,7 @@ class Service {
           from projetos_atuacao pa
           where pa.projeto_id = ${p.id} and geom is not null
         )
-        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
         from bounds`,
         {
           type: Sequelize.QueryTypes.SELECT,
@@ -1138,8 +1138,8 @@ class Service {
       const p = projects[i];
 
       query = `
-      select count(*)::integer as total 
-      from dorothy_members m 
+      select count(*)::integer as total
+      from dorothy_members m
       inner join projetos p on p.community_id = m."communityId"
       where p.id = ${p.id}
       `;
@@ -1155,8 +1155,8 @@ class Service {
     select p.modalidade_id, mo.nome, count(distinct p.id)::int
     from projetos p
     left join modalidades mo on mo.id = p.modalidade_id
-    left join projetos__linhas_acao pla on pla.projeto_id = p.id 
-    left join instituicoes i on i.id = p.instituicao_id 
+    left join projetos__linhas_acao pla on pla.projeto_id = p.id
+    left join instituicoes i on i.id = p.instituicao_id
     left join projetos_atuacao pa on pa.projeto_id = p.id
     left join municipios m on m.cd_mun = pa.cd_mun
     ${where}
@@ -1204,15 +1204,15 @@ class Service {
     const projects = await db.instance().query(`
       with all_pr as (
         select CONCAT('draft_',pr.id) as id, pr.nome as "name"
-        from projetos_rascunho pr 
-        ${applyWhere(where1)} 
+        from projetos_rascunho pr
+        ${applyWhere(where1)}
         union
         select CONCAT('indic_',p.id) as id, p."name"
         from projetos_indicados p
         ${applyWhere(where2)}
       )
       select id, "name"
-      from all_pr 
+      from all_pr
       order by "name"
     `, {
       type: Sequelize.QueryTypes.SELECT,
@@ -1228,7 +1228,7 @@ class Service {
     let projects;
     if (type === 'indic') {
       projects = await db.instance().query(`
-      select CONCAT('indic_',p.id) as id, p."name" 
+      select CONCAT('indic_',p.id) as id, p."name"
       from projetos_indicados p
       where p.id = :id
       `, {
@@ -1237,8 +1237,8 @@ class Service {
       });
     } else {
       projects = await db.instance().query(`
-      select CONCAT('draft_',pr.id) as id, pr.nome as "name" 
-      from projetos_rascunho pr 
+      select CONCAT('draft_',pr.id) as id, pr.nome as "name"
+      from projetos_rascunho pr
       where pr.id = :id
       `, {
         type: Sequelize.QueryTypes.SELECT,
@@ -1267,7 +1267,7 @@ class Service {
 
     const query = `
             select distinct p.id, p.nome as "name" ${me_fields}
-            from projetos_rascunho p  
+            from projetos_rascunho p
             ${applyWhere(where)}
             order by ${me_order}"name"
         `;
@@ -1287,9 +1287,9 @@ class Service {
     const query = `
             select distinct p.id as value, p.nome as "label"
             from projetos p
-            left join projetos__linhas_acao pla on pla.projeto_id = p.id        
-            left join projetos_atuacao pa on pa.projeto_id = p.id 
-            left join municipios m on m.cd_mun = pa.cd_mun    
+            left join projetos__linhas_acao pla on pla.projeto_id = p.id
+            left join projetos_atuacao pa on pa.projeto_id = p.id
+            left join municipios m on m.cd_mun = pa.cd_mun
             ${where}
             order by "label"
         `;
@@ -1323,11 +1323,11 @@ class Service {
     const sequelize = db.instance();
 
     const query = `
-            select distinct m.cd_mun as value, upper(m.nm_mun) as "label"  
+            select distinct m.cd_mun as value, upper(m.nm_mun) as "label"
             from projetos p
-            left join projetos__linhas_acao pla on pla.projeto_id = p.id        
-            inner join projetos_atuacao pa on pa.projeto_id = p.id 
-            inner join municipios m on m.cd_mun = pa.cd_mun    
+            left join projetos__linhas_acao pla on pla.projeto_id = p.id
+            inner join projetos_atuacao pa on pa.projeto_id = p.id
+            inner join municipios m on m.cd_mun = pa.cd_mun
             ${where}
             order by "label"
         `;
@@ -1346,8 +1346,8 @@ class Service {
 
     /* const modalidades = await sequelize.query(
       `
-        select id as value, upper(nome) as "label"  
-        from modalidades 
+        select id as value, upper(nome) as "label"
+        from modalidades
         order by nome
         `,
       {
@@ -1357,7 +1357,7 @@ class Service {
 
     const linhas_acao = await sequelize.query(
       `
-        select id as value, upper(nome) as "label"  
+        select id as value, upper(nome) as "label"
         from linhas_acao
         order by nome
         `,
@@ -1370,8 +1370,8 @@ class Service {
     if (!all) {
       regioes = await sequelize.query(
         `
-        select distinct pa.nm_regiao as value, upper(pa.nm_regiao) as "label"  
-        from projetos p 
+        select distinct pa.nm_regiao as value, upper(pa.nm_regiao) as "label"
+        from projetos p
         inner join projetos_atuacao pa on pa.projeto_id = p.id
         where nm_regiao <> 'NACIONAL'
         order by "label"`,
@@ -1388,7 +1388,7 @@ class Service {
 
     const instituicoes = await sequelize.query(
       `
-        select id as value, nome as "label"  
+        select id as value, nome as "label"
         from instituicoes
         order by nome
         `,
@@ -1399,7 +1399,7 @@ class Service {
 
     const segmentos = await sequelize.query(
       `
-        select id as value, nome as "label"  
+        select id as value, nome as "label"
         from segmentos
         order by nome
         `,
@@ -1442,7 +1442,7 @@ class Service {
         .join(',')})`;
 
     const query = `
-        select distinct u.id as value, u.nm_estado as "label"  
+        select distinct u.id as value, u.nm_estado as "label"
         from projetos p
         inner join ufs u on u.id = any(p.ufs)
         ${where}
@@ -1463,11 +1463,11 @@ class Service {
 
   async listFacilitatorsStates() {
     const items = await db.instance().query(`
-      select 
+      select
         distinct u.id as "value",
         u.nm_estado as "label"
       from ufs u
-      inner join facilitators f on f.state = u.sigla 
+      inner join facilitators f on f.state = u.sigla
       order by u.nm_estado
       `, {
       type: Sequelize.QueryTypes.SELECT,
@@ -1486,7 +1486,7 @@ class Service {
     }
 
     const items = await db.instance().query(`
-      select 
+      select
         f.id,
         f.photo,
         f.name,
@@ -1544,10 +1544,10 @@ class Service {
     const sequelize = db.instance();
 
     let atuacoes = await sequelize.query(
-      ` 
+      `
         select pa.id, ST_AsGeoJSON(pa.geom) as geojson, ST_AsGeoJSON(ST_Envelope(pa.geom)) as bbox, m.mungeo
-        from projetos_atuacao pa 
-        left join municipios m on m.cd_mun = pa.cd_mun 
+        from projetos_atuacao pa
+        left join municipios m on m.cd_mun = pa.cd_mun
         where pa.projeto_id = ${parseInt(id)} and pa.geom is not null`,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -1567,7 +1567,7 @@ class Service {
           from projetos_atuacao pa
           where pa.projeto_id = ${parseInt(id)} and geom is not null
         )
-        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
         from bounds`,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -1616,9 +1616,9 @@ class Service {
     }
 
     const query = `select p.id, "userId", "communityId", p2.nome as project_name, u.id as user_id, u."name" as user_name, u.email as user_email
-    from participar p 
+    from participar p
     inner join projetos p2 on p2.community_id = p."communityId"
-    inner join dorothy_users u on u.id = p."userId" 
+    inner join dorothy_users u on u.id = p."userId"
     ${where}`;
 
     const waiting = await sequelize.query(query, {
@@ -1642,10 +1642,10 @@ class Service {
   async approveWaiting(id) {
     /* recupera os dados da participacao e do usuario */
     const participation = await sequelize.query(
-      `select p.id, "userId", "communityId", p2.nome as project_name, u.id as user_id, u."name" as user_name, u.email as user_email, adm  
-      from participar p 
+      `select p.id, "userId", "communityId", p2.nome as project_name, u.id as user_id, u."name" as user_name, u.email as user_email, adm
+      from participar p
       inner join projetos p2 on p2.community_id = p."communityId"
-      inner join dorothy_users u on u.id = p."userId" 
+      inner join dorothy_users u on u.id = p."userId"
       where p.id = :id and "resolvedAt" is null`,
       {
         replacements: { id },
@@ -1722,7 +1722,7 @@ class Service {
 
     const [{ atuacao_aplica, atuacao_naplica_just }] = await sequelize.query(
       `
-    select atuacao_aplica, atuacao_naplica_just 
+    select atuacao_aplica, atuacao_naplica_just
     from projetos_rascunho pa
     where pa.projeto_id = :id`,
       {
@@ -1760,7 +1760,7 @@ class Service {
     /* O primeiro passo e' verificar se ha, nesta tabela, qualquer registro para o projeto (id) */
     const [{ atuacao_edited }] = await sequelize.query(
       `
-        select atuacao_edited 
+        select atuacao_edited
         from projetos_rascunho
         where projeto_id = :id`,
       {
@@ -1774,7 +1774,7 @@ class Service {
     if (!atuacao_edited) {
       await sequelize.query(
         `
-        insert into projetos_atuacao_rascunho(projeto_id, geom) 
+        insert into projetos_atuacao_rascunho(projeto_id, geom)
         select projeto_id, geom from projetos_atuacao where projeto_id = :id`,
         {
           replacements: { id },
@@ -1798,7 +1798,7 @@ class Service {
     const geoms = await sequelize.query(
       `
       select ST_AsGeoJSON((ST_Dump(ST_Simplify(pa.geom,0.001))).geom)::jsonb as geojson
-      from projetos_atuacao_rascunho pa 
+      from projetos_atuacao_rascunho pa
       where projeto_id = :id`,
       {
         replacements: { id },
@@ -1813,8 +1813,8 @@ class Service {
             st_ymin(bb) as bbymin,
             st_xmax(bb) as bbxmax,
             st_ymax(bb) as bbymax
-        from (select ST_Extent(geom) as bb 
-				      from projetos_atuacao_rascunho pa 
+        from (select ST_Extent(geom) as bb
+				      from projetos_atuacao_rascunho pa
 				      where projeto_id = :id
 			       ) s1
       `,
@@ -1842,7 +1842,7 @@ class Service {
       select p.nome,
         p.community_id
       from projetos p
-      where p.id = :id			
+      where p.id = :id
       `,
       {
         replacements: { id },
@@ -1856,9 +1856,9 @@ class Service {
     // se gt tem membros, envia para gt
     entities = await db.instance().query(
       `
-      select count(*) as total 
+      select count(*) as total
       from dorothy_members dm
-      where dm."communityId" = :communityId			
+      where dm."communityId" = :communityId
       `,
       {
         replacements: { communityId },
@@ -1915,7 +1915,7 @@ class Service {
 
       await db.instance().query(
         `
-        insert into projetos_atuacao_rascunho(projeto_id, geom) 
+        insert into projetos_atuacao_rascunho(projeto_id, geom)
         values(:id, ST_GeomFromGeoJSON(:geom))`,
         {
           replacements: { id, geom: JSON.stringify(geom) },
@@ -1946,12 +1946,12 @@ class Service {
   async get(id) {
     let entity = await db.instance().query(
       `
-        select 
+        select
         pr.id as "draft_id",
         pr.nome,
         pr.instituicao_id,
         pr.modalidade_id,
-        pr.contatos,	
+        pr.contatos,
         pr.objetivos_txt,
         pr.aspectos_gerais_txt,
         -- pr.publico_txt,
@@ -1983,7 +1983,7 @@ class Service {
     /* RELACOES */
     const relacoes = await db.instance().query(
       `
-      select 
+      select
         pr."data"->>'pp_base' as "pp_base",
         pr."data"->>'apoiada_base' as "apoiada_base",
         pr."data"->>'apoia_base' as "apoia_base"
@@ -2008,13 +2008,13 @@ class Service {
 
     entity[0].pp = await db.instance().query(
       `
-      select 
-        politica_id as "id", 
-        p.nome as "name", 
+      select
+        politica_id as "id",
+        p.nome as "name",
         "type",
         other_type
-      from 
-        projetos_relacoes pr, 
+      from
+        projetos_relacoes pr,
         jsonb_to_recordset((pr."data"->>'politicas')::jsonb) AS specs(politica_id int, "type" jsonb, "other_type" varchar)
       inner join politicas p on p.id = politica_id
       where pr.projeto_rascunho_id = :id
@@ -2032,22 +2032,22 @@ class Service {
 
     entity[0].apoiada = await db.instance().query(
       `
-      select 
-        i.id as instituicao_id, 
+      select
+        i.id as instituicao_id,
         coalesce(i.nome,'') as instituicao_name,
-        case 
+        case
           when p_i.id is not null then concat('indic_', p_i.id)
           else null
         end	as iniciativa_id,
-        coalesce(p_rasc.nome, p_i."name", '') as iniciativa_name, 
+        coalesce(p_rasc.nome, p_i."name", '') as iniciativa_name,
         "type",
-        other_type	
-      from 
-        projetos_relacoes pr, 
+        other_type
+      from
+        projetos_relacoes pr,
           jsonb_to_recordset((pr."data"->>'recebe_apoio')::jsonb) AS specs(instituicao_id int, projeto_indicado_id int, "type" jsonb, "other_type" varchar)
       left join instituicoes i on i.id = instituicao_id
-      left join projetos_indicados p_i on p_i.id = projeto_indicado_id 
-      left join projetos_rascunho p_rasc on p_rasc.id = p_i.projeto_id  
+      left join projetos_indicados p_i on p_i.id = projeto_indicado_id
+      left join projetos_rascunho p_rasc on p_rasc.id = p_i.projeto_id
       where pr.projeto_rascunho_id = :id
       `,
       {
@@ -2063,22 +2063,22 @@ class Service {
 
     entity[0].apoia = await db.instance().query(
       `
-      select 
-        i.id as instituicao_id, 
+      select
+        i.id as instituicao_id,
         coalesce(i.nome,'') as instituicao_name,
-        case 
+        case
           when p_i.id is not null then concat('indic_', p_i.id)
           else null
         end	as iniciativa_id,
-        coalesce(p_rasc.nome, p_i."name", '') as iniciativa_name, 
+        coalesce(p_rasc.nome, p_i."name", '') as iniciativa_name,
         "type",
-        other_type	
-      from 
-        projetos_relacoes pr, 
+        other_type
+      from
+        projetos_relacoes pr,
           jsonb_to_recordset((pr."data"->>'oferece_apoio')::jsonb) AS specs(instituicao_id int, projeto_indicado_id int, "type" jsonb, "other_type" varchar)
       left join instituicoes i on i.id = instituicao_id
-      left join projetos_indicados p_i on p_i.id = projeto_indicado_id 
-      left join projetos_rascunho p_rasc on p_rasc.id = p_i.projeto_id  
+      left join projetos_indicados p_i on p_i.id = projeto_indicado_id
+      left join projetos_rascunho p_rasc on p_rasc.id = p_i.projeto_id
       where pr.projeto_rascunho_id = :id
       `,
       {
@@ -2093,7 +2093,7 @@ class Service {
     if (entity[0].instituicao_id) {
       entity[0].instituicao_segmentos = await db.instance().query(
         `
-        select 
+        select
           s.id,
           s.nome as "name"
         from segmentos s
@@ -2109,10 +2109,10 @@ class Service {
     if (!!entity[0].ufs && entity[0].ufs.length) {
       entity[0].ufs = await db.instance().query(
         `
-        select 
+        select
           u.id,
           u.nm_estado as "value",
-          u.nm_estado as "label", 
+          u.nm_estado as "label",
           u.nm_regiao as "region"
         from ufs u
         where u.id in (${entity[0].ufs.join(',')})`,
@@ -2126,7 +2126,7 @@ class Service {
     if (!!entity[0].publicos && entity[0].publicos.length) {
       const publicos = await db.instance().query(
         `
-        select 
+        select
           e.id,
           e.id as "value",
           e.nome as "label"
@@ -2144,7 +2144,7 @@ class Service {
     if (!!entity[0].tematicas && entity[0].tematicas.length) {
       const tematicas = await db.instance().query(
         `
-        select 
+        select
           e.id,
           e.id as "value",
           e.nome as "label"
@@ -2196,7 +2196,7 @@ class Service {
       mes_inicio_str = `mes_inicio = '${dayjs(data.mes_inicio).set('date', 2).set('hour', 0).set('minute', 0).set('second', 0)}',`;
     }
     let mes_fim_str = 'mes_fim = NULL,';
-    if (['finalizada', 'interrompida'].includes(data.status_desenvolvimento)) {
+    if (['finalizada', 'interrompida', 'em_desenvolvimento'].includes(data.status_desenvolvimento)) {
       mes_fim_str = `mes_fim = '${dayjs(data.mes_fim).set('date', 2).set('hour', 0).set('minute', 0).set('second', 0)}}',`;
     }
 
@@ -2204,13 +2204,13 @@ class Service {
       `
         update projetos_rascunho
         set nome = :nome,
-            modalidade_id = :modalidade_id,   
+            modalidade_id = :modalidade_id,
 
             instituicao_id = :instituicao_id,
 
             atuacao = :atuacao,
             objetivos_txt = :objetivos_txt,
-            aspectos_gerais_txt = :aspectos_gerais_txt,            
+            aspectos_gerais_txt = :aspectos_gerais_txt,
             periodo_txt = :periodo_txt,
             parceiros_txt = :parceiros_txt,
             contatos = :contatos,
@@ -2369,9 +2369,9 @@ class Service {
     // recupera dados do projeto indicador
     result = await db.instance().query(
       `
-      select pr.id, pr.nome as "name"  
+      select pr.id, pr.nome as "name"
       from projetos_rascunho pr
-      inner join projetos p on p.id = pr.projeto_id 
+      inner join projetos p on p.id = pr.projeto_id
       where p.id = :id
       `,
       {
@@ -2516,9 +2516,9 @@ class Service {
                   // qual a comunidade deste projeto?
                   result = await db.instance().query(
                     `
-                    select p.community_id  
+                    select p.community_id
                     from projetos_rascunho pr
-                    inner join projetos p on p.id = pr.projeto_id 
+                    inner join projetos p on p.id = pr.projeto_id
                     where pr.id = :id
                     `,
                     {
@@ -2569,7 +2569,7 @@ class Service {
       `
       select pr.id, pr2.id as "relation_id"
       from projetos_rascunho pr
-      left join projetos_relacoes pr2 on pr2.projeto_rascunho_id = pr.id 
+      left join projetos_relacoes pr2 on pr2.projeto_rascunho_id = pr.id
       where pr.projeto_id = :id`,
       {
         replacements: { id },
@@ -2610,7 +2610,7 @@ class Service {
     let entity = await db.instance().query(
       `
       select agreement
-      from projetos_reconhecimentos pr 
+      from projetos_reconhecimentos pr
       where pr.type_of_support = :type
       and pr.projeto_rascunho_id = :sourceDraftId
       and pr.projeto_indicado_id = :indicationId
@@ -2751,7 +2751,7 @@ class Service {
     const membership = await db.instance().query(
       `
       select dm."communityId" as id
-      from dorothy_members dm 
+      from dorothy_members dm
       where dm."userId" = :userId
       `,
       {
@@ -2774,7 +2774,7 @@ class Service {
 
   async verify(id) {
     let result = await db.instance().query(
-      ` select          
+      ` select
           p.*,
           pr.id as pr_id,
           pro.publicacao
@@ -2849,7 +2849,7 @@ class Service {
       conclusion.ready = false;
     }
     if(project['tematicas'] && project['tematicas'].includes(-1) && !project['tematicas_especificar']) {
-      analysis.information.tematicas_especificar = false; 
+      analysis.information.tematicas_especificar = false;
       conclusion.ready = false;
     }
 
@@ -2984,7 +2984,7 @@ class Service {
         modalidade_id = :modalidade_id,
         objetivos_txt = :objetivos_txt,
         aspectos_gerais_txt = :aspectos_gerais_txt,
-        
+
         periodo_txt = :periodo_txt,
         parceiros_txt = :parceiros_txt,
         indicadores = :indicadores,
@@ -3017,7 +3017,7 @@ class Service {
           modalidade_id: draft.modalidade_id,
           objetivos_txt: draft.objetivos_txt,
           aspectos_gerais_txt: draft.aspectos_gerais_txt,
-          
+
           periodo_txt: draft.periodo_txt,
           parceiros_txt: draft.parceiros_txt,
           indicadores: JSON.stringify(draft.indicadores),
@@ -3044,7 +3044,7 @@ class Service {
       },
     );
 
-    /*  
+    /*
     ufs: [ 11 ],
     status_desenvolvimento: 'finalizada',
     mes_inicio: 2023-01-01T20:00:00.000Z,
@@ -3054,7 +3054,7 @@ class Service {
     /* atualiza o nome da comunidade */
     await db.instance().query(
       `
-    update dorothy_communities  
+    update dorothy_communities
     set descriptor_json = jsonb_set(descriptor_json , '{"title"}', jsonb '"${draft.nome}"', true)
     where id = :id
     `,
@@ -3197,10 +3197,10 @@ class Service {
     // { communityId }
     let entities = await db.instance().query(
       `
-      select 
+      select
         p.facilitador_community_id,
         pa.nm_regiao,
-        m.nm_uf 
+        m.nm_uf
       from projetos p
       left join projetos_atuacao pa on pa.projeto_id = p.id
       left join municipios m on m.cd_mun = pa.cd_mun
@@ -3222,7 +3222,7 @@ class Service {
 
     return await db.instance().query(
       `
-      select 
+      select
         dc.id as "communityId"
       from dorothy_communities dc
       inner join facilitadores f on f."communityId" = dc.id
@@ -3243,8 +3243,8 @@ class Service {
 
     let entities = await db.instance().query(
       `
-    select indicadores->>'${indicKey}' as "indic" 
-    from projetos_rascunho pr 
+    select indicadores->>'${indicKey}' as "indic"
+    from projetos_rascunho pr
     where projeto_id = :id
     `,
       {
@@ -3266,7 +3266,7 @@ class Service {
   async saveIndic(id, indicKey, data) {
     await db.instance().query(
       `
-    update projetos_rascunho 
+    update projetos_rascunho
     set indicadores = jsonb_set(indicadores, '{${indicKey}}', jsonb '${JSON.stringify(data)}', true)
     where projeto_id = :id
     `,
@@ -3292,9 +3292,9 @@ class Service {
       'modalidade',
       'estados',
       'segmentos',
-      'status desenvolvimento',  
+      'status desenvolvimento',
       'publicos',
-      'tematicas',    
+      'tematicas',
       'regioes',
       'objetivos',
       'aspectos gerais',
@@ -3322,15 +3322,15 @@ class Service {
     const projects = await db.instance().query(
       `
       with projeto_regioes as (
-        select p.id, array_agg(distinct pa.nm_regiao) as regioes 
-        from projetos p 
+        select p.id, array_agg(distinct pa.nm_regiao) as regioes
+        from projetos p
         left join projetos_atuacao pa on pa.projeto_id = p.id
         group by p.id
       )
-      select 
-        p.id, 
-        p.nome, 
-        i.nome as "instituicao", 
+      select
+        p.id,
+        p.nome,
+        i.nome as "instituicao",
         m.nome as "modalidade",
         pr.regioes,
         p.objetivos_txt,
@@ -3350,20 +3350,20 @@ class Service {
         (select array_agg(distinct s.nome) from segmentos s where s.id = any(i.segmentos)) as segmentos,
         (select array_agg(distinct u.nm_estado) from ufs u where u.id = any(p.ufs)) as ufs,
         (
-      	select array_agg(distinct pu.nome) 
+      	select array_agg(distinct pu.nome)
       	from publicos pu
 	    where pu.id = any(p.publicos)
-      ) as publicos,      
+      ) as publicos,
       (
-      	select array_agg(distinct ts.nome) 
+      	select array_agg(distinct ts.nome)
       	from tematicas_socioambientais ts
 	    where ts.id = any(p.tematicas)
       ) as tematicas
       from projetos p
-      left join instituicoes i on i.id = p.instituicao_id  
+      left join instituicoes i on i.id = p.instituicao_id
       left join modalidades m on m.id = p.modalidade_id
       left join projeto_regioes pr on pr.id = p.id
-      order by id      
+      order by id
       `,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -3387,7 +3387,7 @@ class Service {
       if(p.status_desenvolvimento) {
         switch(p.status_desenvolvimento) {
           case 'nao_iniciada': status = 'Não iniciada'; break;
-          case 'em_desenvolvimento': status = `Em desenvolvimento (${dayjs(p.mes_inicio).format('MM/YYYY')})`; break;
+          case 'em_desenvolvimento': status = `Em desenvolvimento (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`; break;
           case 'finalizada': status = `Finalizada  (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`; break;
           case 'interrompida': status = `Interrompida(${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')}`; break;
           default: status = 'Não respondido'; break;

@@ -145,7 +145,7 @@ export default function InformationsTab({ projectId }) {
       return;
     }
 
-    if (['finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && !entity.mes_fim) {
+    if (['finalizada', 'interrompida', 'em_desenvolvimento'].includes(entity.status_desenvolvimento) && !entity.mes_fim) {
       _errors({ ...errors, mes_fim: true });
       return;
     }
@@ -352,9 +352,9 @@ export default function InformationsTab({ projectId }) {
                     </div>
 
                     <div className="col-xs-3" style={{ display: 'flex' }}>
-                      {['finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && <DatePicker
+                      {['finalizada', 'interrompida','em_desenvolvimento'].includes(entity.status_desenvolvimento) && <DatePicker
                         className="input-datepicker"
-                        label="Término do desenvolvimento"
+                        label={entity.status_desenvolvimento === 'em_desenvolvimento' ? 'Previsão de conclusão' : 'Término do desenvolvimento'}
                         value={entity.mes_fim}
                         onChange={handleFieldChange('mes_fim')}
                         views={['month', 'year']}
@@ -410,7 +410,7 @@ export default function InformationsTab({ projectId }) {
                       />
                       <HelpBoxButton keyRef={['publicos']} openHelpbox={_contentText} />
                     </div>
-                    
+
                     {entity.publicos?.find(p => String(p.id) === '-1') && (
                       <div className="col-xs-6">
                         <TextField
@@ -438,7 +438,7 @@ export default function InformationsTab({ projectId }) {
                       />
                       <HelpBoxButton keyRef={['tematicas']} openHelpbox={_contentText} />
                     </div>
-                    
+
                     {entity.tematicas?.find(p => String(p.id) === '-1') && (
                       <div className="col-xs-6">
                         <TextField
@@ -457,14 +457,6 @@ export default function InformationsTab({ projectId }) {
                     data={entity.parceiros_txt}
                     onChange={handleFieldChange('parceiros_txt')}
                     sectionTitle={<TitleAndHelpbox title="Parceiros" keyRef={['parceiros_txt']} openHelpbox={_contentText} />}
-                  />
-                </section>
-                <hr className="hr-spacer my-4" />
-                <section id="period">
-                  <FreeMultiple
-                    data={entity.periodo_txt}
-                    onChange={handleFieldChange('periodo_txt')}
-                    sectionTitle={<TitleAndHelpbox title="Período" keyRef={['periodo_txt']} openHelpbox={_contentText} />}
                   />
                 </section>
                 <hr className="hr-spacer my-4" />
