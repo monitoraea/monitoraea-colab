@@ -339,9 +339,9 @@ export default function InformationsTab({ projectId }) {
                       <HelpBoxButton keyRef={['status_desenvolvimento']} openHelpbox={_contentData} />
                     </div>
                     <div className="col-xs-3" style={{ display: 'flex' }}>
-                      {['em_desenvolvimento', 'finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && <DatePicker
+                      {['nao_iniciada','em_desenvolvimento', 'finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && <DatePicker
                         className="input-datepicker"
-                        label="Inicio do desenvolvimento"
+                        label={entity.status_desenvolvimento === 'nao_iniciada' ? 'Previsão de inicio' : 'Inicio do desenvolvimento'}
                         value={entity.mes_inicio}
                         onChange={handleFieldChange('mes_inicio')}
                         views={['month', 'year']}
@@ -352,9 +352,9 @@ export default function InformationsTab({ projectId }) {
                     </div>
 
                     <div className="col-xs-3" style={{ display: 'flex' }}>
-                      {['finalizada', 'interrompida','em_desenvolvimento'].includes(entity.status_desenvolvimento) && <DatePicker
+                      {['nao_iniciada','finalizada', 'interrompida','em_desenvolvimento'].includes(entity.status_desenvolvimento) && <DatePicker
                         className="input-datepicker"
-                        label={entity.status_desenvolvimento === 'em_desenvolvimento' ? 'Previsão de conclusão' : 'Término do desenvolvimento'}
+                        label={['em_desenvolvimento', 'nao_iniciada'].includes(entity.status_desenvolvimento) ? 'Previsão de conclusão' : 'Término do desenvolvimento'}
                         value={entity.mes_fim}
                         onChange={handleFieldChange('mes_fim')}
                         views={['month', 'year']}

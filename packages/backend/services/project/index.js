@@ -2192,11 +2192,11 @@ class Service {
     if (data.relacionado_ppea !== 'sim') data['qual_ppea'] = null;
 
     let mes_inicio_str = 'mes_inicio = NULL,';
-    if (['em_desenvolvimento', 'finalizada', 'interrompida'].includes(data.status_desenvolvimento)) {
+    if (['nao_iniciada','em_desenvolvimento', 'finalizada', 'interrompida'].includes(data.status_desenvolvimento)) {
       mes_inicio_str = `mes_inicio = '${dayjs(data.mes_inicio).set('date', 2).set('hour', 0).set('minute', 0).set('second', 0)}',`;
     }
     let mes_fim_str = 'mes_fim = NULL,';
-    if (['finalizada', 'interrompida', 'em_desenvolvimento'].includes(data.status_desenvolvimento)) {
+    if (['nao_iniciada','finalizada', 'interrompida', 'em_desenvolvimento'].includes(data.status_desenvolvimento)) {
       mes_fim_str = `mes_fim = '${dayjs(data.mes_fim).set('date', 2).set('hour', 0).set('minute', 0).set('second', 0)}}',`;
     }
 
@@ -3391,7 +3391,7 @@ class Service {
       let status = '';
       if(p.status_desenvolvimento) {
         switch(p.status_desenvolvimento) {
-          case 'nao_iniciada': status = 'Não iniciada'; break;
+          case 'nao_iniciada': status = `Não iniciada (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`; break;
           case 'em_desenvolvimento': status = `Em desenvolvimento (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`; break;
           case 'finalizada': status = `Finalizada  (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`; break;
           case 'interrompida': status = `Interrompida(${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')}`; break;

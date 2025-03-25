@@ -26,7 +26,7 @@ export default function Home() {
     const handleCommunityChange = (community) => {
         changeRoute({ community });
 
-        closeMenu();
+        // closeMenu();
     }
 
 
@@ -37,7 +37,7 @@ export default function Home() {
 
             {!!membership && membership.map(c =>
                 <div className={styles.cada} key={c.id} onClick={()=>handleCommunityChange(c.id)}>
-                    
+
                     <div className={`${styles.ball} ${styles[`color_${c.descriptor_json.perspective}`]}`}></div>
 
                     <div className={`${styles.tag} ${styles[`color_${c.descriptor_json.perspective}`]}`}>{mapPerspective[c.descriptor_json.perspective][0]}</div>
