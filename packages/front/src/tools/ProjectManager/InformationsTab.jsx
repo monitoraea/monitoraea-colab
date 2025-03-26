@@ -221,7 +221,7 @@ export default function InformationsTab({ projectId }) {
                         onCreate={handleFieldCreate('institution', ['instituicao_id'])}
                         value={entity.instituicao_id}
                       />
-                      <HelpBoxButton keyRef={['instituicao_id']} openHelpbox={_contentData} />
+                      <HelpBoxButton type="info" keyRef={['instituicao_id']} openHelpbox={_contentData} />
                     </div>
                     <div className="col-xs-4" style={{ display: 'flex' }}>
                       <AsyncAutocompleteMultiple
@@ -232,7 +232,7 @@ export default function InformationsTab({ projectId }) {
                         value={entity.instituicao_segmentos}
                         multiple
                       />
-                      <HelpBoxButton keyRef={['segmento']} openHelpbox={_contentData} />
+                      <HelpBoxButton type="info" keyRef={['segmento']} openHelpbox={_contentData} />
                     </div>
                     <div className="col-xs-2" style={{ display: 'flex' }}>
                       <TextField
@@ -248,7 +248,7 @@ export default function InformationsTab({ projectId }) {
                         <MenuItem value="medio">Médio - até 50 colaboradores</MenuItem>
                         <MenuItem value="grande">Grande - mais de 50 colaboradores</MenuItem>
                       </TextField>
-                      <HelpBoxButton keyRef={['porte']} openHelpbox={_contentData} />
+                      <HelpBoxButton type="info" keyRef={['porte']} openHelpbox={_contentData} />
                     </div>
                   </div>
                 </section>
@@ -279,7 +279,7 @@ export default function InformationsTab({ projectId }) {
 
                         error={!editing && errors.nome}
                       />
-                      <HelpBoxButton keyRef={['nome']} openHelpbox={_contentData} />
+                      <HelpBoxButton type="info" keyRef={['nome']} openHelpbox={_contentData} />
                     </div>
                   </div>
                   <div className="row">
@@ -291,7 +291,7 @@ export default function InformationsTab({ projectId }) {
                         onChange={handleFieldChange('modalidade_id')}
                         value={entity.modalidade_id}
                       />
-                      <HelpBoxButton keyRef={['modalidade_id']} openHelpbox={_contentData} />
+                      <HelpBoxButton type="info" keyRef={['modalidade_id']} openHelpbox={_contentData} />
 
                     </div>
                     <div className="col-xs-4" style={{ display: 'flex' }}>
@@ -303,7 +303,7 @@ export default function InformationsTab({ projectId }) {
                         value={regioes}
                         multiple
                       />
-                      <HelpBoxButton keyRef={['atuacao']} openHelpbox={_contentData} />
+                      <HelpBoxButton type="info" keyRef={['atuacao']} openHelpbox={_contentData} />
                     </div>
                     <div className="col-xs-4" style={{ display: 'flex' }}>
                       <AsyncAutocompleteMultiple
@@ -316,7 +316,7 @@ export default function InformationsTab({ projectId }) {
                         value={entity.ufs}
                         multiple
                       />
-                      <HelpBoxButton keyRef={['ufs']} openHelpbox={_contentData} />
+                      <HelpBoxButton type="info" keyRef={['ufs']} openHelpbox={_contentData} />
                     </div>
                   </div>
 
@@ -336,7 +336,7 @@ export default function InformationsTab({ projectId }) {
                         <MenuItem value="finalizada">Finalizada</MenuItem>
                         <MenuItem value="interrompida">Interrompida</MenuItem>
                       </TextField>
-                      <HelpBoxButton keyRef={['status_desenvolvimento']} openHelpbox={_contentData} />
+                      <HelpBoxButton type="info" keyRef={['status_desenvolvimento']} openHelpbox={_contentData} />
                     </div>
                     <div className="col-xs-3" style={{ display: 'flex' }}>
                       {['nao_iniciada','em_desenvolvimento', 'finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && <DatePicker
@@ -408,7 +408,7 @@ export default function InformationsTab({ projectId }) {
                         value={entity.publicos}
                         multiple
                       />
-                      <HelpBoxButton keyRef={['publicos']} openHelpbox={_contentData} />
+                      <HelpBoxButton type="info" keyRef={['publicos']} openHelpbox={_contentData} />
                     </div>
 
                     {entity.publicos?.find(p => String(p.id) === '-1') && (
@@ -436,7 +436,7 @@ export default function InformationsTab({ projectId }) {
                         value={entity.tematicas}
                         multiple
                       />
-                      <HelpBoxButton keyRef={['tematicas']} openHelpbox={_contentData} />
+                      <HelpBoxButton type="info" keyRef={['tematicas']} openHelpbox={_contentData} />
                     </div>
 
                     {entity.tematicas?.find(p => String(p.id) === '-1') && (
@@ -462,7 +462,7 @@ export default function InformationsTab({ projectId }) {
                 <hr className="hr-spacer my-4" />
                 <section id="politics">
                   <div className="section-header">
-                    <div className="section-title" style={{ display: 'flex' }}>Políticas públicas <HelpBoxButton keyRef={['relacionado_ppea']} openHelpbox={_contentData} /></div>
+                    <div className="section-title" style={{ display: 'flex' }}>Políticas públicas <HelpBoxButton type="info" keyRef={['relacionado_ppea']} openHelpbox={_contentData} /></div>
                   </div>
                   <div className="row">
                     <div className="col-xs-12">
@@ -519,5 +519,5 @@ export default function InformationsTab({ projectId }) {
 }
 
 function TitleAndHelpbox({ title, keyRef, openHelpbox }) {
-  return (<div style={{ display: 'flex', alignItems: 'center' }}><div>{title}</div> <HelpBoxButton keyRef={keyRef} openHelpbox={openHelpbox} /></div>)
+  return (<div style={{ display: 'flex', alignItems: 'center' }}><div>{title}</div> <HelpBoxButton type="info" keyRef={keyRef} openHelpbox={openHelpbox} /></div>)
 }

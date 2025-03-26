@@ -1,5 +1,5 @@
 /* react, libs */
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
 import {
@@ -38,7 +38,7 @@ import {
   TableProperties,
   TableToolbar,
   TodoList,
-  Undo
+  Undo,
 } from 'ckeditor5';
 
 import { useQuery, useMutation, useQueryClient } from 'react-query';
@@ -80,6 +80,8 @@ import { portals, dynamicContents } from './dynamicContents.jsx';
 
 import 'ckeditor5/ckeditor5.css';
 
+import { useLocation, useHistory } from 'react-router-dom';
+
 const emptyEntity = {
   title: '',
   portal: 'none',
@@ -94,9 +96,25 @@ const emptyEntity = {
   published: false,
 };
 
+function uQuery() {
+  const history = useHistory();
+  const { search } = useLocation();
+
+  return useMemo(() => new URLSearchParams(search), [search]);
+}
+
+const perspectiva_portal = {
+  1: 'monitoraea',
+  2: 'pppzcm',
+  3: 'ciea',
+  4: 'pp',
+  5: 'cecsa',
+};
+
 export default function CMS({ id, onClose, onSave }) {
   // const { changeRoute } = useRouter();
 
+  let query = uQuery();
   const editor = useRef();
 
   const [galleryTarget, _galleryTarget] = useState(null);
@@ -164,23 +182,39 @@ export default function CMS({ id, onClose, onSave }) {
     _originalEntity({ ...data, helpbox });
 
     _data_loaded(true);
-
   }, [data, helpbox]);
 
   useEffect(() => {
+    const portal = query.get('portal');
+    const keyref = query.get('key_ref');
+    const type = query.get('type') || 'indic';
 
+    if (portal) {
+      _entity(entity => ({ ...entity, portal: perspectiva_portal[portal] }));
+    }
+    if (keyref) {
+      _entity(entity => ({ ...entity, published: true, type: 'helpbox', helpbox: { keyref, type, description: '' } }));
+    }
+  }, [query]);
+
+  useEffect(() => {
     if (!entity.helpbox) return;
 
     const helpbox = entity.helpbox;
 
     let hd = '';
 
-    if (entity.portal === 'pppzcm' && !!helpbox.type) hd = helpbox.type === 'indic' ? getDescription(helpbox?.keyref) : secureFindIndex(formFields[helpbox.type], helpbox.keyref, 1);
+    if (entity.portal === 'pppzcm' && !!helpbox.type)
+      hd =
+        helpbox.type === 'indic'
+          ? getDescription(helpbox?.keyref)
+          : secureFindIndex(formFields[helpbox.type], helpbox.keyref, 1);
     else if (entity.portal === 'pppzcm') hd = secureFindIndex(formFields['other'], helpbox.keyref, 1);
-    else if (entity.portal !== 'none') hd = !!entity.portal ? secureFindIndex(dynamicContents[entity.portal], helpbox.keyref, 1) : '';
+    else if (entity.portal !== 'none')
+      hd = !!entity.portal ? secureFindIndex(dynamicContents[entity.portal], helpbox.keyref, 1) : '';
 
     _helpbox_description(hd);
-
+    _entity(entity => ({ ...entity, title: hd }));
   }, [entity.helpbox, entity.portal]);
 
   useEffect(() => {
@@ -214,7 +248,7 @@ export default function CMS({ id, onClose, onSave }) {
 
     if (field === 'portal') {
       newEntity.helpbox = emptyEntity.helpbox;
-      _errors(errors => ({ ...errors, portal: false }))
+      _errors(errors => ({ ...errors, portal: false }));
     }
 
     if (field === 'type') {
@@ -256,6 +290,8 @@ export default function CMS({ id, onClose, onSave }) {
     if (hasErrors) {
       _errors(newErrors);
 
+      console.log({ newErrors });
+
       enqueueSnackbar('Alguns campos obrigatórios não foram preenchidos!', {
         variant: 'error',
         anchorOrigin: {
@@ -279,11 +315,12 @@ export default function CMS({ id, onClose, onSave }) {
 
     /* save */
     try {
-      /* const { data: response } =  */await mutation.mutateAsync(entity);
+      /* const { data: response } =  */ await mutation.mutateAsync(entity);
 
       // console.log('response:', response);
 
-      onSave(!_.isEqual(originalEntity, entity));
+      if (query.get('key_ref')) history.go(-1);
+      else onSave(!_.isEqual(originalEntity, entity));
 
       closeSnackbar(snackKey);
 
@@ -329,12 +366,16 @@ export default function CMS({ id, onClose, onSave }) {
       return;
     }
 
-    onClose();
+    if (query.get('key_ref')) history.go(-1);
+    else onClose();
   };
 
   const handleConfirmation = response => {
     _confirm(false);
-    if (response === 'confirm') onClose();
+    if (response === 'confirm') {
+      if (query.get('key_ref')) history.go(-1);
+      else onClose();
+    }
   };
 
   /* const handleGenerateHTML = () => {
@@ -369,8 +410,8 @@ export default function CMS({ id, onClose, onSave }) {
       _errors(errors => ({ ...errors, portal: true }));
       return;
     }
-    _openHelpbox(true)
-  }
+    _openHelpbox(true);
+  };
 
   return (
     <div className="page">
@@ -416,9 +457,9 @@ export default function CMS({ id, onClose, onSave }) {
                       { value: 'pp', title: 'MonitoraEA-Políticas públicas' },
                       { value: 'pppzcm', title: 'MonitoraEA-PPPZCM' },
                       { value: 'ciea', title: 'MonitoraEA-CIEA' },
-                      { value: 'risco', title: 'MonitoraEA-Risco Climático' },
+                      /* { value: 'risco', title: 'MonitoraEA-Risco Climático' }, */
                       { value: 'cecsa', title: 'MonitoraEA-CECSA' },
-                      { value: 'anppea', title: 'ANPPEA' },
+                      /* { value: 'anppea', title: 'ANPPEA' }, */
                     ]}
                     error={errors.portal}
                   />
@@ -439,16 +480,18 @@ export default function CMS({ id, onClose, onSave }) {
                     ]}
                   />
                 </div>
-                {entity.type !== 'helpbox' && (<div className="col-md-5">
-                  <TextField
-                    className="input-text"
-                    label="Título"
-                    shrink="false"
-                    value={entity.title}
-                    onChange={e => handleFieldChange('title')(e.target.value)}
-                    error={!editing && errors.title}
-                  />
-                </div>)}
+                {entity.type !== 'helpbox' && (
+                  <div className="col-md-5">
+                    <TextField
+                      className="input-text"
+                      label="Título"
+                      shrink="false"
+                      value={entity.title}
+                      onChange={e => handleFieldChange('title')(e.target.value)}
+                      error={!editing && errors.title}
+                    />
+                  </div>
+                )}
                 <div className="col-md-2">
                   <FormGroup>
                     <FormControlLabel
@@ -456,6 +499,7 @@ export default function CMS({ id, onClose, onSave }) {
                         <Switch
                           checked={!!entity.published}
                           onChange={e => handleFieldChange('published')(e.target.checked)}
+                          disabled={!!query.get('key_ref')}
                         />
                       }
                       label="Publicado"
@@ -496,9 +540,9 @@ export default function CMS({ id, onClose, onSave }) {
                           'indent',
                           'outdent',
                           '|',
-                          'accessibilityHelp'
+                          'accessibilityHelp',
                         ],
-                        shouldNotGroupWhenFull: false
+                        shouldNotGroupWhenFull: false,
                       },
                       plugins: [
                         AccessibilityHelp,
@@ -535,52 +579,52 @@ export default function CMS({ id, onClose, onSave }) {
                         TableProperties,
                         TableToolbar,
                         TodoList,
-                        Undo
+                        Undo,
                       ],
                       heading: {
                         options: [
                           {
                             model: 'paragraph',
                             title: 'Paragraph',
-                            class: 'ck-heading_paragraph'
+                            class: 'ck-heading_paragraph',
                           },
                           {
                             model: 'heading1',
                             view: 'h1',
                             title: 'Heading 1',
-                            class: 'ck-heading_heading1'
+                            class: 'ck-heading_heading1',
                           },
                           {
                             model: 'heading2',
                             view: 'h2',
                             title: 'Heading 2',
-                            class: 'ck-heading_heading2'
+                            class: 'ck-heading_heading2',
                           },
                           {
                             model: 'heading3',
                             view: 'h3',
                             title: 'Heading 3',
-                            class: 'ck-heading_heading3'
+                            class: 'ck-heading_heading3',
                           },
                           {
                             model: 'heading4',
                             view: 'h4',
                             title: 'Heading 4',
-                            class: 'ck-heading_heading4'
+                            class: 'ck-heading_heading4',
                           },
                           {
                             model: 'heading5',
                             view: 'h5',
                             title: 'Heading 5',
-                            class: 'ck-heading_heading5'
+                            class: 'ck-heading_heading5',
                           },
                           {
                             model: 'heading6',
                             view: 'h6',
                             title: 'Heading 6',
-                            class: 'ck-heading_heading6'
-                          }
-                        ]
+                            class: 'ck-heading_heading6',
+                          },
+                        ],
                       },
                       htmlSupport: {
                         allow: [
@@ -588,9 +632,9 @@ export default function CMS({ id, onClose, onSave }) {
                             name: /^.*$/,
                             styles: true,
                             attributes: true,
-                            classes: true
-                          }
-                        ]
+                            classes: true,
+                          },
+                        ],
                       },
                       image: {
                         toolbar: [
@@ -601,8 +645,8 @@ export default function CMS({ id, onClose, onSave }) {
                           'imageStyle:wrapText',
                           'imageStyle:breakText',
                           '|',
-                          'resizeImage'
-                        ]
+                          'resizeImage',
+                        ],
                       },
                       link: {
                         addTargetToExternalLinks: true,
@@ -612,17 +656,17 @@ export default function CMS({ id, onClose, onSave }) {
                             mode: 'manual',
                             label: 'Downloadable',
                             attributes: {
-                              download: 'file'
-                            }
-                          }
-                        }
+                              download: 'file',
+                            },
+                          },
+                        },
                       },
                       list: {
                         properties: {
                           styles: true,
                           startIndex: true,
-                          reversed: true
-                        }
+                          reversed: true,
+                        },
                       },
                       placeholder: 'Type or paste your content here!',
                       style: {
@@ -630,52 +674,58 @@ export default function CMS({ id, onClose, onSave }) {
                           {
                             name: 'Article category',
                             element: 'h3',
-                            classes: ['category']
+                            classes: ['category'],
                           },
                           {
                             name: 'Title',
                             element: 'h2',
-                            classes: ['document-title']
+                            classes: ['document-title'],
                           },
                           {
                             name: 'Subtitle',
                             element: 'h3',
-                            classes: ['document-subtitle']
+                            classes: ['document-subtitle'],
                           },
                           {
                             name: 'Info box',
                             element: 'p',
-                            classes: ['info-box']
+                            classes: ['info-box'],
                           },
                           {
                             name: 'Side quote',
                             element: 'blockquote',
-                            classes: ['side-quote']
+                            classes: ['side-quote'],
                           },
                           {
                             name: 'Marker',
                             element: 'span',
-                            classes: ['marker']
+                            classes: ['marker'],
                           },
                           {
                             name: 'Spoiler',
                             element: 'span',
-                            classes: ['spoiler']
+                            classes: ['spoiler'],
                           },
                           {
                             name: 'Code (dark)',
                             element: 'pre',
-                            classes: ['fancy-code', 'fancy-code-dark']
+                            classes: ['fancy-code', 'fancy-code-dark'],
                           },
                           {
                             name: 'Code (bright)',
                             element: 'pre',
-                            classes: ['fancy-code', 'fancy-code-bright']
-                          }
-                        ]
+                            classes: ['fancy-code', 'fancy-code-bright'],
+                          },
+                        ],
                       },
                       table: {
-                        contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
+                        contentToolbar: [
+                          'tableColumn',
+                          'tableRow',
+                          'mergeTableCells',
+                          'tableProperties',
+                          'tableCellProperties',
+                        ],
                       },
                       initialData: '',
                     }}
@@ -735,64 +785,65 @@ export default function CMS({ id, onClose, onSave }) {
                             label="Mostrar cabeçalho"
                           />
                         </FormGroup>
-                      </div>)}
+                      </div>
+                    )}
                   </div>
 
-
-
-                  {(['news', 'learning', 'publication'].includes(entity.type) || (entity.type === 'page' && entity.level === 1)) && (<>
-
-                    <div className="row">
-                      <div className="col-md-12">
-                        <TextField
-                          className="input-text"
-                          label="Introdução"
-                          shrink="false"
-                          value={entity.intro}
-                          multiline
-                          rows={2}
-                          onChange={e => handleFieldChange('intro')(e.target.value)}
-                        />
+                  {(['news', 'learning', 'publication'].includes(entity.type) ||
+                    (entity.type === 'page' && entity.level === 1)) && (
+                    <>
+                      <div className="row">
+                        <div className="col-md-12">
+                          <TextField
+                            className="input-text"
+                            label="Introdução"
+                            shrink="false"
+                            value={entity.intro}
+                            multiline
+                            rows={2}
+                            onChange={e => handleFieldChange('intro')(e.target.value)}
+                          />
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="row">
-                      <div className="col-md-6">
-                        <TextField
-                          className="input-text"
-                          label="Imagem de destaque"
-                          shrink="false"
-                          value={entity.featured_images}
-                          onChange={e => handleFieldChange('featured_images')(e.target.value)}
-                          error={!editing && errors.featured_images}
-                          InputProps={{
-                            endAdornment: (
-                              <>
-                                {entity.featured_images !== '' && (
+                      <div className="row">
+                        <div className="col-md-6">
+                          <TextField
+                            className="input-text"
+                            label="Imagem de destaque"
+                            shrink="false"
+                            value={entity.featured_images}
+                            onChange={e => handleFieldChange('featured_images')(e.target.value)}
+                            error={!editing && errors.featured_images}
+                            InputProps={{
+                              endAdornment: (
+                                <>
+                                  {entity.featured_images !== '' && (
+                                    <InputAdornment position="end">
+                                      <IconButton
+                                        aria-label="image gallery"
+                                        onClick={() => handleFieldChange('featured_images')('')}
+                                      >
+                                        <Cancel />
+                                      </IconButton>
+                                    </InputAdornment>
+                                  )}
                                   <InputAdornment position="end">
                                     <IconButton
                                       aria-label="image gallery"
-                                      onClick={() => handleFieldChange('featured_images')('')}
+                                      onClick={handleGetImageFromGallery('featured')}
                                     >
-                                      <Cancel />
+                                      <ImageIcon />
                                     </IconButton>
                                   </InputAdornment>
-                                )}
-                                <InputAdornment position="end">
-                                  <IconButton
-                                    aria-label="image gallery"
-                                    onClick={handleGetImageFromGallery('featured')}
-                                  >
-                                    <ImageIcon />
-                                  </IconButton>
-                                </InputAdornment>
-                              </>
-                            ),
-                          }}
-                        />
+                                </>
+                              ),
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </>)}
+                    </>
+                  )}
                 </>
               )}
               {entity.type === 'helpbox' && (
@@ -805,7 +856,10 @@ export default function CMS({ id, onClose, onSave }) {
                   </div>
                   <div className="col-md-9">
                     <p className={styles.indicator_description}>
-                      <span>{entity.helpbox?.type ? types[entity.helpbox?.type] : portals[entity.portal] || ''}: {helpbox_description || ''}</span>
+                      <span>
+                        {entity.helpbox?.type ? types[entity.helpbox?.type] : portals[entity.portal] || ''}:{' '}
+                        {helpbox_description || ''}
+                      </span>
                     </p>
                   </div>
                 </div>

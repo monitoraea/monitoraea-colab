@@ -219,7 +219,7 @@ export default function ConectionsTab({ projectId }) {
                   <div className="section-header">
                     <div className="section-title" style={{ display: 'flex', alignItems: 'center' }}>
                       <div>A ação/projeto se conecta com alguma Política Pública de Educação Ambiental?</div>
-                      <HelpBoxButton keyRef={['politicas']} openHelpbox={_contentText} />
+                      <HelpBoxButton type="redes" keyRef={['politicas']} openHelpbox={_contentText} />
                     </div>
                     <div className="section-actions">
                       <GetHelpButton tab="conexoes" />
@@ -323,7 +323,7 @@ export default function ConectionsTab({ projectId }) {
                     <div className="section-title" style={{ display: 'flex', alignItems: 'center' }}>
                       <div>A sua iniciativa (ação ou projeto) <strong>é apoiada ou recebe algum suporte</strong> de alguma
                         outra instituição para viabilizar suas ações?</div>
-                      <HelpBoxButton keyRef={['apoiada']} openHelpbox={_contentText} />
+                      <HelpBoxButton type="redes" keyRef={['apoiada']} openHelpbox={_contentText} />
                     </div>
                   </div>
 
@@ -439,7 +439,7 @@ export default function ConectionsTab({ projectId }) {
                     <div className="section-title" style={{ display: 'flex', alignItems: 'center' }}>
                       <div>A sua iniciativa (ação ou projeto) <strong>apoia ou dá algum tipo de suporte</strong> a outra
                         ação/projeto na Zona Costeira e Marinha do Brasil?</div>
-                      <HelpBoxButton keyRef={['apoia']} openHelpbox={_contentText} />
+                      <HelpBoxButton type="redes" keyRef={['apoia']} openHelpbox={_contentText} />
                     </div>
                   </div>
 

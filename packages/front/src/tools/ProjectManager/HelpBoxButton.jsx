@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useDorothy } from 'dorothy-dna-react';
+import { useDorothy, useUser, useRouter } from 'dorothy-dna-react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 
@@ -9,8 +9,12 @@ import styles from './indicators.module.scss';
 
 import HelpCircle from '../../components/icons/HelpCircle.jsx';
 
-export default function HelpBoxButton({ keyRef, openHelpbox }) {
+const CMS_COMMUNITY = 604;
+
+export default function HelpBoxButton({ type, keyRef, openHelpbox }) {
     const { server } = useDorothy();
+    const { user } = useUser();
+    const { currentCommunity } = useRouter();
 
     const [showHelpboxButton, _showHelpboxButton] = useState(false);
 
@@ -25,11 +29,11 @@ export default function HelpBoxButton({ keyRef, openHelpbox }) {
       // console.log('keyRef', keyRef);
       if (!keyRef) return;
 
-      _keyRefTxt(keyRef.join('.'));
+      _keyRefTxt(keyRef.join(','));
     }, [keyRef]);
 
     useEffect(() => {
-      _showHelpboxButton(!!helpContent);
+      _showHelpboxButton(!!helpContent || user.membership.find(m => m.id === CMS_COMMUNITY));
 
       if (!helpContent) return;
 
@@ -44,7 +48,7 @@ export default function HelpBoxButton({ keyRef, openHelpbox }) {
     return (
       <>
         {showHelpboxButton && (
-          <button className={`button-link ${styles.helpbox_button}`} onClick={() => openHelpbox(helpContent)}>
+          <button className={`button-link ${styles.helpbox_button}`} onClick={() => openHelpbox(helpContent || { type: type || 'indic', key_ref: keyRef, community: currentCommunity })}>
             <HelpCircle />
           </button>
         )}

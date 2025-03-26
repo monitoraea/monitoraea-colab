@@ -13,7 +13,7 @@ import {
   RadioGroup,
 } from '@mui/material';
 
-import { useUser} from 'dorothy-dna-react';
+import { useUser } from 'dorothy-dna-react';
 
 /* styles */
 import styles from './cms.module.scss';
@@ -158,13 +158,33 @@ export default function Helpbox({
               )}
             </>
           )}
-          {content && <ContentRenderer text={content.text} />}
+          {content && <ContentRenderer text={content.text || 'Não preenchido!'} />}
           {!content && !manage && <>...</>}
+          {/* {JSON.stringify(content)} */}
         </DialogContent>
         <DialogActions>
-          {user.membership.find(m => m.id === CMS_COMMUNITY) && <button onClick={()=>window.open(`/adm/${CMS_COMMUNITY}/conteudo/${content.id}`, '_blank')} autoFocus className="button-outline">
-            Editar
-          </button>}
+          {user.membership.find(m => m.id === CMS_COMMUNITY) && (
+            <>
+              {content?.id && (
+                <button
+                  onClick={() => window.location.href = `/colabora/adm/${CMS_COMMUNITY}/conteudo/${content.id}/?key_ref=${content.key_ref}`}
+                  autoFocus
+                  className="button-outline"
+                >
+                  Editar
+                </button>
+              )}
+              {!content?.id && (
+                <button
+                  onClick={() => window.location.href = `/colabora/adm/${CMS_COMMUNITY}/conteudo/novo?portal=${content.community.perspective}&type=${content.type}&key_ref=${content.key_ref}`}
+                  autoFocus
+                  className="button-outline"
+                >
+                  Criar
+                </button>
+              )}
+            </>
+          )}
           <button onClick={onClose} autoFocus className="button-outline">
             sair
           </button>
