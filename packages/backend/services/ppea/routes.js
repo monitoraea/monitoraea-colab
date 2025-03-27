@@ -5,11 +5,9 @@ const upload = multer(); // Memory
 const { sendError } = require('dorothy-dna-services').util;
 const entity = require('./index');
 
-const FormManager = require('../../FormsManager')
+const FormManager = require('../../FormsManager');
 
-const upTimelineImage = upload.fields([
-  { name: 'imagem', maxCount: 1 },
-]);
+const upTimelineImage = upload.fields([{ name: 'imagem', maxCount: 1 }]);
 
 /* TODO: TMP!!!! */
 fileUpload = multer({
@@ -164,7 +162,6 @@ router.post('/:id/participate', async (req, res) => {
 
 router.post('/enter_in_network', async (req, res) => {
   try {
-
     const result = await entity.enterInInitiative(res.locals.user);
 
     res.json(result);
@@ -218,11 +215,12 @@ router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
   const { imagem } = req.files;
 
   try {
-    const result = await entity.saveDraftTimeline(res.locals.user,
+    const result = await entity.saveDraftTimeline(
+      res.locals.user,
       JSON.parse(entityData),
       imagem && imagem.length ? imagem[0] : null,
       id,
-      tlid
+      tlid,
     );
 
     res.json(result);
@@ -237,10 +235,11 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
   const { imagem } = req.files;
 
   try {
-    const result = await entity.saveDraftTimeline(res.locals.user,
+    const result = await entity.saveDraftTimeline(
+      res.locals.user,
       JSON.parse(entityData),
       imagem && imagem.length ? imagem[0] : null,
-      id
+      id,
     );
 
     res.json(result);
@@ -263,40 +262,36 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
 
 /* *** FORMS.Begin *** */
 (async function setupForms() {
-
   /* INFORMAÇÃO */
-  const form1 = await FormManager.getForm('ppea/form1')
+  const form1 = await FormManager.getForm('ppea/form1');
 
-  router.put("/:id/draft", upload.fields(FormManager.upFields(form1)), async (req, res) => {
-
+  router.put('/:id/draft', upload.fields(FormManager.upFields(form1)), async (req, res) => {
     try {
       const result = await entity.saveDraft(
         res.locals.user,
         form1,
         FormManager.parse(form1, req.body.entity) /* Transformations */,
         req.files,
-        req.params.id
+        req.params.id,
       );
 
       res.json(result);
     } catch (ex) {
       sendError(res, ex, 500);
     }
-  })
+  });
 
   /* INDICADORES */
 
-  const indic_forms = await FormManager.getForms('ppea/indics2024')
-  let indic_forms_form = {}
+  const indic_forms = await FormManager.getForms('ppea/indics2024');
+  let indic_forms_form = {};
 
   for (let form of indic_forms) {
-
-    const indic_name = form.replace('indic_', '').replace('.yml', '')
-    const indic_form = await FormManager.getForm(`ppea/indics2024/indic_${indic_name}`)
-    indic_forms_form[indic_name] = indic_form
+    const indic_name = form.replace('indic_', '').replace('.yml', '');
+    const indic_form = await FormManager.getForm(`ppea/indics2024/indic_${indic_name}`);
+    indic_forms_form[indic_name] = indic_form;
 
     router.get(`/:id/draft/indicadores/${indic_name}`, async (req, res) => {
-
       try {
         const result = await entity.getDraftIndic(indic_form, indic_name, req.params.id);
 
@@ -306,36 +301,37 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
       }
     });
 
-    router.put(`/:id/draft/indicadores/${indic_name}`, upload.fields(FormManager.upFields(indic_form)), async (req, res) => {
+    router.put(
+      `/:id/draft/indicadores/${indic_name}`,
+      upload.fields(FormManager.upFields(indic_form)),
+      async (req, res) => {
+        try {
+          const result = await entity.saveDraftIndic(
+            res.locals.user,
+            indic_form,
+            indic_name,
+            FormManager.parse(indic_form, req.body.entity) /* Transformations */,
+            req.files,
+            req.params.id,
+          );
 
-      try {
-        const result = await entity.saveDraftIndic(
-          res.locals.user,
-          indic_form,
-          indic_name,
-          FormManager.parse(indic_form, req.body.entity) /* Transformations */,
-          req.files,
-          req.params.id
-        );
-
-        res.json(result);
-      } catch (ex) {
-        sendError(res, ex, 500);
-      }
-    });
+          res.json(result);
+        } catch (ex) {
+          sendError(res, ex, 500);
+        }
+      },
+    );
   }
 
   /* INDICADORES LEGADOS */
 
-  const indic_forms_old = await FormManager.getForms('ppea/indics')
+  const indic_forms_old = await FormManager.getForms('ppea/indics');
 
   for (let form of indic_forms_old) {
-
-    const indic_name = form.replace('indic_', '').replace('.yml', '')
-    const indic_form = await FormManager.getForm(`ppea/indics/indic_${indic_name}`)
+    const indic_name = form.replace('indic_', '').replace('.yml', '');
+    const indic_form = await FormManager.getForm(`ppea/indics/indic_${indic_name}`);
 
     router.get(`/:id/draft/indics/${indic_name}`, async (req, res) => {
-
       try {
         const result = await entity.getDraftIndicOld(indic_form, indic_name, req.params.id);
 
@@ -346,7 +342,6 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
     });
 
     router.put(`/:id/draft/indics/${indic_name}`, upload.fields(FormManager.upFields(indic_form)), async (req, res) => {
-
       try {
         const result = await entity.saveDraftIndicOld(
           res.locals.user,
@@ -354,7 +349,7 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
           indic_name,
           FormManager.parse(indic_form, req.body.entity) /* Transformations */,
           req.files,
-          req.params.id
+          req.params.id,
         );
 
         res.json(result);
@@ -377,8 +372,7 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
       sendError(res, ex);
     }
   });
-
-})()
+})();
 /* *** FORMS.End *** */
 
 router.put('/:id/draft/justification', async (req, res) => {
@@ -405,7 +399,6 @@ router.post('/upload-shp', fileUpload, async (req, res) => {
 });
 
 router.get('/statistics/institutions', async (req, res) => {
-
   try {
     const result = await entity.total_institutions();
 
@@ -413,7 +406,7 @@ router.get('/statistics/institutions', async (req, res) => {
   } catch (ex) {
     sendError(res, ex, 500);
   }
-})
+});
 
 router.get('/for_participation/:id', async (req, res) => {
   try {
@@ -429,11 +422,7 @@ router.get('/for_participation/:id', async (req, res) => {
 
 /* TODO */
 router.get('/', async (req, res) => {
-  const {
-    page,
-    limit,
-    enquads,
-  } = req.query;
+  const { page, limit, enquads } = req.query;
 
   try {
     const result = await entity.list({

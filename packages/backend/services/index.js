@@ -8,6 +8,7 @@ module.exports = [
   'commission',
   'commision_timeline',
   'ppea',
+  'ppea_timeline',
   'institution',
   'organization',
   'segmento',
