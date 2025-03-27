@@ -28,7 +28,77 @@ fileUpload = multer({
   }),
 }).single('file');
 
+const upload = multer(); // Memory
+
+const upTimelineImage = upload.fields([{ name: 'imagem', maxCount: 1 }]);
+
 const service = require('./index');
+
+/* TODO */
+router.delete('/:id/draft/timeline/:tlId', async (req, res) => {
+  const { id, tlId } = req.params;
+
+  try {
+    const result = await service.removeDraftTimeline(id, tlId);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
+/* TODO */
+router.get('/:id/draft/timeline', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await service.getDraftTimeline(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
+router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
+  const { id, tlid } = req.params;
+  const { entity: entityData } = req.body;
+
+  const { imagem } = req.files;
+
+  try {
+    const result = await service.saveDraftTimeline(
+      res.locals.user,
+      JSON.parse(entityData),
+      imagem && imagem.length ? imagem[0] : null,
+      id,
+      tlid,
+    );
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
+  const { id } = req.params;
+  const { entity: entityData } = req.body;
+
+  const { imagem } = req.files;
+
+  try {
+    const result = await service.saveDraftTimeline(
+      res.locals.user,
+      JSON.parse(entityData),
+      imagem && imagem.length ? imagem[0] : null,
+      id,
+    );
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
 
 router.get('/:id/download', async (req, res) => {
   const { id } = req.params;
@@ -84,7 +154,6 @@ router.get('/list', async (req, res) => {
   }
 });
 
-
 router.get('/list_all_indic', async (req, res) => {
   try {
     const { me } = req.query;
@@ -99,7 +168,6 @@ router.get('/list_all_indic', async (req, res) => {
 
 router.get('/opt_relations/:id', async (req, res) => {
   try {
-
     const { id } = req.params;
 
     const result = await service.getOptRelations(id);
@@ -112,11 +180,10 @@ router.get('/opt_relations/:id', async (req, res) => {
 
 router.get('/opt_relations', async (req, res) => {
   try {
-
     const { institution } = req.query;
 
-    const result = await service.listOptRelations({ 
-      institution      
+    const result = await service.listOptRelations({
+      institution,
     });
 
     res.json(result);
@@ -124,7 +191,6 @@ router.get('/opt_relations', async (req, res) => {
     sendError(res, ex);
   }
 });
-
 
 router.get('/instiuicao/list', async (req, res) => {
   try {
@@ -139,9 +205,7 @@ router.get('/instiuicao/list', async (req, res) => {
 });
 
 router.get('/facilitators_states', async (req, res) => {
-
   try {
-
     const result = await service.listFacilitatorsStates();
 
     res.json(result);
@@ -151,11 +215,9 @@ router.get('/facilitators_states', async (req, res) => {
 });
 
 router.get('/facilitators', async (req, res) => {
-
   const { uf } = req.query;
 
   try {
-
     const result = await service.listFacilitators({ uf });
 
     res.json(result);
@@ -464,7 +526,6 @@ router.post('/', async (req, res) => {
 
 router.get('/total', async (req, res) => {
   try {
-
     const result = await service.getTotal();
 
     res.json(result);
@@ -560,7 +621,6 @@ router.get('/', async (req, res) => {
 
 router.get('/from_map', async (req, res) => {
   try {
-
     const { ids } = req.query;
 
     const result = await service.fromMap(ids);
@@ -593,8 +653,7 @@ function buildFiltersWhere(filters, where = [], exclude = []) {
   if (filters['f_instituicao_segmento'] && !exclude.includes('f_instituicao_segmento'))
     whereArray.push(`ARRAY[${filters['f_instituicao_segmento']}] && i.segmentos`);
 
-  if (filters['f_ids'] && !exclude.includes('f_ids'))
-    whereArray.push(`p.id IN (${filters['f_ids']})`);
+  if (filters['f_ids'] && !exclude.includes('f_ids')) whereArray.push(`p.id IN (${filters['f_ids']})`);
 
   return whereArray.length ? `WHERE ${whereArray.join(' AND ')}` : '';
 }
@@ -703,7 +762,6 @@ router.get('/:id/draft/info', async (req, res) => {
 
 router.get('/draft/name/:id', async (req, res) => {
   try {
-
     const { id } = req.params;
 
     const result = await service.getDraftName(id);
@@ -1018,7 +1076,6 @@ router.get('/for_participation/:id', async (req, res) => {
 
 router.post('/enter_in_network', async (req, res) => {
   try {
-
     const result = await service.enterInInitiative(res.locals.user);
 
     res.json(result);
@@ -1029,7 +1086,6 @@ router.post('/enter_in_network', async (req, res) => {
 
 router.get('/total_institutions', async (req, res) => {
   try {
-
     const result = await service.getTotalInstitutions();
 
     res.json(result);
@@ -1040,7 +1096,6 @@ router.get('/total_institutions', async (req, res) => {
 
 router.get('/statistics/linhas', async (req, res) => {
   try {
-
     const result = await service.getStatisticsLinhas();
 
     res.json(result);
@@ -1048,8 +1103,6 @@ router.get('/statistics/linhas', async (req, res) => {
     sendError(res, ex);
   }
 });
-
-
 
 router.get('/:id', async (req, res) => {
   try {

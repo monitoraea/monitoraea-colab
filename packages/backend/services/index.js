@@ -4,6 +4,7 @@ module.exports = [
   'dash',
   'news',
   'project',
+  'project_timeline',
   'commission',
   'commision_timeline',
   'ppea',

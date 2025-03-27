@@ -7,6 +7,7 @@ import axios from 'axios';
 import ProjectsTabs from './Tabs';
 import InformationsTab from './InformationsTab';
 import ConectionsTab from './ConectionsTab';
+import TimelineTab from './TimelineTab';
 import IndicatorsTab from './IndicatorsTab';
 import ActingTab from './ActingTab';
 import { PageTitle } from '../../components/PageTitle/PageTitle';
@@ -207,6 +208,7 @@ const ProjectManager = () => {
               {tabindex === 'conexoes' && <ConectionsTab projectId={projectId} />}
               {tabindex === 'indicadores' && <IndicatorsTab analysis={analysis} />}
               {tabindex === 'abrangencia' && <ActingTab projectId={projectId} />}
+              {tabindex === 'timeline' && <TimelineTab projectId={projectId} />}
             </>
           )}
         </>

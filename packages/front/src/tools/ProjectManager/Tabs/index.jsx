@@ -42,7 +42,15 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
 
     _infoIsReady(isEmpty(groupByNotReady));
     //_indicatorIsReady(analysis.ready);
-    _indicatorIsReady(Object.values(analysis.analysis.indics).reduce((acc, i) => { if (!i.ready) { return false } else { return acc } }, true));
+    _indicatorIsReady(
+      Object.values(analysis.analysis.indics).reduce((acc, i) => {
+        if (!i.ready) {
+          return false;
+        } else {
+          return acc;
+        }
+      }, true),
+    );
     _atuacaoIsReady(analysis.analysis.geo);
 
     _conectionsIsReady(analysis.analysis.connections);
@@ -57,8 +65,9 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
             disableRipple
             label="Informações"
             {...a11yProps('informacao', infoProblemCounter > 0 ? infoProblemCounter : '')}
-            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} ${infoProblemCounter < 10 && styles['fixed-size']
-              }`}
+            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} ${
+              infoProblemCounter < 10 && styles['fixed-size']
+            }`}
           />
           <Tab
             disableRipple
@@ -69,17 +78,20 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
           <Tab
             disableRipple
             label="Indicadores"
-            className={`${styles.indicator} ${indicatorIsReady ? styles['ready'] : styles['not-ready']} ${indicProblemCounter < 10 && styles['fixed-size']
-              }`}
+            className={`${styles.indicator} ${indicatorIsReady ? styles['ready'] : styles['not-ready']} ${
+              indicProblemCounter < 10 && styles['fixed-size']
+            }`}
             {...a11yProps('indicadores', indicProblemCounter > 0 ? indicProblemCounter : '')}
           />
           <Tab
             disableRipple
             label="Abrangência"
-            className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
-              }`}
+            className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${
+              styles['fixed-size']
+            }`}
             {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
           />
+          <Tab disableRipple label="Linha do tempo" {...a11yProps('timeline')} />
         </Tabs>
       </div>
     </div>

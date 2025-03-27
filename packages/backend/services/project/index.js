@@ -27,7 +27,7 @@ const s3 = new AWS.S3({
 const { Messagery } = require('dorothy-dna-services');
 
 const sgMail = require('@sendgrid/mail');
-const { applyWhere, parseBBOX } = require('../../utils');
+const { applyWhere, parseBBOX, getSegmentedId } = require('../../utils');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const defaultLimit = 5;
@@ -647,7 +647,8 @@ class Service {
   }
 
   async getListForUser(user, config) {
-    const entities = await db.instance().query(`
+    const entities = await db.instance().query(
+      `
     with iniciatives as (
       select
         c.id,
@@ -833,7 +834,7 @@ class Service {
     await require('../gt').addMember(community_id, user.id, 'member', 99);
 
     /* retorna id da comunidade */
-    return { communityId: community_id }
+    return { communityId: community_id };
   }
 
   async getProjectForParticipation(id) {
@@ -883,7 +884,7 @@ class Service {
       },
     );
 
-    return institutions[0].total
+    return institutions[0].total;
   }
 
   async getStatisticsLinhas() {
@@ -899,11 +900,10 @@ class Service {
       },
     );
 
-    const data = institutions.map(i => ({ x: i.nome, y: i.total }))
+    const data = institutions.map(i => ({ x: i.nome, y: i.total }));
 
-    return data
+    return data;
   }
-
 
   /* Recupera os dados de um determinado projeto */
   async getProject(id) {
@@ -984,27 +984,31 @@ class Service {
   }
 
   async getTotal() {
-
     let entities;
 
-    entities = await db.instance().query(`
+    entities = await db.instance().query(
+      `
     select count(*)::int as total
     from projetos p
     where p.publicacao is not null
-    `, {
-      type: Sequelize.QueryTypes.SELECT,
-    });
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
     const total = entities[0].total;
 
-    entities = await db.instance().query(`select p.modalidade_id, m.nome, count(*)::int
+    entities = await db.instance().query(
+      `select p.modalidade_id, m.nome, count(*)::int
     from projetos p
     inner join modalidades m on m.id = p.modalidade_id
     WHERE publicacao is NOT NULL
-    group by p.modalidade_id, m.nome`, {
-      type: Sequelize.QueryTypes.SELECT,
-    });
-
+    group by p.modalidade_id, m.nome`,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
     return { total, modalidades: entities };
   }
@@ -1016,9 +1020,9 @@ class Service {
             select p.id, p.nome
             from projetos p
             where id in (${ids
-        .split(',')
-        .map(id => parseInt(id))
-        .join(',')})
+              .split(',')
+              .map(id => parseInt(id))
+              .join(',')})
             order by p.nome
         `; /* TODO: melhor protecao contra injection? */
 
@@ -1064,9 +1068,9 @@ class Service {
     left join projetos_atuacao pa on pa.projeto_id = p.id
     left join municipios m on m.cd_mun = pa.cd_mun
             where p.id in (${ids
-        .split(',')
-        .map(id => parseInt(id))
-        .join(',')})
+              .split(',')
+              .map(id => parseInt(id))
+              .join(',')})
         group by p.id, i.nome
         order by p.nome
         `; /* TODO: melhor protecao contra injection? */
@@ -1151,7 +1155,8 @@ class Service {
     }
 
     /* chart de modalidade */
-    const entities = await db.instance().query(`
+    const entities = await db.instance().query(
+      `
     select p.modalidade_id, mo.nome, count(distinct p.id)::int
     from projetos p
     left join modalidades mo on mo.id = p.modalidade_id
@@ -1160,9 +1165,11 @@ class Service {
     left join projetos_atuacao pa on pa.projeto_id = p.id
     left join municipios m on m.cd_mun = pa.cd_mun
     ${where}
-    group by p.modalidade_id, mo.nome`, {
-      type: Sequelize.QueryTypes.SELECT,
-    });
+    group by p.modalidade_id, mo.nome`,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
     return {
       entities: projects,
@@ -1176,15 +1183,18 @@ class Service {
   }
 
   async listAllIndicProjects(projetoId) {
-    const projects = await db.instance().query(`
+    const projects = await db.instance().query(
+      `
     select distinct pi.id, pi.name, pi.instituicao_id
     from projetos_indicados pi
     where pi."projeto_id" is null OR pi."projeto_id" = :projetoId
     order by pi.name
-    `, {
-      type: Sequelize.QueryTypes.SELECT,
-      replacements: { projetoId }
-    });
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { projetoId },
+      },
+    );
 
     return { list: projects };
   }
@@ -1201,7 +1211,8 @@ class Service {
       replacements.instituicao_id2 = config.institution;
     }
 
-    const projects = await db.instance().query(`
+    const projects = await db.instance().query(
+      `
       with all_pr as (
         select CONCAT('draft_',pr.id) as id, pr.nome as "name"
         from projetos_rascunho pr
@@ -1214,10 +1225,12 @@ class Service {
       select id, "name"
       from all_pr
       order by "name"
-    `, {
-      type: Sequelize.QueryTypes.SELECT,
-      replacements,
-    });
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements,
+      },
+    );
 
     return { list: projects };
   }
@@ -1227,23 +1240,29 @@ class Service {
 
     let projects;
     if (type === 'indic') {
-      projects = await db.instance().query(`
+      projects = await db.instance().query(
+        `
       select CONCAT('indic_',p.id) as id, p."name"
       from projetos_indicados p
       where p.id = :id
-      `, {
-        type: Sequelize.QueryTypes.SELECT,
-        replacements: { id },
-      });
+      `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+          replacements: { id },
+        },
+      );
     } else {
-      projects = await db.instance().query(`
+      projects = await db.instance().query(
+        `
       select CONCAT('draft_',pr.id) as id, pr.nome as "name"
       from projetos_rascunho pr
       where pr.id = :id
-      `, {
-        type: Sequelize.QueryTypes.SELECT,
-        replacements: { id },
-      });
+      `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+          replacements: { id },
+        },
+      );
     }
 
     return projects[0];
@@ -1462,16 +1481,19 @@ class Service {
   }
 
   async listFacilitatorsStates() {
-    const items = await db.instance().query(`
+    const items = await db.instance().query(
+      `
       select
         distinct u.id as "value",
         u.nm_estado as "label"
       from ufs u
       inner join facilitators f on f.state = u.sigla
       order by u.nm_estado
-      `, {
-      type: Sequelize.QueryTypes.SELECT,
-    });
+      `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
     return items;
   }
@@ -1485,7 +1507,8 @@ class Service {
       replacements.uf = config.uf;
     }
 
-    const items = await db.instance().query(`
+    const items = await db.instance().query(
+      `
       select
         f.id,
         f.photo,
@@ -1497,10 +1520,12 @@ class Service {
       inner join ufs u on u.sigla = f.state
       ${applyWhere(where)}
       order by f.name
-      `, {
-      type: Sequelize.QueryTypes.SELECT,
-      replacements,
-    });
+      `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements,
+      },
+    );
 
     return items;
   }
@@ -1682,8 +1707,9 @@ class Service {
       from: `Plataforma MonitoraEA <${process.env.CONTACT_EMAIL}>`,
       subject: `MonitoraEA - ${subject}`,
       text: `${message}\n\n${process.env.BASE_URL}/projeto/${pData.communityId}`,
-      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/projeto/${pData.communityId
-        }">Clique aqui para acessar esta iniciativa</a>`,
+      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/projeto/${
+        pData.communityId
+      }">Clique aqui para acessar esta iniciativa</a>`,
     };
 
     try {
@@ -1735,7 +1761,6 @@ class Service {
   }
 
   async geoAble(id, isAble) {
-
     let isAbleString = null;
     if (isAble === '1') isAbleString = true;
     if (isAble === '0') isAbleString = false;
@@ -1882,20 +1907,20 @@ class Service {
       email,
       message,
       isADM: !hasMembers,
-    }
+    };
 
     await Messagery.sendNotification({ id: 0 }, room, {
       content,
       userId: 0,
       tool: {
-        type: "native",
-        element: "NewContactFromSite"
+        type: 'native',
+        element: 'NewContactFromSite',
       },
     });
 
     return {
       success: true,
-    }
+    };
   }
 
   async getGeoDrawSave(id, geoms) {
@@ -2057,7 +2082,15 @@ class Service {
     );
 
     const apoiada_length = entity[0].apoiada.length;
-    for (let i = 5; i >= apoiada_length; i--) entity[0].apoiada.push({ instituicao_id: null, instituicao_name: '', iniciativa_id: null, iniciativa_name: '', type: [], other_type: '' });
+    for (let i = 5; i >= apoiada_length; i--)
+      entity[0].apoiada.push({
+        instituicao_id: null,
+        instituicao_name: '',
+        iniciativa_id: null,
+        iniciativa_name: '',
+        type: [],
+        other_type: '',
+      });
 
     //****************************
 
@@ -2088,7 +2121,15 @@ class Service {
     );
 
     const apoia_length = entity[0].apoia.length;
-    for (let i = 5; i >= apoia_length; i--) entity[0].apoia.push({ instituicao_id: null, instituicao_name: '', iniciativa_id: null, iniciativa_name: '', type: [], other_type: '' });
+    for (let i = 5; i >= apoia_length; i--)
+      entity[0].apoia.push({
+        instituicao_id: null,
+        instituicao_name: '',
+        iniciativa_id: null,
+        iniciativa_name: '',
+        type: [],
+        other_type: '',
+      });
 
     if (entity[0].instituicao_id) {
       entity[0].instituicao_segmentos = await db.instance().query(
@@ -2137,7 +2178,7 @@ class Service {
         },
       );
 
-      if(entity[0].publicos.includes(-1)) publicos.push({ id: -1, value: -1, label: 'Outros - especificar' })
+      if (entity[0].publicos.includes(-1)) publicos.push({ id: -1, value: -1, label: 'Outros - especificar' });
       entity[0].publicos = publicos;
     }
 
@@ -2155,7 +2196,7 @@ class Service {
         },
       );
 
-      if(entity[0].tematicas.includes(-1)) tematicas.push({ id: -1, value: -1, label: 'Outros - especificar' })
+      if (entity[0].tematicas.includes(-1)) tematicas.push({ id: -1, value: -1, label: 'Outros - especificar' });
       entity[0].tematicas = tematicas;
     }
 
@@ -2192,11 +2233,11 @@ class Service {
     if (data.relacionado_ppea !== 'sim') data['qual_ppea'] = null;
 
     let mes_inicio_str = 'mes_inicio = NULL,';
-    if (['nao_iniciada','em_desenvolvimento', 'finalizada', 'interrompida'].includes(data.status_desenvolvimento)) {
+    if (['nao_iniciada', 'em_desenvolvimento', 'finalizada', 'interrompida'].includes(data.status_desenvolvimento)) {
       mes_inicio_str = `mes_inicio = '${dayjs(data.mes_inicio).set('date', 2).set('hour', 0).set('minute', 0).set('second', 0)}',`;
     }
     let mes_fim_str = 'mes_fim = NULL,';
-    if (['nao_iniciada','finalizada', 'interrompida', 'em_desenvolvimento'].includes(data.status_desenvolvimento)) {
+    if (['nao_iniciada', 'finalizada', 'interrompida', 'em_desenvolvimento'].includes(data.status_desenvolvimento)) {
       mes_fim_str = `mes_fim = '${dayjs(data.mes_fim).set('date', 2).set('hour', 0).set('minute', 0).set('second', 0)}}',`;
     }
 
@@ -2274,7 +2315,7 @@ class Service {
           replacements: { id: data.instituicao_id, porte: data.instituicao_porte },
           type: Sequelize.QueryTypes.UPDATE,
         },
-      )
+      );
     }
 
     // Trata de indicacao
@@ -2291,7 +2332,8 @@ class Service {
 
     const draft = await this.get(id);
 
-    if (!!entity.length > 0 && (!data.indicado || data.indicado !== entity[0].id)) { // nao uso mais indicado e tem um indicado apontando para mim
+    if (!!entity.length > 0 && (!data.indicado || data.indicado !== entity[0].id)) {
+      // nao uso mais indicado e tem um indicado apontando para mim
       // remove meu id do indicado
       await db.instance().query(
         `
@@ -2303,10 +2345,11 @@ class Service {
           replacements: { projeto_id: id },
           type: Sequelize.QueryTypes.UPDATE,
         },
-      )
+      );
     }
 
-    if (!!data.indicado) { // uso indicado
+    if (!!data.indicado) {
+      // uso indicado
       // coloca meu id em indicado
       await db.instance().query(
         `
@@ -2318,7 +2361,7 @@ class Service {
           replacements: { projeto_id: id, indicado_id: data.indicado },
           type: Sequelize.QueryTypes.UPDATE,
         },
-      )
+      );
     }
 
     return draft;
@@ -2335,31 +2378,41 @@ class Service {
         values(:projeto_indicado_id, :contact_name, :contact_email, :contact_phone, :website, NOW(),NOW())
         `,
         {
-          replacements: { projeto_indicado_id: id, contact_name: data.contact_name, contact_email: data.contact_email, contact_phone: data.contact_phone, website: data.website },
+          replacements: {
+            projeto_indicado_id: id,
+            contact_name: data.contact_name,
+            contact_email: data.contact_email,
+            contact_phone: data.contact_phone,
+            website: data.website,
+          },
           type: Sequelize.QueryTypes.INSERT,
         },
-      )
+      );
     }
 
     // atualiza notificacao com refresh
     const notificationData = await Messagery.getNotificationData(data.notificationId);
     if (!notificationData) return { success: false, error: 'Notification does not exist!' };
 
-    await Messagery.updateNotificationContent(data.notificationId, { ...notificationData.content, answered: true }, true);
+    await Messagery.updateNotificationContent(
+      data.notificationId,
+      { ...notificationData.content, answered: true },
+      true,
+    );
 
     return { success: true };
   }
 
   async saveDraftNetwork(id, data) {
-    console.log({ id, data: JSON.stringify(data) })
+    console.log({ id, data: JSON.stringify(data) });
 
     let relation_data = {
-      "politicas": [],
-      "recebe_apoio": [],
-      "oferece_apoio": [],
-      "pp_base": data.pp_base,
-      "apoiada_base": data.apoiada_base,
-      "apoia_base": data.apoia_base,
+      politicas: [],
+      recebe_apoio: [],
+      oferece_apoio: [],
+      pp_base: data.pp_base,
+      apoiada_base: data.apoiada_base,
+      apoia_base: data.apoia_base,
     };
 
     //********************************************** */
@@ -2378,16 +2431,16 @@ class Service {
         replacements: { id },
         type: Sequelize.QueryTypes.SELECT,
       },
-    )
+    );
 
     const indicador = result[0];
 
     if (data.pp_base === 'sim') {
       for (let d of data.pp) {
         if (!!d.name) {
-
           let ppId = d.id;
-          if (!ppId) { /* cria politica, se necessario */
+          if (!ppId) {
+            /* cria politica, se necessario */
             result = await db.instance().query(
               `
               INSERT INTO politicas(nome)
@@ -2407,7 +2460,7 @@ class Service {
             type: d.type,
             other_type: d.other_type,
             politica_id: ppId,
-          })
+          });
         }
       }
     }
@@ -2418,9 +2471,9 @@ class Service {
       if (data[`${what}_base`] === 'sim') {
         for (let d of data[what]) {
           if (!!d.instituicao_name) {
-
             let instituionId = d.instituicao_id;
-            if (!instituionId) { /* cria instituicao, se necessario */
+            if (!instituionId) {
+              /* cria instituicao, se necessario */
               result = await db.instance().query(
                 `
               INSERT INTO instituicoes(nome)
@@ -2439,9 +2492,9 @@ class Service {
             let projeto_indicado_id = null;
 
             if (!!d.iniciativa_name.length) {
-
               let projectId = d.iniciativa_id;
-              if (!projectId) { /* NOVA */
+              if (!projectId) {
+                /* NOVA */
                 result = await db.instance().query(
                   `
                   INSERT INTO projetos_indicados(name, instituicao_id)
@@ -2462,18 +2515,18 @@ class Service {
                   indicationName: d.iniciativa_name,
                   type: what,
                   answered: false,
-                }
+                };
 
                 await Messagery.sendNotification({ id: 0 }, `room_c${data.communityId}_t1`, {
                   content,
                   userId: 0,
                   tool: {
-                    type: "native",
-                    element: "NewIndicatedProjectNotification"
+                    type: 'native',
+                    element: 'NewIndicatedProjectNotification',
                   },
                 });
-
-              } else { /* tem id, indic ou draft */
+              } else {
+                /* tem id, indic ou draft */
 
                 const [type, eId] = projectId.split('_');
                 //console.log({ type, eId })
@@ -2490,7 +2543,7 @@ class Service {
                       replacements: { id: eId },
                       type: Sequelize.QueryTypes.SELECT,
                     },
-                  )
+                  );
 
                   if (!!result.length) projeto_indicado_id = result[0].id;
                   else {
@@ -2506,7 +2559,7 @@ class Service {
                       },
                     );
 
-                    projeto_indicado_id = result[0].id
+                    projeto_indicado_id = result[0].id;
                   }
 
                   /****
@@ -2525,7 +2578,7 @@ class Service {
                       replacements: { id: eId },
                       type: Sequelize.QueryTypes.SELECT,
                     },
-                  )
+                  );
 
                   const communityId = result[0].community_id;
 
@@ -2535,20 +2588,27 @@ class Service {
                     sourceProjectName: indicador.name,
                     indicationId: projeto_indicado_id,
                     type: what,
-                  }
+                  };
 
                   const key = `indication_${indicador.id}_${projeto_indicado_id}_${what}`;
 
-                  await Messagery.sendNotification({ id: 0 }, `room_c${communityId}_t1`, {
-                    content,
-                    userId: 0,
-                    tool: {
-                      type: "native",
-                      element: "IndicationNotification"
+                  await Messagery.sendNotification(
+                    { id: 0 },
+                    `room_c${communityId}_t1`,
+                    {
+                      content,
+                      userId: 0,
+                      tool: {
+                        type: 'native',
+                        element: 'IndicationNotification',
+                      },
                     },
-                  }, [key], true, {
-                    dedup: [key],
-                  });
+                    [key],
+                    true,
+                    {
+                      dedup: [key],
+                    },
+                  );
                 }
               }
             }
@@ -2558,7 +2618,7 @@ class Service {
               other_type: d.other_type,
               instituicao_id: instituionId,
               projeto_indicado_id,
-            })
+            });
           }
         }
       }
@@ -2580,7 +2640,8 @@ class Service {
     // console.log(JSON.stringify(relation_data))
 
     const relationId = entity[0].relation_id;
-    if (!!relationId) { /* Atualiza */
+    if (!!relationId) {
+      /* Atualiza */
       await db.instance().query(
         `
         update projetos_relacoes
@@ -2813,9 +2874,9 @@ class Service {
       analysis.geo = false;
       conclusion.ready = false;
 
-      if (!project.atuacao_naplica_just || !project.atuacao_naplica_just.length) analysis.question_problems.push('naplica_just');
+      if (!project.atuacao_naplica_just || !project.atuacao_naplica_just.length)
+        analysis.question_problems.push('naplica_just');
     }
-
 
     // INFORMACOES
 
@@ -2837,18 +2898,18 @@ class Service {
 
     analysis.information.contatos = this.check(
       !!project.contatos &&
-      !!project.contatos[0] &&
-      (project.contatos[0].nome.length > 0 ||
-        project.contatos[0].email.length > 0 ||
-        project.contatos[0].tel.length > 0),
+        !!project.contatos[0] &&
+        (project.contatos[0].nome.length > 0 ||
+          project.contatos[0].email.length > 0 ||
+          project.contatos[0].tel.length > 0),
       conclusion,
     );
 
-    if(project['publicos'] && project['publicos'].includes(-1) && !project['publicos_especificar']) {
+    if (project['publicos'] && project['publicos'].includes(-1) && !project['publicos_especificar']) {
       analysis.information.publicos_especificar = false;
       conclusion.ready = false;
     }
-    if(project['tematicas'] && project['tematicas'].includes(-1) && !project['tematicas_especificar']) {
+    if (project['tematicas'] && project['tematicas'].includes(-1) && !project['tematicas_especificar']) {
       analysis.information.tematicas_especificar = false;
       conclusion.ready = false;
     }
@@ -3160,34 +3221,48 @@ class Service {
       name: draft.nome,
     };
 
-
-    const basicKey = `published_${id}_${dayjs().format('YYYYMMDD')}`
+    const basicKey = `published_${id}_${dayjs().format('YYYYMMDD')}`;
 
     // SE
-    await Messagery.sendNotification({ id: 0 }, 'room_c1_t1', {
-      content,
-      userId: 0,
-      tool: {
-        type: "native",
-        element: "PublishNotification"
-      },
-    }, [`${basicKey}_1`], true, {
-      dedup: [`${basicKey}_1`],
-    });
-
-    // Facilitadores
-    const supporters = await singletonInstance.retrieveSupporters(id);
-    for (let sup of supporters) { // para cada facilitador
-      await Messagery.sendNotification({ id: 0 }, `room_c${sup.communityId}_t1`, {
+    await Messagery.sendNotification(
+      { id: 0 },
+      'room_c1_t1',
+      {
         content,
         userId: 0,
         tool: {
-          type: "native",
-          element: "PublishNotification"
+          type: 'native',
+          element: 'PublishNotification',
         },
-      }, [`${basicKey}_${sup.communityId}`], true, {
-        dedup: [`${basicKey}_${sup.communityId}`],
-      });
+      },
+      [`${basicKey}_1`],
+      true,
+      {
+        dedup: [`${basicKey}_1`],
+      },
+    );
+
+    // Facilitadores
+    const supporters = await singletonInstance.retrieveSupporters(id);
+    for (let sup of supporters) {
+      // para cada facilitador
+      await Messagery.sendNotification(
+        { id: 0 },
+        `room_c${sup.communityId}_t1`,
+        {
+          content,
+          userId: 0,
+          tool: {
+            type: 'native',
+            element: 'PublishNotification',
+          },
+        },
+        [`${basicKey}_${sup.communityId}`],
+        true,
+        {
+          dedup: [`${basicKey}_${sup.communityId}`],
+        },
+      );
     }
 
     return { success: true };
@@ -3389,13 +3464,23 @@ class Service {
       project_data.push(p.segmentos?.length ? p.segmentos.join(', ') : ''); // segmentos
 
       let status = '';
-      if(p.status_desenvolvimento) {
-        switch(p.status_desenvolvimento) {
-          case 'nao_iniciada': status = `Não iniciada (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`; break;
-          case 'em_desenvolvimento': status = `Em desenvolvimento (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`; break;
-          case 'finalizada': status = `Finalizada  (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`; break;
-          case 'interrompida': status = `Interrompida(${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')}`; break;
-          default: status = 'Não respondido'; break;
+      if (p.status_desenvolvimento) {
+        switch (p.status_desenvolvimento) {
+          case 'nao_iniciada':
+            status = `Não iniciada (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`;
+            break;
+          case 'em_desenvolvimento':
+            status = `Em desenvolvimento (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`;
+            break;
+          case 'finalizada':
+            status = `Finalizada  (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`;
+            break;
+          case 'interrompida':
+            status = `Interrompida(${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')}`;
+            break;
+          default:
+            status = 'Não respondido';
+            break;
         }
       }
       project_data.push(status); // status desenvolvimento
@@ -3648,7 +3733,7 @@ class Service {
                     let value = 0;
                     try {
                       value = parseInt(indicDB[dbKey][question.id]);
-                    } catch (e) { }
+                    } catch (e) {}
 
                     analysis.indicators[dbKey].questions[question.id].accum += value;
                     analysis.indicators[dbKey].questions[question.id].qtd++;
@@ -3743,6 +3828,147 @@ class Service {
     return { analysis };
   }
   /* .v2 */
+
+  async getDraftTimeline(id) {
+    const tLs = await db.instance().query(
+      `
+        SELECT
+              lt.id,
+              lt."date",
+              lt.texto,
+              f.url,
+              f.file_name,
+              p.id as project_id
+          FROM public.linhas_do_tempo lt
+          left join files f on f.id = lt.timeline_arquivo
+          inner join projetos p on p.id = lt.projeto_id
+          where p.id = :id
+          order by lt."date"
+          `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    for (let tl of tLs) {
+      if (!!tl.url)
+        tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(tl.project_id, 'timeline_arquivo', tl.url)}`;
+    }
+
+    return tLs;
+  }
+
+  async saveDraftTimeline(user, entity, timeline_arquivo, projeto_id, tlid) {
+    let entityModel;
+    if (!tlid) {
+      entityModel = await db.models['Project_timeline'].create({
+        ...entity,
+        projeto_id,
+        timeline_arquivo: undefined,
+      });
+    } else {
+      // recupera
+      entityModel = await db.models['Project_timeline'].findByPk(tlid);
+      // atualiza
+      entityModel.date = entity.date;
+      entityModel.texto = entity.texto;
+      // salva
+      entityModel.save();
+    }
+
+    if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
+    else if (timeline_arquivo)
+      await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', entityModel.get('projeto_id'));
+
+    return entityModel;
+  }
+
+  async removeDraftTimeline(projeto_id, tlId) {
+    const timeline = await db.models['Project_timeline'].findByPk(tlId);
+
+    if (timeline.get('timeline_arquivo')) {
+      /* remove file */
+      await db.models['File'].destroy({
+        where: { id: timeline.get('timeline_arquivo') },
+      });
+    }
+
+    await db.models['Project_timeline'].destroy({
+      where: {
+        id: tlId,
+        projeto_id,
+      },
+    });
+
+    return true;
+  }
+
+  async removeFile(entityModel, fieldName) {
+    let fileId = entityModel.get(fieldName);
+    entityModel.set(fieldName, null);
+
+    entityModel.save();
+
+    /* remove file */
+    db.models['File'].destroy({
+      where: { id: fileId },
+    });
+
+    /* TODO: remove from S3? */
+  }
+
+  async updateFile(entityModel, file, fieldName, entityId) {
+    // S3
+    await s3
+      .putObject({
+        Bucket: BUCKET_NAME,
+        Key: this.getFileKey(entityId || entityModel.get('projeto_id'), fieldName, file.originalname),
+        Body: file.buffer,
+        ACL: 'public-read',
+      })
+      .promise();
+
+    await this.updateFileModel(
+      entityModel,
+      fieldName,
+      file.originalname,
+      file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`,
+    );
+  }
+
+  async updateFileModel(entityModel, fieldName, file_name, content_type) {
+    let fileModel;
+    if (!!entityModel[fieldName]) {
+      fileModel = await db.models['File'].findByPk(entityModel[fieldName]);
+    }
+
+    if (!!fileModel) {
+      fileModel.file_name = file_name;
+      fileModel.url = file_name;
+      fileModel.document_type = `cne_${fieldName}`;
+      fileModel.content_type = content_type;
+
+      fileModel.save();
+    } else {
+      const fileModel = await db.models['File'].create({
+        file_name,
+        url: file_name,
+        document_type: `cne_${fieldName}`,
+        content_type,
+      });
+
+      entityModel.set(fieldName, fileModel.id);
+
+      await entityModel.save();
+    }
+  }
+
+  getFileKey(id, folder, filename) {
+    const segmentedId = getSegmentedId(id);
+
+    return `project/${segmentedId}/${folder}/original/${filename}`;
+  }
 }
 
 const singletonInstance = new Service();
@@ -3751,8 +3977,8 @@ module.exports = singletonInstance;
 function cleanItems(txt) {
   return txt
     ? txt
-      .split('\n')
-      .filter(t => t.length)
-      .join('\n')
+        .split('\n')
+        .filter(t => t.length)
+        .join('\n')
     : '';
 }
