@@ -264,7 +264,7 @@ class Service {
             detalhamento_arquivo: entity.detalhamento_tipo === null ? null : undefined,
 
         }, {
-            where: { id }
+            where: { cne_id: id, versao: 'draft' }
         });
 
         const entityModel = await db.models['Cne'].findByPk(id);

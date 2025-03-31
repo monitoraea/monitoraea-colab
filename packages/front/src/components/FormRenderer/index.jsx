@@ -6,8 +6,8 @@ import Trash from '../icons/Trash';
 import DatePicker from '../DatePicker';
 import UploaderField from '../../components/UploaderField';
 
-let context_modules = {}; // TODO: context? 
-let context_lists = {}; // TODO: context? 
+let context_modules = {}; // TODO: context?
+let context_lists = {}; // TODO: context?
 
 import { v4 as uuidv4 } from 'uuid'
 import dayjs from 'dayjs'
@@ -482,7 +482,7 @@ export function FieldRenderer({ f, size, readonly, keyRef, blocks, data, iterati
  *****************************************************************/
 
 /***
-    Block 
+    Block
     - basic, it handles the show rule, the title and the remove button (for iterative - TODO: esta questão do botão, deveria ser responsabilidade deste elemento?)
  ***/
 function Block({ block, data, basic = false, iterative, onRemoveIterative, children }) {
@@ -606,7 +606,7 @@ export function mapForm2Data(data, form) { /* TODO: vai para o getFormData, abai
 
     // async_autocomplete
     for (let f of form.fields.filter(f => f.type === 'async_autocomplete')) {
-        mappedData[f.key] = data[f.key].id || data[f.key];
+        mappedData[f.key] = data[f.key]?.id || data[f.key];
     }
 
     return mappedData;
@@ -735,7 +735,7 @@ function OptionsField({ f, readonly, index, dataValue, onChange, error }) {
 
 let timer;
 function buildFilter(data, filters) {
-    let filterQuery = ''; 
+    let filterQuery = '';
     for(let f of filters) filterQuery = `${filterQuery}&${f}=${data[f]}`
     return filterQuery;
 }
