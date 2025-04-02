@@ -105,11 +105,11 @@ export default function MembersHome() {
       {tabindex && (
         <>
           <Tabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} />
-          
+
               {tabindex === 'lista' && <Members />}
               {tabindex === 'convites' && <Invites />}
               {tabindex === 'solicitacoes' && <Participations />}
-              
+
         </>
       )}
 
@@ -128,6 +128,10 @@ function NewInviteDialog({ open, onCreate, onClose }) {
       _email('');
     }
   }, [open]);
+
+  const handleEmail = e => {
+    _email(e.target.value.trim().toLowerCase())
+  }
 
   return (
     <div>
@@ -148,7 +152,7 @@ function NewInviteDialog({ open, onCreate, onClose }) {
           </div>
           <div className="row">
             <div className="col-xs-12">
-              <TextField className="input-text" label="E-mail" value={email} onChange={e => _email(e.target.value)} />
+              <TextField className="input-text" label="E-mail" value={email} onChange={handleEmail} />
             </div>
           </div>
         </DialogContent>

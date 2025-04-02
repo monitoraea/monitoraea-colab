@@ -128,6 +128,10 @@ const SignupPanel = ({ next }) => {
     }
   }
 
+  const handleEmail = e => {
+    _email(e.target.value.trim().toLowerCase())
+  }
+
   return (
     <div className='page width-limiter centered'>
       <div className='page-content'>
@@ -145,7 +149,7 @@ const SignupPanel = ({ next }) => {
 
                 {status === 'signup' && <>
                   <div className='row mb-3'>
-                    <TextField className="input-text" id="text" label="E-mail" value={email} onChange={(e) => _email(e.target.value)} />
+                    <TextField className="input-text" id="text" label="E-mail" value={email} onChange={handleEmail} />
                   </div>
                   <div className='row mb-3'>
                     <TextField className="input-text" id="text" label="Nome" value={name} onChange={(e) => _name(e.target.value)} />
