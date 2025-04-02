@@ -546,7 +546,7 @@ class Service {
       `
         update ppea.politicas
         set atuacao_naplica_just = :value
-        where politica_id = :id`,
+        where politica_id = :id and versao = 'draft'`,
       {
         replacements: {
           id,
