@@ -119,3 +119,17 @@
         }
     }
 }
+
+.component {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.helpbox_button {
+  height: 100%;
+
+  >svg {
+      margin: 0;
+  }
+}

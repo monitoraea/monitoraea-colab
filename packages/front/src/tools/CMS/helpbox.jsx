@@ -82,7 +82,7 @@ export default function Helpbox({
                   </div>
                 </div>
               )}
-              {portal === 'pppzcm' && (
+              {['cecsa','pppzcm'].includes(portal) && (
                 <div>
                   <div className="row">
                     <FormLabel id="select-helpbox">Tipo de conteúdo auxiliar:</FormLabel>
@@ -160,7 +160,7 @@ export default function Helpbox({
           )}
           {content && <ContentRenderer text={content.text || 'Não preenchido!'} />}
           {!content && !manage && <>...</>}
-          {/* {JSON.stringify(content)} */}
+          {JSON.stringify(content)}
         </DialogContent>
         <DialogActions>
           {user.membership.find(m => m.id === CMS_COMMUNITY) && (

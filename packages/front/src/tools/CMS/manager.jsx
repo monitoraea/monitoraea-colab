@@ -423,7 +423,7 @@ export default function CMS({ id, onClose, onSave }) {
                 Conteúdos
               </span>
               {' » '}
-              {id === 'novo' && !entity?.title.length ? 'Novo' : entity?.title}
+              {id === 'novo' && !entity?.title?.length ? 'Novo' : entity?.title}
             </>
           }
         />

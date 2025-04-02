@@ -21,6 +21,8 @@ fields:
   type: options
   title: Tipologia
   size: 4
+  helpbox:
+    file: https://pppzcm-files.s3.us-east-2.amazonaws.com/Centros.Nucelos.e.Equipamentos.de.Educacao.e.Cooperacao.Socioambiental.pdf
   options:
     - value: -1
       label: Não respondido
@@ -32,7 +34,7 @@ fields:
       label: 'Equipamento'
     - value: 3
       label: 'Outro'
-  validation: 
+  validation:
     - type: neq
       value: -1
     - type: not_empty
@@ -81,7 +83,7 @@ fields:
       value:
     - key: detalhamento_arquivo2
       value:
-  list: 
+  list:
     module: property
     key: tipo_arquivo
 
@@ -142,7 +144,7 @@ fields:
   type: monthpicker
   title: Data da criação
   size: 3
-  validation: 
+  validation:
     - type: not_empty
 
 - key: data_inst
@@ -150,7 +152,7 @@ fields:
   type: monthpicker
   title: Data da institucionalização
   size: 3
-  
+
 - key: cnpj
   block: inst
   type: text
@@ -180,7 +182,7 @@ fields:
       value:
     - key: estrategia_arquivo2
       value:
-  list: 
+  list:
     module: property
     key: tipo_arquivo
 
@@ -209,7 +211,7 @@ fields:
 - key: resultado_tipo
   block: outcomes_it
   type: options
-  list: 
+  list:
     module: property
     key: tipo_resultados
   title: Tipo %index%
@@ -242,7 +244,7 @@ blocks: # opcional
     iterate:
       target: none
       index: default
-      add: Adicionar gestor  
+      add: Adicionar gestor
 
   - key: institutions
     title: Instituições proponentes
@@ -254,10 +256,10 @@ blocks: # opcional
     iterate:
       target: none
       index: default
-      add: Adicionar instituição    
+      add: Adicionar instituição
 
   - key: inst
-    title: Institucional  
+    title: Institucional
 
   - key: details
     title: Detalhamento
