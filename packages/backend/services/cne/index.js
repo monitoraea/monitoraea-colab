@@ -696,7 +696,7 @@ class Service {
             with institutions_list as (
                 select distinct jsonb_array_elements(jsonb_path_query_array(c.intitutions_it, '$.nome_inst')) as institutions
                 from cne.cnes c
-                where c.versao = 'current'
+                where c.versao = 'current' and c."deletedAt" is null
                 order by institutions
             )
             select count(*) as total

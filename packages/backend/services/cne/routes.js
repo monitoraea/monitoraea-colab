@@ -302,7 +302,7 @@ router.get('/', async (req, res) => {
   try {
     const { page, f_id, limit } = req.query;
 
-    const where = buildFiltersWhere(req.query, ["versao = 'current'"]);
+    const where = buildFiltersWhere(req.query, ["versao = 'current'",'"deletedAt" IS NULL']);
 
     const result = await entity.list(page ? parseInt(page) : 1, f_id, where, limit);
 
