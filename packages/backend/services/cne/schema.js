@@ -18,6 +18,9 @@ module.exports = (sequelize, DataTypes) => {
         tipologia: {
           type: DataTypes.INTEGER,
         },
+        community_id: {
+          type: DataTypes.INTEGER,
+        },
         intitutions_it: {
           type: DataTypes.JSONB,
         },
@@ -70,9 +73,9 @@ module.exports = (sequelize, DataTypes) => {
         schema: 'cne',
       },
     );
-  
+
     CNE.associate = function (models) {
-      
+
       CNE.belongsTo(models["File"], {
         foreignKey: "logo_arquivo",
       });
@@ -84,8 +87,8 @@ module.exports = (sequelize, DataTypes) => {
       CNE.belongsTo(models["File"], {
         foreignKey: "detalhamento_arquivo",
       });
-      
+
     }
-  
+
     return CNE;
-  };  
+  };

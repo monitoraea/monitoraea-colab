@@ -50,15 +50,17 @@ const Manager = () => {
     refetchOnWindowFocus: false,
   });
 
-  /* const mutation = {
-    publish: useMutation(() => axios.put(`${server}commission/${entityId}/publish`)),
-  }; */
+  const mutation = {
+    publish: useMutation(() => axios.put(`${server}cne/${entityId}/publish`)),
+  };
 
   useEffect(() => {
     _isAdmOrMod(
       user.membership
         .map(membership => {
-          return membership.id === 1 || (membership.id === currentCommunity.id && membership.type === 'adm'); /* TODO: analisar aqui e em projetos (depois que criei outros GT ADM) */
+          return (
+            membership.id === 1 || (membership.id === currentCommunity.id && membership.type === 'adm')
+          ); /* TODO: analisar aqui e em projetos (depois que criei outros GT ADM) */
         })
         .reduce((acc, curr) => acc || curr),
     );
@@ -152,7 +154,7 @@ const Manager = () => {
             <Download></Download>
             Baixar CSV
           </button>
-          
+
           {isAdmOrMod && isAdmOrMod === true && (
             <button className="button-primary" onClick={handlePublish}>
               <CheckCircle></CheckCircle>
@@ -166,7 +168,14 @@ const Manager = () => {
           <Tabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} analysis={analysis} />
           {entityId && (
             <>
-              {tabindex === 'informacao' && <InformationsTab entityId={entityId} problems={Object.keys(analysis.analysis.information).filter(k => analysis.analysis.information[k] === false)} />}
+              {tabindex === 'informacao' && (
+                <InformationsTab
+                  entityId={entityId}
+                  problems={Object.keys(analysis.analysis.information).filter(
+                    k => analysis.analysis.information[k] === false,
+                  )}
+                />
+              )}
               {tabindex === 'conexoes' && <ConexoesTab entityId={entityId} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
               {tabindex === 'timeline' && <TimelineTab entityId={entityId} />}
@@ -174,9 +183,9 @@ const Manager = () => {
           )}
         </>
       )}
-      
+
       <Box display="flex" justifyContent="space-between"></Box>
-      
+
       <TermDialog open={showTermDialod} onClose={handleTermConfirmation} />
     </div>
   );
@@ -197,7 +206,25 @@ function TermDialog({ open, onClose }) {
         <DialogContent>
           <DialogContent id="alert-dialog-description" className={styles.term}>
             <p>
-              TODO TODO TODO
+              Declaro estar ciente e de acordo com as diretrizes político-pedagógicas do Sistema MonitoraEA e que
+              reconheço a Plataforma MonitoraEA como um instrumento de gestão de dados das iniciativas de educação
+              ambiental (políticas, projetos, instâncias, entre outros) no Brasil.
+            </p>
+            <p>
+              Neste sentido, declaro a adesão ao Sistema MonitoraEA por meio da inserção da iniciativa ora cadastrada na
+              Plataforma MonitoraEA. Declaro que a execução técnica e financeira da referida iniciativa está sob a
+              responsabilidade integral da instituição proponente e, eventualmente, seus parceiros.
+            </p>
+            <p>
+              Ainda, declaro concordar com a divulgação pública dos dados da iniciativa ora inserida – por meio da
+              Plataforma MonitoraEA - e assumo a inteira responsabilidade pelo teor e veracidade das informações
+              cadastradas.
+            </p>
+            <p>
+              Por fim, declaro meu consentimento com a coleta, uso e tratamento de meus dados pessoais pela ANPPEA, que
+              atuará como gestora de dados, nos termos da Lei 13.709/2018, e que tenho ciência de que poderei solicitar,
+              a qualquer momento, a exclusão de meus dados do banco de dados da Plataforma MonitoraEA, bem como a
+              revogação deste consentimento.
             </p>
           </DialogContent>
         </DialogContent>

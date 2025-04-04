@@ -143,6 +143,19 @@ router.get('/statistics/cnes', async (req, res) => {
   }
 })
 
+router.put('/:id/publish', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    /* TODO: SO MODERADOR OU ADM */
+    const result = await entity.publish(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.post('/:id/participate', async (req, res) => {
   try {
     const { id } = req.params;
@@ -362,7 +375,7 @@ router.get('/list', async (req, res) => {
     const where = buildFiltersWhere(req.query, [
       `LOWER(unaccent(nome)) like '%${nome.toLowerCase()}%'`,
       "versao = 'current'",
-    ]); 
+    ]);
 
     const result = await entity.listByName(where);
 
@@ -379,7 +392,7 @@ router.get('/instiuicao/list', async (req, res) => {
     const where = buildFiltersWhere(req.query, [
       `LOWER(unaccent(nome)) like '%${nome.toLowerCase()}%'`,
       "versao = 'current'",
-    ]); 
+    ]);
 
     const result = await entity.listIntituicoesByName(where);
 
