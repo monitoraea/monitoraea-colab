@@ -787,6 +787,23 @@ router.put('/:id/draft/info', async (req, res) => {
   }
 });
 
+
+
+router.get('/:id/draft/network', async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const result = await service.getDraftNetwork(id);
+
+    // console.log(result);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.put('/:id/draft/network', async (req, res) => {
   try {
     const { id } = req.params;

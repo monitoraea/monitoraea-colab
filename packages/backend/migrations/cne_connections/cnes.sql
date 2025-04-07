@@ -1,0 +1,1 @@
+ALTER TABLE cne.cnes ADD instituicao_id int4 NULL;

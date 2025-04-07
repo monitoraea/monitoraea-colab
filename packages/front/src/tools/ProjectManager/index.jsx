@@ -205,7 +205,7 @@ const ProjectManager = () => {
           {projectId && (
             <>
               {tabindex === 'informacao' && <InformationsTab projectId={projectId} />}
-              {tabindex === 'conexoes' && <ConectionsTab projectId={projectId} />}
+              {tabindex === 'conexoes' && <ConectionsTab entityId={projectId} />}
               {tabindex === 'indicadores' && <IndicatorsTab analysis={analysis} />}
               {tabindex === 'abrangencia' && <ActingTab projectId={projectId} />}
               {tabindex === 'timeline' && <TimelineTab projectId={projectId} />}

@@ -5,7 +5,7 @@ import axios from 'axios';
 /* components */
 import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
-import ConexoesTab from './ConexoesTab';
+import ConexoesTab from '../ProjectManager/ConectionsTab';
 import TimelineTab from './TimelineTab';
 import AtuacaoTab from './ActingTab';
 
@@ -176,7 +176,7 @@ const Manager = () => {
                   )}
                 />
               )}
-              {tabindex === 'conexoes' && <ConexoesTab entityId={entityId} />}
+              {tabindex === 'conexoes' && <ConexoesTab entityName="cne" entityId={entityId} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
               {tabindex === 'timeline' && <TimelineTab entityId={entityId} />}
             </>

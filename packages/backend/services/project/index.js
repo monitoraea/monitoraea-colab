@@ -1968,34 +1968,12 @@ class Service {
   }
 
   /* v2 */
-  async get(id) {
+  async getDraftNetwork(id) {
     let entity = await db.instance().query(
       `
         select
-        pr.id as "draft_id",
-        pr.nome,
-        pr.instituicao_id,
-        pr.modalidade_id,
-        pr.contatos,
-        pr.objetivos_txt,
-        pr.aspectos_gerais_txt,
-        -- pr.publico_txt,
-        pr.periodo_txt,
-        pr.publicos,
-        pr.tematicas,
-        pr.publicos_especificar,
-        pr.tematicas_especificar,
-        pr.parceiros_txt,
-        pr.atuacao,
-        pr.relacionado_ppea,
-        pr.qual_ppea,
-        pr.ufs,
-        pr.status_desenvolvimento,
-        pr.mes_inicio,
-        pr.mes_fim,
-        i.porte as "instituicao_porte"
+        pr.id as "draft_id"
       from projetos_rascunho pr
-      left join instituicoes i on i.id = pr.instituicao_id
       where pr.projeto_id = :id`,
       {
         replacements: { id },
@@ -2005,7 +1983,6 @@ class Service {
 
     if (!entity.length) return null;
 
-    /* RELACOES */
     const relacoes = await db.instance().query(
       `
       select
@@ -2131,6 +2108,48 @@ class Service {
         other_type: '',
       });
 
+      return entity[0];
+  }
+
+  async get(id) {
+    let entity = await db.instance().query(
+      `
+        select
+        pr.id as "draft_id",
+        pr.nome,
+        pr.instituicao_id,
+        pr.modalidade_id,
+        pr.contatos,
+        pr.objetivos_txt,
+        pr.aspectos_gerais_txt,
+        -- pr.publico_txt,
+        pr.periodo_txt,
+        pr.publicos,
+        pr.tematicas,
+        pr.publicos_especificar,
+        pr.tematicas_especificar,
+        pr.parceiros_txt,
+        pr.atuacao,
+        pr.relacionado_ppea,
+        pr.qual_ppea,
+        pr.ufs,
+        pr.status_desenvolvimento,
+        pr.mes_inicio,
+        pr.mes_fim,
+        i.porte as "instituicao_porte"
+      from projetos_rascunho pr
+      left join instituicoes i on i.id = pr.instituicao_id
+      where pr.projeto_id = :id`,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!entity.length) return null;
+
+    // relações -> getDraftNetwork
+
     if (entity[0].instituicao_id) {
       entity[0].instituicao_segmentos = await db.instance().query(
         `
@@ -2234,11 +2253,19 @@ class Service {
 
     let mes_inicio_str = 'mes_inicio = NULL,';
     if (['nao_iniciada', 'em_desenvolvimento', 'finalizada', 'interrompida'].includes(data.status_desenvolvimento)) {
-      mes_inicio_str = `mes_inicio = '${dayjs(data.mes_inicio).set('date', 2).set('hour', 0).set('minute', 0).set('second', 0)}',`;
+      mes_inicio_str = `mes_inicio = '${dayjs(data.mes_inicio)
+        .set('date', 2)
+        .set('hour', 0)
+        .set('minute', 0)
+        .set('second', 0)}',`;
     }
     let mes_fim_str = 'mes_fim = NULL,';
     if (['nao_iniciada', 'finalizada', 'interrompida', 'em_desenvolvimento'].includes(data.status_desenvolvimento)) {
-      mes_fim_str = `mes_fim = '${dayjs(data.mes_fim).set('date', 2).set('hour', 0).set('minute', 0).set('second', 0)}}',`;
+      mes_fim_str = `mes_fim = '${dayjs(data.mes_fim)
+        .set('date', 2)
+        .set('hour', 0)
+        .set('minute', 0)
+        .set('second', 0)}}',`;
     }
 
     await db.instance().query(
@@ -2307,7 +2334,9 @@ class Service {
       await db.instance().query(
         `
         update instituicoes
-        set segmentos = '{${!!data.instituicao_segmentos?.length ? data.instituicao_segmentos.map(s => s.id).join(',') : ''}}',
+        set segmentos = '{${
+          !!data.instituicao_segmentos?.length ? data.instituicao_segmentos.map(s => s.id).join(',') : ''
+        }}',
             porte = :porte
         where id = :id
         `,
@@ -2645,7 +2674,7 @@ class Service {
       await db.instance().query(
         `
         update projetos_relacoes
-        set data = '${JSON.stringify(relation_data).replace(':null', ': null')}' /* gambiarra */
+        set data = '${JSON.stringify(relation_data).replaceAll(':null', ': null')}' /* gambiarra */
         where projeto_rascunho_id = :draft_id
         `,
         {
@@ -2657,7 +2686,7 @@ class Service {
       await db.instance().query(
         `
         insert into projetos_relacoes(projeto_rascunho_id, data)
-        values(:draft_id, '${JSON.stringify(relation_data).replace(':null', ': null')}')  /* gambiarra */
+        values(:draft_id, '${JSON.stringify(relation_data).replaceAll(':null', ': null')}')  /* gambiarra */
         `,
         {
           replacements: { draft_id: entity[0].id },
@@ -2703,7 +2732,9 @@ class Service {
     );
 
     /* refresh notification (LIVE) */
-    const watch = `indication_${data.sourceDraftId}_${data.indicationId}_${data.type === 'apoia' ? 'apoia' : 'apoiada'}`;
+    const watch = `indication_${data.sourceDraftId}_${data.indicationId}_${
+      data.type === 'apoia' ? 'apoia' : 'apoiada'
+    }`;
     Messagery.refreshNotifications(watch);
 
     return { success: true };
@@ -3470,7 +3501,9 @@ class Service {
             status = `Não iniciada (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`;
             break;
           case 'em_desenvolvimento':
-            status = `Em desenvolvimento (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`;
+            status = `Em desenvolvimento (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format(
+              'MM/YYYY',
+            )})`;
             break;
           case 'finalizada':
             status = `Finalizada  (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`;
@@ -3853,7 +3886,11 @@ class Service {
 
     for (let tl of tLs) {
       if (!!tl.url)
-        tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(tl.project_id, 'timeline_arquivo', tl.url)}`;
+        tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(
+          tl.project_id,
+          'timeline_arquivo',
+          tl.url,
+        )}`;
     }
 
     return tLs;

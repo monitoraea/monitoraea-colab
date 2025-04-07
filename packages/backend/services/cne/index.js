@@ -153,6 +153,21 @@ class Service {
 
     const community_id = result[0].id;
 
+    // institution
+    result = await db.instance().query(
+      `
+        INSERT INTO public.instituicoes(nome, "createdAt", "updatedAt")
+        VALUES(:nome, now(), now())
+        RETURNING id
+        `,
+      {
+        replacements: { nome },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const instituicao_id = result[0].id;
+
     result = await db.instance().query(
       `
         SELECT MAX(cne_id)+1 as next from cne.cnes
@@ -166,11 +181,11 @@ class Service {
 
     result = await db.instance().query(
       `
-        INSERT INTO cne.cnes(nome, community_id, cne_id, versao, "createdAt", "updatedAt")
-        values(:nome, :community_id, :cne_id, 'draft', NOW(), NOW())
+        INSERT INTO cne.cnes(nome, community_id, cne_id, versao, "createdAt", "updatedAt", instituicao_id)
+        values(:nome, :community_id, :cne_id, 'draft', NOW(), NOW(), :instituicao_id)
         `,
       {
-        replacements: { nome, community_id, cne_id },
+        replacements: { nome, community_id, cne_id, instituicao_id },
         type: Sequelize.QueryTypes.INSERT,
       },
     );
@@ -276,8 +291,7 @@ class Service {
     });
 
     if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
-    else if (files.logo_arquivo)
-      await this.updateFile(entityModel, files.logo_arquivo[0], 'logo_arquivo', id);
+    else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo[0], 'logo_arquivo', id);
 
     files = {
       /* TODO: recuperar em form - nem precisa existir, pode ser resolvido abaixo */
@@ -298,6 +312,24 @@ class Service {
         else if (files[`${wFile}_arquivo`])
           await this.updateFile(entityModel, files[`${wFile}_arquivo`], `${wFile}_arquivo`, entityModel.get('id'));
       }
+    }
+
+    /* atualiza o nome da instituicao vinculada */
+    if(entityModel.get('instituicao_id')) {
+      await db.instance().query(
+        `
+          update instituicoes
+          set nome = :name
+          where id = :id
+        `,
+        {
+          replacements: {
+            id: entityModel.get('instituicao_id'),
+            name: entity.nome,
+          },
+          type: Sequelize.QueryTypes.UPDATE,
+        },
+      );
     }
 
     return entity;
@@ -511,7 +543,6 @@ class Service {
   }
 
   async publish(cne_id) {
-
     const transaction = await db.instance().transaction();
 
     try {
@@ -735,11 +766,7 @@ class Service {
 
     for (let tl of cneTLs) {
       if (!!tl.url)
-        tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(
-          id,
-          'timeline_arquivo',
-          tl.url,
-        )}`;
+        tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'timeline_arquivo', tl.url)}`;
     }
 
     return cneTLs;
@@ -766,8 +793,7 @@ class Service {
     }
 
     if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
-    else if (timeline_arquivo)
-      await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', id);
+    else if (timeline_arquivo) await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', id);
 
     return entityModel;
   }
@@ -1312,6 +1338,419 @@ class Service {
     return {
       success: true,
     };
+  }
+
+  async getDraftNetwork(cne_id) {
+
+    let entity = await db.instance().query(
+      `
+      select *
+      from cne.cnes c
+      where cne_id = :cne_id
+      and versao = 'draft'
+      and c."deletedAt" is null
+      `,
+      {
+        replacements: { cne_id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!entity.length) return null;
+
+    const relacoes = await db.instance().query(
+      `
+      select
+        cr."data"->>'pp_base' as "pp_base",
+        cr."data"->>'apoiada_base' as "apoiada_base",
+        cr."data"->>'apoia_base' as "apoia_base"
+      from cne.cne_relacoes cr
+      where cr.cne_versao_id = :id
+      `,
+      {
+        replacements: { id: entity[0].id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!!relacoes.length) {
+      entity[0].pp_base = relacoes[0].pp_base;
+      entity[0].apoiada_base = relacoes[0].apoiada_base;
+      entity[0].apoia_base = relacoes[0].apoia_base;
+    } else {
+      entity[0].pp_base = 'none';
+      entity[0].apoiada_base = 'none';
+      entity[0].apoia_base = 'none';
+    }
+
+    entity[0].pp = await db.instance().query(
+      `
+      select
+      politica_id as "id",
+      p.nome as "name",
+      "type",
+        other_type
+      from
+        cne.cne_relacoes cr,
+        jsonb_to_recordset((cr."data"->>'politicas')::jsonb) AS specs(politica_id int, "type" jsonb, "other_type" varchar)
+      inner join politicas p on p.id = politica_id
+      where cr.cne_versao_id = :id
+      `,
+      {
+        replacements: { id: entity[0].id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+    const pp_length = entity[0].pp.length;
+
+    for (let i = 5; i >= pp_length; i--) entity[0].pp.push({ id: null, name: '', type: [], other_type: '' });
+
+    //****************************
+
+    entity[0].apoiada = await db.instance().query(
+      `
+      select
+        i.id as instituicao_id,
+        coalesce(i.nome,'') as instituicao_name,
+        case
+          when p_i.id is not null then concat('indic_', p_i.id)
+          else null
+        end	as iniciativa_id,
+        coalesce(p_rasc.nome, p_i."name", '') as iniciativa_name,
+        "type",
+        other_type
+      from
+        cne.cne_relacoes cr,
+          jsonb_to_recordset((cr."data"->>'recebe_apoio')::jsonb) AS specs(instituicao_id int, projeto_indicado_id int, "type" jsonb, "other_type" varchar)
+      left join instituicoes i on i.id = instituicao_id
+      left join projetos_indicados p_i on p_i.id = projeto_indicado_id
+      left join projetos_rascunho p_rasc on p_rasc.id = p_i.projeto_id
+      where cr.cne_versao_id = :id
+      `,
+      {
+        replacements: { id: entity[0].id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const apoiada_length = entity[0].apoiada.length;
+    for (let i = 5; i >= apoiada_length; i--)
+      entity[0].apoiada.push({
+        instituicao_id: null,
+        instituicao_name: '',
+        iniciativa_id: null,
+        iniciativa_name: '',
+        type: [],
+        other_type: '',
+      });
+
+    //****************************
+
+    entity[0].apoia = await db.instance().query(
+      `
+      select
+        i.id as instituicao_id,
+        coalesce(i.nome,'') as instituicao_name,
+        case
+          when p_i.id is not null then concat('indic_', p_i.id)
+          else null
+        end	as iniciativa_id,
+        coalesce(p_rasc.nome, p_i."name", '') as iniciativa_name,
+        "type",
+        other_type
+      from
+        cne.cne_relacoes cr,
+          jsonb_to_recordset((cr."data"->>'oferece_apoio')::jsonb) AS specs(instituicao_id int, projeto_indicado_id int, "type" jsonb, "other_type" varchar)
+      left join instituicoes i on i.id = instituicao_id
+      left join projetos_indicados p_i on p_i.id = projeto_indicado_id
+      left join projetos_rascunho p_rasc on p_rasc.id = p_i.projeto_id
+      where cr.cne_versao_id = :id
+      `,
+      {
+        replacements: { id: entity[0].id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const apoia_length = entity[0].apoia.length;
+    for (let i = 5; i >= apoia_length; i--)
+      entity[0].apoia.push({
+        instituicao_id: null,
+        instituicao_name: '',
+        iniciativa_id: null,
+        iniciativa_name: '',
+        type: [],
+        other_type: '',
+      });
+
+    return entity[0];
+  }
+
+  async saveDraftNetwork(cne_id, data) {
+
+    let relation_data = {
+      politicas: [],
+      recebe_apoio: [],
+      oferece_apoio: [],
+      pp_base: data.pp_base,
+      apoiada_base: data.apoiada_base,
+      apoia_base: data.apoia_base,
+    };
+
+    //********************************************** */
+
+    let result;
+
+    // recupera dados do projeto indicador
+    result = await db.instance().query(
+      `
+      select c.id, c.nome as "name"
+      from cne.cnes c
+      where c.cne_id = :cne_id
+      and c.versao = 'draft'
+      and c."deletedAt" is null
+      `,
+      {
+        replacements: { cne_id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const indicador = result[0];
+
+    if (data.pp_base === 'sim') {
+      for (let d of data.pp) {
+        if (!!d.name) {
+          let ppId = d.id;
+          if (!ppId) {
+            /* cria politica, se necessario */
+            result = await db.instance().query(
+              `
+              INSERT INTO politicas(nome)
+              VALUES(:nome)
+              RETURNING id
+              `,
+              {
+                replacements: { nome: d.name },
+                type: Sequelize.QueryTypes.SELECT,
+              },
+            );
+
+            ppId = result[0].id;
+          }
+
+          relation_data.politicas.push({
+            type: d.type,
+            other_type: d.other_type,
+            politica_id: ppId,
+          });
+        }
+      }
+    }
+
+    //********************************************** */
+
+    for (let what of ['apoiada', 'apoia']) {
+      if (data[`${what}_base`] === 'sim') {
+        for (let d of data[what]) {
+          if (!!d.instituicao_name) {
+            let instituionId = d.instituicao_id;
+            if (!instituionId) {
+              /* cria instituicao, se necessario */
+              result = await db.instance().query(
+                `
+              INSERT INTO instituicoes(nome)
+              VALUES(:nome)
+              RETURNING id
+              `,
+                {
+                  replacements: { nome: d.instituicao_name },
+                  type: Sequelize.QueryTypes.SELECT,
+                },
+              );
+
+              instituionId = result[0].id;
+            }
+
+            let projeto_indicado_id = null;
+
+            if (!!d.iniciativa_name.length) {
+              let projectId = d.iniciativa_id;
+              if (!projectId) {
+                /* NOVA */
+                result = await db.instance().query(
+                  `
+                  INSERT INTO projetos_indicados(name, instituicao_id)
+                  VALUES (:name, :instituicao_id)
+                  RETURNING id
+                  `,
+                  {
+                    replacements: { name: d.iniciativa_name, instituicao_id: instituionId },
+                    type: Sequelize.QueryTypes.SELECT,
+                  },
+                );
+
+                projeto_indicado_id = result[0].id;
+
+                /* NOTIFICACAO */
+                let content = {
+                  indicationId: projeto_indicado_id,
+                  indicationName: d.iniciativa_name,
+                  type: what,
+                  answered: false,
+                };
+
+                await Messagery.sendNotification({ id: 0 }, `room_c${data.communityId}_t1`, {
+                  content,
+                  userId: 0,
+                  tool: {
+                    type: 'native',
+                    element: 'NewIndicatedProjectNotification',
+                  },
+                });
+              } else {
+                /* tem id, indic ou draft */
+
+                const [type, eId] = projectId.split('_');
+                //console.log({ type, eId })
+                if (type === 'indic') projeto_indicado_id = eId;
+                else {
+                  // tem indic para este draft_[este ID]?
+                  result = await db.instance().query(
+                    `
+                    select id
+                    from projetos_indicados p
+                    where p.projeto_id = :id
+                    `,
+                    {
+                      replacements: { id: eId },
+                      type: Sequelize.QueryTypes.SELECT,
+                    },
+                  );
+
+                  if (!!result.length) projeto_indicado_id = result[0].id;
+                  else {
+                    result = await db.instance().query(
+                      `
+                      INSERT INTO projetos_indicados(projeto_id, name, instituicao_id)
+                      VALUES (:draft_id, :name, :instituicao_id)
+                      RETURNING id
+                      `,
+                      {
+                        replacements: { draft_id: eId, name: d.iniciativa_name, instituicao_id: instituionId },
+                        type: Sequelize.QueryTypes.SELECT,
+                      },
+                    );
+
+                    projeto_indicado_id = result[0].id;
+                  }
+
+                  /****
+                   * NOTIFICACOES
+                   */
+
+                  // qual a comunidade deste projeto?
+                  result = await db.instance().query(
+                    `
+                    select p.community_id
+                    from projetos_rascunho pr
+                    inner join projetos p on p.id = pr.projeto_id
+                    where pr.id = :id
+                    `,
+                    {
+                      replacements: { id: eId },
+                      type: Sequelize.QueryTypes.SELECT,
+                    },
+                  );
+
+                  const communityId = result[0].community_id;
+
+                  const content = {
+                    sourceProjectId: id,
+                    sourceDraftId: indicador.id,
+                    sourceProjectName: indicador.name,
+                    indicationId: projeto_indicado_id,
+                    type: what,
+                  };
+
+                  const key = `indication_${indicador.id}_${projeto_indicado_id}_${what}`;
+
+                  await Messagery.sendNotification(
+                    { id: 0 },
+                    `room_c${communityId}_t1`,
+                    {
+                      content,
+                      userId: 0,
+                      tool: {
+                        type: 'native',
+                        element: 'IndicationNotification',
+                      },
+                    },
+                    [key],
+                    true,
+                    {
+                      dedup: [key],
+                    },
+                  );
+                }
+              }
+            }
+
+            relation_data[what === 'apoiada' ? 'recebe_apoio' : 'oferece_apoio'].push({
+              type: d.type,
+              other_type: d.other_type,
+              instituicao_id: instituionId,
+              projeto_indicado_id,
+            });
+          }
+        }
+      }
+    }
+
+    /* descobre o id do draft */
+    let entity = await db.instance().query(
+      `
+      select c.id, cr.id as "relation_id"
+      from cne.cnes c
+      left join cne.cne_relacoes cr on cr.cne_versao_id = c.id
+      where c.cne_id = :cne_id
+      and c.versao = 'draft'
+      and c."deletedAt" is null`,
+      {
+        replacements: { cne_id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    // console.log(JSON.stringify(relation_data))
+
+    const relationId = entity[0].relation_id;
+    if (!!relationId) {
+
+      /* Atualiza */
+      await db.instance().query(
+        `
+        update cne.cne_relacoes
+        set data = '${JSON.stringify(relation_data).replaceAll(':null', ': null')}' /* gambiarra */
+        where cne_versao_id = :draft_id
+        `,
+        {
+          replacements: { draft_id: entity[0].id },
+          type: Sequelize.QueryTypes.UPDATE,
+        },
+      );
+    } else {
+      await db.instance().query(
+        `
+        insert into cne.cne_relacoes(cne_versao_id, data)
+        values(:draft_id, '${JSON.stringify(relation_data).replaceAll(':null', ': null')}')  /* gambiarra */
+        `,
+        {
+          replacements: { draft_id: entity[0].id },
+          type: Sequelize.QueryTypes.INSERT,
+        },
+      );
+    }
   }
 }
 

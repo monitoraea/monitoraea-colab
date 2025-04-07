@@ -207,6 +207,23 @@ router.get('/:id/draft/timeline', async (req, res) => {
   }
 });
 
+
+
+router.get('/:id/draft/network', async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const result = await entity.getDraftNetwork(id);
+
+    // console.log(result);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
   const { id, tlid } = req.params;
   const { entity: entityData } = req.body;
@@ -291,6 +308,19 @@ router.put('/:id/draft/justification', async (req, res) => {
     const { value } = req.body;
 
     const result = await entity.saveProjectJustDraft(id, value);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.put('/:id/draft/network', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    const result = await entity.saveDraftNetwork(id, data);
 
     res.json(result);
   } catch (ex) {

@@ -21,6 +21,9 @@ module.exports = (sequelize, DataTypes) => {
         community_id: {
           type: DataTypes.INTEGER,
         },
+        instituicao_id: {
+          type: DataTypes.INTEGER,
+        },
         intitutions_it: {
           type: DataTypes.JSONB,
         },

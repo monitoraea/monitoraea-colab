@@ -1,0 +1,1 @@
+ALTER TABLE ciea.comissoes ADD instituicao_id int4 NULL;

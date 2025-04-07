@@ -17,7 +17,7 @@ import GetHelpButton from './GetHelpButton';
 /* styles */
 // import styles from './information.module.scss';
 
-export default function ConectionsTab({ projectId }) {
+export default function ConectionsTab({ entityName='project', entityId }) {
   /* hooks */
   const { server } = useDorothy();
   const queryClient = useQueryClient();
@@ -36,16 +36,16 @@ export default function ConectionsTab({ projectId }) {
   //   apoiada: [],
   // });
 
-  //get project_data
-  const { data } = useQuery(['project_info', { projectId }], {
-    queryFn: async () => (await axios.get(`${server}project/${projectId}/draft/info`)).data,
+  //get network data
+  const { data } = useQuery([`${entityName}_network`, { entityId }], {
+    queryFn: async () => (await axios.get(`${server}${entityName}/${entityId}/draft/network`)).data,
     refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
     if (!data) return;
 
-    _entity(data.project);
+    _entity(data);
 
     // TODO: Atualiza avoids (3)
   }, [data]);
@@ -56,10 +56,10 @@ export default function ConectionsTab({ projectId }) {
 
   const mutationSave = useMutation(
     entity => {
-      if (entity) return axios.put(`${server}project/${projectId}/draft/network`, { ...entity, communityId: currentCommunity.id });
+      if (entity) return axios.put(`${server}${entityName}/${entityId}/draft/network`, { ...entity, communityId: currentCommunity.id });
     },
     {
-      onSuccess: () => queryClient.invalidateQueries(`project/${projectId}/draft/info`),
+      onSuccess: () => queryClient.invalidateQueries(`${entityName}/${entityId}/draft/network`),
     },
   );
 
@@ -153,7 +153,7 @@ export default function ConectionsTab({ projectId }) {
         for (let i = 0; i < 5; i++)
           if (!!entity[what][i].instituicao_name.length || !!entity[what][i].iniciativa_name.length) {
             maxFilled = i;
-            if (what === 'apoia' && entity[what][i].iniciativa_name === '') newErrors.push(`apoia_${i}_iniciativa_id`);
+            // if (what === 'apoia' && entity[what][i].iniciativa_name === '') newErrors.push(`apoia_${i}_iniciativa_id`);
             if (entity[what][i].instituicao_name === '') newErrors.push(`${what}_${i}_instituicao_id`);
             if (!entity[what][i].type.length) newErrors.push(`${what}_${i}_type`);
           }
@@ -180,8 +180,8 @@ export default function ConectionsTab({ projectId }) {
     try {
       await mutationSave.mutateAsync(entity);
 
-      queryClient.invalidateQueries(`project_info`);
-      queryClient.invalidateQueries(`project_indics`);
+      queryClient.invalidateQueries(`${entityName}_network`);
+      // queryClient.invalidateQueries(`project_indics`);
 
       closeSnackbar(snackKey);
 
@@ -207,6 +207,25 @@ export default function ConectionsTab({ projectId }) {
     }
   };
 
+  const pergunta = (num, entityName) => {
+    if(entityName !== 'cne') entityName = 'default';
+
+    const perguntas = {
+      cne: {
+        1: <div>O centro cadastrado se conecta com alguma Política Pública de Educação Ambiental?</div>,
+        2: <div>A(s) organização(ões) responsável(is) pelo centro/núcleo/equipamento cadastrado <strong>é apoiada ou recebe algum suporte</strong> de alguma outra instituição, no contexto específico das atividades fomentadas pelo centro?</div>,
+        3: <div>A(s) organização(ões) responsável(is) pelo centro/núcleo/equipamento cadastrado <strong>apoia ou dá algum tipo de suporte</strong> a outra instituição, no contexto específico das atividades fomentadas pelo centro?</div>,
+      },
+      default: {
+        1: <div>A ação/projeto se conecta com alguma Política Pública de Educação Ambiental?</div>,
+        2: <div>A sua iniciativa (ação ou projeto) <strong>é apoiada ou recebe algum suporte</strong> de alguma outra instituição para viabilizar suas ações?</div>,
+        3: <div>A sua iniciativa (ação ou projeto) <strong>apoia ou dá algum tipo de suporte</strong> a outra ação/projeto na Zona Costeira e Marinha do Brasil?</div> ,
+      },
+    };
+
+    return perguntas[entityName][num];
+  }
+
   return (
     <>
       {entity && (
@@ -218,11 +237,11 @@ export default function ConectionsTab({ projectId }) {
 
                   <div className="section-header">
                     <div className="section-title" style={{ display: 'flex', alignItems: 'center' }}>
-                      <div>A ação/projeto se conecta com alguma Política Pública de Educação Ambiental?</div>
+                      <div>{pergunta(1, entityName)}</div>
                       <HelpBoxButton type="redes" keyRef={['politicas']} openHelpbox={_contentText} />
                     </div>
                     <div className="section-actions">
-                      <GetHelpButton tab="conexoes" />
+                      {entityName === 'project' && <GetHelpButton tab="conexoes" />}
                       <button className="button-primary" onClick={() => handleSave()}>
                         <FilePlus></FilePlus>
                         Gravar
@@ -321,8 +340,7 @@ export default function ConectionsTab({ projectId }) {
                 <section id="apoiada">
                   <div className="section-header">
                     <div className="section-title" style={{ display: 'flex', alignItems: 'center' }}>
-                      <div>A sua iniciativa (ação ou projeto) <strong>é apoiada ou recebe algum suporte</strong> de alguma
-                        outra instituição para viabilizar suas ações?</div>
+                      <div>{pergunta(2, entityName)}</div>
                       <HelpBoxButton type="redes" keyRef={['apoiada']} openHelpbox={_contentText} />
                     </div>
                   </div>
@@ -437,8 +455,7 @@ export default function ConectionsTab({ projectId }) {
                 <section id="apoia">
                   <div className="section-header">
                     <div className="section-title" style={{ display: 'flex', alignItems: 'center' }}>
-                      <div>A sua iniciativa (ação ou projeto) <strong>apoia ou dá algum tipo de suporte</strong> a outra
-                        ação/projeto na Zona Costeira e Marinha do Brasil?</div>
+                      <div>{pergunta(3,entityName)}</div>
                       <HelpBoxButton type="redes" keyRef={['apoia']} openHelpbox={_contentText} />
                     </div>
                   </div>
