@@ -257,7 +257,7 @@ const WorkingGroups = () => {
         <Box display="flex" justifyContent="space-between"></Box>
         <ConfirmationDialog
           open={removeDialogOpen}
-          content="Confirma a remoção deste produtor?"
+          content="Confirma a remoção desta iniciativa?"
           confirmButtonText="Remover"
           onClose={doRemove}
         />
