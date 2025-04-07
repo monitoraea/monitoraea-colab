@@ -1600,14 +1600,14 @@ class Service {
                   answered: false,
                 };
 
-                // await Messagery.sendNotification({ id: 0 }, `room_c${data.communityId}_t1`, {
-                //   content,
-                //   userId: 0,
-                //   tool: {
-                //     type: 'native',
-                //     element: 'NewIndicatedProjectNotification',
-                //   },
-                // });
+                await Messagery.sendNotification({ id: 0 }, `room_c${data.communityId}_t1`, {
+                  content,
+                  userId: 0,
+                  tool: {
+                    type: 'native',
+                    element: 'NewIndicatedProjectNotification',
+                  },
+                });
               } else {
                 /* tem id, indic ou draft */
 
@@ -1675,23 +1675,23 @@ class Service {
 
                   const key = `indication_${indicador.id}_${projeto_indicado_id}_${what}`;
 
-                  // await Messagery.sendNotification(
-                  //   { id: 0 },
-                  //   `room_c${communityId}_t1`,
-                  //   {
-                  //     content,
-                  //     userId: 0,
-                  //     tool: {
-                  //       type: 'native',
-                  //       element: 'IndicationNotification',
-                  //     },
-                  //   },
-                  //   [key],
-                  //   true,
-                  //   {
-                  //     dedup: [key],
-                  //   },
-                  // );
+                  await Messagery.sendNotification(
+                    { id: 0 },
+                    `room_c${communityId}_t1`,
+                    {
+                      content,
+                      userId: 0,
+                      tool: {
+                        type: 'native',
+                        element: 'IndicationNotification',
+                      },
+                    },
+                    [key],
+                    true,
+                    {
+                      dedup: [key],
+                    },
+                  );
                 }
               }
             }
@@ -1731,7 +1731,7 @@ class Service {
       await db.instance().query(
         `
         update cne.cne_relacoes
-        set data = '${JSON.stringify(relation_data).replaceAll(':null', ': null')}' /* gambiarra */
+        set data = '${JSON.stringify(relation_data).replace(/\:null/g,": null")}' /* gambiarra */
         where cne_versao_id = :draft_id
         `,
         {
@@ -1743,7 +1743,7 @@ class Service {
       await db.instance().query(
         `
         insert into cne.cne_relacoes(cne_versao_id, data)
-        values(:draft_id, '${JSON.stringify(relation_data).replaceAll(':null', ': null')}')  /* gambiarra */
+        values(:draft_id, '${JSON.stringify(relation_data).replace(/\:null/g,": null")}')  /* gambiarra */
         `,
         {
           replacements: { draft_id: entity[0].id },

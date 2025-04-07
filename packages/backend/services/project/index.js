@@ -2674,7 +2674,7 @@ class Service {
       await db.instance().query(
         `
         update projetos_relacoes
-        set data = '${JSON.stringify(relation_data).replaceAll(':null', ': null')}' /* gambiarra */
+        set data = '${JSON.stringify(relation_data).replace(/\:null/g,": null")}' /* gambiarra */
         where projeto_rascunho_id = :draft_id
         `,
         {
@@ -2686,7 +2686,7 @@ class Service {
       await db.instance().query(
         `
         insert into projetos_relacoes(projeto_rascunho_id, data)
-        values(:draft_id, '${JSON.stringify(relation_data).replaceAll(':null', ': null')}')  /* gambiarra */
+        values(:draft_id, '${JSON.stringify(relation_data).replace(/\:null/g,": null")}')  /* gambiarra */
         `,
         {
           replacements: { draft_id: entity[0].id },
