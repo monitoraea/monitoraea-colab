@@ -1108,6 +1108,72 @@ class Service {
       await entityModel.save();
     }
   }
+
+  async delete(id, user) {
+    const result = await this.getIdFromCommunity(id);
+
+    if (result) {
+      let politica_id = result.id;
+
+      await db.models['Ppea'].destroy({
+        where: {
+          politica_id,
+        },
+      });
+
+    }
+
+    // TODO: remove community and members
+    await db.instance().query(
+      `
+      delete from dorothy_communities
+      where id = :id
+  `,
+      {
+        replacements: {
+          id: id,
+        },
+        type: Sequelize.QueryTypes.DELETE,
+      },
+    );
+
+    await db.instance().query(
+      `
+      delete from dorothy_members
+      where "communityId" = :communityId
+  `,
+      {
+        replacements: {
+          communityId: id,
+        },
+        type: Sequelize.QueryTypes.DELETE,
+      },
+    );
+
+    // get user membership from DB
+    const membership = await db.instance().query(
+      `
+      select dm."communityId" as id
+      from dorothy_members dm
+      where dm."userId" = :userId
+      `,
+      {
+        replacements: {
+          userId: user.id,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (membership.some(m => m.id === 1)) {
+      return 1;
+    } else if (membership.some(m => m.id === 533)) {
+      return 533;
+    } else {
+      await require('../gt').addMember(533, user.id);
+      return 533;
+    }
+  }
 }
 
 const singletonInstance = new Service();

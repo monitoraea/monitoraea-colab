@@ -195,6 +195,20 @@ router.delete('/:id/draft/timeline/:tlId', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req.body;
+
+    /* TODO: SO MODERADOR OU ADM */
+    const result = await entity.delete(id, res.locals.user);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 /* TODO */
 router.get('/:id/draft/timeline', async (req, res) => {
   const { id } = req.params;

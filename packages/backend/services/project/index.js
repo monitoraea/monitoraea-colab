@@ -2108,7 +2108,7 @@ class Service {
         other_type: '',
       });
 
-      return entity[0];
+    return entity[0];
   }
 
   async get(id) {
@@ -2674,7 +2674,7 @@ class Service {
       await db.instance().query(
         `
         update projetos_relacoes
-        set data = '${JSON.stringify(relation_data).replace(/\:null/g,": null")}' /* gambiarra */
+        set data = '${JSON.stringify(relation_data).replace(/\:null/g, ': null')}' /* gambiarra */
         where projeto_rascunho_id = :draft_id
         `,
         {
@@ -2686,7 +2686,7 @@ class Service {
       await db.instance().query(
         `
         insert into projetos_relacoes(projeto_rascunho_id, data)
-        values(:draft_id, '${JSON.stringify(relation_data).replace(/\:null/g,": null")}')  /* gambiarra */
+        values(:draft_id, '${JSON.stringify(relation_data).replace(/\:null/g, ': null')}')  /* gambiarra */
         `,
         {
           replacements: { draft_id: entity[0].id },
@@ -2743,74 +2743,74 @@ class Service {
   async delete(id, user) {
     const result = await this.getProjectIdFromCommunity(id);
 
-    if (!result) throw new Error('Projeto nao encontrado!');
+    if (result) {
+      let project = result;
 
-    let project = result;
-
-    await db.instance().query(
-      `
+      await db.instance().query(
+        `
         delete from projetos_atuacao
         where projeto_id = :id
     `,
-      {
-        replacements: {
-          id: project.id,
+        {
+          replacements: {
+            id: project.id,
+          },
+          type: Sequelize.QueryTypes.DELETE,
         },
-        type: Sequelize.QueryTypes.DELETE,
-      },
-    );
+      );
 
-    await db.instance().query(
-      `
+      await db.instance().query(
+        `
       delete from projetos_atuacao_rascunho
       where projeto_id = :id
   `,
-      {
-        replacements: {
-          id: project.id,
+        {
+          replacements: {
+            id: project.id,
+          },
+          type: Sequelize.QueryTypes.DELETE,
         },
-        type: Sequelize.QueryTypes.DELETE,
-      },
-    );
+      );
 
-    await db.instance().query(
-      `
+      await db.instance().query(
+        `
       delete from projetos__linhas_acao
       where projeto_id = :id
   `,
-      {
-        replacements: {
-          id: project.id,
+        {
+          replacements: {
+            id: project.id,
+          },
+          type: Sequelize.QueryTypes.DELETE,
         },
-        type: Sequelize.QueryTypes.DELETE,
-      },
-    );
+      );
 
-    await db.instance().query(
-      `
+      await db.instance().query(
+        `
         delete from projetos__linhas_atuacao
         where projeto_id = :id
     `,
-      {
-        replacements: {
-          id: project.id,
+        {
+          replacements: {
+            id: project.id,
+          },
+          type: Sequelize.QueryTypes.DELETE,
         },
-        type: Sequelize.QueryTypes.DELETE,
-      },
-    );
+      );
 
-    await db.instance().query(
-      `
+      await db.instance().query(
+        `
       delete from projetos
       where id = :id
   `,
-      {
-        replacements: {
-          id: project.id,
+        {
+          replacements: {
+            id: project.id,
+          },
+          type: Sequelize.QueryTypes.DELETE,
         },
-        type: Sequelize.QueryTypes.DELETE,
-      },
-    );
+      );
+    }
 
     // TODO: remove community and members
     await db.instance().query(

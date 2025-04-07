@@ -33,9 +33,9 @@ class Service {
   async get(id) {
     const result = await db.instance().query(
       `
-      select 
-        CONCAT('CIEA-',u.sigla) as nome, 
-        u.nm_estado, 
+      select
+        CONCAT('CIEA-',u.sigla) as nome,
+        u.nm_estado,
         c.data_criacao,
         c.coordenacao,
         c.coordenacao_especifique,
@@ -62,12 +62,12 @@ class Service {
         f2.url as ppea2_link,
         f3.url as plano_estadual_link,
         f4.url as programa_estadual_link
-      from ciea.comissoes c 
+      from ciea.comissoes c
       inner join ufs u on u.id = c.uf
       left join files f1 on f1.id = c.ppea_arquivo
-      left join files f2 on f2.id = c.ppea2_arquivo 
-      left join files f3 on f3.id = c.plano_estadual_arquivo 
-      left join files f4 on f4.id = c.programa_estadual_arquivo 
+      left join files f2 on f2.id = c.ppea2_arquivo
+      left join files f3 on f3.id = c.plano_estadual_arquivo
+      left join files f4 on f4.id = c.programa_estadual_arquivo
       where c.id = :id
         `,
       {
@@ -113,11 +113,11 @@ class Service {
     const commissionTLs = await db.instance().query(
       `
       SELECT
-          lt.id, 
+          lt.id,
           lt."date",
           lt.texto,
           f.url,
-          f.file_name 
+          f.file_name
       FROM ciea.linhas_do_tempo lt
       left join files f on f.id = lt.timeline_arquivo
       WHERE lt.comissao_id = :id
@@ -166,7 +166,7 @@ class Service {
       `
       SELECT
         c.uf,
-        u.nm_estado as uf_nome,        
+        u.nm_estado as uf_nome,
         u.nm_regiao as regiao,
         c.logo_arquivo,
         c.link,
@@ -299,11 +299,11 @@ class Service {
     /* Recupera o id da comunidade, a partir do id da comissao */
     const community = await db.instance().query(
       `
-      select 
+      select
         c.community_id,
         dc.descriptor_json->>'title' as "nome"
-      from ciea.comissoes c 
-      inner join dorothy_communities dc on dc.id = c.community_id 
+      from ciea.comissoes c
+      inner join dorothy_communities dc on dc.id = c.community_id
       where c.id = :id
       `,
       {
@@ -401,26 +401,26 @@ class Service {
   async getListForUser(user) {
     const commissions = await db.instance().query(`
     with commissions as (
-      select 
+      select
         c.id,
         dc.id as "community_id",
         dc.descriptor_json->>'title' as "name",
         count(dm.*) > 0 as "has_members"
-      from ciea.comissoes c 
-      inner join dorothy_communities dc on dc.id = c.community_id 
+      from ciea.comissoes c
+      inner join dorothy_communities dc on dc.id = c.community_id
       left join dorothy_members dm on dm."communityId" = dc.id
       group by c.id, dc.id
     )
-    select 
+    select
       c.id,
       c.community_id,
       c."name",
       dm."createdAt" is not null as "is_member",
       c."has_members",
       p.id is not null as "is_requesting"
-    from commissions c 
+    from commissions c
     left join dorothy_members dm on dm."communityId" = c.community_id and dm."userId" = :userId
-    left join participar p on p."communityId" = c.community_id and p."userId" = :userId and p."resolvedAt" is null 
+    left join participar p on p."communityId" = c.community_id and p."userId" = :userId and p."resolvedAt" is null
     order by c."name"
     `,
       {
@@ -475,7 +475,7 @@ class Service {
             where c.id = ${parseInt(c.id)}
             and u.geom is not null
         )
-        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
         from bounds
         `,
         {
@@ -496,8 +496,8 @@ class Service {
       const c = instance[i];
 
       query = `
-      select count(*)::integer as total 
-      from dorothy_members m 
+      select count(*)::integer as total
+      from dorothy_members m
       inner join ciea.comissoes c on c.community_id = m."communityId"
       where c.id = ${c.id}
       `;
@@ -549,8 +549,8 @@ class Service {
         .join(',')})`;
 
     const query = `
-        select distinct u.id as value, upper(u.nm_estado) as "label"  
-        from ciea.comissoes c 
+        select distinct u.id as value, upper(u.nm_estado) as "label"
+        from ciea.comissoes c
         inner join ufs u on u.id = c.uf
         ${where}
         order by "label"`;
@@ -570,8 +570,8 @@ class Service {
     if (!all) {
       regioes = await sequelize.query(
         `
-        select distinct u.nm_regiao as value, upper(u.nm_regiao) as "label"  
-        from ciea.comissoes c 
+        select distinct u.nm_regiao as value, upper(u.nm_regiao) as "label"
+        from ciea.comissoes c
         inner join ufs u on u.id = c.uf
         where u.nm_regiao <> 'NACIONAL'
         order by "label"`,
@@ -600,7 +600,7 @@ class Service {
           p.community_id
       from ciea.comissoes p
       inner join ufs u on u.id = p.uf
-      where p.id = :id			
+      where p.id = :id
       `,
       {
         replacements: { id },
@@ -614,9 +614,9 @@ class Service {
     // se gt tem membros, envia para gt
     entities = await db.instance().query(
       `
-      select count(*) as total 
+      select count(*) as total
       from dorothy_members dm
-      where dm."communityId" = :communityId			
+      where dm."communityId" = :communityId
       `,
       {
         replacements: { communityId },
@@ -661,7 +661,7 @@ class Service {
     const result = await db.instance().query(
       `
       select id
-      from dorothy_communities dc 
+      from dorothy_communities dc
       where alias = 'rede_ciea'
     `,
       {
@@ -682,9 +682,9 @@ class Service {
     const sequelize = db.instance();
 
     let atuacoes = await sequelize.query(
-      ` 
+      `
         select u.id, ST_AsGeoJSON(ST_Transform(u.geom,4326)) as geojson, ST_AsGeoJSON(ST_Envelope(ST_Transform(u.geom,4326))) as bbox
-        from ufs u 
+        from ufs u
         inner join ciea.comissoes c on c.uf = u.id
         where c.id = ${parseInt(id)}
         and u.geom is not null
@@ -709,7 +709,7 @@ class Service {
             where c.id = ${parseInt(id)}
             and u.geom is not null
         )
-        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2 
+        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
         from bounds
         `,
       {
@@ -730,7 +730,7 @@ class Service {
 
     result = await sequelize.query(
       `
-        select p.id, CONCAT('CIEA-',u.sigla) as nome 
+        select p.id, CONCAT('CIEA-',u.sigla) as nome
         from ciea.comissoes p
         inner join ufs u on u.id = p.uf
         where p.id = ${parseInt(id)}
@@ -746,9 +746,9 @@ class Service {
 
     const members = await sequelize.query(
       `
-      select count(*)::integer as total 
-      from dorothy_members m 
-      inner join ciea.comissoes p on p.community_id = m."communityId"  
+      select count(*)::integer as total
+      from dorothy_members m
+      inner join ciea.comissoes p on p.community_id = m."communityId"
       where p.versao = 'draft'
       and p.id = ${parseInt(id)}
       `,
@@ -760,6 +760,72 @@ class Service {
     project.total_members = !members || !members.length ? 0 : members[0].total;
 
     return project;
+  }
+
+  async delete(id, user) {
+    const result = await this.getIdFromCommunity(id);
+
+    if (result) {
+      let ciea = result.id;
+
+      await db.models['Commission'].destroy({
+        where: {
+          id: ciea,
+        },
+      });
+
+    }
+
+    // TODO: remove community and members
+    await db.instance().query(
+      `
+      delete from dorothy_communities
+      where id = :id
+  `,
+      {
+        replacements: {
+          id: id,
+        },
+        type: Sequelize.QueryTypes.DELETE,
+      },
+    );
+
+    await db.instance().query(
+      `
+      delete from dorothy_members
+      where "communityId" = :communityId
+  `,
+      {
+        replacements: {
+          communityId: id,
+        },
+        type: Sequelize.QueryTypes.DELETE,
+      },
+    );
+
+    // get user membership from DB
+    const membership = await db.instance().query(
+      `
+      select dm."communityId" as id
+      from dorothy_members dm
+      where dm."userId" = :userId
+      `,
+      {
+        replacements: {
+          userId: user.id,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (membership.some(m => m.id === 1)) {
+      return 1;
+    } else if (membership.some(m => m.id === 603)) {
+      return 603;
+    } else {
+      await require('../gt').addMember(603, user.id);
+      return 603;
+    }
   }
 }
 

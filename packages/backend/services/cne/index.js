@@ -315,7 +315,7 @@ class Service {
     }
 
     /* atualiza o nome da instituicao vinculada */
-    if(entityModel.get('instituicao_id')) {
+    if (entityModel.get('instituicao_id')) {
       await db.instance().query(
         `
           update instituicoes
@@ -1341,7 +1341,6 @@ class Service {
   }
 
   async getDraftNetwork(cne_id) {
-
     let entity = await db.instance().query(
       `
       select *
@@ -1487,7 +1486,6 @@ class Service {
   }
 
   async saveDraftNetwork(cne_id, data) {
-
     let relation_data = {
       politicas: [],
       recebe_apoio: [],
@@ -1726,12 +1724,11 @@ class Service {
 
     const relationId = entity[0].relation_id;
     if (!!relationId) {
-
       /* Atualiza */
       await db.instance().query(
         `
         update cne.cne_relacoes
-        set data = '${JSON.stringify(relation_data).replace(/\:null/g,": null")}' /* gambiarra */
+        set data = '${JSON.stringify(relation_data).replace(/\:null/g, ': null')}' /* gambiarra */
         where cne_versao_id = :draft_id
         `,
         {
@@ -1743,13 +1740,79 @@ class Service {
       await db.instance().query(
         `
         insert into cne.cne_relacoes(cne_versao_id, data)
-        values(:draft_id, '${JSON.stringify(relation_data).replace(/\:null/g,": null")}')  /* gambiarra */
+        values(:draft_id, '${JSON.stringify(relation_data).replace(/\:null/g, ': null')}')  /* gambiarra */
         `,
         {
           replacements: { draft_id: entity[0].id },
           type: Sequelize.QueryTypes.INSERT,
         },
       );
+    }
+  }
+
+  async delete(id, user) {
+    const result = await this.getIdFromCommunity(id);
+
+    if (result) {
+      let cne_id = result.id;
+
+      await db.models['Cne'].destroy({
+        where: {
+          cne_id,
+        },
+      });
+
+    }
+
+    // TODO: remove community and members
+    await db.instance().query(
+      `
+      delete from dorothy_communities
+      where id = :id
+  `,
+      {
+        replacements: {
+          id: id,
+        },
+        type: Sequelize.QueryTypes.DELETE,
+      },
+    );
+
+    await db.instance().query(
+      `
+      delete from dorothy_members
+      where "communityId" = :communityId
+  `,
+      {
+        replacements: {
+          communityId: id,
+        },
+        type: Sequelize.QueryTypes.DELETE,
+      },
+    );
+
+    // get user membership from DB
+    const membership = await db.instance().query(
+      `
+      select dm."communityId" as id
+      from dorothy_members dm
+      where dm."userId" = :userId
+      `,
+      {
+        replacements: {
+          userId: user.id,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (membership.some(m => m.id === 1)) {
+      return 1;
+    } else if (membership.some(m => m.id === 1236)) {
+      return 1236;
+    } else {
+      await require('../gt').addMember(1236, user.id);
+      return 1236;
     }
   }
 }

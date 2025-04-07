@@ -342,6 +342,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req.body;
+
+    /* TODO: SO MODERADOR OU ADM */
+    const result = await entity.delete(id, res.locals.user);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.get('/geo', async (req, res) => {
   try {
     const { f_id } = req.query;

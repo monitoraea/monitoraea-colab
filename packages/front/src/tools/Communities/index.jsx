@@ -19,6 +19,8 @@ import Trash from '../../components/icons/Trash';
 import styles from '../../components/FreeMultiple/FreeMultiple.module.scss';
 import { useQueryClient, useQuery, useMutation } from 'react-query';
 
+import { perspeciveXentity } from '../../utils/configs';
+
 const WorkingGroups = () => {
   const { server } = useDorothy();
   const { currentCommunity, changeRoute } = useRouter();
@@ -55,7 +57,7 @@ const WorkingGroups = () => {
   const mutations = {
     remove: useMutation(
       id => {
-        return axios.delete(`${server}project/${id}`);
+        return axios.delete(`${server}${perspeciveXentity[currentCommunity.perspective]}/${id}`);
       },
       { onSuccess: () => queryClient.invalidateQueries('communities_list') },
     ),
