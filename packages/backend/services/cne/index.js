@@ -1600,14 +1600,14 @@ class Service {
                   answered: false,
                 };
 
-                await Messagery.sendNotification({ id: 0 }, `room_c${data.communityId}_t1`, {
-                  content,
-                  userId: 0,
-                  tool: {
-                    type: 'native',
-                    element: 'NewIndicatedProjectNotification',
-                  },
-                });
+                // await Messagery.sendNotification({ id: 0 }, `room_c${data.communityId}_t1`, {
+                //   content,
+                //   userId: 0,
+                //   tool: {
+                //     type: 'native',
+                //     element: 'NewIndicatedProjectNotification',
+                //   },
+                // });
               } else {
                 /* tem id, indic ou draft */
 
@@ -1675,23 +1675,23 @@ class Service {
 
                   const key = `indication_${indicador.id}_${projeto_indicado_id}_${what}`;
 
-                  await Messagery.sendNotification(
-                    { id: 0 },
-                    `room_c${communityId}_t1`,
-                    {
-                      content,
-                      userId: 0,
-                      tool: {
-                        type: 'native',
-                        element: 'IndicationNotification',
-                      },
-                    },
-                    [key],
-                    true,
-                    {
-                      dedup: [key],
-                    },
-                  );
+                  // await Messagery.sendNotification(
+                  //   { id: 0 },
+                  //   `room_c${communityId}_t1`,
+                  //   {
+                  //     content,
+                  //     userId: 0,
+                  //     tool: {
+                  //       type: 'native',
+                  //       element: 'IndicationNotification',
+                  //     },
+                  //   },
+                  //   [key],
+                  //   true,
+                  //   {
+                  //     dedup: [key],
+                  //   },
+                  // );
                 }
               }
             }
