@@ -965,7 +965,7 @@ class Service {
   }
 
   async getDraftTimeline(id) {
-    const cneTLs = await db.instance().query(
+    const politicaTLs = await db.instance().query(
       `
               SELECT
                   lt.id,
@@ -987,12 +987,16 @@ class Service {
       },
     );
 
-    for (let tl of cneTLs) {
+    for (let tl of politicaTLs) {
       if (!!tl.url)
-        tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(tl.politica_versao_id, 'timeline_arquivo', tl.url)}`;
+        tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(
+          tl.politica_versao_id,
+          'timeline_arquivo',
+          tl.url,
+        )}`;
     }
 
-    return cneTLs;
+    return politicaTLs;
   }
 
   async saveDraftTimeline(user, entity, timeline_arquivo, id, tlid) {
@@ -1044,7 +1048,7 @@ class Service {
   }
 
   async getPPEADraftId(politica_id) {
-    // encontra a versao draft desta cne
+    // encontra a versao draft desta politica
     const p_draft = await db.instance().query(
       `
       select id
@@ -1068,7 +1072,7 @@ class Service {
     await s3
       .putObject({
         Bucket: s3BucketName,
-        Key: this.getFileKey(entityId || entityModel.get('cne_versao_id'), fieldName, file.originalname),
+        Key: this.getFileKey(entityId || entityModel.get('politica_versao_id'), fieldName, file.originalname),
         Body: file.buffer,
         ACL: 'public-read',
       })
@@ -1091,7 +1095,7 @@ class Service {
     if (!!fileModel) {
       fileModel.file_name = file_name;
       fileModel.url = file_name;
-      fileModel.document_type = `cne_${fieldName}`;
+      fileModel.document_type = `politica_${fieldName}`;
       fileModel.content_type = content_type;
 
       fileModel.save();
@@ -1099,7 +1103,7 @@ class Service {
       const fileModel = await db.models['File'].create({
         file_name,
         url: file_name,
-        document_type: `cne_${fieldName}`,
+        document_type: `politica_${fieldName}`,
         content_type,
       });
 
@@ -1120,7 +1124,6 @@ class Service {
           politica_id,
         },
       });
-
     }
 
     // TODO: remove community and members
@@ -1172,6 +1175,184 @@ class Service {
     } else {
       await require('../gt').addMember(533, user.id);
       return 533;
+    }
+  }
+
+  async publish(politica_id) {
+    const transaction = await db.instance().transaction();
+
+    try {
+      /**** >>> A.REMOVE CURRENT (if exists) <<< ****/
+      const politica_current = await db.models['Ppea'].findOne({
+        where: {
+          politica_id,
+          versao: 'current',
+        },
+      });
+      if (politica_current) {
+        const timelines = await db.models['Ppea_timeline'].findAll({
+          where: {
+            politica_versao_id: politica_current.id,
+          },
+        });
+        for (let tl of timelines) {
+          // A.1A REMOVE TIMELINE FILES
+          if (tl.timeline_arquivo) {
+            await db.models['File'].destroy({
+              where: { id: tl.timeline_arquivo },
+              transaction,
+            });
+          }
+          // A.1B REMOVE TIMELINE
+          await db.models['Ppea_timeline'].destroy({
+            where: { id: tl.id },
+            transaction,
+          });
+        }
+        // A.2 REMOVE GEOM
+        await db.instance().query(
+          `
+            DELETE FROM ppea.politicas_atuacao
+            WHERE politica_versao_id = :politica_versao_id
+          `,
+          {
+            replacements: { politica_versao_id: politica_current.id },
+            type: Sequelize.QueryTypes.DELETE,
+            transaction,
+          },
+        );
+        // A.3 REMOVE FILES
+        // if (politica_current.logo_arquivo) {
+        //   await db.models['File'].destroy({
+        //     where: { id: politica_current.logo_arquivo },
+        //     transaction,
+        //   });
+        // }
+        // A.4 REMOVE politica
+        politica_current.destroy({ transaction });
+      }
+
+      /**** >>> B.DRAFT->CURRENT <<< ****/
+      const politica_draft = await db.models['Ppea'].findOne({
+        where: {
+          politica_id,
+          versao: 'draft',
+        },
+      });
+      if (!politica_draft) throw new Error('politica without draft');
+      politica_draft.versao = 'current';
+      await politica_draft.save({
+        transaction,
+      });
+
+      /**** >>> C.CLONE new CURRENT -> DRAFT <<< ****/
+
+      // C.1 CLONE FILE
+      // const new_file = await db.instance().query(
+      //   `
+      //   insert into files(file_name, description, "content_type", "createdAt", "updatedAt", tags, url, file_size, legacy_id, origin, document_type, send_date)
+      //   SELECT file_name, description, "content_type", NOW(), NOW(), tags, url, file_size, legacy_id, origin, document_type, send_date
+      //   FROM files
+      //   WHERE id = :file_id
+      //   RETURNING id
+      // `,
+      //   {
+      //     replacements: { file_id: politica_draft.logo_arquivo },
+      //     type: Sequelize.QueryTypes.SELECT,
+      //     transaction,
+      //   },
+      // );
+
+      // C.2 CLONE politica
+      const politica_clone = await db.models['Ppea'].create(
+        {
+          ...politica_draft.get({ plain: true }),
+          id: undefined,
+          versao: 'draft',
+          // logo_arquivo: new_file[0].id,
+        },
+        {
+          transaction,
+        },
+      );
+
+      // C.3A CLONE TIMELINE
+      const timelines = await db.models['Ppea_timeline'].findAll({
+        where: {
+          politica_versao_id: politica_draft.id,
+        },
+      });
+      for (let tl of timelines) {
+        // C.3B CLONE TIMELINE FILES
+        const new_file = await db.instance().query(
+          `
+          insert into files(file_name, description, "content_type", "createdAt", "updatedAt", tags, url, file_size, legacy_id, origin, document_type, send_date)
+          SELECT file_name, description, "content_type", NOW(), NOW(), tags, url, file_size, legacy_id, origin, document_type, send_date
+          FROM files
+          WHERE id = :file_id
+          RETURNING id
+        `,
+          {
+            replacements: { file_id: tl.timeline_arquivo },
+            type: Sequelize.QueryTypes.SELECT,
+            transaction,
+          },
+        );
+
+        await db.models['Ppea_timeline'].create(
+          {
+            ...tl.get({ plain: true }),
+            id: undefined,
+            politica_versao_id: politica_clone.id,
+            timeline_arquivo: new_file[0].id,
+          },
+          {
+            transaction,
+          },
+        );
+      }
+
+      // C.4 CLONE GEOM
+      await db.instance().query(
+        `
+        INSERT INTO ppea.politicas_atuacao(politica_versao_id, geom)
+        SELECT ${politica_clone.id} as politica_versao_id, geom FROM ppea.politicas_atuacao
+        WHERE politica_versao_id = :politica_versao_id
+      `,
+        {
+          replacements: { politica_versao_id: politica_draft.id },
+          type: Sequelize.QueryTypes.INSERT,
+          transaction,
+        },
+      );
+
+      /* atualiza o nome da comunidade */
+      await db.instance().query(
+        `
+      update dorothy_communities
+      set descriptor_json = jsonb_set(descriptor_json , '{"title"}', jsonb '"${politica_draft.nome}"', true)
+      where id = :id
+      `,
+        {
+          replacements: {
+            id: politica_draft.community_id,
+          },
+          type: Sequelize.QueryTypes.UPDATE,
+          transaction,
+        },
+      );
+
+      // COMMIT TRANSACTION
+      await transaction.commit();
+
+      // SEND NOTIFICATION --> TODO (ISSUE)
+
+      return { success: true };
+    } catch (error) {
+      // ROLLBACK TRANSACTION
+
+      await transaction.rollback();
+      throw error;
     }
   }
 }

@@ -52,9 +52,9 @@ const Manager = () => {
     refetchOnWindowFocus: false,
   });
 
-  /* const mutation = {
-    publish: useMutation(() => axios.put(`${server}commission/${entityId}/publish`)),
-  }; */
+  const mutation = {
+    publish: useMutation(() => axios.put(`${server}ppea/${entityId}/publish`)),
+  };
 
   useEffect(() => {
     _isAdmOrMod(
@@ -104,7 +104,7 @@ const Manager = () => {
       if (data.success) {
         window.location = `${window.location}`;
 
-        enqueueSnackbar('Comissão publicada com sucesso!', {
+        enqueueSnackbar('politica publicada com sucesso!', {
           variant: 'success',
           anchorOrigin: {
             vertical: 'top',
@@ -115,7 +115,7 @@ const Manager = () => {
         enqueueSnackbar(
           <div>
             <p>
-              <strong>Esta comissão ainda não esta pronta para ser publicada!</strong>
+              <strong>Esta politica ainda não esta pronta para ser publicada!</strong>
             </p>
             <p>Verifique se todos os campos das abas de Informações estão completamente preenchidos.</p>
           </div>,
@@ -133,7 +133,7 @@ const Manager = () => {
 
       console.error(error);
 
-      enqueueSnackbar('Erro ao publicar a comissão!', {
+      enqueueSnackbar('Erro ao publicar a politica!', {
         variant: 'error',
         anchorOrigin: {
           vertical: 'top',

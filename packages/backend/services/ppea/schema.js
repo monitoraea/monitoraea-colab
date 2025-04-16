@@ -61,6 +61,9 @@ module.exports = (sequelize, DataTypes) => {
       nome: {
         type: DataTypes.STRING,
       },
+      community_id: {
+        type: DataTypes.INTEGER,
+      },
       link: {
         type: DataTypes.STRING,
       },

@@ -422,6 +422,19 @@ router.get('/statistics/institutions', async (req, res) => {
   }
 });
 
+router.put('/:id/publish', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    /* TODO: SO MODERADOR OU ADM */
+    const result = await entity.publish(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.get('/for_participation/:id', async (req, res) => {
   try {
     const { id } = req.params;
