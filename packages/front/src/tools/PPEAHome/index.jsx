@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDorothy, useRouter, useUser } from 'dorothy-dna-react';
 import { useQuery, useMutation } from 'react-query';
+import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
 import axios from 'axios';
 /* components */
 import Tabs from './Tabs';
@@ -22,6 +23,8 @@ import Button from '@mui/material/Button';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
+import Trash from '../../components/icons/Trash';
+
 /* styles */
 import styles from './styles.module.scss';
 
@@ -31,6 +34,9 @@ const Manager = () => {
   const { user, updateUser } = useUser();
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [toRemove, _toRemove] = useState(null);
+  const [removeDialogOpen, _removeDialogOpen] = useState(false);
+
   /*  */
   const [entityId, _entityId] = useState(null);
   const [tabindex, _tabindex] = useState(null);
@@ -54,6 +60,9 @@ const Manager = () => {
 
   const mutation = {
     publish: useMutation(() => axios.put(`${server}ppea/${entityId}/publish`)),
+    remove: useMutation(() => {
+      return axios.delete(`${server}ppea/${toRemove}`);
+    }),
   };
 
   useEffect(() => {
@@ -84,6 +93,31 @@ const Manager = () => {
   const handleTermConfirmation = confirmation => {
     if (confirmation === 'confirm') doPublish();
     _showTermDialod(false);
+  };
+
+  const remove = () => {
+    _toRemove(currentCommunity.id);
+    _removeDialogOpen(true);
+  };
+
+  const doRemove = async action => {
+    if (action === 'confirm') {
+      let result = await mutation.remove.mutateAsync(toRemove);
+
+      enqueueSnackbar('Iniciativa deletada com sucesso!', {
+        variant: 'success',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
+      });
+
+      changeRoute({ community: result.data });
+      updateUser();
+    }
+
+    _toRemove(null);
+    _removeDialogOpen(false);
   };
 
   const doPublish = async () => {
@@ -157,10 +191,22 @@ const Manager = () => {
             Baixar CSV
           </button>
 
+          <button className="button-outline" /* onClick={() => _showShapeDialog(true)} */>
+            <Download></Download>
+            Baixar GEO (Shapefile)
+          </button>
+
           {isAdmOrMod && isAdmOrMod === true && (
             <button className="button-primary" onClick={handlePublish}>
               <CheckCircle></CheckCircle>
               Publicar
+            </button>
+          )}
+
+          {isAdmOrMod && isAdmOrMod === true && (
+            <button className={styles.button_delete} onClick={remove}>
+              <Trash></Trash>
+              Excluir
             </button>
           )}
         </div>
@@ -191,6 +237,12 @@ const Manager = () => {
       )}
 
       <Box display="flex" justifyContent="space-between"></Box>
+      <ConfirmationDialog
+        open={removeDialogOpen}
+        content="Confirma a remoção desta iniciativa?"
+        confirmButtonText="Remover"
+        onClose={doRemove}
+      />
 
       <TermDialog open={showTermDialod} onClose={handleTermConfirmation} />
     </div>
