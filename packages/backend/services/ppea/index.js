@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 
 const { getSegmentedId, applyWhere, parseBBOX } = require('../../utils');
 
-const dayjs = require('dayjs');
+const AdmZip = require('adm-zip');
 
 const { check } = require('../../form_utils');
 
@@ -1354,6 +1354,57 @@ class Service {
       await transaction.rollback();
       throw error;
     }
+  }
+
+  async downloadProject(id) {
+    /* recupera projeto e linhas de acao */
+
+    let rows = await db.instance().query(
+      `
+      select
+        id, politica_id, legacy_id, community_id, enquadramento_1, enquadramento_1_just, enquadramento_2, enquadramento_2_just, enquadramento_3, enquadramento_3_just, enquadramento_4, enquadramento_4_just, instituicao_nome, instituicao_enquadramento, responsavel_nome, responsavel_cargo, responsavel_telefone, responsavel_email, nome, link, fase, fase_ano, fase_descricao, area, area_tematica,
+        -- dificuldades,
+        contemplados, "createdAt", "updatedAt", versao, atuacao_aplica, atuacao_naplica_just
+      from ppea.politicas p
+      where p.versao='draft' and p.politica_id = :id
+      `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!rows.length) return null;
+
+    let title = rows[0].nome;
+
+    // fileName
+    const fileName = `politica_publica_${id}`;
+
+    const csvFileName = `${fileName}.csv`;
+    const zipFileName = `${fileName}.zip`;
+
+    // 1. transformar em csv
+    const columns = Object.keys(rows[0]).filter(k => !['coordinates', 'bbox'].includes(k));
+    let initialContent = columns.join(';') + '\n';
+
+    const content = rows.reduce((accum, r) => {
+      const row = columns.reduce((accum, key) => {
+        if (typeof r[key] === 'string') r[key] = r[key].replace(/\n/g, ' ').replace(/;/g, ',').trim();
+
+        return [...accum, r[key]];
+      }, []);
+      return `${accum} ${row.join(`;`)}\n`;
+    }, initialContent);
+
+    // 2. zipar e colocar na memoria
+    const zip = new AdmZip();
+    zip.addFile(csvFileName, Buffer.from(content, 'latin1'));
+
+    return {
+      zipFileName,
+      content: zip.toBuffer(), // get in-memory zip
+    };
   }
 }
 

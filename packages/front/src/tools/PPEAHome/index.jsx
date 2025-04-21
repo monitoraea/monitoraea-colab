@@ -40,6 +40,7 @@ const Manager = () => {
   /*  */
   const [entityId, _entityId] = useState(null);
   const [tabindex, _tabindex] = useState(null);
+  const [showShapeDialog, _showShapeDialog] = useState(false);
   const [showTermDialod, _showTermDialod] = useState(false);
   const [isAdmOrMod, _isAdmOrMod] = useState(false);
   /*  */
@@ -178,7 +179,7 @@ const Manager = () => {
   };
 
   const handleDownload = () => {
-    // window.open(`${server}commission/${entityId}/download`, '_blank');
+    window.open(`${server}ppea/${entityId}/download`, '_blank');
   };
 
   return (
@@ -191,7 +192,7 @@ const Manager = () => {
             Baixar CSV
           </button>
 
-          <button className="button-outline" /* onClick={() => _showShapeDialog(true)} */>
+          <button className="button-outline" onClick={() => _showShapeDialog(true)}>
             <Download></Download>
             Baixar GEO (Shapefile)
           </button>
@@ -244,10 +245,34 @@ const Manager = () => {
         onClose={doRemove}
       />
 
+      <ShapeDialog open={showShapeDialog} onClose={() => _showShapeDialog(false)} />
       <TermDialog open={showTermDialod} onClose={handleTermConfirmation} />
     </div>
   );
 };
+
+function ShapeDialog({ open, onClose }) {
+  return (
+    <div>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Aviso</DialogTitle>
+        <DialogContent>
+          <DialogContent id="alert-dialog-description">Este recurso esta em fase de implementação!</DialogContent>
+        </DialogContent>
+        <DialogActions>
+          <button className="button-primary" onClick={() => onClose('cancel')} autoFocus>
+            Fechar
+          </button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}
 
 function TermDialog({ open, onClose }) {
   return (
