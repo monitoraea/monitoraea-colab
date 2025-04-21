@@ -5,25 +5,11 @@ lists:
     - value: -1
       label: Não respondido
     - value: 0
-      label: 'Poder Público - Nível Federal'
+      label: 'Nível Federal'
     - value: 1
-      label: 'Poder Público - Nível Estadual'
+      label: 'Nível Estadual'
     - value: 2
-      label: 'Poder Público - Nível Municipal'
-    - value: 3
-      label: 'Organização da Sociedade Civil'
-    - value: 4
-      label: 'Escolas e Universidades'
-    - value: 5
-      label: 'Comitê gestor de Unidade de Conservação'
-    - value: 6
-      label: 'Bacia Hidrogrãfica'
-    - value: 7
-      label: 'Coletivos e Redes'
-    - value: 8
-      label: 'Setor Privado e outros'
-    - value: 9
-      label: 'Outro'
+      label: 'Nível Municipal'
 
   - key: areas
     options:
@@ -33,7 +19,7 @@ lists:
       label: 'Geral'
     - value: 1
       label: 'Temática'
-      
+
   - key: fases
     options:
     - value: -1
