@@ -435,8 +435,37 @@ router.post('/upload-shp', fileUpload, async (req, res) => {
 });
 
 router.get('/statistics/institutions', async (req, res) => {
+
+  const { enquads } = req.query;
+
   try {
-    const result = await entity.total_institutions();
+    const result = await entity.total_institutions({ enquads: enquads ? enquads.split(',') : null });
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
+router.get('/statistics/iniciatives', async (req, res) => {
+
+  const { enquads } = req.query;
+
+  try {
+    const result = await entity.total_iniciatives({ enquads: enquads ? enquads.split(',') : null });
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
+router.get('/statistics/members', async (req, res) => {
+
+  const { enquads } = req.query;
+
+  try {
+    const result = await entity.total_members({ enquads: enquads ? enquads.split(',') : null });
 
     res.json(result);
   } catch (ex) {

@@ -911,12 +911,64 @@ class Service {
     };
   }
 
-  async total_institutions() {
+  async total_institutions(config) {
+    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
+
+    if (config.enquads) {
+      where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
+    }
+
     // retrieve
     let result = await db.instance().query(
       `
       select count(distinct p.instituicao_nome)::integer as total
       from ppea.politicas p
+      ${applyWhere(where)}
+      `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return result[0].total;
+  }
+
+  async total_iniciatives(config) {
+    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
+
+    if (config.enquads) {
+      where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
+    }
+
+    // retrieve
+    let result = await db.instance().query(
+      `
+      select count(distinct p.politica_id)::integer as total
+      from ppea.politicas p
+      ${applyWhere(where)}
+      `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return result[0].total;
+  }
+
+  async total_members(config) {
+    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
+
+    if (config.enquads) {
+      where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
+    }
+
+    // retrieve
+    let result = await db.instance().query(
+      `
+      select count(distinct dm."userId")::integer as total
+      from ppea.politicas p
+      inner join dorothy_members dm on dm."communityId" = p.community_id
+      ${applyWhere(where)}
       `,
       {
         type: Sequelize.QueryTypes.SELECT,
