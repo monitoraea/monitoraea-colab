@@ -158,7 +158,7 @@ export default function ActingTab() {
     });
 
     await axios.put(`${server}ppea/${id}/geo-draw/${checked ? (checked === 'none' ? 'none' : '1') : '0'}`);
-    
+
 
     queryClient.invalidateQueries('policy_analysis')
 
@@ -177,7 +177,7 @@ export default function ActingTab() {
       },
     });
 
-    await axios.put(`${server}ppea/${id}/draft/justification`, { value: justification });    
+    await axios.put(`${server}ppea/${id}/draft/justification`, { value: justification });
 
     queryClient.invalidateQueries('policy_analysis')
 
@@ -238,7 +238,7 @@ export default function ActingTab() {
                 <div className="row">
                   <div className="col-xs-12">
                     <TextField
-                      className="input-text" /* 
+                      className="input-text" /*
                     label="Justificativa" */
                       value={justification || ''}
                       onChange={e => _justification(e.target.value)}

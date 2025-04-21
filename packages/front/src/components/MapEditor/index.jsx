@@ -161,7 +161,7 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
       });
     });
 
-    
+
     closeSnackbar(snackKey);
 
     _cqlFilter(null);
@@ -217,7 +217,7 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
           <EditControl
             position='topright'
 
-            /* 
+            /*
             onEdited={onChange}
             onCreated={onChange}
             onDeleted={onChange}
@@ -256,15 +256,15 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
       </FeatureGroup>
 
       {isEditing && <>
-        <Control position="bottomright">
+        <Control position="topright">
           <button disabled={editing} className="action save" onClick={handleSave}>Gravar</button>
         </Control>
-        <Control position="bottomright">
+        <Control position="topright">
           <button disabled={editing} className="action cancel" onClick={handleCancel}>Sair</button>
         </Control>
       </>}
 
-      {!isEditing && <Control position="bottomright">
+      {!isEditing && <Control position="topright">
         <button className="action" onClick={() => onEdit(true)}>Editar</button>
       </Control>}
 
