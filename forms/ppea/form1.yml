@@ -12,14 +12,14 @@ fields:
   type: options
   title: Área da Política Pública
   size: 6
-  list: 
+  list:
     module: property
-    key: areas  
-  validation: 
+    key: areas
+  validation:
     - type: neq
       value: -1
     - type: not_empty
-  
+
 - key: area_tematica
   type: text
   title: Especifique
@@ -27,7 +27,7 @@ fields:
   show:
     target:
       key: area
-      value: 1  
+      value: 1
   validation: not_empty # nao pode ser vazio se esta campo estiver sendo apresentado
   # disabled
 
@@ -41,12 +41,12 @@ fields:
 - key: instituicao_enquadramento
   block: inst
   type: options
-  title: Enquadramento da Instituição
+  title: Nível da PPEA
   size: 8
-  list: 
+  list:
     module: property
     key: enquadramentos
-  validation: 
+  validation:
     - type: neq
       value: -1
     - type: not_empty
@@ -59,7 +59,7 @@ fields:
 
 - key: responsavel_cargo
   type: text
-  title: Cargo/Função	
+  title: Cargo/Função
   size: 6
 
 - key: responsavel_telefone
@@ -70,13 +70,13 @@ fields:
 - key: responsavel_email
   type: text
   title: Email
-  size: 6  
+  size: 6
   validation: not_empty
 
 - key: link
   type: text
   title: Link para acesso à informações da Política Pública
-  size: 12  
+  size: 12
 
 - key: contemplados
   type: textarea
@@ -88,10 +88,10 @@ fields:
   type: options
   title: Fase atual da Política Pública
   size: 4
-  list: 
+  list:
     module: property
-    key: fases 
-  validation: 
+    key: fases
+  validation:
     - type: neq
       value: -1
     - type: not_empty
@@ -131,7 +131,7 @@ fields:
     - value: 8
       label: 'Implementação'
 
-# 1. BasicRenderer: se houver blocks abaixo (ou nos campos), o renderer utiliza esta informação para definir o visual e impor regras. 
+# 1. BasicRenderer: se houver blocks abaixo (ou nos campos), o renderer utiliza esta informação para definir o visual e impor regras.
 # -- Neste caso, campo deve estar presente em block para aparecer (ou ligar showOrphan)
 
 # 2. Renderer (com view): utiliza esta informação, somente, para regras
