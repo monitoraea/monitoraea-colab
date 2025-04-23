@@ -1,0 +1,30 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: NOVO INDICADOR
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: text
+    title: NOVO
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

@@ -2,14 +2,20 @@ fields:
   - key: 1
     block: main
     type: options
-    title: Existem recursos financeiros para a viabilização da iniciativa?
+    title: Qual posição da EA na estrutura administrativa/organizacional da instituição?
     options:
-      - value: -1
-        label: Não respondido
       - value: 0
-        label: "Não"
+        label: Nível 1 – (PPEA alocada como uma Diretoria/Coordenação (ou outra nomenclatura que indique amaior proximidade com o nível estratégico da instituição)
       - value: 1
-        label: "Sim"
+        label: Nível 2 – (PPEA alocada como um Departamento/Setor (ou outra nomenclatura que indique o nível logo abaixo do superior da instituição)
+      - value: 2
+        label: Nível 3 – (PPEA alocada como um grupo de trabalho (ou outra nomenclatura que indique o nível com baixa governabilidade dentro da instituição)
+      - value: 3
+        label: Nível 4 – PPEA sem alocação definida - sem governabilidade
+      - value: 4
+        label: Não há previsão de estrutura administrativa/organizacional na instituição para a EA
+      - value: 5
+        label: Outro
     validation:
       - type: neq
         value: -1
@@ -17,82 +23,12 @@ fields:
 
   - key: 2
     block: dependent
-    type: multi_autocomplete
-    title: Tipo de fontes dos recursos
-    options:
-      - value: 0
-        label: Interna
-      - value: 1
-        label: Externa
-
-  - key: 3
-    block: dependent
-    type: multi_autocomplete
-    title: Tipo de fontes dos recursos
-    options:
-      - value: 0
-        label: Previsão Orçamentária
-      - value: 1
-        label: Recursos disponíveis na instituição
-    show:
-      target:
-        key: 2
-        value: 0
-
-  - key: 4
-    block: dependent
-    type: multi_autocomplete
-    title: Tipo de fontes dos recursos
-    options:
-      - value: 0
-        label: Renúncia Fiscal
-      - value: 1
-        label: Financiamento Coletivo
-      - value: 2
-        label: Editais de Apoio
-      - value: 3
-        label: Emendas parlamentares
-      - value: 4
-        label: Outros
-    show:
-      target:
-        key: 2
-        value: 1
-
-  - key: 5
-    block: dependent
     type: textarea
-    title: Especifique
+    title: Descreva / comente
     validation: not_empty
     show:
       target:
-        key: 4
-        value: 4
-
-  - key: 6
-    block: dependent
-    type: options
-    title: Há mecanismos de acesso aos recursos?
-    options:
-      - value: -1
-        label: Não respondido
-      - value: 0
-        label: "Não"
-      - value: 1
-        label: "Sim"
-    validation:
-      - type: neq
-        value: -1
-      - type: not_empty
-
-  - key: 7
-    block: dependent
-    type: textarea
-    title: Descreva/comente.
-    validation: not_empty
-    show:
-      target:
-        key: 6
+        key: 5
         value: 1
 
 blocks:

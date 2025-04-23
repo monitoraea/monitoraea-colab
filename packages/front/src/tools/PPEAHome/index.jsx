@@ -229,7 +229,6 @@ const Manager = () => {
                 <IndicatorsTab entityId={entityId} analysis={analysis} problems={analysis.analysis.question_problems} />
               )}
               {tabindex === 'conexoes' && <ConexoesTab entityId={entityId} />}
-              {tabindex === 'indicadores' && <OldIndicatorsTab entityId={entityId} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
               {tabindex === 'timeline' && <TimelineTab entityId={entityId} />}
             </>

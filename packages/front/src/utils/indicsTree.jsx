@@ -21,7 +21,7 @@ export function indicsTree(data) {
 
 export function getDimTitle(structure, id) {
     const dim = getDimension(structure, id)
-    
+
     return dim.title
 }
 export function getIndicTitle(structure, d, id) {

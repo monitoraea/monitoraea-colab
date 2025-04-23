@@ -88,11 +88,6 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             label="Linha do tempo"
             {...a11yProps('timeline')}
           />
-          {(user.membership.find(c => c.alias === 'adm_ppea')) && <Tab
-            disableRipple
-            label="Indicadores legados"
-            {...a11yProps('indicadores')}
-          />}
         </Tabs>
       </div>
     </div>

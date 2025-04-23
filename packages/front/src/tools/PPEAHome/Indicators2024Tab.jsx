@@ -63,8 +63,6 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {/* hook
 
     useEffect(() => {
         if (analysis) _tree(indicsTree(analysis));
-
-        // console.log('analysis', analysis, indicsTree(analysis))
     }, [analysis])
 
     useEffect(() => {
@@ -183,7 +181,7 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {/* hook
                                 {tree.map(d => {
                                     let hasDim = getDimension(structure, d.id);
 
-                                    return <Fragment key={d.id}>                                        
+                                    return <Fragment key={d.id}>
 
                                         {hasDim && <li className={`mb-3 ${styles.li_lae_titles}`} onClick={() => handleNavBranch(d.id)}>
                                             <ListItemStatus

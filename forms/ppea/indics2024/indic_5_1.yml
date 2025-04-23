@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A iniciativa prevê(iu) algum elemento para identificar a elevação da autoestima dos envolvidos?
+    title: A iniciativa promoveu ações socioambientais articuladas com as iniciativas culturais?
     options:
       - value: -1
         label: Não respondido
@@ -17,45 +17,18 @@ fields:
 
   - key: 2
     block: dependent
-    type: multi_autocomplete
-    title: Qual elemento foi previsto para identificar a elevação da autoestima?
-    options:
-      - value: 0
-        label: Pesquisa/diagnostico
-      - value: 1
-        label: Relatos / depoimentos
-      - value: 2
-        label: Observação
+    type: textarea
+    title: Se sim (promoveu ações socioambientais articuladas com as iniciativas culturais), comente
 
   - key: 3
     block: dependent
-    type: options
-    title: Qual é a percepção da elevação da autoestima dos envolvidos diagnosticada?
-    options:
-      - value: -1
-        label: Não respondido
-      - value: 0
-        label: Alta
-      - value: 1
-        label: Média
-      - value: 2
-        label: Baixa
-      - value: 3
-        label: Muito baixa
+    type: textarea
+    title: Cite e descreva as ações
 
   - key: 4
     block: dependent
-    type: textarea
-    title: Insira elemento comprobatório referente a pergunta acima
-    show:
-      target:
-        key: 3
-        value: 1
-
-  - key: 5
-    block: dependent
     type: options
-    title: As intervenções fomentam / se desdobram em outras ações?
+    title: As práticas promovidas têm como princípio a valorização da cultura local/tradicional/popular?
     options:
       - value: -1
         label: Não respondido
@@ -66,25 +39,12 @@ fields:
     validation:
       - type: neq
         value: -1
+      - type: not_empty
 
-  - key: 6
+  - key: 5
     block: dependent
     type: textarea
-    title: Se Sim (as intervenções fomentam / se desdobram em outras ações), especifique
-    show:
-      target:
-        key: 5
-        value: 1
-
-  - key: 7
-    block: dependent
-    type: file
-    title: Insira elemento comprobatório referente a pergunta acima
-    validation: not_empty
-    show:
-      target:
-        key: 5
-        value: 1
+    title: Descreva/comente.
 
 blocks:
   - key: main

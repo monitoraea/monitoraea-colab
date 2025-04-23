@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: Foi construído algum instrumento pedagógico que oriente a política?
+    title: Existem práticas internas da instituição de uso racional dos recursos naturais e bens públicos?
     options:
       - value: -1
         label: Não respondido
@@ -18,40 +18,46 @@ fields:
   - key: 2
     block: dependent
     type: multi_autocomplete
-    title: Quais instrumentos?
+    title: Há alguma referência que defina os critérios de tais práticas da organização?
     options:
       - value: 0
-        label: Projeto Político Pedagógico (PPP)
+        label: A3P (se instituição pública)
       - value: 1
-        label: Programa
+        label: Programa de gestão ambiental ou similar
       - value: 2
-        label: Plano
+        label: Plano de gestão ambiental ou similar
       - value: 3
-        label: Normas Internas
+        label: Não há
 
   - key: 3
     block: dependent
-    type: multi_autocomplete
-    title: Quais estratégias são utilizadas para a construção do instrumento pedagógico de base?
+    type: options
+    title: Existência de grupo organizado/comissão responsável pelo planejamento e implementação das práticas sustentáveis?
     options:
+      - value: -1
+        label: Não respondido
       - value: 0
-        label: Levantamento bibliográfico
+        label: "Não"
       - value: 1
-        label: Entrevistas /questionários
-      - value: 2
-        label: Oficinas participativas
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 4
     block: dependent
     type: multi_autocomplete
-    title: Quais os atores envolvidos na construção do instrumento pedagógico?
+    title: Quais ações são realizadas?
     options:
       - value: 0
-        label: Instituição proponente em conjunto com consultor/especialista e grupo/público alvo
+        label: Sensibilização, engajamento e formação dos servidores/funcionários/apoiadores, com estímulo a reflexão crítica e a mudança de atitude)
       - value: 1
-        label: Setor responsável da instituição proponente
+        label: Inclusão de critérios socioambientais nos investimentos, compras e contratações de serviços
       - value: 2
-        label: Especialista contratado – responsável único
+        label: Combate ao desperdício
+      - value: 3
+        label: Gestão adequada dos resíduos gerados
 
   - key: 5
     block: dependent

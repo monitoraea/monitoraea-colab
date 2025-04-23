@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A iniciativa cadastrada está gerando alguma intervenção socioambiental?
+    title: A iniciativa prevê(iu) algum elemento para identificar a elevação da autoestima dos envolvidos?
     options:
       - value: -1
         label: Não respondido
@@ -17,34 +17,45 @@ fields:
 
   - key: 2
     block: dependent
-    type: textarea
-    title: Quais as intervenções socioambientais geradas? Comente e quantifique.
+    type: multi_autocomplete
+    title: Qual elemento foi previsto para identificar a elevação da autoestima?
+    options:
+      - value: 0
+        label: Pesquisa/diagnostico
+      - value: 1
+        label: Relatos / depoimentos
+      - value: 2
+        label: Observação
 
   - key: 3
     block: dependent
     type: options
-    title: As intervenções preveem ou trazem em seu desenvolvimento processos pedagógicos reflexivos?
+    title: Qual é a percepção da elevação da autoestima dos envolvidos diagnosticada?
     options:
       - value: -1
         label: Não respondido
       - value: 0
-        label: "Não"
+        label: Alta
       - value: 1
-        label: "Sim"
-    validation:
-      - type: neq
-        value: -1
-      - type: not_empty
+        label: Média
+      - value: 2
+        label: Baixa
+      - value: 3
+        label: Muito baixa
 
   - key: 4
     block: dependent
     type: textarea
-    title: Se Sim (as intervenções preveem ou trazem em seu desenvolvimento processos pedagógicos reflexivos), especifique
+    title: Insira elemento comprobatório referente a pergunta acima
+    show:
+      target:
+        key: 3
+        value: 1
 
   - key: 5
     block: dependent
     type: options
-    title: As intervenções fomentam ou se desdobram em outras ações?
+    title: As intervenções fomentam / se desdobram em outras ações?
     options:
       - value: -1
         label: Não respondido
@@ -55,34 +66,25 @@ fields:
     validation:
       - type: neq
         value: -1
-      - type: not_empty
 
   - key: 6
     block: dependent
     type: textarea
     title: Se Sim (as intervenções fomentam / se desdobram em outras ações), especifique
+    show:
+      target:
+        key: 5
+        value: 1
 
   - key: 7
     block: dependent
     type: file
     title: Insira elemento comprobatório referente a pergunta acima
     validation: not_empty
-
-  - key: 8
-    block: dependent
-    type: options
-    title: As intervenções envolveram temas relacionados à mudanças do clima?
-    options:
-      - value: -1
-        label: Não respondido
-      - value: 0
-        label: "Não"
-      - value: 1
-        label: "Sim"
-    validation:
-      - type: neq
-        value: -1
-      - type: not_empty
+    show:
+      target:
+        key: 5
+        value: 1
 
 blocks:
   - key: main
