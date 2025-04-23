@@ -10,6 +10,8 @@ lists:
       label: 'Nível Estadual'
     - value: 2
       label: 'Nível Municipal'
+    - value: 5
+      label: 'A partir de Unidade de Conservação'
 
   - key: areas
     options:

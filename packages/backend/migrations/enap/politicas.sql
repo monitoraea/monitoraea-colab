@@ -6,5 +6,6 @@ where true;
 update ppea.politicas set instituicao_enquadramento = -1 where id in (
 	select id
 	from ppea.politicas
-	where instituicao_enquadramento not in (0,1,2) or instituicao_enquadramento is null
+	where instituicao_enquadramento not in (0,1,2,5) or instituicao_enquadramento is null
 )
+
