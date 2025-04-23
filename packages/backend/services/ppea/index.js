@@ -684,7 +684,7 @@ class Service {
       from ppea.politicas c
       inner join dorothy_communities dc on dc.id = c.community_id
       left join dorothy_members dm on dm."communityId" = dc.id
-      where c.versao = 'draft'
+      where c.versao = 'draft' and c."deletedAt" is null
       group by c.id, dc.id
     )
     select

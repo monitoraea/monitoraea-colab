@@ -212,15 +212,17 @@ class Service {
     let entities = await db.instance().query(
       `
         select
-          id,
-          alias,
-          TRIM(type) as "type",
+          dc.id,
+          dc.alias,
+          TRIM(dc.type) as "type",
           'Política Pública' as "typeName",
-          descriptor_json->'title' as "name",
+          dc.descriptor_json->'title' as "name",
           count(*) OVER() AS total_count
-        from dorothy_communities
+        from dorothy_communities dc
+        inner join ppea.politicas p on p.community_id = dc.id and p.versao = 'draft'
         where type not in ('network','adm_ppea')
         and descriptor_json->>'perspective' = '4'
+        and p."deletedAt" is null
         order by "${config.order}" ${config.direction}
       `,
       {
