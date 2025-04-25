@@ -649,6 +649,7 @@ export function FieldRenderer({
   const [doShow, _doShow] = useState(false);
 
   useEffect(() => {
+
     let show = checkShow(f, data);
 
     _doShow(show);
@@ -866,13 +867,24 @@ function checkShow(e, data) {
       data[e.show.function.params[0].value_of],
     );
   } else if (!!e.show?.target) {
-    // console.log(f.show.target.key, data[f.show.target.key], f.show.target.value)
+    // if (!Array.isArray(e.show.target.value)) show = data[e.show.target.key] === e.show.target.value;
+    // else show = data[e.show.target.key].map(v => v.value).includes(e.show.target.value);
 
-    if (!Array.isArray(e.show.target.value)) show = data[e.show.target.key] === e.show.target.value;
-    else show = e.show.target.value.includes(data[e.show.target.key]);
+    // quais valores devem estar presentes
+    const valoresReferencia = Array.isArray(e.show.target.value) ? e.show.target.value.map(v => cleanValue(v)) : [cleanValue(e.show.target.value)];
+    // quais valores o usuário escolheu
+    const valoresEscolhidos = Array.isArray(data[e.show.target.key]) ? data[e.show.target.key].map(v => cleanValue(v)) : [cleanValue(data[e.show.target.key])];
+
+    // intersection
+    show = valoresReferencia.filter(x => valoresEscolhidos.includes(x)).length;
   }
 
   return show;
+}
+
+function cleanValue(value) {
+  if(value?.value) return value.value;
+  return value;
 }
 
 function titleAndIndex(title, index) {
@@ -1049,6 +1061,7 @@ function OptionsField({ f, readonly, index, dataValue, onChange, error }) {
 
   useEffect(() => {
     if (dataValue !== undefined && dataValue !== null) _value(dataValue);
+    else _value(-1)
   }, [dataValue]);
 
   return (
