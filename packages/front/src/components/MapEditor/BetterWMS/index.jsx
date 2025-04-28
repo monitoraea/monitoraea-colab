@@ -29,7 +29,6 @@ class BetterWMS extends GridLayer {
             this.leafletElement.setUrl(url)
         }
         if (!isEqual(params, prevParams)) {
-            console.log('AQUI')
             if(params.cql_filter === null) params.cql_filter = 'INCLUDE';
             this.leafletElement.setParams(params)
         }

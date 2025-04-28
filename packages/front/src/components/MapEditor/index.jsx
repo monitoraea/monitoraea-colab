@@ -46,8 +46,11 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
   const [editing, _editing] = useState(false);
 
   const [cqlFilter, _cqlFilter] = useState(null);
+  const [optionValue, _optionValue] = useState(null);  
 
   const [showMunDialog, _showMunDialog] = useState(false);
+
+  useEffect
 
   useEffect(() => {
     if (!initialBBOX || !mapRef || !mapRef.current) return;
@@ -140,11 +143,21 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
   }
 
   const toogleTemplate = (t) => {
-    if (showTemplate === t) {
-      _showTemplate(null);
+    
+    if(templateLayers[t].options) {
+      _cqlFilter(`${templateLayers[t].options.field}=${templateLayers[t].options.default}`);
+      _optionValue(templateLayers[t].options.default);
+    } else {
       _cqlFilter(null);
+      _optionValue(null);
     }
-    else _showTemplate(t)
+
+    if (showTemplate === t) _showTemplate(null); else _showTemplate(t);
+  }
+
+  const handleOptionChange = (t, v) => {
+    _cqlFilter(`${templateLayers[t].options.field}=${v}`);
+    _optionValue(v)
   }
 
   const handleAddMun = async (cd_mun) => {
@@ -260,8 +273,13 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
           <Control position="topright">
             <div style={{ display: "flex", flexDirection: "column", alignItems: 'self-end' }}>
               {templateLayers.map((t, idx) => <div key={idx}>
-                <button disabled={editing || (showTemplate !== null && showTemplate !== idx)} onClick={() => toogleTemplate(idx)}>{t.name}</button>
+                <button disabled={editing || (showTemplate !== null && showTemplate !== idx)} onClick={() => toogleTemplate(idx)}>
+                  {t.name} {t.options && showTemplate === idx && <> - {t.options.title}:</>}
+                </button>
                 {t.search && showTemplate === idx && <button onClick={() => _showMunDialog(!showMunDialog)}>...</button>}
+                {t.options && showTemplate === idx && <select value={optionValue} onChange={(e) => handleOptionChange(idx, e.target.value)}>
+                  {t.options.values.map(v => <option key={v}>{v}</option>)}
+                </select>}
               </div>)}
             </div>
           </Control>

@@ -33,11 +33,16 @@ const templateLayers = [
     url: import.meta.env.VITE_GEOSERVER_URL,
     layers: 'pppzcm:ufs',
   },
-
   {
-    name: 'Bacias (nível 5)',
-    url: 'https://geoservicos.ibge.gov.br/geoserver/ows',
-    layers: 'CREN:bacias_nivel_5',
+    name: 'Bacias',
+    url: import.meta.env.VITE_GEOSERVER_URL,
+    layers: 'pppzcm:bacias',
+    options: {
+      title: 'Nível',
+      field: 'level',
+      values: [2,3,4,5],
+      default: 2,
+    }
   },
 ];
 
