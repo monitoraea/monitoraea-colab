@@ -50,7 +50,7 @@ fields:
   - key: 3
     block: dependent
     type: file
-    title: Insira elemento comprobatório referente a pergunta acima
+    title: Insira elementos comprobatórios (aquivo zip) referente a pergunta acima
     validation: not_empty
 
   - key: 4

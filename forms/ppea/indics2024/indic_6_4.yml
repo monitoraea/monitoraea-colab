@@ -36,7 +36,7 @@ fields:
   - key: 4
     block: dependent
     type: file
-    title: Apresente evidências.
+    title: Apresente evidências (arquivo zip).
     validation: not_empty
 
   - key: 5
@@ -70,7 +70,7 @@ fields:
   - key: 8
     block: dependent
     type: file
-    title: Apresente evidências.
+    title: Apresente evidências (arquivo zip).
     validation: not_empty
 
   - key: 9
@@ -110,7 +110,7 @@ fields:
   - key: 12
     block: dependent
     type: file
-    title: Apresente evidências.
+    title: Apresente evidências (arquivo zip).
     validation: not_empty
 
 blocks:
