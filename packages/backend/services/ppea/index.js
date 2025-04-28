@@ -230,6 +230,7 @@ class Service {
       FROM ppea.politicas p
       WHERE p.politica_id = :id
       AND versao = 'draft'
+      AND "deletedAt" is null
         `,
       {
         replacements: { id },

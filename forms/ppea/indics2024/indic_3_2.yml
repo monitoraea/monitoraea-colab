@@ -18,33 +18,40 @@ fields:
   - key: 2
     block: dependent
     type: textarea
-    title: Se Sim, especifique
-    show:
+    title: Especifique o(s) público(s)
+    show: # o texto só aparece se a pergunta da key 1 for sim = 1
       target:
         key: 1
         value: 1
+
+  - key: 7
+    block: dependent
+    type: textarea
+    title: Justifique.
+    show:  # o texto só aparece se a pergunta da key 1 for não = 0
+      target:
+        key: 1
+        value: 0
 
   - key: 3
     block: dependent
     type: options
     title: Existem critérios para favorecer a diversidade dentro desse público específico?
     options:
-      - value: -1
-        label: Não respondido
       - value: 0
-        label: "Não"
+        label: Não
       - value: 1
-        label: "Sim"
-    validation:
-      - type: neq
-        value: -1
-      - type: not_empty
+        label: Sim
+    show: # o texto só aparece se a pergunta da key 1 for sim = 1
+      target:
+        key: 1
+        value: 1
 
   - key: 4
     block: dependent
     type: textarea
-    title: Quais? Especificar.
-    show:
+    title: Especifique o(s) critério(s)
+    show:  # o texto só aparece se a pergunta da key 3 for sim = 1
       target:
         key: 3
         value: 1
@@ -54,22 +61,20 @@ fields:
     type: options
     title: Existe um equilíbrio das categorias de público envolvido nas formações realizadas?
     options:
-      - value: -1
-        label: Não respondido
       - value: 0
-        label: "Não"
+        label: Não
       - value: 1
-        label: "Sim"
-    validation:
-      - type: neq
-        value: -1
-      - type: not_empty
+        label: Sim
+    show:  # o texto só aparece se a pergunta da key 1 for não = 0
+      target:
+        key: 1
+        value: 0
 
-  - key: 4
+  - key: 6
     block: dependent
     type: textarea
-    title: Quais? Especificar.
-    show:
+    title: Comente.
+    show:  # o texto só aparece se a pergunta da key 5 for sim = 1
       target:
         key: 5
         value: 1

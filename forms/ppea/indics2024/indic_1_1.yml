@@ -47,15 +47,17 @@ fields:
       - value: 0
         label: Entrevistas e aplicação de questionários
       - value: 1
-        label: Oficinas
+        label: Consulta Pública por meio digital
       - value: 2
+        label: Oficinas
+      - value: 3
         label: Conjunto de técnicas participativas (DRP - Diagnóstico Rápido Participativo ou similar)
     validation: at_least_one
 
   - key: 5
     block: dependent
     type: file
-    title: Insira elemento comprobatório referente a pergunta acima
+    title: Insira elementos comprobatórios (aquivo zip) referente a pergunta acima
     validation: not_empty
 
   - key: 6

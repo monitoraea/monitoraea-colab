@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A iniciativa promove ações que dialogam com temas relacionados a ações afirmativas de enfrentamento da desigualdade e qualquer tipo discriminação em seu território de atuação?
+    title: A PPEA promove ações que dialogam com temas relacionados a ações afirmativas de enfrentamento da desigualdade e qualquer tipo discriminação em seu território de atuação?
     options:
       - value: -1
         label: Não respondido
@@ -26,25 +26,57 @@ fields:
         label: Discriminação de gênero
       - value: 2
         label: Discriminação social
-      - value: 3
-        label: Outro"
 
   - key: 3
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 4
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+
+  - key: 5
     block: dependent
     type: multi_autocomplete
     title: Onde busca informações / dados para subsidiar o dialogo?
     options:
       - value: 0
-        label: Dados oficiais  / Censo
+        label: Dados oficiais
       - value: 1
         label: Pesquisa / diagnóstico
       - value: 2
-        label: Comente onde busca as informações
+        label: Outros
 
-  - key: 4
+  - key: 6
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 5 for Outros = 2
+        key: 5
+        value: 2
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 8
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+
+  - key: 9
     block: dependent
     type: multi_autocomplete
-    title: Onde busca informações / dados para subsidiar o dialogo?
+    title: Que tipo de ações desenvolve para abordar os temas?
     options:
       - value: 0
         label: Ações de diagnóstico
@@ -58,6 +90,28 @@ fields:
         label: Comunicação
       - value: 5
         label: Outro
+
+  - key: 10
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 9 for Outros = 5
+        key: 9
+        value: 5
+    validation: not_empty  
+
+  - key: 11
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+
+  - key: 12
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
 
 blocks:
   - key: main

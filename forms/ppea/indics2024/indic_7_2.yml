@@ -17,35 +17,35 @@ fields:
 
   - key: 2
     block: dependent
-    type: multi_autocomplete
-    title: Há alguma referência que defina os critérios de tais práticas da organização?
-    options:
-      - value: 0
-        label: A3P (se instituição pública)
-      - value: 1
-        label: Programa de gestão ambiental ou similar
-      - value: 2
-        label: Plano de gestão ambiental ou similar
-      - value: 3
-        label: Não há
-
-  - key: 3
-    block: dependent
     type: options
-    title: Existência de grupo organizado/comissão responsável pelo planejamento e implementação das práticas sustentáveis?
+    title: Existe algum plano/planejamento participativo para definir critérios e promover práticas sustentáveis dentro da instituição proponente da politica?
     options:
-      - value: -1
-        label: Não respondido
       - value: 0
         label: "Não"
       - value: 1
         label: "Sim"
-    validation:
-      - type: neq
-        value: -1
-      - type: not_empty
 
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for Sim = 1
+        key: 2
+        value: 1
+    validation: not_empty
+ 
   - key: 4
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for Sim = 1
+        key: 2
+        value: 1
+    validation: not_empty
+ 
+  - key: 5
     block: dependent
     type: multi_autocomplete
     title: Quais ações são realizadas?
@@ -55,14 +55,34 @@ fields:
       - value: 1
         label: Inclusão de critérios socioambientais nos investimentos, compras e contratações de serviços
       - value: 2
-        label: Combate ao desperdício
+        label: Monitora a redução de emissões de Gases de Efeito Estufa
       - value: 3
         label: Gestão adequada dos resíduos gerados
+      - value: 4
+        label: Combate ao desperdício
+      - value: 5
+        label: Outros
 
-  - key: 5
+  - key: 6
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 5 for Outro = 5
+        key: 5
+        value: 5
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 8
     block: dependent
     type: file
-    title: Insira elemento comprobatório referente a pergunta acima
+    title: Apresente evidências.
     validation: not_empty
 
 blocks:

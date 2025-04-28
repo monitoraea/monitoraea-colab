@@ -17,17 +17,17 @@ fields:
 
   - key: 2
     block: dependent
-    type: multi_autocomplete
+    type: options
     title: Quais os públicos envolvidos na produção dos materiais/peças de comunicação?
     options:
       - value: 0
-        label: Instituição proponente / executora
-      - value: 1
-        label: Empresa especializada em comunicação
-      - value: 2
         label: Proponentes + atores sociais envolvidos
-      - value: 3
+      - value: 1
         label: Empresa especializada em comunicação + atores sociais envolvidos
+      - value: 2
+        label: Instituição proponente / executora
+      - value: 3
+        label: Empresa especializada em comunicação
 
   - key: 3
     block: dependent
@@ -43,37 +43,42 @@ fields:
       - value: 3
         label: Teatro, poesias, cordel
       - value: 4
-        label: Outros
+        label: Outro
 
   - key: 4
     block: dependent
-    type: textarea
-    title: Especifique
-    validation: not_empty
+    type: TextArea
+    title: Especifique.
     show:
-      target:
+      target: # o texto só aparece se a pergunta da key 3 for Outro = 4
         key: 3
         value: 4
+    validation: not_empty
 
   - key: 5
     block: dependent
     type: multi_autocomplete
     title: As ações/produtos envolveram temas relacionados à mudanças do clima?
     options:
-      - value: -1
-        label: Não respondido
       - value: 0
         label: "Não"
       - value: 1
         label: "Sim"
-    validation:
-      - type: neq
-        value: -1
 
   - key: 6
     block: dependent
     type: textarea
     title: Comente.
+    validation: not_empty
+    show:
+      target:
+        key: 5
+        value: 1
+
+  - key: 7
+    block: dependent
+    type: file
+    title: Apresente evidências.
     validation: not_empty
     show:
       target:

@@ -2,7 +2,23 @@ fields:
   - key: 1
     block: main
     type: options
-    title: Qual posição da EA na estrutura administrativa/organizacional da instituição?
+    title: A implementação da PPEA está ancorada em uma unidade organizacional específica dentro da instituição
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: Qual posição da PPEA na estrutura administrativa / organizacional dentro da pasta de meio ambiente (ou correlata)?
     options:
       - value: 0
         label: Nível 1 – (PPEA alocada como uma Diretoria/Coordenação (ou outra nomenclatura que indique amaior proximidade com o nível estratégico da instituição)
@@ -16,20 +32,66 @@ fields:
         label: Não há previsão de estrutura administrativa/organizacional na instituição para a EA
       - value: 5
         label: Outro
-    validation:
-      - type: neq
-        value: -1
-      - type: not_empty
 
-  - key: 2
+  - key: 3
     block: dependent
-    type: textarea
-    title: Descreva / comente
-    validation: not_empty
+    type: TextArea
+    title: Especifique.
     show:
-      target:
-        key: 5
-        value: 1
+      target: # o texto só aparece se a pergunta da key 2 for Outro = 5
+        key: 2
+        value: 5
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 5
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: options
+    title: Qual posição da PPEA na estrutura administrativa / organizacional dentro da pasta de educação (ou correlata)?
+    options:
+      - value: 0
+        label: Nível 1 – PPEA alocada em Diretoria/Coordenação
+      - value: 1
+        label: Nível 2 – PPEA alocada em Departamento/Setor
+      - value: 2
+        label: Nível 3 – PPEA alocada em grupo de trabalho
+      - value: 3
+        label: Não há previsão de estrutura administrativa/organizacional na instituição para a PPEA
+      - value: 4
+        label: Outro
+
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 6 for Outro = 4
+        key: 6
+        value: 4
+    validation: not_empty
+
+  - key: 8
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 9
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
 
 blocks:
   - key: main

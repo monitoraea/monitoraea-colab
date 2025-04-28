@@ -25,18 +25,32 @@ fields:
       - value: 1
         label: Decreto
       - value: 2
-        label: Resolução
-      - value: 3
         label: Portaria
-      - value: 4
+      - value: 3
         label: Instrução Normativa
-      - value: 5
+      - value: 4
         label: Outro
 
   - key: 3
     block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for Outro = 4
+        key: 2
+        value: 4
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 5
+    block: dependent
     type: file
-    title: Insira elemento comprobatório referente a pergunta acima
+    title: Apresente evidências.
     validation: not_empty
 
 blocks:

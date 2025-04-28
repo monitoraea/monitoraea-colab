@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: Existe um Plano de Comunicação da iniciativa?
+    title: Existe um Plano de Comunicação para a PPEA?
     options:
       - value: -1
         label: Não respondido
@@ -39,45 +39,65 @@ fields:
       - value: 8
         label: Realização de reuniões, fóruns, encontros
       - value: 9
-        label: Outros
+        label: Outro
 
   - key: 3
     block: dependent
-    type: textarea
-    title: Especique
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for Outro = 9
+        key: 2
+        value: 9
     validation: not_empty
 
   - key: 4
     block: dependent
-    type: multi_autocomplete
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 5
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: options
     title: Qual é a periodicidade de atualização / disponibilização de informações?
     options:
       - value: 0
         label: Semanal
       - value: 1
-        label: Mensal
+        label: Quinzenal
       - value: 2
+        label: Mensal
+      - value: 3
+        label: Bimestral
+      - value: 4
         label: Trimestral
       - value: 3
         label: Semestral
       - value: 4
         label: Anual
       - value: 5
-        label: Bianual ou mais
+        label: Outro
 
-  - key: 5
+  - key: 7
     block: dependent
-    type: multi_autocomplete
+    type: options
     title: Quem são os interlocutores no processo de comunicação da iniciativa?
     options:
       - value: 0
-        label: Não há interlocutores claramente identificados
-      - value: 1
-        label: Internos a instituição (técnicos, gestores, diretores, colaboradores, etc)
-      - value: 2
-        label: Externos a instituição (sociedade em geral e integrantes de espaços de controle social)
-      - value: 3
         label: Internos e Externos a instituição
+      - value: 1
+        label: Externos a instituição (sociedade em geral e integrantes de espaços de controle social)
+      - value: 2
+        label: Internos a instituição (técnicos, gestores, diretores, colaboradores, etc)
+      - value: 3
+        label: Não há interlocutores claramente identificados
 
 blocks:
   - key: main

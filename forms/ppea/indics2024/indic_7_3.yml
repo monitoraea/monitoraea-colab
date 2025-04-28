@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: Existem recursos financeiros para a viabilização da iniciativa?
+    title: Existem recursos financeiros para a viabilização da PPEA?
     options:
       - value: -1
         label: Não respondido
@@ -18,82 +18,61 @@ fields:
   - key: 2
     block: dependent
     type: multi_autocomplete
-    title: Tipo de fontes dos recursos
+    title: A PPEA possui orçamento previsto no PPA (Plano Plurianual)?
     options:
       - value: 0
-        label: Interna
+        label: Sim, está prevista no PPA atual com orçamento definido
       - value: 1
-        label: Externa
+        label: Sim, mas sem garantia de execução financeira
+      - value: 2
+        label: Não, não está contemplada no PPA
 
   - key: 3
     block: dependent
     type: multi_autocomplete
-    title: Tipo de fontes dos recursos
+    title: Qual é o mecanismo adotado para acessar recursos financeiros para implementar esta política pública de EA?
     options:
       - value: 0
-        label: Previsão Orçamentária
+        label: Transferências Intersetoriais e/ou Intergovernamentais
       - value: 1
-        label: Recursos disponíveis na instituição
+        label: Parceria Público-Privado
+      - value: 2
+        label: Emendas Parlamentares
+      - value: 3
+        label: Recursos obtidos via bancos públicos ou internacionais (BNDES, Banco Mundial, etc.)
+      - value: 4
+        label: Recursos obtidos via fundos públicos ou privados
+      - value: 5
+        label: Doações e Acordos de Cooperação
+      - value: 6
+        label: Outros
     show:
-      target:
+      target: # o texto só aparece se a pergunta da key 2 for Outro = 2
         key: 2
-        value: 0
+        value: 2
+    validation: not_empty
 
   - key: 4
     block: dependent
-    type: multi_autocomplete
-    title: Tipo de fontes dos recursos
-    options:
-      - value: 0
-        label: Renúncia Fiscal
-      - value: 1
-        label: Financiamento Coletivo
-      - value: 2
-        label: Editais de Apoio
-      - value: 3
-        label: Emendas parlamentares
-      - value: 4
-        label: Outros
+    type: TextArea
+    title: Especifique.
     show:
-      target:
-        key: 2
-        value: 1
+      target: # o texto só aparece se a pergunta da key 3 for Outros = 6
+        key: 3
+        value: 6
+    validation: not_empty
 
   - key: 5
     block: dependent
-    type: textarea
-    title: Especifique
+    type: TextArea
+    title: Comente.
     validation: not_empty
-    show:
-      target:
-        key: 4
-        value: 4
-
+ 
   - key: 6
     block: dependent
-    type: options
-    title: Há mecanismos de acesso aos recursos?
-    options:
-      - value: -1
-        label: Não respondido
-      - value: 0
-        label: "Não"
-      - value: 1
-        label: "Sim"
-    validation:
-      - type: neq
-        value: -1
-      - type: not_empty
-
-  - key: 7
-    block: dependent
-    type: textarea
-    title: Descreva/comente.
+    type: file
+    title: Apresente evidências.
     validation: not_empty
-    show:
-      target:
-        key: 6
-        value: 1
 
 blocks:
   - key: main

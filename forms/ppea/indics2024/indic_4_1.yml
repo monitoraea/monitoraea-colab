@@ -17,74 +17,63 @@ fields:
 
   - key: 2
     block: dependent
-    type: multi_autocomplete
+    type: options
     title: Qual elemento foi previsto para identificar a elevação da autoestima?
     options:
       - value: 0
-        label: Pesquisa/diagnostico
+        label: Pesquisa/diagnóstico
       - value: 1
         label: Relatos / depoimentos
       - value: 2
         label: Observação
+      - value: 3
+        label: Outro
 
   - key: 3
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for Outro = 3
+        key: 2
+        value: 3
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 5
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+
+  - key: 6
     block: dependent
     type: options
     title: Qual é a percepção da elevação da autoestima dos envolvidos diagnosticada?
     options:
-      - value: -1
-        label: Não respondido
       - value: 0
         label: Alta
       - value: 1
         label: Média
       - value: 2
         label: Baixa
-      - value: 3
-        label: Muito baixa
-
-  - key: 4
-    block: dependent
-    type: textarea
-    title: Insira elemento comprobatório referente a pergunta acima
-    show:
-      target:
-        key: 3
-        value: 1
-
-  - key: 5
-    block: dependent
-    type: options
-    title: As intervenções fomentam / se desdobram em outras ações?
-    options:
-      - value: -1
-        label: Não respondido
-      - value: 0
-        label: "Não"
-      - value: 1
-        label: "Sim"
-    validation:
-      - type: neq
-        value: -1
-
-  - key: 6
-    block: dependent
-    type: textarea
-    title: Se Sim (as intervenções fomentam / se desdobram em outras ações), especifique
-    show:
-      target:
-        key: 5
-        value: 1
 
   - key: 7
     block: dependent
-    type: file
-    title: Insira elemento comprobatório referente a pergunta acima
+    type: TextArea
+    title: Comente.
     validation: not_empty
-    show:
-      target:
-        key: 5
-        value: 1
+ 
+  - key: 8
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
 
 blocks:
   - key: main
