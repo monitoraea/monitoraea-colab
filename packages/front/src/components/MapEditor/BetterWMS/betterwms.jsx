@@ -64,6 +64,10 @@ L.TileLayer.BetterWMS = L.TileLayer.WMS.extend({
         params[params.version === '1.3.0' ? 'i' : 'x'] = Math.round(point.x);
         params[params.version === '1.3.0' ? 'j' : 'y'] = Math.round(point.y);
 
+        if(this.wmsParams?.cql_filter) params.cql_filter = this.wmsParams.cql_filter;
+
+        console.log(this._url + L.Util.getParamString(params, this._url, true))
+
         return this._url + L.Util.getParamString(params, this._url, true);
     },
 
