@@ -777,6 +777,7 @@ class Service {
   }
 
   async getGeoDrawSave(id, geoms) {
+
     // encontra a versao draft desta politica
     const p_draft = await db.instance().query(
       `

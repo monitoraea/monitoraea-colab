@@ -27,6 +27,10 @@ import { useSnackbar } from 'notistack';
 const position = [-15.559793, -56.58506];
 const zoom = 4;
 
+L.drawLocal.draw.toolbar.buttons.polygon = 'Desenhe um polígono';
+L.drawLocal.draw.toolbar.buttons.circle = 'Determine uma área circular (raio)';
+// L.drawLocal.draw.toolbar.buttons.marker = 'Determine uma área a partir de um marcador';
+
 
 export default function MapEditor({ entity, initialGeoms, initialBBOX, templateLayers, onSave, onEdit, isEditing, onCancel }) {
 
@@ -65,6 +69,9 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
       /* console.log(geojson) */
 
       leafletGeoJSON.eachLayer(layer => {
+        if (layer.feature.geometry.type === 'Point') {
+          console.log({ layer })
+        }
         editableFG.current.leafletElement.addLayer(layer);
       });
     });
@@ -200,6 +207,13 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
     // _showMunDialog(false);
   }
 
+  // const addCircle = (layer) => {
+  //   console.log(layer)
+  // }
+  // const removeCircle = (layer) => {
+  //   console.log(layer)
+  // }
+
   return (<>
     <input type="file" ref={inputFileRef} style={{ display: "none" }} name="file" onChange={(e) => doUpload(e.target.files[0])} />
     <Map
@@ -217,10 +231,10 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
           <EditControl
             position='topright'
 
-            /*
-            onEdited={onChange}
-            onCreated={onChange}
-            onDeleted={onChange}
+            /*            
+            onCreated={(layer) => layer.layerType === 'circle' && addCircle(layer)}
+            onDeleted={lg => console.log(lg)}            
+            onEdited={console.log}
             */
 
             onEditStart={() => _editing(true)}
@@ -232,9 +246,9 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
             onDrawStop={() => _editing(false)}
 
             draw={{
-              // rectangle: false,
+              rectangle: false,
               marker: false,
-              // circle: false,
+              circle: false,
               circlemarker: false,
               polyline: false,
             }}
@@ -310,7 +324,7 @@ function MunDialog({ show, onClose, onFind, onAdd, onRemove, hasFilter }) {
             label="Municipio"
             url="municipio"
             query="?uf=1"
-            onChange={(_, e) => {_munSearchValue(e?.value); if(e?.value) onRemove()}}
+            onChange={(_, e) => { _munSearchValue(e?.value); if (e?.value) onRemove() }}
             value={munSearchValue}
           />
         </div>
