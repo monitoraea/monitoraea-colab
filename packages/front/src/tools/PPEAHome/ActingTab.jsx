@@ -20,32 +20,6 @@ import FilePlus from '../../components/icons/FilePlus';
 
 import GetHelpButton from './GetHelpButton';
 
-const templateLayers = [
-  {
-    name: 'Municipíos',
-    url: import.meta.env.VITE_GEOSERVER_URL,
-    layers: 'pppzcm:municipios',
-    search: true,
-  },
-
-  {
-    name: 'Estados',
-    url: import.meta.env.VITE_GEOSERVER_URL,
-    layers: 'pppzcm:ufs',
-  },
-  {
-    name: 'Bacias',
-    url: import.meta.env.VITE_GEOSERVER_URL,
-    layers: 'pppzcm:bacias',
-    options: {
-      title: 'Nível',
-      field: 'level',
-      values: [2,3,4,5],
-      default: 2,
-    }
-  },
-];
-
 async function retrieveGeoms(server, id) {
   const {
     data: { geoms, bbox },
@@ -221,7 +195,6 @@ export default function ActingTab() {
                 entity='ppea'
                 initialGeoms={geoms}
                 initialBBOX={bbox}
-                templateLayers={templateLayers}
                 isEditing={isEditing}
                 onEdit={editing => _isEditing(editing)}
                 onSave={handleSave}

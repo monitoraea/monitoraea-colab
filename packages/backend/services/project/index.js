@@ -1020,9 +1020,9 @@ class Service {
             select p.id, p.nome
             from projetos p
             where id in (${ids
-              .split(',')
-              .map(id => parseInt(id))
-              .join(',')})
+        .split(',')
+        .map(id => parseInt(id))
+        .join(',')})
             order by p.nome
         `; /* TODO: melhor protecao contra injection? */
 
@@ -1068,9 +1068,9 @@ class Service {
     left join projetos_atuacao pa on pa.projeto_id = p.id
     left join municipios m on m.cd_mun = pa.cd_mun
             where p.id in (${ids
-              .split(',')
-              .map(id => parseInt(id))
-              .join(',')})
+        .split(',')
+        .map(id => parseInt(id))
+        .join(',')})
         group by p.id, i.nome
         order by p.nome
         `; /* TODO: melhor protecao contra injection? */
@@ -1707,9 +1707,8 @@ class Service {
       from: `Plataforma MonitoraEA <${process.env.CONTACT_EMAIL}>`,
       subject: `MonitoraEA - ${subject}`,
       text: `${message}\n\n${process.env.BASE_URL}/projeto/${pData.communityId}`,
-      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/projeto/${
-        pData.communityId
-      }">Clique aqui para acessar esta iniciativa</a>`,
+      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/projeto/${pData.communityId
+        }">Clique aqui para acessar esta iniciativa</a>`,
     };
 
     try {
@@ -1822,7 +1821,7 @@ class Service {
 
     const geoms = await sequelize.query(
       `
-      select ST_AsGeoJSON((ST_Dump(ST_Simplify(pa.geom,0.001))).geom)::jsonb as geojson
+      select ST_AsGeoJSON((ST_Dump(pa.geom)).geom)::jsonb as geojson
       from projetos_atuacao_rascunho pa
       where projeto_id = :id`,
       {
@@ -2334,8 +2333,7 @@ class Service {
       await db.instance().query(
         `
         update instituicoes
-        set segmentos = '{${
-          !!data.instituicao_segmentos?.length ? data.instituicao_segmentos.map(s => s.id).join(',') : ''
+        set segmentos = '{${!!data.instituicao_segmentos?.length ? data.instituicao_segmentos.map(s => s.id).join(',') : ''
         }}',
             porte = :porte
         where id = :id
@@ -2732,9 +2730,8 @@ class Service {
     );
 
     /* refresh notification (LIVE) */
-    const watch = `indication_${data.sourceDraftId}_${data.indicationId}_${
-      data.type === 'apoia' ? 'apoia' : 'apoiada'
-    }`;
+    const watch = `indication_${data.sourceDraftId}_${data.indicationId}_${data.type === 'apoia' ? 'apoia' : 'apoiada'
+      }`;
     Messagery.refreshNotifications(watch);
 
     return { success: true };
@@ -2929,10 +2926,10 @@ class Service {
 
     analysis.information.contatos = this.check(
       !!project.contatos &&
-        !!project.contatos[0] &&
-        (project.contatos[0].nome.length > 0 ||
-          project.contatos[0].email.length > 0 ||
-          project.contatos[0].tel.length > 0),
+      !!project.contatos[0] &&
+      (project.contatos[0].nome.length > 0 ||
+        project.contatos[0].email.length > 0 ||
+        project.contatos[0].tel.length > 0),
       conclusion,
     );
 
@@ -3559,71 +3556,72 @@ class Service {
       /* lae -> indic */
       // indic.LAEs
       // indic.INDICs -> questions
-      for (let lae of indic.LAEs) {
-        const laeIndics = indic.INDICs.filter(i => i.lae_id === lae.id);
+      if (indicDB)
+        for (let lae of indic.LAEs) {
+          const laeIndics = indic.INDICs.filter(i => i.lae_id === lae.id);
 
-        for (let indic of laeIndics) {
-          const dbKey = `${lae.id}_${indic.id}`;
-          // console.log(dbKey)
+          for (let indic of laeIndics) {
+            const dbKey = `${lae.id}_${indic.id}`;
+            // console.log(dbKey)
 
-          // existe esta chave, no registro?
-          let key;
-          if (indicDB[dbKey]) {
-            key = indicDB[dbKey].base.toUpperCase();
-          } else {
-            key = 'NAO_RESPONDIDO';
+            // existe esta chave, no registro?
+            let key;
+            if (indicDB[dbKey]) {
+              key = indicDB[dbKey].base.toUpperCase();
+            } else {
+              key = 'NAO_RESPONDIDO';
+            }
+
+            project_data.push(key);
+
+            for (let question of indic.questions) {
+              if (key === 'SIM') {
+                const eValue = indicDB[dbKey][question.id];
+
+                let value;
+                switch (question.type) {
+                  case TYPES.INT:
+                  case TYPES.TEXT:
+                  case TYPES.TEXT_M:
+                  case TYPES.SN:
+                    value = eValue;
+                    break;
+                  case TYPES.SEL_MO:
+                  case TYPES.SEL_M:
+                    let items_array =
+                      !!eValue.items && eValue.items.length
+                        ? eValue.items.map(i => question.options.find(o => String(o.value) === String(i)).title)
+                        : [];
+                    if (!!eValue.other) items_array.push(eValue.other);
+                    value = items_array.join(', ');
+                    break;
+                  case TYPES.SEL_S:
+                    let tempvalue = question.options.find(o => String(o.value) === String(eValue));
+
+                    if (!!eValue) value = tempvalue ? tempvalue.title : '';
+                    break;
+                  case TYPES.SEL_SO:
+                    if (!!eValue.other) value = eValue.other;
+                    else if (!!eValue.value && eValue.value !== 'none')
+                      question.options.find(o => String(o.value) === String(eValue.value)).title;
+                    else value = '';
+                    break;
+                  case TYPES.ITEMS:
+                    value = !!eValue ? eValue.replace(/(?:\r\n|\r|\n)/g, ' | ') : '';
+                    break;
+                  default:
+                    console.log(question.type, eValue, data.length);
+                    value = `[${question.type}]?`;
+                }
+
+                project_data.push(value);
+              } else project_data.push('');
+            }
+
+            // console.log(key);
+            // console.log(analysis.indicators[dbKey]);
           }
-
-          project_data.push(key);
-
-          for (let question of indic.questions) {
-            if (key === 'SIM') {
-              const eValue = indicDB[dbKey][question.id];
-
-              let value;
-              switch (question.type) {
-                case TYPES.INT:
-                case TYPES.TEXT:
-                case TYPES.TEXT_M:
-                case TYPES.SN:
-                  value = eValue;
-                  break;
-                case TYPES.SEL_MO:
-                case TYPES.SEL_M:
-                  let items_array =
-                    !!eValue.items && eValue.items.length
-                      ? eValue.items.map(i => question.options.find(o => String(o.value) === String(i)).title)
-                      : [];
-                  if (!!eValue.other) items_array.push(eValue.other);
-                  value = items_array.join(', ');
-                  break;
-                case TYPES.SEL_S:
-                  let tempvalue = question.options.find(o => String(o.value) === String(eValue));
-
-                  if (!!eValue) value = tempvalue ? tempvalue.title : '';
-                  break;
-                case TYPES.SEL_SO:
-                  if (!!eValue.other) value = eValue.other;
-                  else if (!!eValue.value && eValue.value !== 'none')
-                    question.options.find(o => String(o.value) === String(eValue.value)).title;
-                  else value = '';
-                  break;
-                case TYPES.ITEMS:
-                  value = !!eValue ? eValue.replace(/(?:\r\n|\r|\n)/g, ' | ') : '';
-                  break;
-                default:
-                  console.log(question.type, eValue, data.length);
-                  value = `[${question.type}]?`;
-              }
-
-              project_data.push(value);
-            } else project_data.push('');
-          }
-
-          // console.log(key);
-          // console.log(analysis.indicators[dbKey]);
         }
-      }
 
       data.push(project_data);
     }
@@ -3766,7 +3764,7 @@ class Service {
                     let value = 0;
                     try {
                       value = parseInt(indicDB[dbKey][question.id]);
-                    } catch (e) {}
+                    } catch (e) { }
 
                     analysis.indicators[dbKey].questions[question.id].accum += value;
                     analysis.indicators[dbKey].questions[question.id].qtd++;
@@ -4014,8 +4012,8 @@ module.exports = singletonInstance;
 function cleanItems(txt) {
   return txt
     ? txt
-        .split('\n')
-        .filter(t => t.length)
-        .join('\n')
+      .split('\n')
+      .filter(t => t.length)
+      .join('\n')
     : '';
 }

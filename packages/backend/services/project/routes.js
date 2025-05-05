@@ -123,7 +123,6 @@ router.get('/spreadsheet', async (req, res) => {
   try {
     /* TODO: SO MODERADOR OU ADM */
     const { zipFileName, content } = await service.spreadsheet();
-    console.log('titulo ', zipFileName, content);
     // download
     const readStream = new stream.PassThrough();
     readStream.end(content);
@@ -132,8 +131,9 @@ router.get('/spreadsheet', async (req, res) => {
     res.set('Content-Type', 'application/octet-stream');
 
     readStream.pipe(res);
-  } catch ({ message }) {
-    res.status(401).send({ error: message });
+  } catch (e) {
+    console.log(e)
+    res.status(401).send({ error: e.message });
   }
 });
 

@@ -32,7 +32,40 @@ L.drawLocal.draw.toolbar.buttons.circle = 'Determine uma área circular (raio)';
 // L.drawLocal.draw.toolbar.buttons.marker = 'Determine uma área a partir de um marcador';
 
 
-export default function MapEditor({ entity, initialGeoms, initialBBOX, templateLayers, onSave, onEdit, isEditing, onCancel }) {
+
+const templateLayers = [
+  {
+    name: 'Municipíos',
+    url: import.meta.env.VITE_GEOSERVER_URL,
+    layers: 'pppzcm:municipios',
+    search: true,
+    key: 'gid',
+    entity: 'municipios',
+  },
+
+  {
+    name: 'Estados',
+    url: import.meta.env.VITE_GEOSERVER_URL,
+    layers: 'pppzcm:ufs',
+    key: 'id',
+    entity: 'ufs',
+  },
+  {
+    name: 'Bacias',
+    url: import.meta.env.VITE_GEOSERVER_URL,
+    layers: 'pppzcm:bacias',
+    options: {
+      title: 'Nível',
+      field: 'level',
+      values: [2,3,4,5],
+      default: 2,
+    },
+    key: 'id',
+    entity: 'bacias',
+  },
+];
+
+export default function MapEditor({ entity, initialGeoms, initialBBOX, onSave, onEdit, isEditing, onCancel }) {
 
   const mapRef = useRef();
   const editableFG = useRef();
@@ -121,23 +154,53 @@ export default function MapEditor({ entity, initialGeoms, initialBBOX, templateL
     // console.log(fetching);
   }
 
-  const handleGetFeatureInfo = (data) => {
+  const handleGetFeatureInfo = async (data) => {
 
-    if (data && data.features && data.features[0] && data.features[0]) {
+    if (data && data.features && data.features[0]) {
 
-      for (let poly of data.features[0].geometry.coordinates) {
-        let transformedGeometry = { ...data.features[0] };
+      const idKey = templateLayers[showTemplate].key;
+      const entity = templateLayers[showTemplate].entity;
 
-        // From MultiPolygon to Polygon
-        transformedGeometry.geometry.type = 'Polygon';
-        transformedGeometry.geometry.coordinates = poly;
+      if(data.features[0].properties[idKey]) {
 
-        let leafletGeoJSON = new L.GeoJSON(transformedGeometry);
+        const id = data.features[0].properties[idKey];
+  
+        // console.log({showTemplate, entity, id})
+  
+        // recupera geojson via base  
+        const {
+          data: { geoms },
+        } = await axios.get(`${server}geo/${entity}/${idKey}/${id}`);
 
-        leafletGeoJSON.eachLayer(layer => {
-          editableFG.current.leafletElement.addLayer(layer);
+        // adiciona geojson no mapa
+        geoms.forEach(geojson => {
+          const leafletGeoJSON = new L.GeoJSON(geojson);
+    
+          /* console.log(geojson) */
+    
+          leafletGeoJSON.eachLayer(layer => {
+            if (layer.feature.geometry.type === 'Point') {
+              console.log({ layer })
+            }
+            editableFG.current.leafletElement.addLayer(layer);
+          });
         });
       }
+
+      /* OLD - bug */
+      // for (let poly of data.features[0].geometry.coordinates) {
+      //   let transformedGeometry = { ...data.features[0] };
+
+      //   // From MultiPolygon to Polygon
+      //   transformedGeometry.geometry.type = 'Polygon';
+      //   transformedGeometry.geometry.coordinates = poly;
+
+      //   let leafletGeoJSON = new L.GeoJSON(transformedGeometry);
+
+      //   leafletGeoJSON.eachLayer(layer => {
+      //     editableFG.current.leafletElement.addLayer(layer);
+      //   });
+      // }
 
     }
   }

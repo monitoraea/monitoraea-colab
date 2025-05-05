@@ -97,7 +97,7 @@ class Service {
 
     async feature(cd_mun) {
         const geoms = await db.instance().query(`
-        select ST_AsGeoJSON((ST_Dump(ST_Simplify(m.geom,0.001))).geom)::jsonb as geojson
+        select ST_AsGeoJSON((ST_Dump(m.geom)).geom)::jsonb as geojson
         from municipios m 
         where m.cd_mun = :cd_mun
         `,

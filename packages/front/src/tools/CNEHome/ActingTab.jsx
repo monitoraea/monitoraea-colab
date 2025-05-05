@@ -20,27 +20,6 @@ import FilePlus from '../../components/icons/FilePlus';
 
 import GetHelpButton from './GetHelpButton';
 
-const templateLayers = [
-  {
-    name: 'Municipíos',
-    url: import.meta.env.VITE_GEOSERVER_URL,
-    layers: 'pppzcm:municipios',
-    search: true,
-  },
-
-  {
-    name: 'Estados',
-    url: import.meta.env.VITE_GEOSERVER_URL,
-    layers: 'pppzcm:ufs',
-  },
-
-  {
-    name: 'Bacias (nível 5)',
-    url: 'https://geoservicos.ibge.gov.br/geoserver/ows',
-    layers: 'CREN:bacias_nivel_5',
-  },
-];
-
 async function retrieveGeoms(server, id) {
   const {
     data: { geoms, bbox },
@@ -216,7 +195,6 @@ export default function ActingTab() {
                 entity='cne'
                 initialGeoms={geoms}
                 initialBBOX={bbox}
-                templateLayers={templateLayers}
                 isEditing={isEditing}
                 onEdit={editing => _isEditing(editing)}
                 onSave={handleSave}

@@ -39,4 +39,5 @@ module.exports = [
   'equipe',
   'publico',
   'tematica_socioambiental',
+  'geo',
 ];
