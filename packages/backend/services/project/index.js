@@ -3409,6 +3409,7 @@ class Service {
       'relacionado ppea',
       'qual ppea',
       'contatos',
+      'membros',
     ];
 
     for (let lae of indic.LAEs) {
@@ -3550,6 +3551,26 @@ class Service {
         );
       }
       project_data.push(contacts_array.join(' | '));
+
+      // membros
+      const members = await db.instance().query(`
+        select 
+          du."name", 
+          du.email
+        from dorothy_members dm 
+        inner join dorothy_users du on du.id = dm."userId"
+        inner join projetos p on p.community_id = dm."communityId"
+        where p.id = :id
+        order by du."name"
+        `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+          replacements: { id: p.id }
+        },
+      );
+
+      const members_all = members.map(m => `${m.name} (${m.email})`).join(',');
+      project_data.push(members_all);
 
       const indicDB = p['indicadores'];
 
