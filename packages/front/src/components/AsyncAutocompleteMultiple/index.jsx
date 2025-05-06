@@ -8,7 +8,7 @@ import { useQuery } from 'react-query';
 
 import styles from './styles.module.scss';
 
-export default function AsyncAutocomplete({ label = 'Label', url, query = '', value, titleField, onChange, error }) {
+export default function AsyncAutocomplete({ label = 'Label', url, query = '', value, titleField, onChange, error, disabled = false }) {
     const [open, _open] = useState(false);
     const [options, _options] = useState([]);
     const [localValue, _localValue] = useState([]);
@@ -55,6 +55,7 @@ export default function AsyncAutocomplete({ label = 'Label', url, query = '', va
             multiple={true}
             filterSelectedOptions={true}
             fullWidth
+            disabled={disabled}
             renderInput={(params) => (
                 <TextField
                     {...params}                    

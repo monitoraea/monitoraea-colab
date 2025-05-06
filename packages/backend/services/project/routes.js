@@ -425,6 +425,19 @@ router.put('/:id/draft/justification', async (req, res) => {
   }
 });
 
+router.put('/:id/draft/ufs', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ufs } = req.body;
+
+    const result = await service.saveProjectUFsDraft(id, ufs);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 /* TODO */
 router.get('/mine', async (req, res) => {
   const { direction } = req.query;

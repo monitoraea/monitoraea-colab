@@ -700,6 +700,25 @@ class Service {
     return { ok: true };
   }
 
+  async saveProjectUFsDraft(id, ufs) {
+
+    await db.instance().query(
+      `
+        update projetos_rascunho
+        set ufs = '{${ufs.map(u => u.id).join(',')}}'
+        where projeto_id = :id
+      `,
+      {
+        replacements: {
+          id,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return { ok: true };
+  }
+
   async saveProjectDraft(data) {
     const sequelize = db.instance();
 
@@ -1745,9 +1764,9 @@ class Service {
   async hasGeo(id) {
     const sequelize = db.instance();
 
-    const [{ atuacao_aplica, atuacao_naplica_just }] = await sequelize.query(
+    let [{ atuacao_aplica, atuacao_naplica_just, ufs }] = await sequelize.query(
       `
-    select atuacao_aplica, atuacao_naplica_just
+    select atuacao_aplica, atuacao_naplica_just, ufs
     from projetos_rascunho pa
     where pa.projeto_id = :id`,
       {
@@ -1756,7 +1775,23 @@ class Service {
       },
     );
 
-    return { atuacao_aplica, atuacao_naplica_just };
+    if (!!ufs && ufs.length) {
+      ufs = await db.instance().query(
+        `
+        select
+          u.id,
+          u.nm_estado as "value",
+          u.nm_estado as "label",
+          u.nm_regiao as "region"
+        from ufs u
+        where u.id in (${ufs.join(',')})`,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+        },
+      );
+    }
+
+    return { atuacao_aplica, atuacao_naplica_just, ufs };
   }
 
   async geoAble(id, isAble) {
@@ -1948,7 +1983,63 @@ class Service {
       );
     }
 
-    return { ok: true };
+    /* identifica e atualiza os estados */
+    const ufs = await db.instance().query(`
+      with w_points as (
+          select 
+              CASE
+          WHEN ST_GeometryType(par.geom) = 'ST_Point' then ST_Buffer(par.geom, 0.00001, 'quad_segs=8')
+          else par.geom 
+          end as geom,
+              par.projeto_id
+          from projetos_atuacao_rascunho par
+      ), u_geom as (
+          select 
+              ST_Transform(ST_Union(ST_MakeValid(geom, 'method=structure')),3857) as geom
+          from w_points
+        where projeto_id =  :id
+      ), a_geom as (
+          select st_area(geom) as area from u_geom
+      ), inter as (
+          select 
+              u.id, 
+              u.nm_estado, 
+              ST_AREA(ST_intersection(u_geom.geom, u.geom)) as area_inter
+          from u_geom 
+          inner join ufs u on ST_intersects(u_geom.geom, u.geom) and u.id <> 28
+      ), percent as (
+          select 
+              id, 
+              nm_estado as label, 
+              nm_estado as value, 
+              area_inter / a_geom.area * 100 as percent_area_inter 
+          from inter
+          inner join a_geom on true
+          order by 3 desc
+      )
+      select *
+      from percent p
+      where p.percent_area_inter >= 0.5
+  `, {
+      type: Sequelize.QueryTypes.SELECT,
+      replacements: { id }
+    });
+
+    await db.instance().query(
+      `
+      update projetos_rascunho
+      set ufs = '{${ufs.map(u => u.id).join(',')}}'
+      where projeto_id = :id
+    `,
+    {
+      replacements: {
+        id,
+      },
+      type: Sequelize.QueryTypes.SELECT,
+    });
+    
+
+    return { ok: true, ufs };
   }
 
   async importSHP(filePath) {
