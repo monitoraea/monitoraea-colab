@@ -53,7 +53,7 @@ export default function NewContactFromSite({ data }) {
           </Box> */}
             </Box>
             <Box sx={{ marginTop: '8px' }}>
-                <p>{data.content.name} ({data.content.email}) envio a seguinte mensagem:</p>
+                <p>{data.content.name} ({data.content.email}) enviou a seguinte mensagem:</p>
                 <pre>{data.content.message}</pre>
                 {data.content.isADM && <p>para a iniciativa <span className={styles['goto-gt']} onClick={()=>changeRoute({ community: data.content.communityId})}>"{data.content.projectName}"</span></p>}
             </Box>

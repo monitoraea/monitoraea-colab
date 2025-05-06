@@ -51,7 +51,7 @@ export default function NewContactFromSite({ data }) {
           </Box> */}
             </Box>
             <Box sx={{ marginTop: '8px' }}>
-                <p>{data.content.name} ({data.content.email}) envio a seguinte mensagem:</p>
+                <p>{data.content.name} ({data.content.email}) enviou a seguinte mensagem:</p>
                 <pre>{data.content.message}</pre>
             </Box>
         </Box>
