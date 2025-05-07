@@ -2031,13 +2031,13 @@ class Service {
       set ufs = '{${ufs.map(u => u.id).join(',')}}'
       where projeto_id = :id
     `,
-    {
-      replacements: {
-        id,
-      },
-      type: Sequelize.QueryTypes.SELECT,
-    });
-    
+      {
+        replacements: {
+          id,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      });
+
 
     return { ok: true, ufs };
   }
@@ -3486,7 +3486,9 @@ class Service {
       'modalidade',
       'estados',
       'segmentos',
-      'status desenvolvimento',
+      'status desenvolvimento (S.D.)',
+      'S.D. inicio',
+      'S.D. fim',
       'publicos',
       'tematicas',
       'regioes',
@@ -3500,8 +3502,9 @@ class Service {
       'relacionado ppea',
       'qual ppea',
       'contatos',
-      'membros',
     ];
+
+    let data_members = [];
 
     for (let lae of indic.LAEs) {
       const laeIndics = indic.INDICs.filter(i => i.lae_id === lae.id);
@@ -3574,31 +3577,44 @@ class Service {
       const p = projects[idx];
 
       let project_data = [];
+      let project_data_members = [];
 
       project_data.push(p.id); // ID
       project_data.push(p.nome); // nome da acao
       project_data.push(p.instituicao); // instituicao
       project_data.push(p.modalidade); // modalidade
-
       project_data.push(p.ufs?.length ? p.ufs.join(', ') : ''); // estados
       project_data.push(p.segmentos?.length ? p.segmentos.join(', ') : ''); // segmentos
 
+      project_data_members.push(p.id); // ID
+      project_data_members.push(p.nome); // nome da acao
+      project_data_members.push(p.instituicao); // instituicao
+      project_data_members.push(p.ufs?.length ? p.ufs.join(', ') : ''); // estados
+
       let status = '';
+      let dt_inicio = '';
+      let dt_fim = '';
       if (p.status_desenvolvimento) {
         switch (p.status_desenvolvimento) {
           case 'nao_iniciada':
-            status = `Não iniciada (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`;
+            status = 'Não iniciada';
+            dt_inicio = dayjs(p.mes_inicio).format('MM/YYYY');
+            dt_fim = dayjs(p.mes_fim).format('MM/YYYY');
             break;
           case 'em_desenvolvimento':
-            status = `Em desenvolvimento (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format(
-              'MM/YYYY',
-            )})`;
+            status = 'Em desenvolvimento';
+            dt_inicio = dayjs(p.mes_inicio).format('MM/YYYY');
+            dt_fim = dayjs(p.mes_fim).format('MM/YYYY');
             break;
           case 'finalizada':
-            status = `Finalizada  (${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')})`;
+            status = 'Finalizada';
+            dt_inicio = dayjs(p.mes_inicio).format('MM/YYYY');
+            dt_fim = dayjs(p.mes_fim).format('MM/YYYY');
             break;
           case 'interrompida':
-            status = `Interrompida(${dayjs(p.mes_inicio).format('MM/YYYY')}-${dayjs(p.mes_fim).format('MM/YYYY')}`;
+            status = 'Interrompida';
+            dt_inicio = dayjs(p.mes_inicio).format('MM/YYYY');
+            dt_fim = dayjs(p.mes_fim).format('MM/YYYY');
             break;
           default:
             status = 'Não respondido';
@@ -3606,6 +3622,13 @@ class Service {
         }
       }
       project_data.push(status); // status desenvolvimento
+      project_data.push(dt_inicio); // status desenvolvimento - inicio
+      project_data.push(dt_fim); // status desenvolvimento - fim
+
+      project_data_members.push(status); // status desenvolvimento
+      project_data_members.push(dt_inicio); // status desenvolvimento - inicio
+      project_data_members.push(dt_fim); // status desenvolvimento - fim
+
       project_data.push(p.publicos?.length ? p.publicos.join(', ') : ''); // publicos
       project_data.push(p.tematicas?.length ? p.tematicas.join(', ') : ''); // tematicas
       project_data.push(p.regioes.filter(r => !!r).join(', ')); // regioes
@@ -3642,26 +3665,7 @@ class Service {
         );
       }
       project_data.push(contacts_array.join(' | '));
-
-      // membros
-      const members = await db.instance().query(`
-        select 
-          du."name", 
-          du.email
-        from dorothy_members dm 
-        inner join dorothy_users du on du.id = dm."userId"
-        inner join projetos p on p.community_id = dm."communityId"
-        where p.id = :id
-        order by du."name"
-        `,
-        {
-          type: Sequelize.QueryTypes.SELECT,
-          replacements: { id: p.id }
-        },
-      );
-
-      const members_all = members.map(m => `${m.name} (${m.email})`).join(',');
-      project_data.push(members_all);
+      project_data_members.push(contacts_array.join(' | '));
 
       const indicDB = p['indicadores'];
 
@@ -3735,17 +3739,46 @@ class Service {
           }
         }
 
+      // membros
+      const members = await db.instance().query(`
+        select 
+          du."name", 
+          du.email
+        from dorothy_members dm 
+        inner join dorothy_users du on du.id = dm."userId"
+        inner join projetos p on p.community_id = dm."communityId"
+        where p.id = :id
+        order by du."name"
+        `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+          replacements: { id: p.id }
+        },
+      );
+
+      for (let m of members) {
+        project_data_members.push(`${m.name} <${m.email}>`)
+      }
+
       data.push(project_data);
+      data_members.push(project_data_members);
     }
 
     // fileName
     const fileName = `spreadsheet_${dayjs().format('YYYY.MM.DD')}`;
 
-    const csvFileName = `${fileName}.csv`;
+    const csvFileName = `${fileName}_dados.csv`;
+    const csvMembersFileName = `${fileName}_membros.csv`;
     const zipFileName = `${fileName}.zip`;
 
     // 1. transformar em csv
     let content = data.reduce((accum, row) => {
+      return `${accum.length ? `${accum}\n` : ''}${row
+        .map(c => String(c).replace(/\n/g, ' ').replace(/;/g, ',').trim())
+        .join(';')}`;
+    }, '');
+
+    let content_members = data_members.reduce((accum, row) => {
       return `${accum.length ? `${accum}\n` : ''}${row
         .map(c => String(c).replace(/\n/g, ' ').replace(/;/g, ',').trim())
         .join(';')}`;
@@ -3765,6 +3798,7 @@ class Service {
 
     const zip = new AdmZip();
     zip.addFile(csvFileName, Buffer.from(content, 'latin1'));
+    zip.addFile(csvMembersFileName, Buffer.from(content_members, 'latin1'));
 
     return {
       zipFileName,
