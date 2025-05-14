@@ -18,7 +18,6 @@ app.use(express.json({ limit: '10MB' }));
 app.use(express.static(path.join(__dirname, '..', 'portal', 'dist')));
 app.use('/colabora', express.static(path.join(__dirname, '..', 'front', 'dist')));
 app.use('/colabora/(*)?', express.static(path.join(__dirname, '..', 'front', 'dist')));
-app.use('/scripts', express.static(path.join(__dirname, '..', '..', 'scripts_test','scripts.js')));
 
 const server = http.createServer(app);
 
