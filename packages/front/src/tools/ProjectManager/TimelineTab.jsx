@@ -109,6 +109,16 @@ export default function TimelineTab({ projectId }) {
       {entity && (
         <div className="page-content">
           <div className="page-body">
+            <Card middle headerless>
+              <div className="p-3">
+                <section id="details">
+                  A linha do tempo é uma ferramenta para a apresentação e o registro dos principais marcos/eventos da iniciativa.
+Insira o mês/ano em que o marco/evento aconteceu, uma imagem ilustrativa (pode ser uma fotografia real ou um ícone/desenho) e um texto descritivo. A ferramenta organiza automaticamente a apresentação dos marcos/eventos em ordem cronológica.<br/>
+Alguns exemplos de marcos/eventos: criação da iniciativa, realização de atividades relevantes, eventos públicos, publicação de normativas, relatórios, materiais educomunicativos, etc.
+                </section>
+              </div>
+            </Card>
+
             <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
               <div className={`p-3 ${styles['add-panel']}`}>
                 <section id="details">
