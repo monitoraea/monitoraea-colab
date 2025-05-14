@@ -19,8 +19,8 @@ class Service {
 
     const entities = await db.instance().query(
       `
-    select 
-        c.id, 
+    select
+        c.id,
         c."title",
         c.published,
         c.type,
@@ -29,15 +29,15 @@ class Service {
         c.level,
         h.type as hb_type,
         h.key_ref as hb_key_ref,
-        count(*) OVER() AS total_count 
+        count(*) OVER() AS total_count
     from contents c
     left join helpboxes h on h.content_id = c.id
     ${applyWhere(where)}
     order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}, c.title` : 'p."updatedAt" desc'
       }
     ${!config.last && config.order === 'type' ? ', title' : ''}
-    LIMIT ${!config.all ? ':limit' : 'NULL'} 
-    OFFSET ${!config.all ? ':offset' : 'NULL'} 
+    LIMIT ${!config.all ? ':limit' : 'NULL'}
+    OFFSET ${!config.all ? ':offset' : 'NULL'}
     `,
       {
         replacements,
@@ -72,7 +72,7 @@ class Service {
 
     const list = await db.instance().query(
       `
-        SELECT distinct c.id::integer, c.title 
+        SELECT distinct c.id::integer, c.title
         FROM contents c
         ${applyWhere(where)}
         order by c."title"
@@ -98,8 +98,8 @@ class Service {
 
     const list = await db.instance().query(
       `
-      select * 
-      from contents c      
+      select *
+      from contents c
       ${applyWhere(where)}
         `,
       {
@@ -144,22 +144,22 @@ class Service {
 
     const entities = await db.instance().query(
       `
-    select 
-        c.id, 
+    select
+        c.id,
         c."title",
         coalesce(c."intro",'') as "intro",
         c.published,
         c."publishedAt",
         c.featured_images,
         c.portal,
-        count(*) OVER() AS total_count 
+        count(*) OVER() AS total_count
     from contents c
     ${applyWhere(where)}
     order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'p."updatedAt" desc'
       }
     ${!config.last && config.order === 'type' ? ', title' : ''}
-    LIMIT ${!config.all ? ':limit' : 'NULL'} 
-    OFFSET ${!config.all ? ':offset' : 'NULL'} 
+    LIMIT ${!config.all ? ':limit' : 'NULL'}
+    OFFSET ${!config.all ? ':offset' : 'NULL'}
     `,
       {
         replacements,
@@ -180,7 +180,7 @@ class Service {
     const totals = await db.instance().query(
       `
     select c.portal, count(*)::int as "total"
-    from contents c 
+    from contents c
     where c."deletedAt" is null
     and c.published = true
     and c."type" = :type
@@ -207,6 +207,8 @@ class Service {
       where: {
         portal,
         type: 'faq',
+        published: true,
+        deletedAt: null,
       }
     });
   }
