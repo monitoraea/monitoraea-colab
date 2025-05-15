@@ -1,0 +1,103 @@
+fields:
+  - key: 1 # TODO - não deveríamos usar key numérico!!
+    block: main
+    type: options
+    title: Foi realizado diagnóstico participativo?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent # opção - aqui ou no elements do bloco
+    type: options
+    title: Quando foi realizado o diagnóstico?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: No início, para planejar e construir a PPEA
+      - value: 1
+        label: Para implementar e/ou revisar a PPEA
+      - value: 2
+        label: Durante todo o processo de construção, implementação e revisão da PPEA
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 3
+    block: dependent
+    type: file
+    title: Insira elemento comprobatório referente a pergunta acima
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: multi_autocomplete
+    title: Quais as estratégias utilizadas para realizar o diagnóstico?
+    options:
+      - value: 0
+        label: Entrevistas e aplicação de questionários
+      - value: 1
+        label: Consulta Pública por meio digital
+      - value: 2
+        label: Oficinas
+      - value: 3
+        label: Conjunto de técnicas participativas (DRP - Diagnóstico Rápido Participativo ou similar)
+    validation: at_least_one
+
+  - key: 5
+    block: dependent
+    type: file
+    title: Insira elementos comprobatórios (aquivo zip) referente a pergunta acima
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: options
+    title: O diagnóstico envolveu temas relativos à mudanças do clima?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Se envolveu temas relativos à mudanças do clima, comente.
+    show:
+      target: # a pergunta só aparece se a pergunta da key 6 for sim = 1
+        key: 6
+        value: 1
+
+  - key: 8
+    block: dependent
+    type: textarea
+    rows: 8
+    title: Descreva o processo de envolvimento destes atores/sujeitos
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1
+    # elements: inseri nos próprios campos na propriedade block

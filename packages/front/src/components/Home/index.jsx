@@ -10,6 +10,7 @@ const mapPerspective = {
     3: ['CIEA'],
     4: ['PPEA'],
     5: ['Centros'],
+    6: ['Iniciativas Não Governamentais'],
 }
 
 export default function Home() {

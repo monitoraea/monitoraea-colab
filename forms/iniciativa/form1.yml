@@ -1,0 +1,165 @@
+# imports: é ignorado pelo se é um form de front
+
+fields:
+
+- key: nome
+  type: text
+  title: Nome da Política Pública
+  size: 12
+  client_validation: not_empty # not implemented yet
+
+- key: area
+  type: options
+  title: Área da Política Pública
+  size: 6
+  list:
+    module: property
+    key: areas
+  validation:
+    - type: neq
+      value: -1
+    - type: not_empty
+
+- key: area_tematica
+  type: text
+  title: Especifique
+  size: 6
+  show:
+    target:
+      key: area
+      value: 1
+  validation: not_empty # nao pode ser vazio se esta campo estiver sendo apresentado
+  # disabled
+
+- key: instituicao_nome
+  block: inst # opção para indicar o bloco ao qual o campo pertence
+  type: text
+  title: Nome da Instituição Executora
+  size: 6
+  validation: not_empty
+
+- key: instituicao_enquadramento
+  block: inst
+  type: options
+  title: Nível da PPEA
+  size: 8
+  list:
+    module: property
+    key: enquadramentos
+  validation:
+    - type: neq
+      value: -1
+    - type: not_empty
+
+- key: responsavel_nome
+  type: text
+  title: Nome
+  size: 6
+  validation: not_empty
+
+- key: responsavel_cargo
+  type: text
+  title: Cargo/Função
+  size: 6
+
+- key: responsavel_telefone
+  type: text
+  title: Telefone
+  size: 6
+
+- key: responsavel_email
+  type: text
+  title: Email
+  size: 6
+  validation: not_empty
+
+- key: link
+  type: text
+  title: Link para acesso à informações da Política Pública
+  size: 12
+
+- key: contemplados
+  type: textarea
+  rows: 8
+  title: Cite quais as ações, projetos, programas e planos estão contemplados pela PPEA
+  size: 12
+
+- key: fase
+  type: options
+  title: Fase atual da Política Pública
+  size: 4
+  list:
+    module: property
+    key: fases
+  validation:
+    - type: neq
+      value: -1
+    - type: not_empty
+
+- key: fase_ano
+  type: yearpicker
+  title: Desde que ano esta etapa da política política vem sendo desenvolvida
+  size: 4
+
+- key: fase_descricao
+  type: text
+  title: Descrição
+  size: 4
+
+- key: dificuldades
+  type: multi_autocomplete
+  # tag: true
+  title: Principais dificuldades no processo de construção/implementação da política
+  size: 12
+  options:
+    - value: 0
+      label: 'Envolvimento da sociedade civil'
+    - value: 1
+      label: 'Envolvimento do poder público'
+    - value: 2
+      label: 'Transversalidade'
+    - value: 3
+      label: 'Equipe'
+    - value: 4
+      label: 'Recursos financeiros'
+    - value: 5
+      label: 'Morosidade na etapa de aprovação'
+    - value: 6
+      label: 'Dificuldades na definição de indicadores'
+    - value: 7
+      label: 'Descontinuidade'
+    - value: 8
+      label: 'Implementação'
+
+# 1. BasicRenderer: se houver blocks abaixo (ou nos campos), o renderer utiliza esta informação para definir o visual e impor regras.
+# -- Neste caso, campo deve estar presente em block para aparecer (ou ligar showOrphan)
+
+# 2. Renderer (com view): utiliza esta informação, somente, para regras
+
+blocks: # opcional
+
+  - key: ppea # só é necessário se tem regras ou com view?
+    title: Sobre a Política Pública # optional
+    elements:
+      - nome
+      - area
+      - area_tematica
+
+  - key: inst
+    title: Sobre a Instituição
+
+  - key: responsavel
+    title: Sobre a Responsável
+    elements:
+      - responsavel_nome
+      - responsavel_cargo
+      - responsavel_telefone
+      - responsavel_email
+
+  - key: more
+    title: Mais informações
+    elements:
+      - fase
+      - fase_ano
+      - dificuldades
+      - contemplados

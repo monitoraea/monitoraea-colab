@@ -1,0 +1,95 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A PPEA está articulada com outras temáticas?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais temas?
+    options:
+      - value: 0
+        label: Ambiental
+      - value: 1
+        label: Social
+      - value: 2
+        label: Desenvolvimento Econômico
+      - value: 3
+        label: Rural
+      - value: 4
+        label: Urbano
+      - value: 5
+        label: Outro
+
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for Outro = 5
+        key: 2
+        value: 5
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 5
+    block: dependent
+    type: file
+    title: Apresente evidências (arquivo zip).
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: options
+    title: Articulação gerou algum tipo de ação conjunta?
+    options:
+      - value: 0
+        label: Não
+      - value: 1
+        label: Sim
+
+  - key: 8
+    block: dependent
+    type: TextArea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a pergunta da key 6 for Sim = 1
+        key: 6
+        value: 1
+    validation: not_empty
+
+  - key: 9
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+    show:
+      target: # o texto só aparece se a pergunta da key 6 for Sim = 1
+        key: 6
+        value: 1
+ 
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

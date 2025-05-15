@@ -1,0 +1,57 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A PPEA estimula construção/fortalecimento de laços comunitários no seu território de abrangência?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais estratégias foram criadas para estimular o fortalecimento dos laços comunitários?
+    options:
+      - value: 0
+        label: Criação de grupo(s) de ação socioambiental no território de atuação
+      - value: 1
+        label: Realização de eventos socioambientais organizados (Feiras, festas populares, cinedebate, seminários, etc)
+      - value: 2
+        label: Criação e cuidado de espaços de convivência (praças, parques, centro de vivências, etc)
+      - value: 3
+        label: Desenvolvimento de projetos colaborativos (hortas comunitárias, projetos de reciclagem, cooperativa de trabalho, inciativas educacionais, etc)
+      - value: 4
+        label: Apoio a iniciativas culturais (apoiar artistas locais, resgatar tradições, incentivar atividades como teatro, música, literatura, etc)
+      - value: 5
+        label: Incentivo ao voluntariado (programas que conectam voluntários a causas socioambientais locais, como cuidado com as áreas protegidas, espaços públicos de convivências, etc)
+      - value: 6
+        label: Resolução de conflitos comunitários (mediação de conflitos entre moradores, criação de comitês de diálogos, etc)
+
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 4
+    block: dependent
+    type: file
+    title: Apresente evidências (arquivo zip).
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

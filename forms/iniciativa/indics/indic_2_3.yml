@@ -1,0 +1,90 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Os dados sobre a PPEA estão prontamente disponíveis para a sociedade? 
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Os dados são disponibilizados de que forma?
+    options:
+      - value: 1
+        label: Online
+      - value: 2
+        label: Mídia
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Indique o endereço.
+    show: 
+      target: # o texto só aparece se a resposta key 2 for Mídia impressa = 1
+        key: 2
+        value: 1
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: TextArea
+    title: Indique o endereço de onde é possível encontrar os dados.
+    show: 
+      target: # o texto só aparece se a resposta key 2 for Online = 0
+        key: 2
+        value: 2
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: options
+    title: Ocorre a atualização periódica desses dados?
+    options:
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: options
+    title: Qual período?
+    options:
+      - value: 0
+        label: Mensal
+      - value: 1
+        label: Bimestral
+      - value: 2
+        label: Trimestral
+      - value: 3
+        label: Semestral
+      - value: 4
+        label: Anual
+      - value: 5
+        label: Outro
+    validation: not_empty
+    show:
+      target: # a pergunta só aparece se a pergunta da key 5 for sim = 1
+        key: 5
+        value: 1
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

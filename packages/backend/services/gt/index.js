@@ -73,7 +73,7 @@ class Service {
     if (!community.length) throw new Error('Unknown community!');
     const type = community[0].type.trim();
 
-    if (!['adm', 'facilitador', 'adm_zcm', 'adm_ciea', 'adm_ppea', 'adm_cne'].includes(type)) throw new Error('Permission denied!');
+    if (!['adm', 'facilitador', 'adm_zcm', 'adm_ciea', 'adm_ppea', 'adm_cne', 'adm_iniciativas'].includes(type)) throw new Error('Permission denied!');
 
     if (type === 'adm') return this.list4Adm(communityId, config);
     else if (type === 'facilitador') return this.list4Facilit(communityId, config);
@@ -81,6 +81,7 @@ class Service {
     else if (type === 'adm_ciea') return this.list4AdmCIEA(communityId, config);
     else if (type === 'adm_ppea') return this.list4AdmPPEA(communityId, config);
     else if (type === 'adm_cne') return this.list4AdmCNE(communityId, config);
+    else if (type === 'adm_iniciativas') return this.list4AdmIniciative(communityId, config);
     else return {
       entities: [],
       total: 0,
@@ -194,6 +195,35 @@ class Service {
         from dorothy_communities
         where type not in ('network','adm_ciea')
         and descriptor_json->>'perspective' = '3'
+        order by "${config.order}" ${config.direction}
+      `,
+      {
+        replacements: { communityId },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return {
+      entities,
+      total: entities.length ? parseInt(entities[0].total_count) : 0,
+    };
+  }
+
+  async list4AdmIniciative(communityId, config) {
+    let entities = await db.instance().query(
+      `
+        select
+          dc.id,
+          dc.alias,
+          TRIM(dc.type) as "type",
+          'Iniciativa Não Governamental' as "typeName",
+          dc.descriptor_json->'title' as "name",
+          count(*) OVER() AS total_count
+        from dorothy_communities dc
+        inner join iniciativas.iniciativas p on p.community_id = dc.id and p.versao = 'draft'
+        where type not in ('network','adm_iniciativa')
+        and descriptor_json->>'perspective' = '6'
+        and p."deletedAt" is null
         order by "${config.order}" ${config.direction}
       `,
       {

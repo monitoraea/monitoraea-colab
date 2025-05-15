@@ -1,0 +1,75 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A PPEA está articulada / integrada com alguma Rede / Coletivo / Movimento Socioambientais nas escalas de abrangência regional, nacional e/ou global?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais?
+    options:
+      - value: 0
+        label: Local
+      - value: 1
+        label: Regional
+      - value: 2
+        label: Nacional
+      - value: 3
+        label: Global
+
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 4
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: multi_autocomplete
+    title: De que forma ocorreu a interação da iniciativa com a Rede / Coletivo / Movimento?
+    options:
+      - value: 0
+        label: Realização conjunta de evento ou outra ação pontual pela instituição proponente e a rede/movimento/ coletivo
+      - value: 1
+        label: Planejamento conjunto de projeto, programa ou política pública
+      - value: 2
+        label: Execução do planejamento compartilhado com a produção conjunta de serviço, bem coletivo
+
+  - key: 6
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 7
+    block: dependent
+    type: file
+    title: Apresente evidências (arquivo zip).
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

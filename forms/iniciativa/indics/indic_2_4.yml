@@ -1,0 +1,102 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A PPEA prevê algum mecanismo de tomada de decisão frente à eventos não previstos e/ou incertos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais mecanismos estão previstos na PPEA?
+    options:
+      - value: 0
+        label: Formação e capacitação continuada dos gestores públicos e dos atores da sociedade vinculados aos processos de controle social para que estejam aptos a lidas com a complexidade e a dinâmica das políticas adaptativas      
+      - value: 1
+        label: Instauração de comitês técnicos e políticos
+      - value: 2
+        label: Instauração de comitês sociais e participativos
+      - value: 3
+        label: Avaliação rápida e revisão de diretrizes políticas e instrumentos operacionais
+      - value: 4
+        label: outro
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: file
+    title: Insira elementos comprobatórios (aquivo zip) referente a pergunta acima
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: options
+    title: A PPEA utiliza alguma estratégia para se antecipar à ocorrência de eventos incertos?
+    options:
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: multi_autocomplete
+    title: Quais mecanismos estão previstos na PPEA?
+    options:
+      - value: 0
+        label: Acesso à mecanismos e dados de monitoramento contínuo para  atuação a partir de sinais precoces      
+      - value: 1
+        label: Uso de cenários / dados de modelos
+      - value: 2
+        label: outro
+    show:
+      target: # a pergunta só aparece se a pergunta da key 5 for sim = 1
+        key: 5
+        value: 1
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 5 for sim = 1
+        key: 5
+        value: 1
+    validation: not_empty
+
+  - key: 8
+    block: dependent
+    type: file
+    title: Insira elementos comprobatórios (aquivo zip) referente a pergunta acima
+    show:
+      target: # o texto só aparece se a pergunta da key 5 for sim = 1
+        key: 5
+        value: 1
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

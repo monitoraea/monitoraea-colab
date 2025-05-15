@@ -25,6 +25,7 @@ const mapPerspective = {
     project: ['Iniciativa', 'projeto', 'rede_zcm'],
     commission: ['Comissão', 'comissao', 'rede_ciea'],
     cne: ['Centro', 'cne', 'rede_cne'],
+    iniciative: ['Iniciativa não governamental', 'iniciativa', 'rede_iniciativa'],
 }
 
 export default function MyArea() {

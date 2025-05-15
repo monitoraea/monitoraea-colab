@@ -1,0 +1,133 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A PPEA está gerando alguma intervenção socioambiental?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: TextArea
+    title: Quais as intervenções socioambientais são geradas? Especifique.
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: options
+    title: Quem a desenvolveu?
+    options:
+      - value: 0
+        label: Proponente da Política Pública
+      - value: 1
+        label: Lideranças comunitárias/populares
+      - value: 2
+        label: Ambos
+
+  - key: 4
+    block: dependent
+    type: options
+    title: As intervenções preveem ou trazem em seu desenvolvimento processos pedagógicos reflexivos?
+    options:
+      - value: 0
+        label: Não
+      - value: 1
+        label: Sim
+
+  - key: 5
+    block: dependent
+    type: TextArea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a pergunta da key 4 for Sim = 1
+        key: 4
+        value: 1
+    validation: not_empty
+ 
+  - key: 6
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    show:
+      target: # o texto só aparece se a pergunta da key 4 for Sim = 1
+        key: 4
+        value: 1
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: options
+    title: As intervenções fomentam ou se desdobram em outras ações?
+    options:
+      - value: 0
+        label: Não
+      - value: 1
+        label: Sim
+
+  - key: 8
+    block: dependent
+    type: TextArea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a pergunta da key 7 for Sim = 1
+        key: 7
+        value: 1
+    validation: not_empty
+ 
+  - key: 9
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    show:
+      target: # o texto só aparece se a pergunta da key 7 for Sim = 1
+        key: 7
+        value: 1
+    validation: not_empty
+
+  - key: 10
+    block: dependent
+    type: options
+    title: As intervenções envolveram temas relacionados à mudanças do clima?
+    options:
+      - value: 0
+        label: Não
+      - value: 1
+        label: Sim
+
+  - key: 11
+    block: dependent
+    type: TextArea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a pergunta da key 10 for Sim = 1
+        key: 10
+        value: 1
+    validation: not_empty
+ 
+  - key: 12
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    show:
+      target: # o texto só aparece se a pergunta da key 10 for Sim = 1
+        key: 10
+        value: 1
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

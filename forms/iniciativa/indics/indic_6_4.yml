@@ -1,0 +1,123 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A PPEA promove ações que dialogam com temas relacionados a ações afirmativas de enfrentamento da desigualdade e qualquer tipo discriminação em seu território de atuação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Dialoga com quais temas?
+    options:
+      - value: 0
+        label: Discriminação racial / étnica
+      - value: 1
+        label: Discriminação de gênero
+      - value: 2
+        label: Discriminação social
+
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 4
+    block: dependent
+    type: file
+    title: Apresente evidências (arquivo zip).
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: multi_autocomplete
+    title: Onde busca informações / dados para subsidiar o dialogo?
+    options:
+      - value: 0
+        label: Dados oficiais
+      - value: 1
+        label: Pesquisa / diagnóstico
+      - value: 2
+        label: Outros
+
+  - key: 6
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 5 for Outros = 2
+        key: 5
+        value: 2
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 8
+    block: dependent
+    type: file
+    title: Apresente evidências (arquivo zip).
+    validation: not_empty
+
+  - key: 9
+    block: dependent
+    type: multi_autocomplete
+    title: Que tipo de ações desenvolve para abordar os temas?
+    options:
+      - value: 0
+        label: Ações de diagnóstico
+      - value: 1
+        label: Ações de mobilização
+      - value: 2
+        label: Ações de formação dialógica
+      - value: 3
+        label: Intervenções socioambientais
+      - value: 4
+        label: Comunicação
+      - value: 5
+        label: Outro
+
+  - key: 10
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 9 for Outros = 5
+        key: 9
+        value: 5
+    validation: not_empty  
+
+  - key: 11
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+
+  - key: 12
+    block: dependent
+    type: file
+    title: Apresente evidências (arquivo zip).
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

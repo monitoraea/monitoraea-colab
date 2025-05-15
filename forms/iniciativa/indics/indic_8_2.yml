@@ -1,0 +1,95 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: São utilizados processos de educomunicação e/ou Comunicação Social?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: Quais os públicos envolvidos na produção dos materiais/peças de comunicação?
+    options:
+      - value: 0
+        label: Proponentes + atores sociais envolvidos
+      - value: 1
+        label: Empresa especializada em comunicação + atores sociais envolvidos
+      - value: 2
+        label: Instituição proponente / executora
+      - value: 3
+        label: Empresa especializada em comunicação
+
+  - key: 3
+    block: dependent
+    type: multi_autocomplete
+    title: Quais ações e/ou produtos comunicativos/ educomunicativas foram gerados a partir da iniciativa?
+    options:
+      - value: 0
+        label: jornais impressos ou digitais
+      - value: 1
+        label: vídeos
+      - value: 2
+        label: podcasts
+      - value: 3
+        label: Teatro, poesias, cordel
+      - value: 4
+        label: Outro
+
+  - key: 4
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 3 for Outro = 4
+        key: 3
+        value: 4
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: multi_autocomplete
+    title: As ações/produtos envolveram temas relacionados à mudanças do clima?
+    options:
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+
+  - key: 6
+    block: dependent
+    type: textarea
+    title: Comente.
+    validation: not_empty
+    show:
+      target:
+        key: 5
+        value: 1
+
+  - key: 7
+    block: dependent
+    type: file
+    title: Apresente evidências (aquivo zip).
+    validation: not_empty
+    show:
+      target:
+        key: 5
+        value: 1
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

@@ -1,0 +1,54 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: A PPEA dialoga com os seguintes documentos internacionais de referência?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais?
+    options:
+      - value: 0
+        label: Tratado de EA para Sociedades Sustentáveis e Responsabilidade Global
+      - value: 1
+        label: Carta da Terra
+      - value: 2
+        label: Objetivos de Desenvolvimento Sustentável – ODS
+      - value: 3
+        label: Convenção sobre Diversidade Biológica
+      - value: 4
+        label: Relatórios de Avaliação do IPCC sobre mudanças do clima
+    validation: at_least_one
+
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 4
+    block: dependent
+    type: file
+    title: Apresente evidências (arquivo zip).
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

@@ -1,0 +1,237 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Foi realizado algum processo formador / capacitação / educativo no contexto da PPEA?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: integer
+    title: Quantos processos formativos foram realizados a partir da PPEA (Inserir dado numérico)?
+
+  - key: 18
+    block: dependent
+    type: text
+    title: Comente
+
+  - key: 3
+    block: dependent
+    type: options
+    title: Os processos de formação contemplam articulação entre teoria e prática?
+    options:
+      - value: 0
+        label: Não
+      - value: 1
+        label: Sim
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: text
+    title: Como a relação teoria-prática é estruturada no contexto pedagógico (especifique)?
+    show:
+      target: # a pergunta só aparece se a pergunta da key 3 for sim = 1
+        key: 3
+        value: 1
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: options
+    title: Foram verificados resultados da articulação da teoria e prática do processo formativo?
+    options:
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # a pergunta só aparece se a pergunta da key 3 for sim = 1
+        key: 3
+        value: 1
+
+  - key: 6
+    block: dependent
+    type: multi_autocomplete
+    title: Quais?
+    options:
+      - value: 0
+        label: Intervenções na realidade      
+      - value: 1
+        label: Narrativas construídas pelos participantes do processo
+      - value: 2
+        label: Diálogo de saberes populares/comunitários, técnicos, acadêmicos e outros
+      - value: 3
+        label: outros
+    show:
+      target: # o texto só aparece se a pergunta da key 5 for sim = 1
+        key: 5
+        value: 1
+    validation: not_empty
+ 
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a pergunta da key 5 for sim = 1
+        key: 5
+        value: 1
+    validation: not_empty
+
+  - key: 8
+    block: dependent
+    type: file
+    title: Apresente evidências (arquivo zip).
+    show:
+      target: # o texto só aparece se a pergunta da key 5 for sim = 1
+        key: 5
+        value: 1
+    validation: not_empty
+
+  - key: 9
+    block: dependent
+    type: TextArea
+    title: Qual a abordagem metodológica do processo formativo desenvolvido (especifique)?
+    validation: not_empty
+
+  - key: 10 
+    block: dependent
+    type: multi_autocomplete
+    title: Quais foram as principais técnicas utilizadas no processo de formação?
+    options:
+      - value: 0
+        label: Técnicas expositivas (Aulas/palestras, etc)
+      - value: 1
+        label: Estudo de caso
+      - value: 2
+        label: Leitura compartilhada/ debates de textos
+      - value: 3
+        label: Oficinas, grupos de trabalho, rodas de conversa
+      - value: 4
+        label: Grupos de Estudo
+      - value: 5
+        label: Estudo do meio
+      - value: 6
+        label: Mostras, Feiras, Eventos diversos
+      - value: 7
+        label: Jogos pedagógicos e dinâmicas diversas
+      - value: 8
+        label: Resolução de exercícios
+      - value: 9
+        label: Trabalhos individuais
+      - value: 10
+        label: Multilinguagens (vídeo, teatro, música, fotografia, cinema, internet, rádio, etc)
+      - value: 11
+        label: Representação de papeis (dramatização, simulação de situações/cenários, etc)
+      - value: 12
+        label: Outros
+
+  - key: 11
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 10 for Outros = 12
+        key: 10
+        value: 12
+    validation: not_empty
+
+  - key: 12
+    block: dependent
+    type: options
+    title: O processo formativo envolveu temas relativos à mudanças do clima?
+    options:
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+
+  - key: 13
+    block: dependent
+    type: TextArea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a pergunta da key 12 for Sim = 1
+        key: 12
+        value: 1
+    validation: not_empty
+
+  - key: 14
+    block: dependent
+    type: options
+    title: Houve processo de avaliação relacionado à formação?
+    options:
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+
+  - key: 15
+    block: dependent
+    type: options
+    title: Em qual momento da formação foi realizada a avaliação?
+    options:
+      - value: 0
+        label: Final do processo formativo      
+      - value: 1
+        label: Início e final do processo do processo formativo
+      - value: 2
+        label: Durante todo o processo formativo
+    show:
+      target: # o texto só aparece se a pergunta da key 14 for sim = 1
+        key: 14
+        value: 1
+    validation: not_empty
+
+  - key: 16
+    block: dependent
+    type: multi_autocomplete
+    title: Quais instrumentos de avaliação foram utilizados no processo de formação?
+    options:
+      - value: 0
+        label: Provas, testes, resolução de problemas, etc     
+      - value: 1
+        label: Questionário / formulário
+      - value: 2
+        label: Entrevistas
+      - value: 3
+        label: Dinâmicas     
+      - value: 4
+        label: Reunião / Roda de conversa
+      - value: 5
+        label: Outros
+    show:
+      target: # o texto só aparece se a pergunta da key 14 for sim = 1
+        key: 14
+        value: 1
+    validation: not_empty
+
+  - key: 17
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 16 for Outros = 5
+        key: 16
+        value: 5
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

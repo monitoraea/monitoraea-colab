@@ -1,0 +1,166 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Houve formação de educadores ambientais por meio da PPEA?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: integer
+    title: Quantos educadores ambientais foram formados nos últimos 2 anos (inserir dado numérico)?
+    show: # o texto só aparece se a pergunta da key 1 for sim = 1
+      target:
+        key: 1
+        value: 1
+
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: options
+    title: Os educadores ambientais formados estão conectados por meio de algum canal de comunicação?
+    options:
+      - value: 0
+        label: Não
+      - value: 1
+        label: Sim
+
+  - key: 6
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+    show: # o texto só aparece se a pergunta da key 5 for sim = 1
+      target:
+        key: 5
+        value: 1
+
+  - key: 7
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+    show: # o texto só aparece se a pergunta da key 5 for sim = 1
+      target:
+        key: 5
+        value: 1
+
+  - key: 8
+    block: dependent
+    type: options
+    title: Os educadores ambientais formados estão atuando em alguma ação relacionada a política pública cadastrada?
+    options:
+      - value: 0
+        label: Não
+      - value: 1
+        label: Sim
+
+  - key: 9
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+    show: # o texto só aparece se a pergunta da key 8 for sim = 1
+      target:
+        key: 8
+        value: 1
+
+  - key: 10
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+    show: # o texto só aparece se a pergunta da key 8 for sim = 1
+      target:
+        key: 8
+        value: 1
+
+  - key: 11
+    block: dependent
+    type: options
+    title: Os educadores ambientais formados realizam praticas /intervenções socioambientais no âmbito da PPEA?
+    options:
+      - value: 0
+        label: Não
+      - value: 1
+        label: Sim
+
+  - key: 12
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+    show: # o texto só aparece se a pergunta da key 11 for sim = 1
+      target:
+        key: 11
+        value: 1
+
+  - key: 13
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+    show: # o texto só aparece se a pergunta da key 11 for sim = 1
+      target:
+        key: 11
+        value: 1
+
+  - key: 14
+    block: dependent
+    type: options
+    title: Existe algum plano de ação para ser executado pelos educadores ambientais formados ?
+    options:
+      - value: 0
+        label: Não
+      - value: 1
+        label: Sim
+
+  - key: 15
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+    show: # o texto só aparece se a pergunta da key 14 for sim = 1
+      target:
+        key: 14
+        value: 1
+
+  - key: 16
+    block: dependent
+    type: file
+    title: Apresente evidências.
+    validation: not_empty
+    show: # o texto só aparece se a pergunta da key 14 for sim = 1
+      target:
+        key: 14
+        value: 1
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

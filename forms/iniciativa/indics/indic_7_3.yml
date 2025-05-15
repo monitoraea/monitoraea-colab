@@ -1,0 +1,84 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Existem recursos financeiros para a viabilização da PPEA?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: A PPEA possui orçamento previsto no PPA (Plano Plurianual)?
+    options:
+      - value: 0
+        label: Sim, está prevista no PPA atual com orçamento definido
+      - value: 1
+        label: Sim, mas sem garantia de execução financeira
+      - value: 2
+        label: Não, não está contemplada no PPA
+
+  - key: 3
+    block: dependent
+    type: multi_autocomplete
+    title: Qual é o mecanismo adotado para acessar recursos financeiros para implementar esta política pública de EA?
+    options:
+      - value: 0
+        label: Transferências Intersetoriais e/ou Intergovernamentais
+      - value: 1
+        label: Parceria Público-Privado
+      - value: 2
+        label: Emendas Parlamentares
+      - value: 3
+        label: Recursos obtidos via bancos públicos ou internacionais (BNDES, Banco Mundial, etc.)
+      - value: 4
+        label: Recursos obtidos via fundos públicos ou privados
+      - value: 5
+        label: Doações e Acordos de Cooperação
+      - value: 6
+        label: Outros
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for Outro = 2
+        key: 2
+        value: 2
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 3 for Outros = 6
+        key: 3
+        value: 6
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+ 
+  - key: 6
+    block: dependent
+    type: file
+    title: Apresente evidências (arquivo zip).
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

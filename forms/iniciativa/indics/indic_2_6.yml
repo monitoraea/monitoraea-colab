@@ -1,0 +1,83 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Estão previstos mecanismos de monitoramento, avaliação e revisão da PPEA?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: Como os mecanismos de monitoramento e avaliação foram construídos?
+    options:
+      - value: 0
+        label: Com diálogos em espaços de controle social
+      - value: 1
+        label: Em discussão interna da proponente da iniciativa
+      - value: 2
+        label: Outro
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for Outro = 2
+        key: 2
+        value: 2
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: options
+    title: Quais os atores envolvidos na execução dos processos de monitoramento e avaliação?
+    options:
+      - value: 0
+        label: Instituição proponente / executora
+      - value: 1
+        label: Instituição proponente/ executora e outros atores sociais externos
+      - value: 2
+        label: Outro
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 5 for Outro = 2
+        key: 5
+        value: 2
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Comente.
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

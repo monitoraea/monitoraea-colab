@@ -40,4 +40,6 @@ module.exports = [
   'publico',
   'tematica_socioambiental',
   'geo',
+  'iniciativa',
+  'iniciativa_timeline',
 ];
