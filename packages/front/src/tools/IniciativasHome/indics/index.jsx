@@ -1,14 +1,7 @@
 /* forms */
 import indic_1_1 from '../../../../../../forms/iniciativa/indics/indic_1_1.yml'
 import indic_2_1 from '../../../../../../forms/iniciativa/indics/indic_2_1.yml'
-import indic_2_2 from '../../../../../../forms/iniciativa/indics/indic_2_2.yml'
-import indic_2_3 from '../../../../../../forms/iniciativa/indics/indic_2_3.yml'
-import indic_2_4 from '../../../../../../forms/iniciativa/indics/indic_2_4.yml'
-import indic_2_5 from '../../../../../../forms/iniciativa/indics/indic_2_5.yml'
-import indic_2_6 from '../../../../../../forms/iniciativa/indics/indic_2_6.yml'
 import indic_3_1 from '../../../../../../forms/iniciativa/indics/indic_3_1.yml'
-import indic_3_2 from '../../../../../../forms/iniciativa/indics/indic_3_2.yml'
-import indic_3_3 from '../../../../../../forms/iniciativa/indics/indic_3_3.yml'
 import indic_4_1 from '../../../../../../forms/iniciativa/indics/indic_4_1.yml'
 import indic_4_2 from '../../../../../../forms/iniciativa/indics/indic_4_2.yml'
 import indic_4_3 from '../../../../../../forms/iniciativa/indics/indic_4_3.yml'
@@ -17,10 +10,10 @@ import indic_6_1 from '../../../../../../forms/iniciativa/indics/indic_6_1.yml'
 import indic_6_2 from '../../../../../../forms/iniciativa/indics/indic_6_2.yml'
 import indic_6_3 from '../../../../../../forms/iniciativa/indics/indic_6_3.yml'
 import indic_6_4 from '../../../../../../forms/iniciativa/indics/indic_6_4.yml'
+import indic_6_5 from '../../../../../../forms/iniciativa/indics/indic_6_5.yml'
 import indic_7_1 from '../../../../../../forms/iniciativa/indics/indic_7_1.yml'
 import indic_7_2 from '../../../../../../forms/iniciativa/indics/indic_7_2.yml'
 import indic_7_3 from '../../../../../../forms/iniciativa/indics/indic_7_3.yml'
-import indic_7_4 from '../../../../../../forms/iniciativa/indics/indic_7_4.yml'
 import indic_8_1 from '../../../../../../forms/iniciativa/indics/indic_8_1.yml'
 import indic_8_2 from '../../../../../../forms/iniciativa/indics/indic_8_2.yml'
 
@@ -32,7 +25,7 @@ export default [
     "indics": [
       {
         "id": "1_1",
-        "title": "Diagnóstico Participativo",
+        "title": "Realização de Diagnóstico Participativo",
         "ready": false,
         "form": indic_1_1
       }
@@ -49,36 +42,6 @@ export default [
         "ready": false,
         "form": indic_2_1
       },
-      {
-        "id": "2_2",
-        "title": "Instâncias e/ou colegiados para diálogos, construção e tomadas de decisão coletiva",
-        "ready": false,
-        "form": indic_2_2
-      },
-      {
-        "id": "2_3",
-        "title": "Transparência",
-        "ready": false,
-        "form": indic_2_3
-      },
-      {
-        "id": "2_4",
-        "title": "Mecanismos para lidar com a imprevisibilidade",
-        "ready": false,
-        "form": indic_2_4
-      },
-      {
-        "id": "2_5",
-        "title": "Instrumento pedagógico participativo",
-        "ready": false,
-        "form": indic_2_5
-      },
-      {
-        "id": "2_6",
-        "title": "Monitoramento e Avaliação",
-        "ready": false,
-        "form": indic_2_6
-      },
     ]
   },
   {
@@ -91,18 +54,6 @@ export default [
         "title": "Desenvolvimento do processo formativo",
         "ready": false,
         "form": indic_3_1
-      },
-      {
-        "id": "3_2",
-        "title": "Diversidade de públicos envolvidos",
-        "ready": false,
-        "form": indic_3_2
-      },
-      {
-        "id": "3_3",
-        "title": "Educadores Ambientais formados",
-        "ready": false,
-        "form": indic_3_3
       },
     ]
   },
@@ -125,7 +76,7 @@ export default [
       },
       {
         "id": "4_3",
-        "title": "Ações educativas ambientais articuladas com os aspectos culturais",
+        "title": "Valorização da Cultura",
         "ready": false,
         "form": indic_4_3
       },
@@ -138,7 +89,7 @@ export default [
     "indics": [
       {
         "id": "5_1",
-        "title": "Intervenções socioambientais geradas a partir da execução da PPEA",
+        "title": "Intervenções socioambientais geradas",
         "ready": false,
         "form": indic_5_1
       },
@@ -157,21 +108,27 @@ export default [
       },
       {
         "id": "6_2",
-        "title": "Articulação de Redes, Movimentos socioambientais e Coletivos Educadores",
+        "title": "Articulação de Redes, Movimentos socioambientais e Coletivos",
         "ready": false,
         "form": indic_6_2
       },
       {
         "id": "6_3",
-        "title": "Conexão e articulação com referências e documentos internacionais",
+        "title": "Articulação institucional/comunitária",
         "ready": false,
         "form": indic_6_3
       },
       {
         "id": "6_4",
-        "title": "Apoio à Ações Afirmativas de enfrentamento às desigualdades e discriminações",
+        "title": "Conexão e articulação com referências e documentos internacionais",
         "ready": false,
         "form": indic_6_4
+      },
+      {
+        "id": "6_5",
+        "title": "Ações Afirmativas",
+        "ready": false,
+        "form": indic_6_5
       },
     ]
   },
@@ -182,27 +139,21 @@ export default [
     "indics": [
       {
         "id": "7_1",
-        "title": "Instrumento legal",
+        "title": "Suporte orçamentário",
         "ready": false,
         "form": indic_7_1
       },
       {
         "id": "7_2",
-        "title": "Gestão racional dos bens naturais, patrimoniais e bens públicos",
+        "title": "Equipe dedicada",
         "ready": false,
         "form": indic_7_2
       },
       {
         "id": "7_3",
-        "title": "Suporte orçamentário",
+        "title": "Processos de Monitoramento e Avaliação",
         "ready": false,
         "form": indic_7_3
-      },
-      {
-        "id": "7_4",
-        "title": "Nível da PPEA na estrutura organizacional/administrativa",
-        "ready": false,
-        "form": indic_7_4
       },
     ]
   },

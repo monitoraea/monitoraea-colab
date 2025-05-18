@@ -2,7 +2,7 @@ fields:
   - key: 1 # TODO - não deveríamos usar key numérico!!
     block: main
     type: options
-    title: Foi realizado diagnóstico participativo?
+    title: A iniciativa realizou algum diagnóstico participativo?
     options:
       - value: -1
         label: Não respondido
@@ -18,16 +18,14 @@ fields:
   - key: 2
     block: dependent # opção - aqui ou no elements do bloco
     type: options
-    title: Quando foi realizado o diagnóstico?
+    title: Quando a iniciativa realizou o diagnóstico?
     options:
       - value: -1
         label: Não respondido
       - value: 0
-        label: No início, para planejar e construir a PPEA
+        label: Na fase de projeto, para sua formulação
       - value: 1
-        label: Para implementar e/ou revisar a PPEA
-      - value: 2
-        label: Durante todo o processo de construção, implementação e revisão da PPEA
+        label: No desenvolvimento da iniciativa, como parte de suas atividades
     validation:
       - type: neq
         value: -1
@@ -35,14 +33,8 @@ fields:
 
   - key: 3
     block: dependent
-    type: file
-    title: Insira elemento comprobatório referente a pergunta acima
-    validation: not_empty
-
-  - key: 4
-    block: dependent
     type: multi_autocomplete
-    title: Quais as estratégias utilizadas para realizar o diagnóstico?
+    title: Quais as estratégias utilizadas para a realização do diagnóstico?
     options:
       - value: 0
         label: Entrevistas e aplicação de questionários
@@ -54,13 +46,13 @@ fields:
         label: Conjunto de técnicas participativas (DRP - Diagnóstico Rápido Participativo ou similar)
     validation: at_least_one
 
-  - key: 5
+  - key: 4
     block: dependent
     type: file
     title: Insira elementos comprobatórios (aquivo zip) referente a pergunta acima
     validation: not_empty
 
-  - key: 6
+  - key: 5
     block: dependent
     type: options
     title: O diagnóstico envolveu temas relativos à mudanças do clima?
@@ -76,16 +68,16 @@ fields:
         value: -1
       - type: not_empty
 
-  - key: 7
+  - key: 6
     block: dependent
     type: TextArea
     title: Se envolveu temas relativos à mudanças do clima, comente.
     show:
-      target: # a pergunta só aparece se a pergunta da key 6 for sim = 1
-        key: 6
+      target: # a pergunta só aparece se a pergunta da key 5 for sim = 1
+        key: 5
         value: 1
 
-  - key: 8
+  - key: 7
     block: dependent
     type: textarea
     rows: 8

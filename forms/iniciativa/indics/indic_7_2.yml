@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: Existem práticas internas da instituição de uso racional dos recursos naturais e bens públicos?
+    title: Há equipe dedicada à implementação da iniciativa de EA?
     options:
       - value: -1
         label: Não respondido
@@ -17,50 +17,35 @@ fields:
 
   - key: 2
     block: dependent
-    type: options
-    title: Existe algum plano/planejamento participativo para definir critérios e promover práticas sustentáveis dentro da instituição proponente da politica?
-    options:
-      - value: 0
-        label: "Não"
-      - value: 1
-        label: "Sim"
+    type: integer
+    title: Qual é o número de pessoas na equipe?
 
   - key: 3
     block: dependent
     type: TextArea
     title: Comente.
-    show:
-      target: # o texto só aparece se a pergunta da key 2 for Sim = 1
-        key: 2
-        value: 1
     validation: not_empty
  
   - key: 4
     block: dependent
     type: file
     title: Apresente evidências.
-    show:
-      target: # o texto só aparece se a pergunta da key 2 for Sim = 1
-        key: 2
-        value: 1
     validation: not_empty
  
   - key: 5
     block: dependent
     type: multi_autocomplete
-    title: Quais ações são realizadas?
+    title: Qual é o vínculo dos integrantes da equipe?
     options:
       - value: 0
-        label: Sensibilização, engajamento e formação dos servidores/funcionários/apoiadores, com estímulo a reflexão crítica e a mudança de atitude)
+        label: Membro do Conselho/Diretoria da Organização responsável pela iniciativa
       - value: 1
-        label: Inclusão de critérios socioambientais nos investimentos, compras e contratações de serviços
+        label: Contratado especificamente para realização da iniciativa
       - value: 2
-        label: Monitora a redução de emissões de Gases de Efeito Estufa
+        label: Estagiário(a) / Bolsista
       - value: 3
-        label: Gestão adequada dos resíduos gerados
+        label: Voluntário(a)
       - value: 4
-        label: Combate ao desperdício
-      - value: 5
         label: Outros
 
   - key: 6
@@ -71,18 +56,6 @@ fields:
       target: # o texto só aparece se a pergunta da key 5 for Outro = 5
         key: 5
         value: 5
-    validation: not_empty
-
-  - key: 7
-    block: dependent
-    type: TextArea
-    title: Comente.
-    validation: not_empty
- 
-  - key: 8
-    block: dependent
-    type: file
-    title: Apresente evidências (arquivo zip).
     validation: not_empty
 
 blocks:

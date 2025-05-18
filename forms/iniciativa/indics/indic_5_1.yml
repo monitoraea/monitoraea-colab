@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A PPEA está gerando alguma intervenção socioambiental?
+    title: A iniciativa está gerou alguma intervenção socioambiental?
     options:
       - value: -1
         label: Não respondido
@@ -18,7 +18,7 @@ fields:
   - key: 2
     block: dependent
     type: TextArea
-    title: Quais as intervenções socioambientais são geradas? Especifique.
+    title: Quais  intervenções socioambientais foram geradas?
     validation: not_empty
 
   - key: 3
@@ -27,16 +27,16 @@ fields:
     title: Quem a desenvolveu?
     options:
       - value: 0
-        label: Proponente da Política Pública
+        label: Proponente da iniciativa
       - value: 1
-        label: Lideranças comunitárias/populares
+        label: Proponentes da iniciativa/lideranças comunitárias/populares
       - value: 2
         label: Ambos
 
   - key: 4
     block: dependent
     type: options
-    title: As intervenções preveem ou trazem em seu desenvolvimento processos pedagógicos reflexivos?
+    title: As intervenções previram ou trouxeram em seu desenvolvimento processos pedagógicos reflexivos?
     options:
       - value: 0
         label: Não

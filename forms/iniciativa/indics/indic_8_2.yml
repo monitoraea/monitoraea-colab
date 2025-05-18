@@ -71,7 +71,7 @@ fields:
     title: Comente.
     validation: not_empty
     show:
-      target:
+      target:  # o texto só aparece se a pergunta da key 5 for Sim = 1
         key: 5
         value: 1
 
@@ -81,7 +81,7 @@ fields:
     title: Apresente evidências (aquivo zip).
     validation: not_empty
     show:
-      target:
+      target:   # o texto só aparece se a pergunta da key 5 for Sim = 1
         key: 5
         value: 1
 

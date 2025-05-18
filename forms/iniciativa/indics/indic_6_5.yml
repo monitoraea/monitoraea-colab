@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A iniciativa promoveu alguma ação conjunta com outra(s) instituição(ções) ou comunidade(s)?
+    title: A iniciativa de EA promove ações que dialogam com temas relacionados a ações afirmativas de enfrentamento da desigualdade e qualquer tipo de discriminação em seu território de atuação?
     options:
       - value: -1
         label: Não respondido
@@ -17,8 +17,15 @@ fields:
 
   - key: 2
     block: dependent
-    type: integer
-    title: Quantas ações foram realizadas conjuntamente (inserir dado numérico)?
+    type: multi_autocomplete
+    title: Dialoga com quais temas?
+    options:
+      - value: 0
+        label: Discriminação racial / étnica
+      - value: 1
+        label: Discriminação de gênero
+      - value: 2
+        label: Discriminação social
 
   - key: 3
     block: dependent
@@ -29,27 +36,19 @@ fields:
   - key: 4
     block: dependent
     type: file
-    title: Apresente evidências.
+    title: Apresente evidências (arquivo zip).
     validation: not_empty
 
   - key: 5
     block: dependent
     type: multi_autocomplete
-    title: Quais tipos de ações conjuntas foram realizadas?
+    title: Onde busca informações / dados para subsidiar o diálogo?
     options:
       - value: 0
-        label: Cursos/Oficinas/Eventos
+        label: Dados oficiais
       - value: 1
-        label: Campanhas educativas
+        label: Pesquisa / diagnóstico
       - value: 2
-        label: Produção de materiais educativos
-      - value: 3
-        label: Projetos de captação de recursos financeiros
-      - value: 4
-        label: Ações de comunicação e difusão de informações
-      - value: 5
-        label: Produção de relatórios técnicos e/ou pesquisas científicas
-      - value: 6
         label: Outros
 
   - key: 6
@@ -57,9 +56,9 @@ fields:
     type: TextArea
     title: Especifique.
     show:
-      target: # o texto só aparece se a pergunta da key 5 for Outro = 6
+      target: # o texto só aparece se a pergunta da key 5 for Outros = 2
         key: 5
-        value: 6
+        value: 2
     validation: not_empty
 
   - key: 7
@@ -76,43 +75,42 @@ fields:
 
   - key: 9
     block: dependent
-    type: options
-    title: O projeto estabeleceu alguma parceria formal?
+    type: multi_autocomplete
+    title: Que tipo de ações desenvolve para abordar os temas?
     options:
       - value: 0
-        label: Não
+        label: Ações de diagnóstico
       - value: 1
-        label: Sim
+        label: Ações de mobilização
+      - value: 2
+        label: Ações de formação dialógica
+      - value: 3
+        label: Intervenções socioambientais
+      - value: 4
+        label: Comunicação
+      - value: 5
+        label: Outro
 
   - key: 10
     block: dependent
-    type: integer
-    title: Quantas parcerias formais foram estabelecidas (inserir dado numérico)?
+    type: TextArea
+    title: Especifique.
     show:
-      target: # o texto só aparece se a pergunta da key 9 for Sim = 1
+      target: # o texto só aparece se a pergunta da key 9 for Outros = 5
         key: 9
-        value: 1
-    validation: not_empty
+        value: 5
+    validation: not_empty  
 
   - key: 11
     block: dependent
     type: TextArea
     title: Comente.
-    show:
-      target: # o texto só aparece se a pergunta da key 9 for Sim = 1
-        key: 9
-        value: 1
     validation: not_empty
 
- 
   - key: 12
     block: dependent
     type: file
     title: Apresente evidências (arquivo zip).
-    show:
-      target: # o texto só aparece se a pergunta da key 9 for Sim = 1
-        key: 9
-        value: 1
     validation: not_empty
 
 blocks:

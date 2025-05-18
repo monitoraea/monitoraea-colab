@@ -135,7 +135,7 @@ class Service {
         contemplados,
         atuacao_aplica,
         atuacao_naplica_just,
-        indicadores2024,
+        indicadores,
         ("createdAt" = "updatedAt") as is_new
       FROM iniciativas.iniciativas p
       WHERE p.politica_id = :id
@@ -197,7 +197,7 @@ class Service {
       };
       analysis.dims[dim] = { ready: true };
 
-      const itemData = data.indicadores2024[dbKey];
+      const itemData = data.indicadores[dbKey];
       const { is_form_valid, fields } = check(indic_forms[dbKey], itemData);
 
       if (!is_form_valid) {
@@ -226,7 +226,7 @@ class Service {
     const entity = await db.instance().query(
       `
       SELECT
-        indicadores2024 as indicadores
+        indicadores as indicadores
       FROM iniciativas.iniciativas p
       WHERE p.politica_id = :id
       AND versao = 'draft'
@@ -269,12 +269,12 @@ class Service {
     const model = iniciativa.get({ plain: true });
 
     for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
-      console.log(f.key, entity[f.key] === 'remove', files[f.key], model.indicadores2024[indic_name]?.[f.key]);
+      console.log(f.key, entity[f.key] === 'remove', files[f.key], model.indicadores[indic_name]?.[f.key]);
     }
 
     // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
     for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
-      if (entity[f.key] === 'remove') await this.removeFile(entity, f.key, model.indicadores2024[indic_name]?.[f.key]);
+      if (entity[f.key] === 'remove') await this.removeFile(entity, f.key, model.indicadores[indic_name]?.[f.key]);
       else if (files[f.key])
         await this.updateFile(
           id,
@@ -282,16 +282,16 @@ class Service {
           files[f.key][0],
           f.key,
           `iniciativa_indic_${f.key}`,
-          model.indicadores2024[indic_name]?.[f.key],
+          model.indicadores[indic_name]?.[f.key],
         );
-      else entity[f.key] = model.indicadores2024[indic_name]?.[f.key];
+      else entity[f.key] = model.indicadores[indic_name]?.[f.key];
     }
 
     console.log({ entity });
 
     // gravar JSON em indics na posicao certa (indic_name)
     await db.models['Iniciativa'].update(
-      { ...model, indicadores2024: { ...model.indicadores2024, [indic_name]: entity } },
+      { ...model, indicadores: { ...model.indicadores, [indic_name]: entity } },
       {
         where: { id: model.id },
       },

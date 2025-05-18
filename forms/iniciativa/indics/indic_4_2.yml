@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A PPEA estimula construção/fortalecimento de laços comunitários no seu território de abrangência?
+    title: A iniciativa estimula construção/fortalecimento de laços comunitários no seu território de abrangência?
     options:
       - value: -1
         label: Não respondido
@@ -34,14 +34,26 @@ fields:
         label: Incentivo ao voluntariado (programas que conectam voluntários a causas socioambientais locais, como cuidado com as áreas protegidas, espaços públicos de convivências, etc)
       - value: 6
         label: Resolução de conflitos comunitários (mediação de conflitos entre moradores, criação de comitês de diálogos, etc)
+      - value: 7
+        label: Outros
 
   - key: 3
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for Outro = 3
+        key: 2
+        value: 3
+    validation: not_empty
+
+  - key: 4
     block: dependent
     type: TextArea
     title: Comente.
     validation: not_empty
  
-  - key: 4
+  - key: 5
     block: dependent
     type: file
     title: Apresente evidências (arquivo zip).

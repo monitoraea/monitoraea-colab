@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A PPEA está articulada com outras temáticas?
+    title: A iniciativa está articulada com outras temáticas?
     options:
       - value: -1
         label: Não respondido
@@ -65,7 +65,7 @@ fields:
       - value: 1
         label: Sim
 
-  - key: 8
+  - key: 7
     block: dependent
     type: TextArea
     title: Comente.
@@ -75,7 +75,7 @@ fields:
         value: 1
     validation: not_empty
 
-  - key: 9
+  - key: 8
     block: dependent
     type: file
     title: Apresente evidências.

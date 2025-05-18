@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: Foi utilizada alguma estratégia de mobilização social?
+    title: A iniciativa utilizou alguma estratégia de mobilização social?
     options:
       - value: -1
         label: Não respondido
@@ -32,7 +32,7 @@ fields:
         label: Outro.
     validation: at_least_one
 
-  - key: 8
+  - key: 3
     block: dependent
     type: TextArea
     title: Especifique.
@@ -41,19 +41,19 @@ fields:
         key: 2
         value: 4
 
-  - key: 9
+  - key: 4
     block: dependent
     type: TextArea
     title: Comente quais estratégias de mobilização foram utilizadas.
     validation: not_empty
 
-  - key: 3
+  - key: 5
     block: dependent
     type: file
-    title: Insira elementos comprobatórios (aquivo zip) referente a pergunta acima
+    title: Insira elementos comprobatórios (aquivo zip) referente a pergunta acima.
     validation: not_empty
 
-  - key: 4
+  - key: 6
     block: dependent
     type: multi_autocomplete
     title: Quais foram os resultados da mobilização realizada?
@@ -72,16 +72,16 @@ fields:
         label: Outro
     validation: at_least_one
 
-  - key: 10
+  - key: 7
     block: dependent
     type: TextArea
     title: Especifique.
     show: 
       target: # o texto só aparece se a resposta key 4 for Outro = 5
-        key: 4
+        key: 6
         value: 5
 
-  - key: 5
+  - key: 8
     block: dependent
     type: textarea
     title: Comente quais foram os resultados da mobilização realizada

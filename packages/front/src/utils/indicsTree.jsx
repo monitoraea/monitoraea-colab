@@ -27,6 +27,8 @@ export function getDimTitle(structure, id) {
 export function getIndicTitle(structure, d, id) {
     const dim = getDimension(structure, d)
 
+    console.log({structure, d, dim, id})
+
     return getIndicFromDim(dim,  id).title
 }
 

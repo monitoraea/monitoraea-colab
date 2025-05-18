@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: Existe um Plano de Comunicação para a PPEA?
+    title: Existe um Plano de Comunicação para a iniciativa?
     options:
       - value: -1
         label: Não respondido
@@ -78,11 +78,11 @@ fields:
         label: Bimestral
       - value: 4
         label: Trimestral
-      - value: 3
-        label: Semestral
-      - value: 4
-        label: Anual
       - value: 5
+        label: Semestral
+      - value: 6
+        label: Anual
+      - value: 7
         label: Outro
 
   - key: 7

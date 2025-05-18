@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A PPEA promove ações que dialogam com temas relacionados a ações afirmativas de enfrentamento da desigualdade e qualquer tipo discriminação em seu território de atuação?
+    title: A iniciativa dialoga com os seguintes documentos internacionais de referência?
     options:
       - value: -1
         label: Não respondido
@@ -18,14 +18,19 @@ fields:
   - key: 2
     block: dependent
     type: multi_autocomplete
-    title: Dialoga com quais temas?
+    title: Quais?
     options:
       - value: 0
-        label: Discriminação racial / étnica
+        label: Tratado de EA para Sociedades Sustentáveis e Responsabilidade Global
       - value: 1
-        label: Discriminação de gênero
+        label: Carta da Terra
       - value: 2
-        label: Discriminação social
+        label: Objetivos de Desenvolvimento Sustentável – ODS
+      - value: 3
+        label: Convenção sobre Diversidade Biológica
+      - value: 4
+        label: Relatórios de Avaliação do IPCC sobre mudanças do clima
+    validation: at_least_one
 
   - key: 3
     block: dependent
@@ -34,80 +39,6 @@ fields:
     validation: not_empty
  
   - key: 4
-    block: dependent
-    type: file
-    title: Apresente evidências (arquivo zip).
-    validation: not_empty
-
-  - key: 5
-    block: dependent
-    type: multi_autocomplete
-    title: Onde busca informações / dados para subsidiar o dialogo?
-    options:
-      - value: 0
-        label: Dados oficiais
-      - value: 1
-        label: Pesquisa / diagnóstico
-      - value: 2
-        label: Outros
-
-  - key: 6
-    block: dependent
-    type: TextArea
-    title: Especifique.
-    show:
-      target: # o texto só aparece se a pergunta da key 5 for Outros = 2
-        key: 5
-        value: 2
-    validation: not_empty
-
-  - key: 7
-    block: dependent
-    type: TextArea
-    title: Comente.
-    validation: not_empty
- 
-  - key: 8
-    block: dependent
-    type: file
-    title: Apresente evidências (arquivo zip).
-    validation: not_empty
-
-  - key: 9
-    block: dependent
-    type: multi_autocomplete
-    title: Que tipo de ações desenvolve para abordar os temas?
-    options:
-      - value: 0
-        label: Ações de diagnóstico
-      - value: 1
-        label: Ações de mobilização
-      - value: 2
-        label: Ações de formação dialógica
-      - value: 3
-        label: Intervenções socioambientais
-      - value: 4
-        label: Comunicação
-      - value: 5
-        label: Outro
-
-  - key: 10
-    block: dependent
-    type: TextArea
-    title: Especifique.
-    show:
-      target: # o texto só aparece se a pergunta da key 9 for Outros = 5
-        key: 9
-        value: 5
-    validation: not_empty  
-
-  - key: 11
-    block: dependent
-    type: TextArea
-    title: Comente.
-    validation: not_empty
-
-  - key: 12
     block: dependent
     type: file
     title: Apresente evidências (arquivo zip).

@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A PPEA promoveu ações educativas ambientais contextualizadas e articuladas com os aspectos culturais do seu território de abrangência?
+    title: A iniciativa promoveu ações educativas ambientais contextualizadas e articuladas com os aspectos culturais do seu território de abrangência?
     options:
       - value: -1
         label: Não respondido

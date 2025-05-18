@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A PPEA está instituída por meio de algum instrumento legal?
+    title: Existem recursos financeiros para viabilização da iniciativa?
     options:
       - value: -1
         label: Não respondido
@@ -17,41 +17,54 @@ fields:
 
   - key: 2
     block: dependent
-    type: multi_autocomplete
-    title: Quais instrumentos?
+    type: options
+    title: Qual é a fonte dos recursos?
     options:
       - value: 0
-        label: Lei
+        label: Fontes de financiamento com recursos privados e fundações
       - value: 1
-        label: Decreto
+        label: Fonte de financiamento com recursos internacionais
       - value: 2
-        label: Portaria
-      - value: 3
-        label: Instrução Normativa
-      - value: 4
-        label: Outro
+        label: Fontes de financiamento com recursos públicos
 
   - key: 3
     block: dependent
     type: TextArea
     title: Especifique.
-    show:
-      target: # o texto só aparece se a pergunta da key 2 for Outro = 4
-        key: 2
-        value: 4
     validation: not_empty
 
   - key: 4
     block: dependent
-    type: TextArea
-    title: Comente.
-    validation: not_empty
- 
+    type: options
+    title: Qual é a fonte dos recursos?
+    options:
+      - value: 0
+        label: Programas governamentais
+      - value: 1
+        label: Emendas parlamentares
+      - value: 2
+        label: Compensação ambiental - licenciamento e termo de ajustamento de conduta (TAC)
+      - value: 3
+        label: Fundos na área de meio ambiente que contemplem a educação ambiental
+      - value: 4
+        label: Fundos específicos de educação ambiental
+      - value: 5
+        label: Outros
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for recursos públicos = 2
+        key: 2
+        value: 2
+    validation: not_empty  
+
   - key: 5
     block: dependent
-    type: file
-    title: Apresente evidências (arquivo zip).
-    validation: not_empty
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 4 for Outros = 5
+        key: 4
+        value: 5
+    validation: not_empty  
 
 blocks:
   - key: main

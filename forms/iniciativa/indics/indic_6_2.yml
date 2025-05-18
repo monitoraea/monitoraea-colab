@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A PPEA está articulada / integrada com alguma Rede / Coletivo / Movimento Socioambientais nas escalas de abrangência regional, nacional e/ou global?
+    title: A iniciativa está articulada / integrada com alguma Rede / Coletivo / Movimento Socioambientais nas escalas de abrangência regional, nacional e/ou global?
     options:
       - value: -1
         label: Não respondido
@@ -18,7 +18,7 @@ fields:
   - key: 2
     block: dependent
     type: multi_autocomplete
-    title: Quais?
+    title: Quais escalas?
     options:
       - value: 0
         label: Local
