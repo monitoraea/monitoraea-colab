@@ -76,7 +76,7 @@ class Service {
       `
         select pa.id, ST_AsGeoJSON(pa.geom) as geojson, ST_AsGeoJSON(ST_Envelope(pa.geom)) as bbox
         from iniciativas.iniciativas_atuacao pa
-        inner join iniciativas.politicas p on p.id = pa.politica_versao_id and p.versao = 'current'
+        inner join iniciativas.iniciativas p on p.id = pa.politica_versao_id and p.versao = 'current'
         where p.politica_id = ${parseInt(id)}
         and pa.geom is not null
         `,
@@ -96,7 +96,7 @@ class Service {
         with bounds as (
             select ST_Extent(geom) as bbox
             from iniciativas.iniciativas_atuacao pa
-            inner join iniciativas.politicas p on p.id = pa.politica_versao_id and p.versao = 'current'
+            inner join iniciativas.iniciativas p on p.id = pa.politica_versao_id and p.versao = 'current'
             where p.politica_id = ${parseInt(id)}
             and pa.geom is not null
         )
@@ -468,7 +468,7 @@ class Service {
       `
       select ST_AsGeoJSON((ST_Dump(ST_Simplify(pa.geom,0.001))).geom)::jsonb as geojson
       from iniciativas.iniciativas_atuacao pa
-      inner join iniciativa.iniciativa p on p.id = pa.politica_versao_id
+      inner join iniciativas.iniciativas p on p.id = pa.politica_versao_id
       where p.politica_id = :id
       and p.versao = 'draft'`,
       {
@@ -486,7 +486,7 @@ class Service {
             st_ymax(bb) as bbymax
         from (select ST_Extent(geom) as bb
 				      from iniciativas.iniciativas_atuacao pa
-              inner join iniciativas.politicas p on p.id = pa.politica_versao_id
+              inner join iniciativas.iniciativas p on p.id = pa.politica_versao_id
               where p.politica_id = :id
               and p.versao = 'draft'
 			       ) s1
@@ -567,7 +567,7 @@ class Service {
       select
         c.community_id,
         dc.descriptor_json->>'title' as "nome"
-      from iniciativas.politicas c
+      from iniciativas.iniciativas c
       inner join dorothy_communities dc on dc.id = c.community_id
       where c.id = :id
       `,
