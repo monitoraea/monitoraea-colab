@@ -25,6 +25,7 @@ export const dynamicContents = {
     'main': 'Principal',
     'monitoraea': 'MonitoraEA',
     'pp': 'MonitoraEA-Políticas Públicas',
+    'ing': 'MonitoraEA-Iniciativas Não Gov',
     'pppzcm': 'MonitoraEA-PPPZCM',
     'ciea': 'MonitoraEA-CIEA',
     'risco': 'MonitoraEA-Risco Climático',

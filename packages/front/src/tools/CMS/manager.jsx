@@ -459,6 +459,7 @@ export default function CMS({ id, onClose, onSave }) {
                       { value: 'ciea', title: 'MonitoraEA-CIEA' },
                       /* { value: 'risco', title: 'MonitoraEA-Risco Climático' }, */
                       { value: 'cecsa', title: 'MonitoraEA-CECSA' },
+                      { value: 'ing', title: 'MonitoraEA-Iniciativas Não Gov' },
                       /* { value: 'anppea', title: 'ANPPEA' }, */
                     ]}
                     error={errors.portal}
