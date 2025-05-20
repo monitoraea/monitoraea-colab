@@ -62,6 +62,8 @@ fields:
         label: Média
       - value: 2
         label: Baixa
+    validation: not_empty
+
 
   - key: 7
     block: dependent

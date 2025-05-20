@@ -18,7 +18,7 @@ fields:
   - key: 2
     block: dependent
     type: integer
-    title: Qual é o número de pessoas na equipe?
+    title: Qual é o número de pessoas na equipe (inserir dado numérico)?
 
   - key: 3
     block: dependent
@@ -53,9 +53,9 @@ fields:
     type: TextArea
     title: Especifique.
     show:
-      target: # o texto só aparece se a pergunta da key 5 for Outro = 5
+      target: # o texto só aparece se a pergunta da key 5 for Outro = 4
         key: 5
-        value: 5
+        value: 4
     validation: not_empty
 
 blocks:

@@ -57,7 +57,7 @@ fields:
 
   - key: 5
     block: dependent
-    type: multi_autocomplete
+    type: options
     title: As ações/produtos envolveram temas relacionados à mudanças do clima?
     options:
       - value: 0

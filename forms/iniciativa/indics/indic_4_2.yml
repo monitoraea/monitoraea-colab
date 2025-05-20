@@ -42,9 +42,9 @@ fields:
     type: TextArea
     title: Especifique.
     show:
-      target: # o texto só aparece se a pergunta da key 2 for Outro = 3
+      target: # o texto só aparece se a pergunta da key 2 for Outro = 7
         key: 2
-        value: 3
+        value: 7
     validation: not_empty
 
   - key: 4

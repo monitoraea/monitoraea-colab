@@ -2,7 +2,7 @@ fields:
   - key: 1
     block: main
     type: options
-    title: A iniciativa está gerou alguma intervenção socioambiental?
+    title: A iniciativa gerou alguma intervenção socioambiental?
     options:
       - value: -1
         label: Não respondido

@@ -65,10 +65,11 @@ fields:
     block: dependent
     type: text
     title: Comente.
-    show:
-      target: # a pergunta só aparece se a pergunta da key 6 for sim = 1
-        key: 6
+    show:   
+      target:
+        key: 6   # a pergunta só aparece se a pergunta da key 6 for sim = 1
         value: 1
+    validation: not_empty
 
   - key: 8
     block: dependent
@@ -98,7 +99,7 @@ fields:
   - key: 10
     block: dependent
     type: text
-    title: Especifique.
+    title: Especifique o(s) critério(s).
     show:
       target: # a pergunta só aparece se a pergunta da key 9 for sim = 1
         key: 9
@@ -129,23 +130,35 @@ fields:
     block: dependent
     type: TextArea
     title: Comente.
+    show:
+      target: # o texto só aparece se a pergunta da key 11 for sim = 1
+        key: 11
+        value: 1
     validation: not_empty
 
   - key: 14
     block: dependent
     type: file
     title: Insira elementos comprobatórios (aquivo zip) referente a pergunta acima.
+    show:
+      target: # o texto só aparece se a pergunta da key 11 for sim = 1
+        key: 11
+        value: 1
     validation: not_empty
 
   - key: 15
     block: dependent
-    type: TextArea
+    type: options
     title: Os educadores ambientais formados estão conectados por meio de algum canal de comunicação?
     options:
       - value: 0
         label: Não
       - value: 1
         label: Sim
+    show:
+      target: # o texto só aparece se a pergunta da key 11 for sim = 1
+        key: 11
+        value: 1
     validation: not_empty
 
   - key: 16
@@ -170,13 +183,17 @@ fields:
 
   - key: 18
     block: dependent
-    type: TextArea
+    type: options
     title: Os educadores ambientais formados estão atuando em alguma ação relacionada a iniciativa?
     options:
       - value: 0
         label: Não
       - value: 1
         label: Sim
+    show:
+      target: # o texto só aparece se a pergunta da key 11 for sim = 1
+        key: 11
+        value: 1
     validation: not_empty
 
   - key: 19
@@ -201,13 +218,17 @@ fields:
 
   - key: 21
     block: dependent
-    type: TextArea
+    type: options
     title: Existe algum plano de ação para ser executado pelos educadores ambientais formados ?
     options:
       - value: 0
         label: Não
       - value: 1
         label: Sim
+    show:
+      target: # o texto só aparece se a pergunta da key 11 for sim = 1
+        key: 11
+        value: 1
     validation: not_empty
 
   - key: 22

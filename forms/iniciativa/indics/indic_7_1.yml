@@ -31,12 +31,27 @@ fields:
     block: dependent
     type: TextArea
     title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for recursos privados e fundações = 0
+        key: 2
+        value: 0
     validation: not_empty
 
   - key: 4
     block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a pergunta da key 2 for recursos internacionais = 1
+        key: 2
+        value: 1
+    validation: not_empty
+
+
+  - key: 5
+    block: dependent
     type: options
-    title: Qual é a fonte dos recursos?
+    title: Especifique entre as opções abaixo.
     options:
       - value: 0
         label: Programas governamentais
@@ -56,13 +71,13 @@ fields:
         value: 2
     validation: not_empty  
 
-  - key: 5
+  - key: 6
     block: dependent
     type: TextArea
     title: Especifique.
     show:
-      target: # o texto só aparece se a pergunta da key 4 for Outros = 5
-        key: 4
+      target: # o texto só aparece se a pergunta da key 5 for Outros = 5
+        key: 5
         value: 5
     validation: not_empty  
 
