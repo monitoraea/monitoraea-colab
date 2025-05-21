@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { useEffect, useState } from 'react';
 // import { /* InputBase, */ Menu, MenuItem } from '@mui/material';
@@ -14,7 +14,7 @@ import { useUser/* , useRouter */ } from 'dorothy-dna-react';
 // }
 
 export default function NavbarRoleSelector({ perspectives }) {
-
+  const location = useLocation();
   const history = useHistory();
 
   const { user } = useUser();
@@ -44,13 +44,14 @@ export default function NavbarRoleSelector({ perspectives }) {
     <div className="nav-roleselector">
 
       <div style={{ display: 'flex', gap: '5px' }}>
-        <button className="button-invert" onClick={()=>history.push("/minha_area")}>
+        <button disabled={location.pathname==='/minha_area'} className={location.pathname==='/minha_area' ? 'button-invert' : 'button-outline'} onClick={()=>history.push("/minha_area")}>
           Minha área
         </button>
 
-        {user.membership && user.membership.length > 1 && <button className="button-outline" onClick={() => history.push('/')}>
+        {user.membership && user.membership.length > 1 && <button disabled={location.pathname==='/'} className={location.pathname==='/' ? 'button-invert' : 'button-outline'} onClick={() => history.push('/')}>
           Meus grupos de trabalho
         </button>}
+        
       </div>
 
       {/* user.membership && (user.membership.length > 1 || (currentCommunity && currentCommunity.id !== user.membership[0].id)) && <div>

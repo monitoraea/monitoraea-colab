@@ -133,9 +133,7 @@
     background-color: $anil;
     border-color: $anil;
 
-    &:hover {
-      color: $white;
-    }
+    cursor: default;
   }
 }
 
