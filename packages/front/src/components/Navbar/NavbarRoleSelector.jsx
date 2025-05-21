@@ -29,9 +29,9 @@ export default function NavbarRoleSelector({ perspectives }) {
 
   /* const [searchField, _searchField] = useState(''); */
 
-  useEffect(()=>{
-    _membership(user.membership.sort((a,b) => a.descriptor_json.perspective > b.descriptor_json.perspective ? 1 : -1));
-  },[user])
+  useEffect(() => {
+    _membership(user.membership.sort((a, b) => a.descriptor_json.perspective > b.descriptor_json.perspective ? 1 : -1));
+  }, [user])
 
   // const handleCommunityChange = (community) => {
   //   changeRoute({ community });
@@ -43,9 +43,15 @@ export default function NavbarRoleSelector({ perspectives }) {
   return (
     <div className="nav-roleselector">
 
-      {user.membership && user.membership.length > 1 && <button className="button-outline" onClick={() => history.push('/')}>
-        Meus grupos de trabalho
-      </button>}
+      <div style={{ display: 'flex', gap: '5px' }}>
+        <button className="button-invert" onClick={()=>history.push("/minha_area")}>
+          Minha área
+        </button>
+
+        {user.membership && user.membership.length > 1 && <button className="button-outline" onClick={() => history.push('/')}>
+          Meus grupos de trabalho
+        </button>}
+      </div>
 
       {/* user.membership && (user.membership.length > 1 || (currentCommunity && currentCommunity.id !== user.membership[0].id)) && <div>
 
