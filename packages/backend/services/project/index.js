@@ -3473,7 +3473,7 @@ class Service {
     return { success: true };
   }
 
-  async spreadsheet() {
+  async spreadsheet(type) {
     const indic = require('./indics.js');
     const TYPES = indic.TYPES;
 
@@ -3519,8 +3519,7 @@ class Service {
     }
     data.push(header);
 
-    const projects = await db.instance().query(
-      `
+    const query = type === 'published' ? `
       with projeto_regioes as (
         select p.id, array_agg(distinct pa.nm_regiao) as regioes
         from projetos p
@@ -3567,7 +3566,50 @@ class Service {
       left join projeto_regioes pr on pr.id = p.id
       left join projetos_rascunho pr2 on pr2.projeto_id = p.id
       order by id
-      `,
+      `
+      :
+      `
+      
+      select
+        p.id,
+        p.nome,
+        i.nome as "instituicao",
+        m.nome as "modalidade",
+        p.objetivos_txt,
+        p.aspectos_gerais_txt,
+        p.publico_txt,
+        p.periodo_txt,
+        p.parceiros_txt,
+        p.relacionado_ppea,
+        p.qual_ppea,
+        p.contatos,
+        p.indicadores,
+        p.status_desenvolvimento,
+        p.mes_inicio,
+        p.mes_fim,
+        (select array_agg(distinct s.nome) from segmentos s where s.id = any(i.segmentos)) as segmentos,
+        (select array_agg(distinct u.nm_estado) from ufs u where u.id = any(p.ufs)) as ufs,
+        (
+      	select array_agg(distinct pu.nome)
+      	from publicos pu
+	    where pu.id = any(p.publicos)
+      ) as publicos,
+      (
+      	select array_agg(distinct ts.nome)
+      	from tematicas_socioambientais ts
+	    where ts.id = any(p.tematicas)
+      ) as tematicas,
+      p."createdAt" as dt_cadastro,
+      p."updatedAt" as dt_ultima_atualizacao
+      from projetos_rascunho p
+      left join instituicoes i on i.id = p.instituicao_id
+      left join modalidades m on m.id = p.modalidade_id
+      order by id
+      `
+
+    const projects = await db.instance().query(
+      query
+      ,
       {
         type: Sequelize.QueryTypes.SELECT,
       },
@@ -3631,7 +3673,7 @@ class Service {
 
       project_data.push(p.publicos?.length ? p.publicos.join(', ') : ''); // publicos
       project_data.push(p.tematicas?.length ? p.tematicas.join(', ') : ''); // tematicas
-      project_data.push(p.regioes.filter(r => !!r).join(', ')); // regioes
+      if (type === 'published') project_data.push(p.regioes.filter(r => !!r).join(', ')); // regioes
 
       project_data.push(dayjs(p.dt_cadastro).format('MM/YYYY'));
       project_data.push(dayjs(p.dt_ultima_atualizacao).format('MM/YYYY'));
@@ -3649,21 +3691,35 @@ class Service {
       project_data.push(!!p.qual_ppea ? p.qual_ppea : ''); // qual ppea
 
       // contatos
-      const total_contacts = Math.max(
-        !!p.nome_ponto_focal ? p.nome_ponto_focal.length : 0,
-        !!p.email_contatos ? p.email_contatos.length : 0,
-        !!p.tel_contatos ? p.tel_contatos.length : 0,
-      );
       let contacts_array = [];
-      for (let cIdx = 0; cIdx < total_contacts; cIdx++) {
-        contacts_array.push(
-          [
-            !!p.nome_ponto_focal ? p.nome_ponto_focal[cIdx] : '',
-            !!p.email_contatos ? p.email_contatos[cIdx] : '',
-            !!p.tel_contatos ? p.tel_contatos[cIdx] : '',
-          ].join(' - '),
+
+      if (type === 'published') {
+        const total_contacts = Math.max(
+          !!p.nome_ponto_focal ? p.nome_ponto_focal.length : 0,
+          !!p.email_contatos ? p.email_contatos.length : 0,
+          !!p.tel_contatos ? p.tel_contatos.length : 0,
         );
+        for (let cIdx = 0; cIdx < total_contacts; cIdx++) {
+          contacts_array.push(
+            [
+              !!p.nome_ponto_focal ? p.nome_ponto_focal[cIdx] : '',
+              !!p.email_contatos ? p.email_contatos[cIdx] : '',
+              !!p.tel_contatos ? p.tel_contatos[cIdx] : '',
+            ].join(' - '),
+          );
+        }
+      } else {
+        for(let c of p.contatos) {
+          contacts_array.push(
+            [
+              !!c.nome ? c.nome : '',
+              !!c.email ? c.email : '',
+              !!c.tel ? c.tel : '',
+            ].join(' - '),
+          );
+        }
       }
+
       project_data.push(contacts_array.join(' | '));
       project_data_members.push(contacts_array.join(' | '));
 
@@ -3691,8 +3747,8 @@ class Service {
             project_data.push(key);
 
             for (let question of indic.questions) {
-              if (key === 'SIM') {
-                const eValue = indicDB[dbKey][question.id];
+              const eValue = indicDB[dbKey]?.[question.id];
+              if (key === 'SIM' && eValue !== undefined) {
 
                 let value;
                 switch (question.type) {
@@ -3767,9 +3823,9 @@ class Service {
     // fileName
     const fileName = `spreadsheet_${dayjs().format('YYYY.MM.DD')}`;
 
-    const csvFileName = `${fileName}_dados.csv`;
-    const csvMembersFileName = `${fileName}_membros.csv`;
-    const zipFileName = `${fileName}.zip`;
+    const csvFileName = `${fileName}_${type==='published' ? 'publicados' : 'rascunhos'}_dados.csv`;
+    const csvMembersFileName = `${fileName}_${type==='published' ? 'publicados' : 'rascunhos'}_membros.csv`;
+    const zipFileName = `${fileName}_${type==='published' ? 'publicados' : 'rascunhos'}.zip`;
 
     // 1. transformar em csv
     let content = data.reduce((accum, row) => {

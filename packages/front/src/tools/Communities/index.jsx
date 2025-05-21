@@ -172,8 +172,12 @@ const WorkingGroups = () => {
               Nova iniciativa
             </button>}
 
-            {currentCommunity.id === 1 && <button className="button-outline" onClick={() =>  window.open(`${server}project/spreadsheet`, '_blank')}>
-              Baixar planilha
+            {currentCommunity.id === 1 && <button className="button-outline" onClick={() =>  window.open(`${server}project/spreadsheet/published`, '_blank')}>
+              Baixar planilha (publicados)
+            </button>}
+
+            {currentCommunity.id === 1 && <button className="button-outline" onClick={() =>  window.open(`${server}project/spreadsheet/draft`, '_blank')}>
+              Baixar planilha (rascunhos)
             </button>}
           </div>
         </div>

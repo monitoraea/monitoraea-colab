@@ -119,10 +119,12 @@ router.get('/:id/download', async (req, res) => {
   }
 });
 
-router.get('/spreadsheet', async (req, res) => {
+router.get('/spreadsheet/:type', async (req, res) => {
+  const { type } = req.params;
+
   try {
     /* TODO: SO MODERADOR OU ADM */
-    const { zipFileName, content } = await service.spreadsheet();
+    const { zipFileName, content } = await service.spreadsheet(type);
     // download
     const readStream = new stream.PassThrough();
     readStream.end(content);
