@@ -613,7 +613,7 @@ class Service {
     /* community for project */
     result = await db.instance().query(
       `
-    select * from dorothy_community_recipes where name = 'policy'
+    select * from dorothy_community_recipes where name = 'iniciative'
     `,
       {
         type: Sequelize.QueryTypes.SELECT,
