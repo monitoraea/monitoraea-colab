@@ -3007,7 +3007,7 @@ class Service {
     for (let item of [
       'nome',
       'objetivos_txt',
-      'aspectos_gerais_txt',
+      // 'aspectos_gerais_txt',
       'parceiros_txt',
       'atuacao',
       'publicos',
