@@ -21,7 +21,7 @@ import GetHelpButton from './GetHelpButton';
 /* style */
 // import style from './information.module.scss';
 
-export default function InformationsTab({ projectId }) {
+export default function InformationsTab({ projectId, problems }) {
   /* hooks */
   const { server } = useDorothy();
   const queryClient = useQueryClient();
@@ -47,6 +47,12 @@ export default function InformationsTab({ projectId }) {
 
     // console.log(data.project)
   }, [data]);
+
+  /*
+  useEffect(() => {
+    if(problems) console.log({ problems })
+  }, [problems]);
+  */
 
   useEffect(() => {
     if (!entity) return;
@@ -277,7 +283,7 @@ export default function InformationsTab({ projectId }) {
 
                         freeSolo
 
-                        error={!editing && errors.nome}
+                        error={problems.includes('nome')}
                       />
                       <HelpBoxButton type="info" keyRef={['nome']} openHelpbox={_contentData} />
                     </div>
@@ -290,6 +296,7 @@ export default function InformationsTab({ projectId }) {
                         url="modality"
                         onChange={handleFieldChange('modalidade_id')}
                         value={entity.modalidade_id}
+                        error={problems.includes('modalidade_id')}
                       />
                       <HelpBoxButton type="info" keyRef={['modalidade_id']} openHelpbox={_contentData} />
 
@@ -302,6 +309,7 @@ export default function InformationsTab({ projectId }) {
                         onChange={handleFieldChange('atuacao')}
                         value={regioes}
                         multiple
+                        error={problems.includes('atuacao')}
                       />
                       <HelpBoxButton type="info" keyRef={['atuacao']} openHelpbox={_contentData} />
                     </div>
@@ -315,6 +323,7 @@ export default function InformationsTab({ projectId }) {
                         onChange={handleFieldChange('ufs')}
                         value={entity.ufs}
                         multiple
+                        error={problems.includes('ufs')}
                       />
                       <HelpBoxButton type="info" keyRef={['ufs']} openHelpbox={_contentData} />
                     </div>
@@ -329,6 +338,7 @@ export default function InformationsTab({ projectId }) {
                         className="input-select"
                         value={entity.status_desenvolvimento || 'none'}
                         onChange={e => handleFieldChange('status_desenvolvimento')(e.target.value)}
+                        error={problems.includes('status_desenvolvimento')}
                       >
                         <MenuItem value="none">Não respondido</MenuItem>
                         <MenuItem value="nao_iniciada">Não iniciada</MenuItem>
@@ -383,11 +393,11 @@ export default function InformationsTab({ projectId }) {
                 </section>
                 <hr className="hr-spacer my-4" />
                 <section id="general-aspects">
-
                   <FreeMultiple
                     data={entity.aspectos_gerais_txt}
                     onChange={handleFieldChange('aspectos_gerais_txt')}
                     sectionTitle={<TitleAndHelpbox title="Aspectos gerais" keyRef={['aspectos_gerais_txt']} openHelpbox={_contentData} />}
+                    error={problems.includes('aspectos_gerais_txt')}
                   />
                 </section>
                 <hr className="hr-spacer my-4" />
@@ -459,6 +469,8 @@ export default function InformationsTab({ projectId }) {
                     sectionTitle={<TitleAndHelpbox title="Parceiros" keyRef={['parceiros_txt']} openHelpbox={_contentData} />}
                   />
                 </section>
+
+                {/*
                 <hr className="hr-spacer my-4" />
                 <section id="politics">
                   <div className="section-header">
@@ -497,6 +509,7 @@ export default function InformationsTab({ projectId }) {
                     )}
                   </div>
                 </section>
+                */}
 
                 <div className="section-header">
                   <div className="section-title"></div>

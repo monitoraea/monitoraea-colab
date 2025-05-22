@@ -140,11 +140,12 @@ const ProjectManager = () => {
         enqueueSnackbar(
           <div>
             <p>
-              <strong>Esta iniciativa ainda não esta pronta para ser publicado!</strong>
+              <strong>Esta iniciativa ainda não está pronta para ser publicada!</strong>
             </p>
             <p>Verifique se todos os campos das abas de Informações e Indicadores estão completamente preenchidos.</p>
           </div>,
           {
+            autoHideDuration: 10000,
             variant: 'warning',
             anchorOrigin: {
               vertical: 'top',
@@ -204,7 +205,12 @@ const ProjectManager = () => {
           <ProjectsTabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} analysis={analysis} />
           {projectId && (
             <>
-              {tabindex === 'informacao' && <InformationsTab projectId={projectId} />}
+              {tabindex === 'informacao' && <InformationsTab
+                projectId={projectId}
+                problems={analysis && Object.keys(analysis.analysis.information).filter(
+                  k => analysis.analysis.information[k] === false,
+                ) || []}
+              />}
               {tabindex === 'conexoes' && <ConectionsTab entityId={projectId} />}
               {tabindex === 'indicadores' && <IndicatorsTab analysis={analysis} />}
               {tabindex === 'abrangencia' && <ActingTab projectId={projectId} />}

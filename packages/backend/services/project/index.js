@@ -701,7 +701,6 @@ class Service {
   }
 
   async saveProjectUFsDraft(id, ufs) {
-
     await db.instance().query(
       `
         update projetos_rascunho
@@ -1039,9 +1038,9 @@ class Service {
             select p.id, p.nome
             from projetos p
             where id in (${ids
-        .split(',')
-        .map(id => parseInt(id))
-        .join(',')})
+              .split(',')
+              .map(id => parseInt(id))
+              .join(',')})
             order by p.nome
         `; /* TODO: melhor protecao contra injection? */
 
@@ -1087,9 +1086,9 @@ class Service {
     left join projetos_atuacao pa on pa.projeto_id = p.id
     left join municipios m on m.cd_mun = pa.cd_mun
             where p.id in (${ids
-        .split(',')
-        .map(id => parseInt(id))
-        .join(',')})
+              .split(',')
+              .map(id => parseInt(id))
+              .join(',')})
         group by p.id, i.nome
         order by p.nome
         `; /* TODO: melhor protecao contra injection? */
@@ -1726,8 +1725,9 @@ class Service {
       from: `Plataforma MonitoraEA <${process.env.CONTACT_EMAIL}>`,
       subject: `MonitoraEA - ${subject}`,
       text: `${message}\n\n${process.env.BASE_URL}/projeto/${pData.communityId}`,
-      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/projeto/${pData.communityId
-        }">Clique aqui para acessar esta iniciativa</a>`,
+      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/projeto/${
+        pData.communityId
+      }">Clique aqui para acessar esta iniciativa</a>`,
     };
 
     try {
@@ -1984,35 +1984,36 @@ class Service {
     }
 
     /* identifica e atualiza os estados */
-    const ufs = await db.instance().query(`
+    const ufs = await db.instance().query(
+      `
       with w_points as (
-          select 
+          select
               CASE
           WHEN ST_GeometryType(par.geom) = 'ST_Point' then ST_Buffer(par.geom, 0.00001, 'quad_segs=8')
-          else par.geom 
+          else par.geom
           end as geom,
               par.projeto_id
           from projetos_atuacao_rascunho par
       ), u_geom as (
-          select 
+          select
               ST_Transform(ST_Union(ST_MakeValid(geom, 'method=structure')),3857) as geom
           from w_points
         where projeto_id =  :id
       ), a_geom as (
           select st_area(geom) as area from u_geom
       ), inter as (
-          select 
-              u.id, 
-              u.nm_estado, 
+          select
+              u.id,
+              u.nm_estado,
               ST_AREA(ST_intersection(u_geom.geom, u.geom)) as area_inter
-          from u_geom 
+          from u_geom
           inner join ufs u on ST_intersects(u_geom.geom, u.geom) and u.id <> 28
       ), percent as (
-          select 
-              id, 
-              nm_estado as label, 
-              nm_estado as value, 
-              area_inter / a_geom.area * 100 as percent_area_inter 
+          select
+              id,
+              nm_estado as label,
+              nm_estado as value,
+              area_inter / a_geom.area * 100 as percent_area_inter
           from inter
           inner join a_geom on true
           order by 3 desc
@@ -2020,10 +2021,12 @@ class Service {
       select *
       from percent p
       where p.percent_area_inter >= 0.5
-  `, {
-      type: Sequelize.QueryTypes.SELECT,
-      replacements: { id }
-    });
+  `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { id },
+      },
+    );
 
     await db.instance().query(
       `
@@ -2036,8 +2039,8 @@ class Service {
           id,
         },
         type: Sequelize.QueryTypes.SELECT,
-      });
-
+      },
+    );
 
     return { ok: true, ufs };
   }
@@ -2424,7 +2427,8 @@ class Service {
       await db.instance().query(
         `
         update instituicoes
-        set segmentos = '{${!!data.instituicao_segmentos?.length ? data.instituicao_segmentos.map(s => s.id).join(',') : ''
+        set segmentos = '{${
+          !!data.instituicao_segmentos?.length ? data.instituicao_segmentos.map(s => s.id).join(',') : ''
         }}',
             porte = :porte
         where id = :id
@@ -2821,8 +2825,9 @@ class Service {
     );
 
     /* refresh notification (LIVE) */
-    const watch = `indication_${data.sourceDraftId}_${data.indicationId}_${data.type === 'apoia' ? 'apoia' : 'apoiada'
-      }`;
+    const watch = `indication_${data.sourceDraftId}_${data.indicationId}_${
+      data.type === 'apoia' ? 'apoia' : 'apoiada'
+    }`;
     Messagery.refreshNotifications(watch);
 
     return { success: true };
@@ -3003,24 +3008,24 @@ class Service {
       'nome',
       'objetivos_txt',
       'aspectos_gerais_txt',
-      /* 'publico_txt', */
-      'periodo_txt',
       'parceiros_txt',
       'atuacao',
       'publicos',
       'tematicas',
-    ])
+      'ufs',
+    ]) {
       analysis.information[item] = this.check(!!project[item] && project[item].length > 0, conclusion);
+    }
 
     for (let item of ['instituicao_id', 'modalidade_id'])
       analysis.information[item] = this.check(!!project[item], conclusion);
 
     analysis.information.contatos = this.check(
       !!project.contatos &&
-      !!project.contatos[0] &&
-      (project.contatos[0].nome.length > 0 ||
-        project.contatos[0].email.length > 0 ||
-        project.contatos[0].tel.length > 0),
+        !!project.contatos[0] &&
+        (project.contatos[0].nome.length > 0 ||
+          project.contatos[0].email.length > 0 ||
+          project.contatos[0].tel.length > 0),
       conclusion,
     );
 
@@ -3138,7 +3143,7 @@ class Service {
     let verification = await this.verify(id);
 
     if (!verification.ready)
-      return { success: false, reason: { code: 'not_ready', message: 'project draft is not ready' } };
+      return { success: false, reason: { code: 'not_ready', message: 'project draft is not ready', verification } };
 
     const laes = this.getLaesFromIndics(draft.indicadores).map(l => l.id);
 
@@ -3165,7 +3170,6 @@ class Service {
         objetivos_txt = :objetivos_txt,
         aspectos_gerais_txt = :aspectos_gerais_txt,
 
-        periodo_txt = :periodo_txt,
         parceiros_txt = :parceiros_txt,
         indicadores = :indicadores,
         relacionado_ppea = :relacionado_ppea,
@@ -3198,7 +3202,6 @@ class Service {
           objetivos_txt: draft.objetivos_txt,
           aspectos_gerais_txt: draft.aspectos_gerais_txt,
 
-          periodo_txt: draft.periodo_txt,
           parceiros_txt: draft.parceiros_txt,
           indicadores: JSON.stringify(draft.indicadores),
           relacionado_ppea: draft.relacionado_ppea,
@@ -3519,7 +3522,9 @@ class Service {
     }
     data.push(header);
 
-    const query = type === 'published' ? `
+    const query =
+      type === 'published'
+        ? `
       with projeto_regioes as (
         select p.id, array_agg(distinct pa.nm_regiao) as regioes
         from projetos p
@@ -3567,9 +3572,8 @@ class Service {
       left join projetos_rascunho pr2 on pr2.projeto_id = p.id
       order by id
       `
-      :
-      `
-      
+        : `
+
       select
         p.id,
         p.nome,
@@ -3605,15 +3609,11 @@ class Service {
       left join instituicoes i on i.id = p.instituicao_id
       left join modalidades m on m.id = p.modalidade_id
       order by id
-      `
+      `;
 
-    const projects = await db.instance().query(
-      query
-      ,
-      {
-        type: Sequelize.QueryTypes.SELECT,
-      },
-    );
+    const projects = await db.instance().query(query, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
 
     for (let idx in projects) {
       const p = projects[idx];
@@ -3709,14 +3709,8 @@ class Service {
           );
         }
       } else {
-        for(let c of p.contatos) {
-          contacts_array.push(
-            [
-              !!c.nome ? c.nome : '',
-              !!c.email ? c.email : '',
-              !!c.tel ? c.tel : '',
-            ].join(' - '),
-          );
+        for (let c of p.contatos) {
+          contacts_array.push([!!c.nome ? c.nome : '', !!c.email ? c.email : '', !!c.tel ? c.tel : ''].join(' - '));
         }
       }
 
@@ -3749,7 +3743,6 @@ class Service {
             for (let question of indic.questions) {
               const eValue = indicDB[dbKey]?.[question.id];
               if (key === 'SIM' && eValue !== undefined) {
-
                 let value;
                 switch (question.type) {
                   case TYPES.INT:
@@ -3796,11 +3789,12 @@ class Service {
         }
 
       // membros
-      const members = await db.instance().query(`
-        select 
-          du."name", 
+      const members = await db.instance().query(
+        `
+        select
+          du."name",
           du.email
-        from dorothy_members dm 
+        from dorothy_members dm
         inner join dorothy_users du on du.id = dm."userId"
         inner join projetos p on p.community_id = dm."communityId"
         where p.id = :id
@@ -3808,12 +3802,12 @@ class Service {
         `,
         {
           type: Sequelize.QueryTypes.SELECT,
-          replacements: { id: p.id }
+          replacements: { id: p.id },
         },
       );
 
       for (let m of members) {
-        project_data_members.push(`${m.name} <${m.email}>`)
+        project_data_members.push(`${m.name} <${m.email}>`);
       }
 
       data.push(project_data);
@@ -3823,9 +3817,9 @@ class Service {
     // fileName
     const fileName = `spreadsheet_${dayjs().format('YYYY.MM.DD')}`;
 
-    const csvFileName = `${fileName}_${type==='published' ? 'publicados' : 'rascunhos'}_dados.csv`;
-    const csvMembersFileName = `${fileName}_${type==='published' ? 'publicados' : 'rascunhos'}_membros.csv`;
-    const zipFileName = `${fileName}_${type==='published' ? 'publicados' : 'rascunhos'}.zip`;
+    const csvFileName = `${fileName}_${type === 'published' ? 'publicados' : 'rascunhos'}_dados.csv`;
+    const csvMembersFileName = `${fileName}_${type === 'published' ? 'publicados' : 'rascunhos'}_membros.csv`;
+    const zipFileName = `${fileName}_${type === 'published' ? 'publicados' : 'rascunhos'}.zip`;
 
     // 1. transformar em csv
     let content = data.reduce((accum, row) => {
@@ -3966,7 +3960,7 @@ class Service {
                     let value = 0;
                     try {
                       value = parseInt(indicDB[dbKey][question.id]);
-                    } catch (e) { }
+                    } catch (e) {}
 
                     analysis.indicators[dbKey].questions[question.id].accum += value;
                     analysis.indicators[dbKey].questions[question.id].qtd++;
@@ -4214,8 +4208,8 @@ module.exports = singletonInstance;
 function cleanItems(txt) {
   return txt
     ? txt
-      .split('\n')
-      .filter(t => t.length)
-      .join('\n')
+        .split('\n')
+        .filter(t => t.length)
+        .join('\n')
     : '';
 }

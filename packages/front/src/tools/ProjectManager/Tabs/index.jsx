@@ -65,7 +65,7 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
             disableRipple
             label="Informações"
             {...a11yProps('informacao', infoProblemCounter > 0 ? infoProblemCounter : '')}
-            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} ${
+            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['not-ready']} ${
               infoProblemCounter < 10 && styles['fixed-size']
             }`}
           />

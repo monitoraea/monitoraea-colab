@@ -7,7 +7,7 @@ import XCircle from '../../components/icons/XCircle';
 /* styles */
 import styles from './FreeMultiple.module.scss';
 
-const FreeMultiple = ({ onChange, data, sectionTitle, hasError }) => {
+const FreeMultiple = ({ onChange, data, sectionTitle, hasError, error }) => {
   const [dataObjArr, _dataObjArr] = useState([]);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const FreeMultiple = ({ onChange, data, sectionTitle, hasError }) => {
                   <XCircle />
                 </div>
               )}
-              {sectionTitle}
+              <span style={{ color: error ? 'red' : 'unset' }}>{sectionTitle}</span>
             </div>
           </div>
           <div className="section-actions">

@@ -113,9 +113,9 @@ const Manager = () => {
         enqueueSnackbar(
           <div>
             <p>
-              <strong>Esta iniciativa ainda não esta pronta para ser publicada!</strong>
+              <strong>Esta iniciativa ainda não está pronta para ser publicada!</strong>
             </p>
-            <p>Verifique se todos os campos das abas de Informações estão completamente preenchidos.</p>
+            <p>Verifique se todos os campos das abas de Informações e Indicadores estão completamente preenchidos.</p>
           </div>,
           {
             variant: 'warning',
