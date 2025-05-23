@@ -146,15 +146,15 @@ export default function InformationsTab({ projectId, problems }) {
       return;
     }
 
-    if (['em_desenvolvimento', 'finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && !entity.mes_inicio) {
-      _errors({ ...errors, mes_inicio: true });
-      return;
-    }
+    // if (['em_desenvolvimento', 'finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && !entity.mes_inicio) {
+    //   _errors({ ...errors, mes_inicio: true });
+    //   return;
+    // }
 
-    if (['finalizada', 'interrompida', 'em_desenvolvimento'].includes(entity.status_desenvolvimento) && !entity.mes_fim) {
-      _errors({ ...errors, mes_fim: true });
-      return;
-    }
+    // if (['finalizada', 'interrompida', 'em_desenvolvimento'].includes(entity.status_desenvolvimento) && !entity.mes_fim) {
+    //   _errors({ ...errors, mes_fim: true });
+    //   return;
+    // }
 
     _errors([]);
 
@@ -357,7 +357,7 @@ export default function InformationsTab({ projectId, problems }) {
                         views={['month', 'year']}
                         inputFormat="MM/yyyy"
                         maxDate={entity.mes_fim}
-                        error={!editing && errors.mes_inicio}
+                        error={problems.includes('mes_inicio')}
                       />}
                     </div>
 
@@ -370,7 +370,7 @@ export default function InformationsTab({ projectId, problems }) {
                         views={['month', 'year']}
                         inputFormat="MM/yyyy"
                         minDate={entity.mes_inicio}
-                        error={!editing && errors.mes_fim}
+                        error={problems.includes('mes_fim')}
                       />}
                     </div>
                   </div>
