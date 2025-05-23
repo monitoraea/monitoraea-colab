@@ -417,6 +417,7 @@ export default function InformationsTab({ projectId, problems }) {
                         onChange={handleFieldChange('publicos')}
                         value={entity.publicos}
                         multiple
+                        error={problems.includes('publicos')}
                       />
                       <HelpBoxButton type="info" keyRef={['publicos']} openHelpbox={_contentData} />
                     </div>
@@ -445,6 +446,7 @@ export default function InformationsTab({ projectId, problems }) {
                         onChange={handleFieldChange('tematicas')}
                         value={entity.tematicas}
                         multiple
+                        error={problems.includes('tematicas')}
                       />
                       <HelpBoxButton type="info" keyRef={['tematicas']} openHelpbox={_contentData} />
                     </div>
@@ -461,14 +463,14 @@ export default function InformationsTab({ projectId, problems }) {
                     )}
                   </div>
                 </section>
-                <hr className="hr-spacer my-4" />
+                {/*<hr className="hr-spacer my-4" />
                 <section id="partners">
                   <FreeMultiple
                     data={entity.parceiros_txt}
                     onChange={handleFieldChange('parceiros_txt')}
                     sectionTitle={<TitleAndHelpbox title="Parceiros" keyRef={['parceiros_txt']} openHelpbox={_contentData} />}
                   />
-                </section>
+                </section>*}
 
                 {/*
                 <hr className="hr-spacer my-4" />

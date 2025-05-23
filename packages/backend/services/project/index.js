@@ -3008,7 +3008,7 @@ class Service {
       'nome',
       'objetivos_txt',
       // 'aspectos_gerais_txt',
-      'parceiros_txt',
+      // 'parceiros_txt',
       'atuacao',
       'publicos',
       'tematicas',
