@@ -214,7 +214,8 @@ export default function CMS({ id, onClose, onSave }) {
       hd = !!entity.portal ? secureFindIndex(dynamicContents[entity.portal], helpbox.keyref, 1) : '';
 
     _helpbox_description(hd);
-    _entity(entity => ({ ...entity, title: hd }));
+    if(hd.length) _entity(entity => ({ ...entity, title: hd }));
+
   }, [entity.helpbox, entity.portal]);
 
   useEffect(() => {
