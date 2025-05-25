@@ -226,6 +226,7 @@ export default function InformationsTab({ projectId, problems }) {
                         creatable={true}
                         onCreate={handleFieldCreate('institution', ['instituicao_id'])}
                         value={entity.instituicao_id}
+                        error={problems.includes('instituicao_id')}
                       />
                       <HelpBoxButton type="info" keyRef={['instituicao_id']} openHelpbox={_contentData} />
                     </div>
@@ -237,6 +238,7 @@ export default function InformationsTab({ projectId, problems }) {
                         onChange={handleFieldChange('instituicao_segmentos')}
                         value={entity.instituicao_segmentos}
                         multiple
+                        error={problems.includes('instituicao_segmentos')}
                       />
                       <HelpBoxButton type="info" keyRef={['segmento']} openHelpbox={_contentData} />
                     </div>
@@ -248,6 +250,7 @@ export default function InformationsTab({ projectId, problems }) {
                         className="input-select"
                         value={entity.instituicao_porte || 'none'}
                         onChange={e => handleFieldChange('instituicao_porte')(e.target.value)}
+                        error={problems.includes('instituicao_porte')}
                       >
                         <MenuItem value="none">Não respondido</MenuItem>
                         <MenuItem value="pequeno">Pequeno - até 10 colaboradores</MenuItem>
@@ -381,6 +384,7 @@ export default function InformationsTab({ projectId, problems }) {
                     data={entity.contatos}
                     onChange={handleFieldChange('contatos')}
                     sectionTitle={<TitleAndHelpbox title="Contatos" keyRef={['contatos']} openHelpbox={_contentData} />}
+                    error={problems.includes('contatos')}
                   />
                 </section>
                 <hr className="hr-spacer my-4" />
@@ -389,6 +393,7 @@ export default function InformationsTab({ projectId, problems }) {
                     data={entity.objetivos_txt}
                     onChange={handleFieldChange('objetivos_txt')}
                     sectionTitle={<TitleAndHelpbox title="Objetivos" keyRef={['objetivos_txt']} openHelpbox={_contentData} />}
+                    error={problems.includes('objetivos_txt')}
                   />
                 </section>
                 <hr className="hr-spacer my-4" />

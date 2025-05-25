@@ -2345,7 +2345,10 @@ class Service {
     if (data.relacionado_ppea !== 'sim') data['qual_ppea'] = null;
 
     let mes_inicio_str = 'mes_inicio = NULL,';
-    if (!!data.mes_inicio && ['nao_iniciada', 'em_desenvolvimento', 'finalizada', 'interrompida'].includes(data.status_desenvolvimento)) {
+    if (
+      !!data.mes_inicio &&
+      ['nao_iniciada', 'em_desenvolvimento', 'finalizada', 'interrompida'].includes(data.status_desenvolvimento)
+    ) {
       mes_inicio_str = `mes_inicio = '${dayjs(data.mes_inicio)
         .set('date', 2)
         .set('hour', 0)
@@ -2353,7 +2356,10 @@ class Service {
         .set('second', 0)}',`;
     }
     let mes_fim_str = 'mes_fim = NULL,';
-    if (!!data.mes_fim && ['nao_iniciada', 'finalizada', 'interrompida', 'em_desenvolvimento'].includes(data.status_desenvolvimento)) {
+    if (
+      !!data.mes_fim &&
+      ['nao_iniciada', 'finalizada', 'interrompida', 'em_desenvolvimento'].includes(data.status_desenvolvimento)
+    ) {
       mes_fim_str = `mes_fim = '${dayjs(data.mes_fim)
         .set('date', 2)
         .set('hour', 0)
@@ -3012,10 +3018,12 @@ class Service {
       'atuacao',
       'publicos',
       'tematicas',
-      'ufs',
     ]) {
       analysis.information[item] = this.check(!!project[item] && project[item].length > 0, conclusion);
     }
+
+    if ('NACIONAL'.includes(project.atuacao)) analysis.information.ufs = true;
+    else analysis.information.ufs = this.check(!!project.ufs && project.ufs.length > 0, conclusion);
 
     for (let item of ['instituicao_id', 'modalidade_id'])
       analysis.information[item] = this.check(!!project[item], conclusion);
@@ -3043,10 +3051,10 @@ class Service {
 
     analysis.information.status_desenvolvimento = this.check(project.status_desenvolvimento !== 'none', conclusion);
     analysis.information.mes_inicio =
-      !['em_desenvolvimento', 'finalizada', 'interrompida','nao_iniciada'].includes(project.status_desenvolvimento) ||
+      !['em_desenvolvimento', 'finalizada', 'interrompida', 'nao_iniciada'].includes(project.status_desenvolvimento) ||
       this.check(!!project.mes_inicio, conclusion);
     analysis.information.mes_fim =
-      !['em_desenvolvimento', 'finalizada', 'interrompida','nao_iniciada'].includes(project.status_desenvolvimento) ||
+      !['em_desenvolvimento', 'finalizada', 'interrompida', 'nao_iniciada'].includes(project.status_desenvolvimento) ||
       this.check(!!project.mes_fim, conclusion);
 
     // CONEXOES

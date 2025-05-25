@@ -6,7 +6,7 @@ import Trash from '../icons/Trash';
 /* styles */
 import styles from './FreeMultiple.module.scss';
 
-const FreeMultipleContacts = ({ onChange, data, sectionTitle }) => {
+const FreeMultipleContacts = ({ onChange, data, sectionTitle, error }) => {
   const [dataObjArr, _dataObjArr] = useState([]);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const FreeMultipleContacts = ({ onChange, data, sectionTitle }) => {
   return (
     <>
       <div className="section-header">
-        <div className="section-title">{sectionTitle}</div>
+        <div className="section-title" style={{ color: error ? 'red' : 'unset' }}>{sectionTitle}</div>
         <div className="section-actions">
           <button className="button-outline" onClick={() => createNewLine()}>
             <Plus></Plus>
