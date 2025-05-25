@@ -137,7 +137,7 @@ class Service {
       type: config.type,
     };
 
-    if (!!config.portal && config.portal !== 'main') {
+    if (!!config.portal && config.portal !== 'general') {
       where.push('portal = :portal');
       replacements.portal = config.portal;
     }
