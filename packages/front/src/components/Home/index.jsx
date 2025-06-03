@@ -11,6 +11,7 @@ const mapPerspective = {
     4: ['PPEA'],
     5: ['Centros'],
     6: ['Iniciativas Não Governamentais'],
+    7: ['Educom&Clima'],
 }
 
 export default function Home() {
