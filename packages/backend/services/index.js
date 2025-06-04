@@ -42,4 +42,5 @@ module.exports = [
   'geo',
   'iniciativa',
   'iniciativa_timeline',
+  'educom_clima',
 ];

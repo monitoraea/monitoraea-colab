@@ -1,0 +1,97 @@
+lists:
+
+  - key: acao_enfrentamento
+    options:
+    - value: 1
+      label: Sim
+    - value: 2
+      label: Não
+
+  - key: nivel
+    options:
+    - value: 1
+      label: Municipal
+    - value: 2
+      label: Estadual
+    - value: 3
+      label: Regional
+    - value: 4
+      label: Nacional
+    - value: 5
+      label: Local
+    - value: 6
+      label: Internacional
+    - value: 7
+      label: Prefiro não responder essa questão
+
+  - key: definicao
+    options:
+    - value: 1
+      label: Organização da social civil
+    - value: 2
+      label: Governamental (inclui escolas públicas, por exemplo)
+    - value: 3
+      label: Movimento social
+    - value: 4
+      label: Prefiro não responder essa questão
+    - value: 5
+      label: Corporativa (ligada ao setor empresarial)
+
+  - key: faixa_etaria
+    options:
+    - value: 1
+      label: Jovens (15 a 29 anos)
+    - value: 2
+      label: Adultos (30 a 59 anos)
+    - value: 3
+      label: Crianças (4 a 14 anos)
+    - value: 4
+      label: Idosos (a partir de 60 anos)
+    - value: 5
+      label: Bebês (até 3 anos)
+    - value: 6
+      label: Prefiro não responder essa questão
+
+  - key: participantes_genero
+    options:
+    - value: 1
+      label: Mulheres cisgênero
+    - value: 2
+      label: Homens cisgênero
+    - value: 3
+      label: Mulheres transgênero
+    - value: 4
+      label: Homens transgênero
+    - value: 5
+      label: Não binário
+    - value: 6
+      label: Prefiro não responder essa questão
+
+  - key: racas_etnias
+    options:
+    - value: 1
+      label: Pretos(as)
+    - value: 2
+      label: Brancos(as)
+    - value: 3
+      label: Pardos(as)
+    - value: 4
+      label: Indígenas
+    - value: 5
+      label: Amarelos(as)
+    - value: 6
+      label: Prefiro não responder essa questão
+
+  - key: noticia_falsa_recebeu
+    options:
+    - value: 1
+      label: Sim
+    - value: 2
+      label: Não
+
+  - key: aborda_desinformacao
+    options:
+    - value: 1
+      label: Sim
+    - value: 2
+      label: Não
