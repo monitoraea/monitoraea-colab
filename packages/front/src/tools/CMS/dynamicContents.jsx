@@ -15,7 +15,7 @@ export const dynamicContents = {
     ],
     risco: [
       ['risco.intro','Introdução ao MonitoraEA-Risco Climático'],
-    ],/* 
+    ],/*
     cne: [
       ['risco.intro','Introdução ao MonitoraEA-Risco Climático'],
     ], */
@@ -26,6 +26,7 @@ export const dynamicContents = {
     'monitoraea': 'MonitoraEA',
     'pp': 'MonitoraEA-Políticas Públicas',
     'ing': 'MonitoraEA-Iniciativas Não Gov',
+    'educom_clima': 'MonitoraEA-Educom&Clima',
     'pppzcm': 'MonitoraEA-PPPZCM',
     'ciea': 'MonitoraEA-CIEA',
     'risco': 'MonitoraEA-Risco Climático',
@@ -33,7 +34,7 @@ export const dynamicContents = {
     'anppea': 'ANPPEA',
   };
 
-  /*  
+  /*
 	- PPPZCM
 		- [ ] intro (pppzcm.intro)
 		- [ ] construído (pppzcm.how)
