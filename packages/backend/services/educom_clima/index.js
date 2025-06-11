@@ -775,7 +775,6 @@ class Service {
   }
 
   async getGeoDrawSave(id, geoms) {
-
     // encontra a versao draft desta politica
     const p_draft = await db.instance().query(
       `
@@ -838,7 +837,7 @@ class Service {
   }
 
   async list(version, config) {
-    let where = ['e."deletedAt" is NULL', "e.versao = :version"];
+    let where = ['e."deletedAt" is NULL', 'e.versao = :version'];
 
     let replacements = {
       version,
@@ -908,7 +907,7 @@ class Service {
   }
 
   async total_institutions(config) {
-    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
+    let where = ['p."deletedAt" is null' /* , "p.versao='current'" */];
 
     if (config.enquads) {
       where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
@@ -930,7 +929,7 @@ class Service {
   }
 
   async total_iniciatives(config) {
-    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
+    let where = ['p."deletedAt" is null' /* , "p.versao='current'" */];
 
     if (config.enquads) {
       where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
@@ -952,7 +951,7 @@ class Service {
   }
 
   async total_members(config) {
-    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
+    let where = ['p."deletedAt" is null' /* , "p.versao='current'" */];
 
     if (config.enquads) {
       where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
@@ -1012,6 +1011,20 @@ class Service {
     return project;
   }
 
+  async getTimeline() {
+    // Portal
+    const educom_climaTLs = await this.getDraftTimeline();
+
+    return {
+      list: educom_climaTLs.map(tl => ({
+        id: tl.id,
+        text: tl.texto,
+        thumb: tl.timeline_arquivo,
+        publishedAt: tl.date,
+      })),
+    };
+  }
+
   async getDraftTimeline() {
     const educom_climaTLs = await db.instance().query(
       `
@@ -1032,17 +1045,13 @@ class Service {
 
     for (let tl of educom_climaTLs) {
       if (!!tl.url)
-        tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(
-          'timeline_arquivo',
-          tl.url,
-        )}`;
+        tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey('timeline_arquivo', tl.url)}`;
     }
 
     return educom_climaTLs;
   }
 
   async saveDraftTimeline(user, entity, timeline_arquivo, tlid) {
-
     let entityModel;
     if (!tlid) {
       entityModel = await db.models['Educom_clima_timeline'].create({
@@ -1060,8 +1069,7 @@ class Service {
     }
 
     if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
-    else if (timeline_arquivo)
-      await this.updateFile2(entityModel, timeline_arquivo, 'timeline_arquivo');
+    else if (timeline_arquivo) await this.updateFile2(entityModel, timeline_arquivo, 'timeline_arquivo');
 
     return entityModel;
   }

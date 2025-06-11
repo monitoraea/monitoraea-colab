@@ -25,6 +25,18 @@ fileUpload = multer({
 }).single('file');
 
 /* TODO */
+router.get('/timeline', async (req, res) => {
+
+  try {
+    const result = await entity.getTimeline();
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
+/* TODO */
 router.get('/:id/draft/info', async (req, res) => {
   const { id } = req.params;
 
