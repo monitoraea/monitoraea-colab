@@ -1,191 +1,200 @@
 import { useState, useEffect } from 'react';
-import { Box, styled, TableBody, TableRow, TableSortLabel, Tooltip, IconButton, TablePagination } from '@mui/material';
+import { useDorothy, useRouter, useUser } from 'dorothy-dna-react';
+import { useQuery, useMutation } from 'react-query';
+import axios from 'axios';
+/* components */
+import Tabs from './Tabs';
+import InformationsTab from './InformationsTab';
+import TimelineTab from './TimelineTab';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
-import Edit from '../../components/icons/Edit';
-import Trash from '../../components/icons/Trash';
-import Plus from '../../components/icons/Plus';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import { Box } from '@mui/material';
+import { useSnackbar } from 'notistack';
 
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+/* styles */
+import styles from './styles.module.scss';
 
-import axios from 'axios';
-
-import { useRouter, useDorothy } from 'dorothy-dna-react';
-
-import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
-
-/* components */
-
-// import Card from '../../components/Card';
-
-/* style */
-// import style from './information.module.scss';
-
-export default function ECHomeTab() {
+const Manager = () => {
+  const { currentCommunity, changeRoute, params } = useRouter();
   const { server } = useDorothy();
-  const { changeRoute, params } = useRouter();
-  const queryClient = useQueryClient();
+  const { user, updateUser } = useUser();
 
-  const [page, _page] = useState(1);
-  const [order, _order] = useState('nome');
-  const [direction, _direction] = useState('desc');
-  const [perPage, _perPage] = useState(10);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  /*  */
+  const [tabindex, _tabindex] = useState(null);
+  const [showTermDialod, _showTermDialod] = useState(false);
+  const [isAdmOrMod, _isAdmOrMod] = useState(false);
+  /*  */
 
-  const [managing, _managing] = useState(null); /* null, 'novo' or content id */
-  const [toRemove, _toRemove] = useState(null);
-
-  const { data } = useQuery(['contents_list', { page, order, direction, perPage }], {
-    queryFn: async () =>
-      (
-        await axios.get(
-          `${server}educom_clima/?version=draft&page=${page}&order=${order}&direction=${
-            direction === 'asc' ? 'desc' : 'asc'
-          }&limit=${perPage}`,
-        )
-      ).data,
+  //get entity_id
+  const { data: entity } = useQuery(['commission', { currentCommunity: currentCommunity.id }], {
+    queryFn: async () => (await axios.get(`${server}commission/id_from_community/${currentCommunity.id}`)).data,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
-  const orderBy = columnName => {
-    _page(1);
-    if (order === columnName) _direction(direction === 'asc' ? 'desc' : 'asc');
-    else {
-      _order(columnName);
-      _direction('desc');
+  /* const { data: analysis } = useQuery(['project_indics', { project_id: project?.id }], {
+    queryFn: async () => (await axios.get(`${server}project/${project?.id}/verify`)).data,
+    enabled: !!project?.id,
+  }); */
+
+  // const mutation = {
+  //   publish: useMutation(() => axios.put(`${server}commission/${entityId}/publish`)),
+  // };
+
+  useEffect(() => {
+    _isAdmOrMod(
+      user.membership
+        .map(membership => {
+          return membership.id === 1 || (membership.id === currentCommunity.id && membership.type === 'adm'); /* TODO: analisar aqui e em projetos (depois que criei outros GT ADM) */
+        })
+        .reduce((acc, curr) => acc || curr),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmOrMod, user, currentCommunity]);
+
+  useEffect(() => {
+    _tabindex(params && params.length ? params[0] : 'informacao');
+  }, [params]);
+
+  const handlePublish = () => {
+    _showTermDialod(true);
+  };
+  const handleTermConfirmation = confirmation => {
+    if (confirmation === 'confirm') doPublish();
+    _showTermDialod(false);
+  };
+
+  const doPublish = async () => {
+    const snackKey = enqueueSnackbar('Publicando...', {
+      persist: true,
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'right',
+      },
+    });
+
+    /* save */
+    try {
+      const { data } = await mutation.publish.mutateAsync();
+
+      closeSnackbar(snackKey);
+
+      if (data.success) {
+        window.location = `${window.location}`;
+
+        enqueueSnackbar('Iniciativa publicada com sucesso!', {
+          variant: 'success',
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+        });
+      } else if (data.reason.code === 'not_ready') {
+        enqueueSnackbar(
+          <div>
+            <p>
+              <strong>Esta iniciativa ainda não esta pronta para ser publicada!</strong>
+            </p>
+            <p>Verifique se todos os campos das abas de Informações estão completamente preenchidos.</p>
+          </div>,
+          {
+            variant: 'warning',
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+            },
+          },
+        );
+      } else throw new Error('unknown reason');
+    } catch (error) {
+      closeSnackbar(snackKey);
+
+      console.error(error);
+
+      enqueueSnackbar('Erro ao publicar a iniciativa!', {
+        variant: 'error',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'right',
+        },
+      });
     }
   };
 
-  const remove = entity => {
-    _toRemove(entity);
-  };
-
-  const handleConfirmation = async action => {
-    // if (action === 'confirm') await mutations.remove.mutateAsync(toRemove);
-
-    _toRemove(null);
-  };
+  // const handleDownload = () => {
+  //   window.open(`${server}commission/${entityId}/download`, '_blank');
+  // };
 
   return (
-    <>
-      {!managing && (
-        <>
-          <div className="page tbox-fixed">
-            <div className="page-header">
-              <PageTitle title={`Iniciativas ${data ? `(${data.total})` : ''}`} />
-              <div className="page-header-buttons">
-                <div>
-                  <button className="button-primary" onClick={() => changeRoute({ params: ['novo'] })}>
-                    <Plus></Plus>
-                    adicionar
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="page-content">
-              <div className="page-body">
-                {data && (
-                  <>
-                    <div className="tablebox">
-                      <div className="tbox-body">
-                        <table className="tbox-table">
-                          <thead>
-                            <tr>
-                              <th>
-                                <TableSortColumn
-                                  text="ID"
-                                  column="id"
-                                  order={order}
-                                  direction={direction}
-                                  onClick={orderBy}
-                                />
-                              </th>
-                              <th>
-                                {/* TODO: da para simplificar? */}
-                                <TableSortColumn
-                                  text="Nome"
-                                  column="nome"
-                                  order={order}
-                                  direction={direction}
-                                  onClick={orderBy}
-                                />
-                              </th>
-                            </tr>
-                          </thead>
-                          <TableBody>
-                            {data.entities.map(row => (
-                              <StyledTableRow key={row.id}>
-                                <td>#{row.id}</td>
-                                <td>{row.nome}</td>
-                                <td className="tbox-table-actions">
-                                  <div>
-                                    <Tooltip title="Editar">
-                                      <IconButton onClick={() => changeRoute({ params: [row.iniciativa_id] })}>
-                                        <Edit />
-                                      </IconButton>
-                                    </Tooltip>
-                                  </div>
-                                  <div>
-                                    <Tooltip title="Remover">
-                                      <IconButton onClick={() => remove(row)}>
-                                        <Trash />
-                                      </IconButton>
-                                    </Tooltip>
-                                  </div>
-                                </td>
-                              </StyledTableRow>
-                            ))}
-                          </TableBody>
-                        </table>
-                      </div>
-                    </div>
-                    <TablePagination
-                      className="pagination"
-                      component="div"
-                      count={data.total}
-                      page={page - 1}
-                      onPageChange={(...args) => _page(args[1] + 1)}
-                      rowsPerPage={perPage}
-                      rowsPerPageOptions={[10, 20, 50, 100]}
-                      onRowsPerPageChange={e => {
-                        _perPage(e.target.value);
-                        _page(1);
-                      }}
-                    />
-                  </>
-                )}
-              </div>
-            </div>
-            <Box display="flex" justifyContent="space-between"></Box>
+    <div className="page">
+      <div className="page-header">
+        <div className="page-header-buttons">
+          {/* <button className="button-outline" onClick={handleDownload}>
+            <Download></Download>
+            Baixar CSV
+          </button>
 
-            <ConfirmationDialog
-              open={!!toRemove}
-              content="Confirma a remoção desta registro?"
-              confirmButtonText="Remover"
-              onClose={handleConfirmation}
-            />
-          </div>
+          {isAdmOrMod && isAdmOrMod === true && (
+            <button className="button-primary" onClick={handlePublish}>
+              <CheckCircle></CheckCircle>
+              Publicar
+            </button>
+          )} */}
+        </div>
+      </div>
+      {tabindex && (
+        <>
+          <Tabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} /* analysis={analysis} */ />
+          <>
+            {tabindex === 'informacao' && <InformationsTab />}
+            {tabindex === 'linha_tempo' && <TimelineTab />}
+          </>
         </>
       )}
-      {!!managing && <>[TODO: MNG]</>}
-    </>
-  );
-}
 
-function TableSortColumn({ text, column, order, direction, enabled = true, onClick }) {
+      <Box display="flex" justifyContent="space-between"></Box>
+
+      <TermDialog open={showTermDialod} onClose={handleTermConfirmation} />
+    </div>
+  );
+};
+
+function TermDialog({ open, onClose }) {
   return (
-    <>
-      {!enabled && <>{text}</>}
-      {enabled && (
-        <TableSortLabel
-          className="tbox-table-sortlabel"
-          active={order === column}
-          direction={direction}
-          onClick={() => onClick(column)}
-        >
-          {text}
-        </TableSortLabel>
-      )}
-    </>
+    <div>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle id="alert-dialog-title">Termo de Adesão ao PPPZCM</DialogTitle>
+        <DialogContent>
+          <DialogContent id="alert-dialog-description" className={styles.term}>
+            <p>
+              TODO TODO TODO
+            </p>
+          </DialogContent>
+        </DialogContent>
+        <DialogActions>
+          <button className="button-primary" onClick={() => onClose('confirm')}>
+            Concordo
+          </button>
+          <Button onClick={() => onClose('cancel')} autoFocus>
+            Não concordo
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 }
 
-const StyledTableRow = styled(TableRow)({ '&:last-child td, &:last-child th': { border: 0 } });
+export default Manager;

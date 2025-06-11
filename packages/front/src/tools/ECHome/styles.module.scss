@@ -1,0 +1,55 @@
+@use '../../sass/theme/app_variables' as *;
+$delete: #A70D11;
+$delete_alt: #F9C623;
+
+.button_delete {
+  padding: 0 1rem;
+  height: 2rem;
+  border: 1px solid $delete;
+  border-radius: 1rem;
+  font-size: .875rem;
+  font-weight: 500;
+  box-sizing: border-box;
+  background: $delete;
+  color: $white;
+  cursor: pointer;
+  font-family: $font-family;
+  transition: .5s ease;
+  display: flex;
+  align-items: center;
+
+  svg {
+    height: 1rem;
+    margin-right: .25rem;
+    margin-left: -0.25rem;
+  }
+
+  &:hover {
+    background: $delete_alt;
+    border: 1px solid $delete_alt;
+
+    svg {
+      animation: Roll .5s ease forwards;
+    }
+  }
+
+  @keyframes Roll {
+    0% {
+      transform: rotate(0);
+    }
+
+    0% {
+      transform: rotate(-360deg);
+    }
+  }
+}
+
+.term {
+  text-align: justify;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  p {
+    margin: 10px 0;
+  }
+}

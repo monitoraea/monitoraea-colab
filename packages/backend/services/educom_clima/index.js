@@ -431,10 +431,8 @@ class Service {
     }
   }
 
-  getFileKey(id, main_folder, folder, filename) {
-    const segmentedId = getSegmentedId(id);
-
-    return `${main_folder}/${segmentedId}/${folder}/original/${filename}`;
+  getFileKey(folder, filename) {
+    return `educom_clima/${folder}/original/${filename}`;
   }
   /* *********************** GENERALIZAR.End */
 
@@ -1014,54 +1012,46 @@ class Service {
     return project;
   }
 
-  async getDraftTimeline(id) {
-    const politicaTLs = await db.instance().query(
+  async getDraftTimeline() {
+    const educom_climaTLs = await db.instance().query(
       `
               SELECT
                   lt.id,
                   lt."date",
                   lt.texto,
                   f.url,
-                  f.file_name,
-                  p.id as politica_versao_id
-              FROM ppea.linhas_do_tempo lt
+                  f.file_name
+              FROM educom_clima.linhas_do_tempo lt
               left join files f on f.id = lt.timeline_arquivo
-              inner join ppea.politicas p on p.id = lt.politica_versao_id
-              where p.politica_id = :id
-              and p.versao = 'draft'
               order by lt."date"
           `,
       {
-        replacements: { id },
         type: Sequelize.QueryTypes.SELECT,
       },
     );
 
-    for (let tl of politicaTLs) {
+    for (let tl of educom_climaTLs) {
       if (!!tl.url)
         tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(
-          tl.politica_versao_id,
           'timeline_arquivo',
           tl.url,
         )}`;
     }
 
-    return politicaTLs;
+    return educom_climaTLs;
   }
 
-  async saveDraftTimeline(user, entity, timeline_arquivo, id, tlid) {
-    const politica_versao_id = await this.getPPEADraftId(id);
+  async saveDraftTimeline(user, entity, timeline_arquivo, tlid) {
 
     let entityModel;
     if (!tlid) {
-      entityModel = await db.models['Ppea_timeline'].create({
+      entityModel = await db.models['Educom_clima_timeline'].create({
         ...entity,
-        politica_versao_id,
         timeline_arquivo: undefined,
       });
     } else {
       // recupera
-      entityModel = await db.models['Ppea_timeline'].findByPk(tlid);
+      entityModel = await db.models['Educom_clima_timeline'].findByPk(tlid);
       // atualiza
       entityModel.date = entity.date;
       entityModel.texto = entity.texto;
@@ -1071,14 +1061,13 @@ class Service {
 
     if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
     else if (timeline_arquivo)
-      await this.updateFile2(entityModel, timeline_arquivo, 'timeline_arquivo', entityModel.get('politica_versao_id'));
+      await this.updateFile2(entityModel, timeline_arquivo, 'timeline_arquivo');
 
     return entityModel;
   }
 
-  async removeDraftTimeline(id, tlId) {
-    const timeline = await db.models['Ppea_timeline'].findByPk(tlId);
-    const politica_versao_id = await this.getPPEADraftId(id);
+  async removeDraftTimeline(tlId) {
+    const timeline = await db.models['Educom_clima_timeline'].findByPk(tlId);
 
     if (timeline.get('timeline_arquivo')) {
       /* remove file */
@@ -1087,10 +1076,9 @@ class Service {
       });
     }
 
-    await db.models['Ppea_timeline'].destroy({
+    await db.models['Educom_clima_timeline'].destroy({
       where: {
         id: tlId,
-        politica_versao_id,
       },
     });
 
@@ -1117,12 +1105,12 @@ class Service {
     return p_draft[0].id;
   }
 
-  async updateFile2(entityModel, file, fieldName, entityId) {
+  async updateFile2(entityModel, file, fieldName) {
     // S3
     await s3
       .putObject({
         Bucket: s3BucketName,
-        Key: this.getFileKey(entityId || entityModel.get('politica_versao_id'), fieldName, file.originalname),
+        Key: this.getFileKey(fieldName, file.originalname),
         Body: file.buffer,
         ACL: 'public-read',
       })
@@ -1145,7 +1133,7 @@ class Service {
     if (!!fileModel) {
       fileModel.file_name = file_name;
       fileModel.url = file_name;
-      fileModel.document_type = `politica_${fieldName}`;
+      fileModel.document_type = `educom_clima_${fieldName}`;
       fileModel.content_type = content_type;
 
       fileModel.save();
@@ -1153,7 +1141,7 @@ class Service {
       const fileModel = await db.models['File'].create({
         file_name,
         url: file_name,
-        document_type: `politica_${fieldName}`,
+        document_type: `educom_clima_${fieldName}`,
         content_type,
       });
 

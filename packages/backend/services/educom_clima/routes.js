@@ -186,11 +186,11 @@ router.post('/', async (req, res) => {
 });
 
 /* TODO */
-router.delete('/:id/draft/timeline/:tlId', async (req, res) => {
-  const { id, tlId } = req.params;
+router.delete('/draft/timeline/:tlId', async (req, res) => {
+  const { tlId } = req.params;
 
   try {
-    const result = await entity.removeDraftTimeline(id, tlId);
+    const result = await entity.removeDraftTimeline(tlId);
 
     res.json(result);
   } catch (ex) {
@@ -232,11 +232,10 @@ router.delete('/:id', async (req, res) => {
 });
 
 /* TODO */
-router.get('/:id/draft/timeline', async (req, res) => {
-  const { id } = req.params;
+router.get('/draft/timeline', async (req, res) => {
 
   try {
-    const result = await entity.getDraftTimeline(id);
+    const result = await entity.getDraftTimeline();
 
     res.json(result);
   } catch (ex) {
@@ -244,8 +243,8 @@ router.get('/:id/draft/timeline', async (req, res) => {
   }
 });
 
-router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
-  const { id, tlid } = req.params;
+router.put('/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
+  const { tlid } = req.params;
   const { entity: entityData } = req.body;
 
   const { imagem } = req.files;
@@ -255,7 +254,6 @@ router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
       res.locals.user,
       JSON.parse(entityData),
       imagem && imagem.length ? imagem[0] : null,
-      id,
       tlid,
     );
 
@@ -264,8 +262,7 @@ router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
     sendError(res, ex, 500);
   }
 });
-router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
-  const { id } = req.params;
+router.post('/draft/timeline', upTimelineImage, async (req, res) => {
   const { entity: entityData } = req.body;
 
   const { imagem } = req.files;
@@ -275,7 +272,6 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
       res.locals.user,
       JSON.parse(entityData),
       imagem && imagem.length ? imagem[0] : null,
-      id,
     );
 
     res.json(result);
