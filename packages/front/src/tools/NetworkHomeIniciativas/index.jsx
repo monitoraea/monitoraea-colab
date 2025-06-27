@@ -199,7 +199,7 @@ export default function NetworkHomeCIEA() {
           <div className="page-header-buttons">
             <button className="button-primary" onClick={()=>_showNIDialog(true)}>
 
-              Nova política
+              Nova iniciativa
             </button>
           </div>
         </div>

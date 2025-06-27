@@ -141,7 +141,7 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {/* hook
             // console.log(response);
 
             queryClient.invalidateQueries(`iniciative_info_${currentIndics}`)
-            queryClient.invalidateQueries('iniciative_analysis')
+            queryClient.invalidateQueries('iniciatives_analysis')
 
             // onSave(!_.isEqual(originalEntity, entity));
 

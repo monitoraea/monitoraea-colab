@@ -197,7 +197,7 @@ const Manager = () => {
           </button>
 
           {isAdmOrMod && isAdmOrMod === true && (
-            <button className="button-primary" onClick={handlePublish}>
+            <button disabled className="button-primary" onClick={handlePublish}>
               <CheckCircle></CheckCircle>
               Publicar
             </button>

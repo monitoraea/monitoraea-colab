@@ -142,7 +142,7 @@ fields:
 - key: publicos
   type: multi_autocomplete
   tag: true
-  title: Pùblicos
+  title: Públicos
   size: 8  
   options:
   - value: 1
@@ -191,7 +191,7 @@ fields:
   - value: 3
     label: Coletivo educador
   - value: 4
-    label: Movimentos sociais / 
+    label: Movimentos sociais / sindicatos
   - value: 5
     label: Escolas
   - value: 6
