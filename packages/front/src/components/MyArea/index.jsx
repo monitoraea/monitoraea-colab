@@ -215,7 +215,7 @@ export default function MyArea() {
                 <button disabled onClick={handleAsk('iniciativa')}>Colaborar com uma <span>Iniciativa Não Governamental</span> cadastrada</button>
                 <button onClick={handleAsk('project')}>Colaborar com um Projeto ou Ações vinculados ao  <span>PPPZCM</span> cadastrada</button>
                 <button onClick={handleAsk('commission')}>Colaborar com uma <span>Instância</span> de Acompanhamento e Controle Social de EA cadastrada</button>
-                <button onClick={handleAsk('cne')}>Colaborar um <span>Centro de Educação</span> e Cooperação Socioambiental cadastrado</button>
+                <button onClick={handleAsk('cne')}>Colaborar com um <span>Centro de Educação</span> e Cooperação Socioambiental cadastrado</button>
             </div>
         </div>
 

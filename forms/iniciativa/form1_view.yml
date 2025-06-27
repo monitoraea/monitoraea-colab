@@ -8,66 +8,84 @@
       size: 12
       key: nome
     - type: column
-      size: 6
-      key: area
-    - type: column
-      size: 6
-      key: area_tematica
+      size: 12
+      key: tema
   - type: row
     elements: 
     - type: column
       size: 12
+      key: objetivos
+    - type: column
+      size: 12
+      key: resumo
+    - type: column
+      size: 6
       key: link
+    - type: column
+      size: 6
+      key: ufs
+  - type: row
+    elements:
+    - type: column
+      size: 6
+      key: data_inicio
+    - type: column
+      size: 6
+      key: data_fim
+  - type: row
+    elements:
+    - type: column
+      size: 12
+      key: publicos
+    - type: column
+      size: 12
+      key: financiadores
 
 - type: row
   block: inst
   elements:
   - type: column
-    size: 6
+    size: 12
     key: instituicao_nome
   - type: column
     size: 6
-    key: instituicao_enquadramento
+    key: instituicao_segmento
+  - type: column
+    size: 6
+    key: instituicao_porte
+  - type: column
+    size: 12
+    key: instituicao_link
 
 - type: row
-  block: responsavel
+  block: responsavel_list
   elements:
   - type: row
-    elements:  
-    - type: column
-      size: 6
-      key: responsavel_nome # poderia ser o index do campo entre os elementos do clock (index: 0)
-    - type: column
-      size: 6
-      key: responsavel_cargo
-  - type: row
+    block: responsavel_items # iterative!
     elements:
-    - type: column
-      size: 6
-      key: responsavel_telefone
-    - type: column
-      size: 6
-      key: responsavel_email
-
-- type: row
-  block: more
-  elements:  
-  - type: row
-    elements:  
-    - type: column
-      size: 4
-      key: fase  
-    - type: column
-      size: 4
-      key: fase_ano
-    - type: column
-      size: 4
-      key: fase_descricao
-  - type: row
+      - type: column
+        size: 5
+        key: responsavel_nome
+      - type: column
+        size: 5
+        key: responsavel_cargo
+      - type: column
+        size: 5
+        key: responsavel_telefone
+      - type: column
+        size: 5
+        key: responsavel_email
+      - type: column
+        size: 2
+        elements:
+          - type: remove
+  - type: add
+    block: responsavel_items # iterative - show if block shows!
     elements:
-    - type: column
-      size: 4
-      key: dificuldades
-    - type: column
-      size: 8
-      key: contemplados
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar responsável

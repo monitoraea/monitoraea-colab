@@ -17,6 +17,18 @@ router.get("/", async (req, res) => {
 });
 
 /* TODO */
+router.get("/related", async (req, res) => {
+    try {
+
+        const result = await entity.listRelated();
+
+        res.json(result);
+    } catch (ex) {
+        sendError(res, ex);
+    }
+});
+
+/* TODO */
 router.get("/:id", async (req, res) => {
     const { id } = req.params;
 

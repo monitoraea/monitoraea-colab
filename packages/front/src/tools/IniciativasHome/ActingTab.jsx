@@ -20,6 +20,8 @@ import FilePlus from '../../components/icons/FilePlus';
 
 import GetHelpButton from './GetHelpButton';
 
+import AsyncAutocompleteMultiple from '../../components/AsyncAutocompleteMultiple';
+
 async function retrieveGeoms(server, id) {
   const {
     data: { geoms, bbox },
@@ -44,6 +46,9 @@ export default function ActingTab() {
 
   const [isEditing, _isEditing] = useState(false);
 
+  const [ufs, _ufs] = useState(null);
+  const [ufs_editing, _ufs_editing] = useState(false);
+
   useEffect(() => {
     async function fetchID() {
       const {
@@ -60,11 +65,12 @@ export default function ActingTab() {
   useEffect(() => {
     async function hasGeo() {
       const {
-        data: { atuacao_aplica, atuacao_naplica_just },
+        data: { atuacao_aplica, atuacao_naplica_just, ufs },
       } = await axios.get(`${server}iniciativa/${id}/geo-draw/has-geo`);
 
       _hasGeo(atuacao_aplica);
       _justification(atuacao_naplica_just ? atuacao_naplica_just : '');
+      _ufs(ufs);
     }
 
     if (id) hasGeo();
@@ -108,11 +114,11 @@ export default function ActingTab() {
       },
     });
 
-    /* const { data } =  */ await axios.post(`${server}iniciativa/${id}/geo-draw`, {
+    const { data } =  await axios.post(`${server}iniciativa/${id}/geo-draw`, {
       geoms: geomsToSave,
     });
 
-    queryClient.invalidateQueries('iniciatives_analysis')
+    _ufs(data.ufs);
 
     closeSnackbar(snackKey);
 
@@ -138,9 +144,7 @@ export default function ActingTab() {
 
     await axios.put(`${server}iniciativa/${id}/geo-draw/${checked ? (checked === 'none' ? 'none' : '1') : '0'}`);
 
-
-    queryClient.invalidateQueries('iniciatives_analysis')
-
+    queryClient.invalidateQueries(`iniciatives_analysis`);
 
     closeSnackbar(snackKey);
 
@@ -158,12 +162,34 @@ export default function ActingTab() {
 
     await axios.put(`${server}iniciativa/${id}/draft/justification`, { value: justification });
 
-    queryClient.invalidateQueries('iniciatives_analysis')
+    queryClient.invalidateQueries(`iniciatives_analysis`);
 
     closeSnackbar(snackKey);
 
     return true;
   };
+
+  const handleSaveUFs = async () => {
+    _ufs_editing(false);
+
+    const snackKey = enqueueSnackbar('Gravando...', {
+      persist: true,
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'right',
+      },
+    });
+
+    await axios.put(`${server}iniciativa/${id}/draft/ufs`, { ufs });
+
+    queryClient.invalidateQueries(`iniciatives_info`);
+
+    closeSnackbar(snackKey);
+  }
+
+  const handleUFsChange = (value) => {
+    _ufs(value)
+  }
 
   return (
     <div className="page-content">
@@ -172,22 +198,49 @@ export default function ActingTab() {
           <div className="p-3">
 
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <NAplica>
-                <div>É possivel representar este projeto de geograficamente?</div>
-                <FormControl>
-                  <Select
-                    className="input-select"
-                    value={hasGeo === null ? 'none' : hasGeo}
-                    onChange={e => changeGeo(e.target.value)}
-                  >
-                    <MenuItem value="none"> -- selecione -- </MenuItem>
-                    <MenuItem value={true}>Sim</MenuItem>
-                    <MenuItem value={false}>Não</MenuItem>
-                  </Select>
-                </FormControl>
-              </NAplica>
+              <div className="col-xs-8" style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="col-xs-5" style={{ display: 'flex' }}>
+                  <AsyncAutocompleteMultiple
+                    label="Estados"
+                    url="uf/related"
+                    urlSingle="uf"
+                    titleField="value"
+                    onChange={handleUFsChange}
+                    value={ufs}
+                    multiple
+                    disabled={!ufs_editing}
+                  />
+                </div>
+                <div className="col-xs-5" style={{ display: 'flex' }}>
+                  {!ufs_editing && <button className="button-primary" onClick={() => _ufs_editing(true)}>
+                    Alterar estados
+                  </button>}
+                  {ufs_editing && <button className="button-primary" onClick={handleSaveUFs}>
+                    Gravar estados
+                  </button>}
+                </div>
+              </div>
 
               <GetHelpButton tab="atuacao" />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div className="col-xs-12" style={{ display: 'flex' }}>
+                <NAplica>
+                  <div>É possivel representar este projeto de geograficamente?</div>
+                  <FormControl>
+                    <Select
+                      className="input-select"
+                      value={hasGeo === null ? 'none' : hasGeo}
+                      onChange={e => changeGeo(e.target.value)}
+                    >
+                      <MenuItem value="none"> -- selecione -- </MenuItem>
+                      <MenuItem value={true}>Sim</MenuItem>
+                      <MenuItem value={false}>Não</MenuItem>
+                    </Select>
+                  </FormControl>
+                </NAplica>
+              </div>
             </div>
 
             {hasGeo === true && (
@@ -216,7 +269,7 @@ export default function ActingTab() {
                 <div className="row">
                   <div className="col-xs-12">
                     <TextField
-                      className="input-text" /*
+                      className="input-text" /* 
                     label="Justificativa" */
                       value={justification || ''}
                       onChange={e => _justification(e.target.value)}

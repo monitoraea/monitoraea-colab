@@ -390,6 +390,19 @@ router.put('/:id/draft/justification', async (req, res) => {
   }
 });
 
+router.put('/:id/draft/ufs', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ufs } = req.body;
+
+    const result = await entity.saveProjectUFsDraft(id, ufs);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.post('/upload-shp', fileUpload, async (req, res) => {
   try {
     const result = await entity.importSHP(req.file.path);

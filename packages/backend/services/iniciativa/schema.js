@@ -12,53 +12,31 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-
-      legacy_id: {
-        type: DataTypes.INTEGER,
-      },
-      enquadramento_1: {
-        type: DataTypes.INTEGER,
-      },
-      enquadramento_1_just: {
-        type: DataTypes.STRING,
-      },
-      enquadramento_2: {
-        type: DataTypes.INTEGER,
-      },
-      enquadramento_2_just: {
-        type: DataTypes.STRING,
-      },
-      enquadramento_3: {
-        type: DataTypes.INTEGER,
-      },
-      enquadramento_3_just: {
-        type: DataTypes.STRING,
-      },
-      enquadramento_4: {
-        type: DataTypes.INTEGER,
-      },
-      enquadramento_4_just: {
-        type: DataTypes.STRING,
-      },
-      instituicao_nome: {
-        type: DataTypes.STRING,
-      },
-      instituicao_enquadramento: {
-        type: DataTypes.INTEGER,
-      },
-      responsavel_nome: {
-        type: DataTypes.STRING,
-      },
-      responsavel_cargo: {
-        type: DataTypes.STRING,
-      },
-      responsavel_telefone: {
-        type: DataTypes.STRING,
-      },
-      responsavel_email: {
-        type: DataTypes.STRING,
-      },
       nome: {
+        type: DataTypes.STRING,
+      },
+      tema: {
+        type: DataTypes.ARRAY(DataTypes.INTEGER)
+      },
+      objetivos: {
+        type: DataTypes.STRING,
+      },
+      resumo: {
+        type: DataTypes.STRING,
+      },
+      data_inicio: {
+        type: DataTypes.STRING,
+      },
+      data_fim: {
+        type: DataTypes.STRING,
+      },
+      publicos: {
+        type: DataTypes.ARRAY(DataTypes.INTEGER)
+      },
+      ufs: {
+        type: DataTypes.ARRAY(DataTypes.INTEGER)
+      },
+      financiadores: {
         type: DataTypes.STRING,
       },
       community_id: {
@@ -67,26 +45,20 @@ module.exports = (sequelize, DataTypes) => {
       link: {
         type: DataTypes.STRING,
       },
-      fase: {
-        type: DataTypes.INTEGER,
-      },
-      fase_ano: {
-        type: DataTypes.INTEGER,
-      },
-      fase_descricao: {
-        type: DataTypes.TEXT,
-      },
-      area: {
-        type: DataTypes.INTEGER,
-      },
-      area_tematica: {
+      instituicao_nome: {
         type: DataTypes.STRING,
       },
-      dificuldades: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER)
+      instituicao_segmento: {
+        type: DataTypes.INTEGER
       },
-      contemplados: {
-        type: DataTypes.TEXT,
+      instituicao_porte: {
+        type: DataTypes.INTEGER
+      },
+      instituicao_link: {
+        type: DataTypes.STRING,
+      },
+      responsavel_items: {
+        type: DataTypes.JSONB,
       },
       indicadores: {
         type: DataTypes.JSONB,

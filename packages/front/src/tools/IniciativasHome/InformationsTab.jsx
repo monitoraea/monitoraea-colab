@@ -38,6 +38,8 @@ export default function InformationsTab({ entityId, problems }) {
   //get policy_data
   const { data } = useQuery(['iniciatives_info', { entityId }], {
     queryFn: async () => (await axios.get(`${server}iniciativa/${entityId}/draft/info`)).data,
+    retry: false,
+    refetchOnWindowFocus: false,
   })
 
   useEffect(() => {

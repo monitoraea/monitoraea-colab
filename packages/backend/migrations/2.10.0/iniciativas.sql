@@ -1,0 +1,11 @@
+ALTER TABLE iniciativas.iniciativas ADD tema _int4 NULL;
+ALTER TABLE iniciativas.iniciativas ADD objetivos text NULL;
+ALTER TABLE iniciativas.iniciativas ADD resumo text NULL;
+ALTER TABLE iniciativas.iniciativas ADD data_inicio varchar NULL;
+ALTER TABLE iniciativas.iniciativas ADD data_fim varchar NULL;
+ALTER TABLE iniciativas.iniciativas ADD publicos _int4 NULL;
+ALTER TABLE iniciativas.iniciativas ADD financiadores text NULL;
+ALTER TABLE iniciativas.iniciativas ADD instituicao_segmento int4 NULL;
+ALTER TABLE iniciativas.iniciativas ADD instituicao_porte int4 NULL;
+ALTER TABLE iniciativas.iniciativas ADD instituicao_link varchar NULL;
+ALTER TABLE iniciativas.iniciativas ADD responsavel_items jsonb null default '[]';

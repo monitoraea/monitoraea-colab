@@ -15,11 +15,23 @@ class Service {
       type: Sequelize.QueryTypes.SELECT,
     });
 
-    if(others) entities.push({
+    if (others) entities.push({
       "id": others,
       "label": "Outros - especificar",
       "value": others
-  })
+    })
+
+    return { list: entities };
+  }
+
+  async listRelated() {
+    const query = `select distinct p.id, p.nome as "name"
+        from tematicas_socioambientais p
+        order by "name"`;
+
+    const entities = await db.instance().query(query, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
 
     return { list: entities };
   }

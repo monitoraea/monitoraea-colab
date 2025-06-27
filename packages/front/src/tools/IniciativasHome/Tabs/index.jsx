@@ -62,7 +62,7 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             disableRipple
             label="Cadastro"
             {...a11yProps('informacao', infoProblemCounter > 0 ? infoProblemCounter : '')}
-            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} ${infoProblemCounter < 10 && styles['fixed-size']
+            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['not-ready']} ${infoProblemCounter < 10 && styles['fixed-size']
               }`}
           />
           <Tab
