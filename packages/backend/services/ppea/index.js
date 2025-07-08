@@ -1027,7 +1027,8 @@ class Service {
                   lt.texto,
                   f.url,
                   f.file_name,
-                  p.id as politica_versao_id
+                  p.id as politica_versao_id, 
+                  p.politica_id as politica_id
               FROM ppea.linhas_do_tempo lt
               left join files f on f.id = lt.timeline_arquivo
               inner join ppea.politicas p on p.id = lt.politica_versao_id
@@ -1044,7 +1045,7 @@ class Service {
     for (let tl of politicaTLs) {
       if (!!tl.url)
         tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(
-          tl.politica_versao_id,
+          tl.politica_id,
           'timeline_arquivo',
           tl.url,
         )}`;
@@ -1054,7 +1055,7 @@ class Service {
   }
 
   async saveDraftTimeline(user, entity, timeline_arquivo, id, tlid) {
-    const politica_versao_id = await this.getPPEADraftId(id);
+    const { politica_versao_id, politica_id } = await this.getPPEADraftId(id);
 
     let entityModel;
     if (!tlid) {
@@ -1075,14 +1076,14 @@ class Service {
 
     if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
     else if (timeline_arquivo)
-      await this.updateFile2(entityModel, timeline_arquivo, 'timeline_arquivo', entityModel.get('politica_versao_id'));
+      await this.updateFile2(entityModel, timeline_arquivo, 'timeline_arquivo', politica_id);
 
     return entityModel;
   }
 
   async removeDraftTimeline(id, tlId) {
     const timeline = await db.models['Ppea_timeline'].findByPk(tlId);
-    const politica_versao_id = await this.getPPEADraftId(id);
+    const { politica_versao_id } = await this.getPPEADraftId(id);
 
     if (timeline.get('timeline_arquivo')) {
       /* remove file */
@@ -1105,7 +1106,7 @@ class Service {
     // encontra a versao draft desta politica
     const p_draft = await db.instance().query(
       `
-      select id
+      select id as politica_versao_id, politica_id
         from ppea.politicas p
         where p.politica_id = :politica_id
         and p.versao = 'draft'
@@ -1118,7 +1119,7 @@ class Service {
 
     if (!p_draft.length) throw new Error('Unknow draft!');
 
-    return p_draft[0].id;
+    return p_draft[0];
   }
 
   async updateFile2(entityModel, file, fieldName, entityId) {
@@ -1126,7 +1127,7 @@ class Service {
     await s3
       .putObject({
         Bucket: s3BucketName,
-        Key: this.getFileKey(entityId || entityModel.get('politica_versao_id'), fieldName, file.originalname),
+        Key: this.getFileKey(entityId, fieldName, file.originalname),
         Body: file.buffer,
         ACL: 'public-read',
       })
