@@ -12,44 +12,10 @@ fields:
   type: multi_autocomplete
   tag: true
   title: Tema/Área da Iniciativa
-  size: 8  
-  options:
-  - value: 1
-    label: Educação ambiental
-  - value: 2
-    label: Ciências naturais
-  - value: 3
-    label: Resíduos sólidos
-  - value: 4
-    label: Educomunicação
-  - value: 5
-    label: Legislação socioambiental
-  - value: 6
-    label: Gestão ambiental
-  - value: 7
-    label: Áreas protegidas
-  - value: 8
-    label: Pesca
-  - value: 9
-    label: Recursos hídricos
-  - value: 10
-    label: Turismo
-  - value: 11
-    label: Desenvolvimento e economia sustentável
-  - value: 12
-    label: Comunidades tradicionais
-  - value: 13
-    label: Patrimônio histórico cultural
-  - value: 14
-    label: Agroecologia
-  - value: 15
-    label: Agricultura familiar
-  - value: 16
-    label: Mudanças climáticas
-  - value: 17
-    label: Políticas públicas
-  - value: 18
-    label: Gênero
+  size: 8
+  list:
+    module: property
+    key: tema
 
 - key: objetivos
   type: textarea
@@ -143,26 +109,10 @@ fields:
   type: multi_autocomplete
   tag: true
   title: Públicos
-  size: 8  
-  options:
-  - value: 1
-    label: Crianças - até 15 anos	
-  - value: 2
-    label: Jovens - Entre 15 e 29 anos
-  - value: 3
-    label: Educadores
-  - value: 4
-    label: Gestores
-  - value: 5
-    label: Sociedade Civil
-  - value: 6
-    label: Turistas
-  - value: 7
-    label: Comunidade escolar
-  - value: 8
-    label: Comunidade local
-  - value: 9
-    label: Comunidades tradicionais  
+  size: 8
+  list:
+    module: property
+    key: publicos
 
 - key: financiadores
   type: textarea

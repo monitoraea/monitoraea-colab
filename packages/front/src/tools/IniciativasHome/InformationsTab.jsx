@@ -124,7 +124,7 @@ export default function InformationsTab({ entityId, problems }) {
                   form={form}
                   view={form_view}
                   lists={lists}
-                  data={mapData2Form(originalEntity, form)}
+                  data={mapData2Form(originalEntity, form, lists)}
                   problems={problems}
                   onDataChange={handleDataChange}
                 />

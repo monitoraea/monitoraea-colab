@@ -463,10 +463,10 @@ function Element(props) {
           const childrenBlocks = !data?.[block.key]
             ? []
             : data[block.key].map((v, index) => (
-                <Block key={`row_${block.key}_${index}`} block={block} data={data}>
-                  <Row {...props} iterative={{ k: block.key, index }} />
-                </Block>
-              ));
+              <Block key={`row_${block.key}_${index}`} block={block} data={data}>
+                <Row {...props} iterative={{ k: block.key, index }} />
+              </Block>
+            ));
 
           return <Fragment key={`block_${block.key}`}>{childrenBlocks}</Fragment>;
         } else {
@@ -791,7 +791,7 @@ export function FieldRenderer({
           <div>
             <button
               className={`button-link ${styles.helpbox_button}`}
-              onClick={() => window.open(f.helpbox.file,'_blank')}
+              onClick={() => window.open(f.helpbox.file, '_blank')}
             >
               <HelpCircle />
             </button>
@@ -883,7 +883,7 @@ function checkShow(e, data) {
 }
 
 function cleanValue(value) {
-  if(value?.value) return value.value;
+  if (value?.value) return value.value;
   return value;
 }
 
@@ -911,8 +911,10 @@ function titleAndIndex(title, index) {
     Basic Mapper
  *****************************************************************/
 
-export function mapData2Form(data, form) {
+export function mapData2Form(data, form, lists) {
   let mappedData = data;
+
+  if (!!lists) context_lists = { property: lists.lists };
 
   // multi_autocomplete
   for (let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
@@ -920,7 +922,15 @@ export function mapData2Form(data, form) {
     if (!Array.isArray(value)) value = [value]; // legacy
 
     if (!!value) {
-      const nValue = f.options.filter(o => value.includes(o.value));
+      let options = f.options;
+
+      // se lista vem de lists
+      if (f.list && !!lists) {
+        // console.log(context_lists[f.list.module]?.find(l => l.key === f.list.key)?.options.filter(o => value.includes(o.value)))
+        options = context_lists[f.list.module]?.find(l => l.key === f.list.key)?.options || [];
+      }
+
+      const nValue = options?.filter(o => value.includes(o.value));
       data[f.key] = nValue;
     }
   }
@@ -1111,8 +1121,7 @@ function AsyncAutocompleteField({ f, readonly, index, dataValue, onChange, error
   );
 
   const { data, isLoading: isLoadingList } = useQuery(
-    `${f.remote_list}/?${f.query ? f.query : ''}${searchValue?.length ? `&search=${searchValue}` : ''}${
-      f.filter && Array.isArray(f.filter) ? buildFilter(formData, f.filter) : ''
+    `${f.remote_list}/?${f.query ? f.query : ''}${searchValue?.length ? `&search=${searchValue}` : ''}${f.filter && Array.isArray(f.filter) ? buildFilter(formData, f.filter) : ''
     }`,
     { enabled: open },
   );
