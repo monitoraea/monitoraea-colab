@@ -668,7 +668,7 @@ class Service {
         dc.descriptor_json->>'title' as "nome"
       from iniciativas.iniciativas c
       inner join dorothy_communities dc on dc.id = c.community_id
-      where c.id = :id
+      where c.politica_id = :id
       `,
       {
         replacements: { id },
