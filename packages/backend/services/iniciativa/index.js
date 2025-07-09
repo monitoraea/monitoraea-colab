@@ -461,6 +461,67 @@ class Service {
     return { id };
   }
 
+  async getRegions(where) {
+    const entities = await db.instance().query(`
+    with all_ufs as (
+      select distinct unnest(p.ufs) as id
+      from iniciativas_w_region p
+      ${where}
+    )
+    select 
+      distinct u.nm_regiao as value,
+      u.nm_regiao as label
+    from all_ufs au
+    inner join ufs u on u.fid = au.id
+    order by 2
+    `, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    return entities;
+  }
+
+  async getUFs(config) {
+    let where = [];
+
+    if (config.f_regioes) {
+      where.push(`u.nm_regiao in (${config.f_regioes.split(',').map(r => `'${r}'`)})`)
+    }
+
+    const entities = await db.instance().query(`
+      select 
+        u.fid as value,
+        u.nm_estado as label
+      from ufs u
+      ${applyWhere(where)}
+      order by 2
+    `, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    return entities;
+  }
+
+  async listProjectsIDs(f_id, where) {
+    const sequelize = db.instance();
+
+    if (f_id) where = `${where} AND p.id = ${f_id}`;
+
+    const query = `
+            select distinct p.politica_id as id
+            from iniciativas_w_region p
+            left join iniciativas.iniciativas_atuacao pa on pa.politica_versao_id = p.id
+            ${where}
+            and pa.geom is not null
+        `;
+
+    const projects = await sequelize.query(query, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    return projects.map(p => p.id);
+  }
+
   async getGeoDraw(id) {
     const sequelize = db.instance();
 
@@ -934,29 +995,24 @@ class Service {
     return { geojson: simplify(feature, 0.001) };
   }
 
-  async list(config) {
-    let where = ['p."deletedAt" is NULL', "p.versao = 'current'"];
+  async list(where, config) {
 
     let replacements = {
       limit: config.limit,
       offset: config.offset || (config.page - 1) * config.limit,
     };
 
-    if (config.enquads) {
-      where.push(`instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
-    }
-
     const entities = await db.instance().query(
       `
     select
-        p.id,
-        p.politica_id,
-        p.nome,
-        p.instituicao_nome,
-        -- regiao
-        count(*) OVER() AS total_count
-    from iniciativas.iniciativas p
-    ${applyWhere(where)}
+      p.id,
+      p.politica_id,
+      p.nome,
+      p.instituicao_nome,
+      p.regions as regioes,
+      count(*) OVER() AS total_count
+    from iniciativas_w_region p
+    ${where}
     order by p.nome
     LIMIT ${!config.all ? ':limit' : 'NULL'}
     OFFSET ${!config.all ? ':offset' : 'NULL'}
@@ -1030,19 +1086,14 @@ class Service {
     return result[0].total;
   }
 
-  async total_iniciatives(config) {
-    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
-
-    if (config.enquads) {
-      where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
-    }
+  async total_iniciatives(where) {
 
     // retrieve
     let result = await db.instance().query(
       `
-      select count(distinct p.politica_id)::integer as total
-      from iniciativas.iniciativas p
-      ${applyWhere(where)}
+      select count(distinct p.politica_id)::integer as total 
+      from iniciativas_w_region p
+      ${where}
       `,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -1052,20 +1103,15 @@ class Service {
     return result[0].total;
   }
 
-  async total_members(config) {
-    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
-
-    if (config.enquads) {
-      where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
-    }
+  async total_members(where) {
 
     // retrieve
     let result = await db.instance().query(
       `
       select count(distinct dm."userId")::integer as total
-      from iniciativas.iniciativas p
+      from iniciativas_w_region p
       inner join dorothy_members dm on dm."communityId" = p.community_id
-      ${applyWhere(where)}
+      ${where}
       `,
       {
         type: Sequelize.QueryTypes.SELECT,

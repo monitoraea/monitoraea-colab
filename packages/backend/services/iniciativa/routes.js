@@ -24,6 +24,55 @@ fileUpload = multer({
   }),
 }).single('file');
 
+router.get('/geo', async (req, res) => {
+  try {
+    const { f_id } = req.query;
+
+    const where = buildFiltersWhere(
+      req.query,
+      ['p."deletedAt" is null', "p.versao = 'current'"],
+    );
+
+    const result = await entity.listProjectsIDs(f_id, where);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+
+
+router.get('/regions', async (req, res) => {
+  try {
+    const where = buildFiltersWhere(
+      req.query,
+      ['p."deletedAt" is null', "p.versao = 'current'"],
+      'f_regioes',
+    );
+
+    const result = await entity.getRegions(where);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/ufs', async (req, res) => {
+
+  const { f_regioes } = req.query;
+
+  try {
+
+    const result = await entity.getUFs({ f_regioes });
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 /* TODO */
 router.get('/:id/draft/info', async (req, res) => {
   const { id } = req.params;
@@ -428,10 +477,13 @@ router.get('/statistics/institutions', async (req, res) => {
 
 router.get('/statistics/iniciatives', async (req, res) => {
 
-  const { enquads } = req.query;
+  const where = buildFiltersWhere(
+    req.query,
+    ['p."deletedAt" is null', "p.versao = 'current'"],
+  );
 
   try {
-    const result = await entity.total_iniciatives({ enquads: enquads ? enquads.split(',') : null });
+    const result = await entity.total_iniciatives(where);
 
     res.json(result);
   } catch (ex) {
@@ -441,10 +493,13 @@ router.get('/statistics/iniciatives', async (req, res) => {
 
 router.get('/statistics/members', async (req, res) => {
 
-  const { enquads } = req.query;
+  const where = buildFiltersWhere(
+    req.query,
+    ['p."deletedAt" is null', "p.versao = 'current'"],
+  );
 
   try {
-    const result = await entity.total_members({ enquads: enquads ? enquads.split(',') : null });
+    const result = await entity.total_members(where);
 
     res.json(result);
   } catch (ex) {
@@ -479,11 +534,15 @@ router.get('/for_participation/:id', async (req, res) => {
 
 /* TODO */
 router.get('/', async (req, res) => {
-  const { page, limit, enquads } = req.query;
+  const { page, limit } = req.query;
+
+  const where = buildFiltersWhere(
+    req.query,
+    ['p."deletedAt" is null', "p.versao = 'current'"],
+  );
 
   try {
-    const result = await entity.list({
-      enquads: enquads ? enquads.split(',') : null,
+    const result = await entity.list(where, {
       page: page ? parseInt(page) : 1,
       limit: limit && limit !== 'none' ? parseInt(limit) : 6,
     });
@@ -493,5 +552,23 @@ router.get('/', async (req, res) => {
     sendError(res, ex, 500);
   }
 });
+
+
+
+function buildFiltersWhere(filters, where = [], exclude = []) {
+  let whereArray = [...where];
+
+  if (filters['f_regioes'] && !exclude.includes('f_regioes'))
+    whereArray.push(`array[${filters['f_regioes'].split(',').map(r => `'${r}'`)}] && p.regions`);
+
+  if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`array[${filters['f_ufs']}] && p.ufs`);
+
+  /* if (filters['f_instituicao'] && !exclude.includes('f_instituicao'))
+    whereArray.push(`p.instituicao_id IN (${filters['f_instituicao']})`); */
+
+  if (filters['f_ids'] && !exclude.includes('f_ids')) whereArray.push(`p.politica_id IN (${filters['f_ids']})`);
+
+  return whereArray.length ? `WHERE ${whereArray.join(' AND ')}` : '';
+}
 
 module.exports = router;
