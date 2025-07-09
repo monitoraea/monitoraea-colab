@@ -37,11 +37,13 @@ class Service {
         p.id,
         p.nome,
         p.instituicao_nome,
-        p.area,
-        p.area_tematica,
-        p.link,
-        p.fase,
-        p.fase_ano
+        p.tema,
+        p.publicos,
+        p.objetivos,
+        p.resumo,
+        p.data_inicio,
+        p.data_fim,
+        p.link
       FROM iniciativas.iniciativas p
       WHERE p.politica_id = :id
       AND versao = 'draft'
@@ -57,11 +59,12 @@ class Service {
     try {
       const { lists } = YAML.parse(lists_file);
 
-      const tipo_areas = lists.find(i => i.key === 'areas').options.filter(o => o.value !== -1);
-      entity.area_name = tipo_areas.find(ta => ta.value === entity.area).label;
+      const temas = lists.find(i => i.key === 'tema').options.filter(o => o.value !== -1);
+      entity.tema = temas.filter(ta => entity.tema.includes(ta.value)).map(t => t.label);     
 
-      const tipo_fases = lists.find(i => i.key === 'fases').options.filter(o => o.value !== -1);
-      entity.fase_name = tipo_fases.find(tf => tf.value === entity.fase).label;
+      const publicos = lists.find(i => i.key === 'publicos').options.filter(o => o.value !== -1);
+      entity.publicos = publicos.filter(ta => entity.publicos.includes(ta.value)).map(t => t.label);
+
     } catch (e) {
       console.log(e);
     }
