@@ -26,7 +26,7 @@ const { Messagery } = require('dorothy-dna-services');
 
 var fs = require('fs');
 const YAML = require('yaml');
-const lists_file = fs.readFileSync(require.resolve(`../../../../forms/ppea/lists1.yml`), 'utf8');
+const lists_file = fs.readFileSync(require.resolve(`../../../../forms/educom_clima/lists1.yml`), 'utf8');
 
 class Service {
   /* Entity */
@@ -36,15 +36,15 @@ class Service {
       SELECT
         p.id,
         p.nome,
-        p.instituicao_nome,
-        p.area,
-        p.area_tematica,
-        p.link,
-        p.fase,
-        p.fase_ano
-      FROM ppea.politicas p
-      WHERE p.politica_id = :id
-      AND versao = 'draft'
+        p.temas,
+        p.midias,
+        p.apresentacao,
+        p.redes_sociais,
+        p.conte_mais,
+        p.nivel 
+      FROM educom_clima.iniciativas p
+      WHERE p.iniciativa_id = :id
+      AND versao = 'current'
         `,
       {
         replacements: { id },
@@ -57,11 +57,9 @@ class Service {
     try {
       const { lists } = YAML.parse(lists_file);
 
-      const tipo_areas = lists.find(i => i.key === 'areas').options.filter(o => o.value !== -1);
-      entity.area_name = tipo_areas.find(ta => ta.value === entity.area).label;
+      const tipo_nivel = lists.find(i => i.key === 'nivel').options.filter(o => o.value !== -1);
+      entity.nivel_name = entity.nivel.map(n => tipo_nivel.find(ta => ta.value === n).label);
 
-      const tipo_fases = lists.find(i => i.key === 'fases').options.filter(o => o.value !== -1);
-      entity.fase_name = tipo_fases.find(tf => tf.value === entity.fase).label;
     } catch (e) {
       console.log(e);
     }
@@ -74,11 +72,10 @@ class Service {
 
     let atuacoes = await sequelize.query(
       `
-        select pa.id, ST_AsGeoJSON(pa.geom) as geojson, ST_AsGeoJSON(ST_Envelope(pa.geom)) as bbox
-        from ppea.politicas_atuacao pa
-        inner join ppea.politicas p on p.id = pa.politica_versao_id and p.versao = 'current'
-        where p.politica_id = ${parseInt(id)}
-        and pa.geom is not null
+        select u.id, ST_AsGeoJSON(u.geom) as geojson, ST_AsGeoJSON(ST_Envelope(u.geom)) as bbox
+        from br_uf u 
+        inner join educom_clima.iniciativas p on u.cd_uf::smallint = any(p.uf) and p.versao = 'current'
+        where p.iniciativa_id =  ${parseInt(id)}
         `,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -94,11 +91,10 @@ class Service {
     const bbox = await sequelize.query(
       `
         with bounds as (
-            select ST_Extent(geom) as bbox
-            from ppea.politicas_atuacao pa
-            inner join ppea.politicas p on p.id = pa.politica_versao_id and p.versao = 'current'
-            where p.politica_id = ${parseInt(id)}
-            and pa.geom is not null
+          select ST_Extent(geom) as bbox
+          from br_uf u 
+          inner join educom_clima.iniciativas p on u.cd_uf = any(p.uf::text[])
+          where p.iniciativa_id = ${parseInt(id)}
         )
         select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
         from bounds
