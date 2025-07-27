@@ -1452,6 +1452,134 @@ class Service {
       content: zip.toBuffer(), // get in-memory zip
     };
   }
+
+  async list4Map(where, config) {
+
+    let replacements = {
+      limit: config.limit,
+      offset: config.offset || (config.page - 1) * config.limit,
+    };
+
+    const entities = await db.instance().query(
+      `
+    select
+      p.id,
+      p.iniciativa_id,
+      p.nome,
+      p.regions as regioes,
+      count(*) OVER() AS total_count
+    from educom_w_region p
+    ${where}
+    order by p.nome
+    LIMIT ${!config.all ? ':limit' : 'NULL'}
+    OFFSET ${!config.all ? ':offset' : 'NULL'}
+    `,
+      {
+        replacements,
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    // bboxes
+    for (let i = 0; i < entities.length; i++) {
+      const p = entities[i];
+
+      const [bbox] = await db.instance().query(
+        `
+            with bounds as (
+              select ST_Extent(geom) as bbox
+              from br_uf u 
+              inner join educom_clima.iniciativas p on u.cd_uf = any(p.uf::text[])
+              where p.iniciativa_id = :iniciativa_id
+            )
+            select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
+            from bounds
+        `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+          replacements: { iniciativa_id: p.iniciativa_id },
+        },
+      );
+
+      p.bbox = bbox && bbox.y1 && bbox.x1 && bbox.y2 && bbox.x2 ? bbox : null;
+    }
+
+    /* pages (count), hasPrevious, hasNext */
+    const total = entities.length ? parseFloat(entities[0]['total_count']) : 0;
+    const rawPages = entities.length ? parseInt(total) / config.limit : 0;
+    let pages = rawPages === Math.trunc(rawPages) ? rawPages : Math.trunc(rawPages) + 1;
+    let hasPrevious = config.page > 1;
+    let hasNext = config.page !== pages;
+
+    return {
+      entities,
+      pages: !config.all ? pages : 1,
+      total,
+      hasPrevious,
+      hasNext,
+    };
+  }
+
+
+
+  async getRegions(where) {
+    const entities = await db.instance().query(`
+    with all_ufs as (
+      select distinct unnest(p.uf) as id
+      from educom_w_region p
+      ${where}
+    )
+    select 
+      distinct u.nm_regiao as value,
+      u.nm_regiao as label
+    from all_ufs au
+    inner join ufs u on u.fid = au.id
+    order by 2
+    `, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    return entities;
+  }
+
+  async getUFs(config) {
+    let where = [];
+
+    if (config.f_regioes) {
+      where.push(`u.nm_regia in (${config.f_regioes.split(',').map(r => `'${r.toUpperCase()}'`)})`)
+    }
+
+    const entities = await db.instance().query(`
+      select 
+        u.cd_uf as value,
+        u.nm_uf as label
+      from br_uf u
+      ${applyWhere(where)}
+      order by 2
+    `, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    return entities;
+  }
+
+  async listProjectsIDs(f_id, where) {
+    const sequelize = db.instance();
+
+    if (f_id) where = `${where} AND p.id = ${f_id}`;
+
+    const query = `
+            select distinct unnest(p.uf) as id
+            from educom_clima.iniciativas p
+            ${where}
+        `;
+
+    const projects = await sequelize.query(query, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    return projects.map(p => p.id);
+  }
 }
 
 const singletonInstance = new Service();
