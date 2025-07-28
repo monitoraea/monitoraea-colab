@@ -39,12 +39,21 @@ class Service {
         p.temas,
         p.midias,
         p.apresentacao,
-        p.redes_sociais,
+        p.materiais_didaticos,
+        p.estrategias_educativas,
         p.conte_mais,
-        p.nivel 
+        p.nivel,
+        p.definicao,
+        p.redes_sociais,
+        p.faixa_etaria,
+        p.participantes_genero,
+        p.racas_etnias,
+        array_agg(u.sigla_uf) as ufs
       FROM educom_clima.iniciativas p
+      left join br_uf u on u.cd_uf::smallint = any(p.uf)
       WHERE p.iniciativa_id = :id
       AND versao = 'current'
+      group by 1
         `,
       {
         replacements: { id },
@@ -58,7 +67,19 @@ class Service {
       const { lists } = YAML.parse(lists_file);
 
       const tipo_nivel = lists.find(i => i.key === 'nivel').options.filter(o => o.value !== -1);
-      entity.nivel_name = entity.nivel.map(n => tipo_nivel.find(ta => ta.value === n).label);
+      entity.nivel = entity.nivel.map(n => tipo_nivel.find(ta => ta.value === n).label);
+
+      const tipo_definicao = lists.find(i => i.key === 'definicao').options.filter(o => o.value !== -1);
+      entity.definicao = tipo_definicao.find(ta => ta.value === entity.definicao).label;
+
+      const tipo_faixa = lists.find(i => i.key === 'faixa_etaria').options.filter(o => o.value !== -1);
+      entity.faixa_etaria = entity.faixa_etaria.map(n => tipo_faixa.find(ta => ta.value === n).label);
+
+      const tipo_genero = lists.find(i => i.key === 'participantes_genero').options.filter(o => o.value !== -1);
+      entity.participantes_genero = entity.participantes_genero.map(n => tipo_genero.find(ta => ta.value === n).label);
+
+      const tipo_etnia = lists.find(i => i.key === 'racas_etnias').options.filter(o => o.value !== -1);
+      entity.racas_etnias = entity.racas_etnias.map(n => tipo_etnia.find(ta => ta.value === n).label);
 
     } catch (e) {
       console.log(e);
