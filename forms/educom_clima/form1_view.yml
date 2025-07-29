@@ -1,0 +1,83 @@
+- type: row
+  block: iniciativa
+  elements:
+  - type: row
+    elements:
+    - type: column
+      size: 12
+      key: nome
+    - type: column
+      size: 6
+      key: email
+    - type: column
+      size: 6
+      key: definicao
+    - type: column
+      size: 6
+      key: nivel
+    - type: column
+      size: 6
+      key: uf
+
+- type: row
+  block: apresentacao
+  elements:
+  - type: row
+    elements:
+    - type: column
+      size: 12
+      key: apresentacao
+    - type: column
+      size: 12
+      key: redes_sociais
+    - type: column
+      size: 12
+      key: conte_mais
+
+- type: row
+  block: participantes
+  elements:
+  - type: row
+    elements:
+    - type: column
+      size: 6
+      key: faixa_etaria
+    - type: column
+      size: 6
+      key: participantes_genero
+    - type: column
+      size: 6
+      key: racas_etnias
+
+- type: row
+  block: mais
+  elements:
+  - type: row
+    elements:
+    - type: column
+      size: 12
+      key: temas    
+    - type: column
+      size: 12
+      key: midias    
+    - type: column
+      size: 12
+      key: materiais_didaticos
+    - type: column
+      size: 12
+      key: estrategias_educativas
+    - type: column
+      size: 3
+      key: acao_enfrentamento
+    - type: column
+      size: 12
+      key: noticia_falsa_recebeu 
+    - type: column
+      size: 12
+      key: noticia_falsa_exemplo
+    - type: column
+      size: 12
+      key: aborda_desinformacao
+    - type: column
+      size: 12
+      key: aborda_desinformacao_exemplo   

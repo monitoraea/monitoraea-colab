@@ -1,0 +1,188 @@
+fields:
+
+- key: nome
+  type: text
+  title: Nome da Iniciativa
+  size: 12
+  client_validation: not_empty # not implemented yet
+
+- key: email
+  type: text
+  title: E-mail do responsável
+  size: 6
+
+- key: definicao
+  type: options
+  list:
+    module: property
+    key: definicao
+  title: Tipo de Organização
+  size: 6
+
+- key: nivel
+  type: multi_autocomplete
+  tag: true
+  title: Nível Territorial
+  size: 6
+  list:
+    module: property
+    key: nivel
+
+- key: uf
+  type: multi_autocomplete
+  tag: true
+  title: Estados de atuação
+  size: 6
+  list:
+    module: property
+    key: ufs
+
+- key: apresentacao
+  type: textarea
+  title: Apresentação
+  size: 4
+  rows: 2
+
+- key: redes_sociais
+  type: text
+  title: Redes Sociais
+  size: 4
+
+- key: conte_mais
+  type: textarea
+  title: Outros detalhes
+  size: 4
+  rows: 2
+
+- key: faixa_etaria
+  type: multi_autocomplete
+  tag: true
+  title: Idades
+  size: 6
+  list:
+    module: property
+    key: faixa_etaria
+
+- key: participantes_genero
+  type: multi_autocomplete
+  tag: true
+  title: Relação Gênero/Sexo
+  size: 6
+  list:
+    module: property
+    key: participantes_genero
+
+- key: racas_etnias
+  type: multi_autocomplete
+  tag: true
+  title: Relação Étnica
+  size: 6
+  list:
+    module: property
+    key: racas_etnias
+
+- key: acao_enfrentamento
+  type: options
+  title: Ação/Enfrentamento
+  size: 4
+  list:
+    module: property
+    key: acao_enfrentamento
+
+- key: temas
+  type: textarea
+  title: Temas
+  size: 4
+  rows: 2
+
+- key: midias
+  type: textarea
+  title: Mídias
+  size: 4
+  rows: 2
+
+- key: materiais_didaticos
+  type: textarea
+  title: Materiais Didáticos
+  size: 4
+  rows: 2
+
+- key: estrategias_educativas
+  type: textarea
+  title: Estratégias Educativas
+  size: 4
+  rows: 2
+
+- key: noticia_falsa_recebeu
+  type: options
+  title: Recebeu Notícia Falsa?
+  size: 4
+  list:
+    module: property
+    key: noticia_falsa_recebeu
+
+- key: noticia_falsa_exemplo
+  type: textarea
+  title: Exemplo de Notícia Falsa
+  size: 12
+  rows: 2
+  show:
+    target:
+      key: noticia_falsa_recebeu
+      value: 1
+
+- key: aborda_desinformacao
+  type: options
+  title: Aborda desinformação?
+  size: 4
+  list:
+    module: property
+    key: aborda_desinformacao
+
+- key: aborda_desinformacao_exemplo
+  type: textarea
+  title: Exemplo de desinformação
+  size: 12
+  rows: 2
+  show:
+    target:
+      key: aborda_desinformacao
+      value: 1
+
+blocks: # opcional
+
+  - key: iniciativa
+    title: Sobre a Iniciativa
+    elements:
+      - nome
+      - email
+      - definicao
+      - nivel
+      - uf
+
+  - key: apresentacao
+    title: Apresentação
+    elements:
+      - apresentacao
+      - redes_sociais
+      - conte_mais
+
+  - key: participantes
+    title: Participantes
+    elements:
+      - faixa_etaria
+      - participantes_genero
+      - racas_etnias
+
+  - key: mais
+    title: Mais informações
+    elements:
+      - acao_enfrentamento
+      - temas
+      - midias
+      - estrategias_educativas
+      - materiais_didaticos
+      - noticia_falsa_recebeu
+      - noticia_falsa_exemplo
+      - aborda_desinformacao
+      - aborda_desinformacao_exemplo

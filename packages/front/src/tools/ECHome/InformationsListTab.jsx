@@ -34,7 +34,7 @@ export default function ECHomeTab() {
   const [managing, _managing] = useState(null); /* null, 'novo' or content id */
   const [toRemove, _toRemove] = useState(null);
 
-  const { data } = useQuery(['contents_list', { page, order, direction, perPage }], {
+  const { data } = useQuery(['educom_list', { page, order, direction, perPage }], {
     queryFn: async () =>
       (
         await axios.get(
@@ -112,12 +112,12 @@ export default function ECHomeTab() {
                           <TableBody>
                             {data.entities.map(row => (
                               <StyledTableRow key={row.id}>
-                                <td>#{row.id}</td>
+                                <td>#{row.iniciativa_id}</td>
                                 <td>{row.nome}</td>
                                 <td className="tbox-table-actions">
                                   <div>
                                     <Tooltip title="Editar">
-                                      <IconButton onClick={() => changeRoute({ params: [row.iniciativa_id] })}>
+                                      <IconButton onClick={() => changeRoute({ params: ['gerenciar', row.iniciativa_id] })}>
                                         <Edit />
                                       </IconButton>
                                     </Tooltip>

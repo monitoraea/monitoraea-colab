@@ -4,7 +4,8 @@ import { useQuery, useMutation } from 'react-query';
 import axios from 'axios';
 /* components */
 import Tabs from './Tabs';
-import InformationsTab from './InformationsTab';
+import InformationsListTab from './InformationsListTab';
+import InformationsManageTab from './informationsManageTab';
 import TimelineTab from './TimelineTab';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
@@ -152,7 +153,8 @@ const Manager = () => {
         <>
           <Tabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} /* analysis={analysis} */ />
           <>
-            {tabindex === 'informacao' && <InformationsTab />}
+            {tabindex === 'informacao' && <InformationsListTab />}
+            {tabindex === 'gerenciar' && <InformationsManageTab entityId={params[1]} />}
             {tabindex === 'linha_tempo' && <TimelineTab />}
           </>
         </>

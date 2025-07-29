@@ -131,35 +131,17 @@ class Service {
     };
   }
 
-  async getDraftInfo(id) {
+  async getDraftInfo(iniciativa_id) {
     const entity = await db.instance().query(
       `
       SELECT
-        p.nome,
-        p.area,
-        p.area_tematica,
-        p.link,
-        instituicao_nome,
-        instituicao_enquadramento,
-        responsavel_nome,
-        responsavel_cargo,
-        responsavel_telefone,
-        responsavel_email,
-        fase,
-        fase_ano,
-        fase_descricao,
-        dificuldades,
-        contemplados,
-        atuacao_aplica,
-        atuacao_naplica_just,
-        indicadores2024,
-        ("createdAt" = "updatedAt") as is_new
-      FROM ppea.politicas p
-      WHERE p.politica_id = :id
+        p.*
+      FROM educom_clima.iniciativas p
+      WHERE p.iniciativa_id = :iniciativa_id
       AND versao = 'draft'
         `,
       {
-        replacements: { id },
+        replacements: { iniciativa_id },
         type: Sequelize.QueryTypes.SELECT,
       },
     );

@@ -85,10 +85,10 @@ router.get('/timeline', async (req, res) => {
 
 /* TODO */
 router.get('/:id/draft/info', async (req, res) => {
-  const { id } = req.params;
+  const { id: iniciativa_id } = req.params;
 
   try {
-    const result = await entity.getDraftInfo(id);
+    const result = await entity.getDraftInfo(iniciativa_id);
 
     res.json(result);
   } catch (ex) {

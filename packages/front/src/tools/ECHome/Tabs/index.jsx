@@ -19,19 +19,21 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             disableRipple
             label="Cadastros"
             {...a11yProps('informacao'/* , infoProblemCounter */)}
-            /* className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['warning']} `}  *//* TODO: <<--${infoProblemCounter < 10 && styles['fixed-size']
-            } */
+            disabled = {defaultTab === 'gerenciar'}
+            style={{ color: defaultTab === 'gerenciar' ? '#aaa' : 'inherit' }}
           />
           <Tab
             disableRipple
             label="Linha do tempo"
             {...a11yProps('linha_tempo')}
+            disabled = {defaultTab === 'gerenciar'}
+            style={{ color: defaultTab === 'gerenciar' ? '#aaa' : 'inherit' }}
           />
-          {/* <Tab
+          {defaultTab === 'gerenciar' && <Tab
             disableRipple
-            label="Membros"
-            {...a11yProps('membros')}
-          /> */}
+            label="Gerenciar"
+            {...a11yProps('gerenciar')}
+          />}
         </Tabs>
       </div>
     </div>
