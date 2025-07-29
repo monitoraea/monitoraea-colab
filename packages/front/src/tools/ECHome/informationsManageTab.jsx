@@ -37,7 +37,7 @@ export default function InformationsManageTab({ entityId }) {
     //get policy_data
     const { data } = useQuery(['policy_info', { entityId }], {
         queryFn: async () => (await axios.get(`${server}educom_clima/${entityId}/draft/info`)).data,
-        enabled: entityId && entityId !== 'novo',
+        enabled: !!entityId && entityId !== 'novo',
         refetchOnWindowFocus: false,
     })
 
