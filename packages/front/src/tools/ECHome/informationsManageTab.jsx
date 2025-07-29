@@ -73,7 +73,7 @@ export default function InformationsManageTab({ entityId }) {
             let method, url;
             /* edit */
             method = 'put';
-            url = `${server}ppea/${entityId}/draft`;
+            url = `${server}educom_clima/${entityId}/draft`;
 
             //   TODO: await axios({
             //     method,
@@ -122,6 +122,19 @@ export default function InformationsManageTab({ entityId }) {
                     <div className="page-body">
                         <Card middle headerless>
                             <div className="p-3">
+
+                                <div className={`section-header ${style['special-section-header']}`}>
+                                    <div className="section-title"></div>
+                                    <div className={`section-actions ${style.action}`}>
+                                        <button className="button-outline" onClick={handleCancel}>
+                                            Cancelar
+                                        </button>
+                                        <button className="button-primary" onClick={handleSave}>
+                                            <FilePlus></FilePlus>
+                                            Gravar
+                                        </button>
+                                    </div>
+                                </div>
 
                                 <Renderer
                                     form={form}
