@@ -228,7 +228,7 @@ class Service {
 
 
       const result = await db.instance().query(
-      `
+        `
       SELECT MAX(iniciativa_id)+1 as next from educom_clima.iniciativas
       `,
         {
@@ -239,8 +239,8 @@ class Service {
       const iniciativa_id = result[0].next;
 
       // current e draft por enquanto
-      await db.models['Educom_clima'].create({...entity, versao: 'draft', iniciativa_id});
-      await db.models['Educom_clima'].create({...entity, versao: 'current', iniciativa_id});
+      await db.models['Educom_clima'].create({ ...entity, versao: 'draft', iniciativa_id });
+      await db.models['Educom_clima'].create({ ...entity, versao: 'current', iniciativa_id });
     }
 
     return entity;
@@ -1184,68 +1184,14 @@ class Service {
   }
 
   async delete(id, user) {
-    const result = await this.getIdFromCommunity(id);
-
-    if (result) {
-      let politica_id = result.id;
-
-      await db.models['Ppea'].destroy({
-        where: {
-          politica_id,
-        },
-      });
-    }
-
-    // TODO: remove community and members
-    await db.instance().query(
-      `
-      delete from dorothy_communities
-      where id = :id
-  `,
-      {
-        replacements: {
-          id: id,
-        },
-        type: Sequelize.QueryTypes.DELETE,
+    
+    await db.models['Educom_clima'].destroy({
+      where: {
+        iniciativa_id: id,
       },
-    );
+    });
 
-    await db.instance().query(
-      `
-      delete from dorothy_members
-      where "communityId" = :communityId
-  `,
-      {
-        replacements: {
-          communityId: id,
-        },
-        type: Sequelize.QueryTypes.DELETE,
-      },
-    );
-
-    // get user membership from DB
-    const membership = await db.instance().query(
-      `
-      select dm."communityId" as id
-      from dorothy_members dm
-      where dm."userId" = :userId
-      `,
-      {
-        replacements: {
-          userId: user.id,
-        },
-        type: Sequelize.QueryTypes.SELECT,
-      },
-    );
-
-    if (membership.some(m => m.id === 534)) {
-      return 534;
-    } else if (membership.some(m => m.id === 533)) {
-      return 533;
-    } else {
-      await require('../gt').addMember(533, user.id);
-      return 533;
-    }
+    return { success: true };
   }
 
   async publish(politica_id) {

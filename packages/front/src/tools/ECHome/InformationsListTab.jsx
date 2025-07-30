@@ -38,12 +38,20 @@ export default function ECHomeTab() {
     queryFn: async () =>
       (
         await axios.get(
-          `${server}educom_clima/?version=draft&page=${page}&order=${order}&direction=${
-            direction === 'asc' ? 'desc' : 'asc'
+          `${server}educom_clima/?version=draft&page=${page}&order=${order}&direction=${direction === 'asc' ? 'desc' : 'asc'
           }&limit=${perPage}`,
         )
       ).data,
   });
+
+  const mutations = {
+    remove: useMutation(
+      id => {
+        return axios.delete(`${server}educom_clima/${id}`);
+      },
+      { onSuccess: () => queryClient.invalidateQueries('educom_list') },
+    ),
+  };
 
   const orderBy = columnName => {
     _page(1);
@@ -59,7 +67,7 @@ export default function ECHomeTab() {
   };
 
   const handleConfirmation = async action => {
-    // if (action === 'confirm') await mutations.remove.mutateAsync(toRemove);
+    if (action === 'confirm') await mutations.remove.mutateAsync(toRemove);
 
     _toRemove(null);
   };
@@ -68,99 +76,99 @@ export default function ECHomeTab() {
     <>
       {!managing && (
         <>
-            <div className="page-header">
-              <PageTitle title={`Iniciativas ${data ? `(${data.total})` : ''}`} />
-              <div className="page-header-buttons">
-                <div>
-                  <button className="button-primary" onClick={() => changeRoute({ params: ['gerenciar','novo'] })}>
-                    <Plus></Plus>
-                    adicionar
-                  </button>
-                </div>
+          <div className="page-header">
+            <PageTitle title={`Iniciativas ${data ? `(${data.total})` : ''}`} />
+            <div className="page-header-buttons">
+              <div>
+                <button className="button-primary" onClick={() => changeRoute({ params: ['gerenciar', 'novo'] })}>
+                  <Plus></Plus>
+                  adicionar
+                </button>
               </div>
             </div>
-            <div className="page-content">
-              <div className="page-body">
-                {data && (
-                  <>
-                    <div className="tablebox">
-                      <div className="tbox-body">
-                        <table className="tbox-table">
-                          <thead>
-                            <tr>
-                              <th>
-                                <TableSortColumn
-                                  text="ID"
-                                  column="id"
-                                  order={order}
-                                  direction={direction}
-                                  onClick={orderBy}
-                                />
-                              </th>
-                              <th>
-                                {/* TODO: da para simplificar? */}
-                                <TableSortColumn
-                                  text="Nome"
-                                  column="nome"
-                                  order={order}
-                                  direction={direction}
-                                  onClick={orderBy}
-                                />
-                              </th>
-                            </tr>
-                          </thead>
-                          <TableBody>
-                            {data.entities.map(row => (
-                              <StyledTableRow key={row.id}>
-                                <td>#{row.iniciativa_id}</td>
-                                <td>{row.nome}</td>
-                                <td className="tbox-table-actions">
-                                  <div>
-                                    <Tooltip title="Editar">
-                                      <IconButton onClick={() => changeRoute({ params: ['gerenciar', row.iniciativa_id] })}>
-                                        <Edit />
-                                      </IconButton>
-                                    </Tooltip>
-                                  </div>
-                                  <div>
-                                    <Tooltip title="Remover">
-                                      <IconButton onClick={() => remove(row)}>
-                                        <Trash />
-                                      </IconButton>
-                                    </Tooltip>
-                                  </div>
-                                </td>
-                              </StyledTableRow>
-                            ))}
-                          </TableBody>
-                        </table>
-                      </div>
+          </div>
+          <div className="page-content">
+            <div className="page-body">
+              {data && (
+                <>
+                  <div className="tablebox">
+                    <div className="tbox-body">
+                      <table className="tbox-table">
+                        <thead>
+                          <tr>
+                            <th>
+                              <TableSortColumn
+                                text="ID"
+                                column="id"
+                                order={order}
+                                direction={direction}
+                                onClick={orderBy}
+                              />
+                            </th>
+                            <th>
+                              {/* TODO: da para simplificar? */}
+                              <TableSortColumn
+                                text="Nome"
+                                column="nome"
+                                order={order}
+                                direction={direction}
+                                onClick={orderBy}
+                              />
+                            </th>
+                          </tr>
+                        </thead>
+                        <TableBody>
+                          {data.entities.map(row => (
+                            <StyledTableRow key={row.id}>
+                              <td>#{row.iniciativa_id}</td>
+                              <td>{row.nome}</td>
+                              <td className="tbox-table-actions">
+                                <div>
+                                  <Tooltip title="Editar">
+                                    <IconButton onClick={() => changeRoute({ params: ['gerenciar', row.iniciativa_id] })}>
+                                      <Edit />
+                                    </IconButton>
+                                  </Tooltip>
+                                </div>
+                                <div>
+                                  <Tooltip title="Remover">
+                                    <IconButton onClick={() => remove(row.iniciativa_id)}>
+                                      <Trash />
+                                    </IconButton>
+                                  </Tooltip>
+                                </div>
+                              </td>
+                            </StyledTableRow>
+                          ))}
+                        </TableBody>
+                      </table>
                     </div>
-                    <TablePagination
-                      className="pagination"
-                      component="div"
-                      count={data.total}
-                      page={page - 1}
-                      onPageChange={(...args) => _page(args[1] + 1)}
-                      rowsPerPage={perPage}
-                      rowsPerPageOptions={[10, 20, 50, 100]}
-                      onRowsPerPageChange={e => {
-                        _perPage(e.target.value);
-                        _page(1);
-                      }}
-                    />
-                  </>
-                )}
-              </div>
+                  </div>
+                  <TablePagination
+                    className="pagination"
+                    component="div"
+                    count={data.total}
+                    page={page - 1}
+                    onPageChange={(...args) => _page(args[1] + 1)}
+                    rowsPerPage={perPage}
+                    rowsPerPageOptions={[10, 20, 50, 100]}
+                    onRowsPerPageChange={e => {
+                      _perPage(e.target.value);
+                      _page(1);
+                    }}
+                  />
+                </>
+              )}
             </div>
-            <Box display="flex" justifyContent="space-between"></Box>
+          </div>
+          <Box display="flex" justifyContent="space-between"></Box>
 
-            <ConfirmationDialog
-              open={!!toRemove}
-              content="Confirma a remoção desta registro?"
-              confirmButtonText="Remover"
-              onClose={handleConfirmation}
-            />
+          <ConfirmationDialog
+            open={!!toRemove}
+            content="Confirma a remoção desta registro?"
+            confirmButtonText="Remover"
+            onClose={handleConfirmation}
+          />
         </>
       )}
       {!!managing && <>[TODO: MNG]</>}
