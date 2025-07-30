@@ -29,7 +29,7 @@ export default function InformationsManageTab({ entityId }) {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
     /* states */
-    const [entity, _entity] = useState([])
+    const [entity, _entity] = useState({})
     const [files, _files] = useState({})
 
     const [originalEntity, _originalEntity] = useState({})
@@ -71,16 +71,25 @@ export default function InformationsManageTab({ entityId }) {
 
         try {
             let method, url;
-            /* edit */
-            method = 'put';
-            url = `${server}educom_clima/${entityId}/draft`;
 
-            //   TODO: await axios({
-            //     method,
-            //     url,
-            //     data,
-            //     config: { headers: { 'Content-Type': 'multipart/form-data' } },
-            //   });
+            if (entityId !== 'novo') {
+
+                /* edit */
+                method = 'put';
+                url = `${server}educom_clima/${entityId}/draft`;
+            } else {
+
+                /* add */
+                method = 'post';
+                url = `${server}educom_clima/draft`;
+            }
+
+            await axios({
+                method,
+                url,
+                data,
+                config: { headers: { 'Content-Type': 'multipart/form-data' } },
+            });
 
             // console.log(response);
 
@@ -112,8 +121,6 @@ export default function InformationsManageTab({ entityId }) {
             });
         }
     }
-
-    if (!data) return <></>
 
     return (
         <>

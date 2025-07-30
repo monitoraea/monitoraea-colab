@@ -230,34 +230,9 @@ router.post('/:id/send_contact', async (req, res) => {
   }
 });
 
-router.post('/:id/participate', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { isADM } = req.body;
-
-    const result = await entity.participate(res.locals.user, id, isADM);
-
-    res.json(result);
-  } catch (error) {
-    res.json({ error: error.message });
-  }
-});
-
 router.post('/enter_in_network', async (req, res) => {
   try {
     const result = await entity.enterInInitiative(res.locals.user);
-
-    res.json(result);
-  } catch (ex) {
-    sendError(res, ex);
-  }
-});
-
-router.post('/', async (req, res) => {
-  try {
-    const { nome } = req.body;
-
-    const result = await entity.createInitiative(nome, res.locals.user);
 
     res.json(result);
   } catch (ex) {
@@ -275,25 +250,6 @@ router.delete('/draft/timeline/:tlId', async (req, res) => {
     res.json(result);
   } catch (ex) {
     sendError(res, ex, 500);
-  }
-});
-
-router.get('/:id/download', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const { zipFileName, content } = await entity.downloadProject(id);
-
-    // download
-    const readStream = new stream.PassThrough();
-    readStream.end(content);
-
-    res.set('Content-disposition', 'attachment;filename=' + zipFileName);
-    res.set('Content-Type', 'application/octet-stream');
-
-    readStream.pipe(res);
-  } catch ({ message }) {
-    res.status(401).send({ error: message });
   }
 });
 
@@ -360,24 +316,12 @@ router.post('/draft/timeline', upTimelineImage, async (req, res) => {
   }
 });
 
-/* router.get('/:id/draft/indics', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const result = await entity.getDraftIndic(id);
-
-    res.json(result);
-  } catch (ex) {
-    sendError(res, ex, 500);
-  }
-}); */
-
 /* *** FORMS.Begin *** */
 (async function setupForms() {
   /* INFORMAÇÃO */
   const form1 = await FormManager.getForm('ppea/form1');
 
-  router.put('/:id/draft', upload.fields(FormManager.upFields(form1)), async (req, res) => {
+  const save = async (req, res) => {
     try {
       const result = await entity.saveDraft(
         res.locals.user,
@@ -391,85 +335,10 @@ router.post('/draft/timeline', upTimelineImage, async (req, res) => {
     } catch (ex) {
       sendError(res, ex, 500);
     }
-  });
-
-  /* INDICADORES */
-
-  const indic_forms = await FormManager.getForms('ppea/indics2024');
-  let indic_forms_form = {};
-
-  for (let form of indic_forms) {
-    const indic_name = form.replace('indic_', '').replace('.yml', '');
-    const indic_form = await FormManager.getForm(`ppea/indics2024/indic_${indic_name}`);
-    indic_forms_form[indic_name] = indic_form;
-
-    router.get(`/:id/draft/indicadores/${indic_name}`, async (req, res) => {
-      try {
-        const result = await entity.getDraftIndic(indic_form, indic_name, req.params.id);
-
-        res.json(result);
-      } catch (ex) {
-        sendError(res, ex, 500);
-      }
-    });
-
-    router.put(
-      `/:id/draft/indicadores/${indic_name}`,
-      upload.fields(FormManager.upFields(indic_form)),
-      async (req, res) => {
-        try {
-          const result = await entity.saveDraftIndic(
-            res.locals.user,
-            indic_form,
-            indic_name,
-            FormManager.parse(indic_form, req.body.entity) /* Transformations */,
-            req.files,
-            req.params.id,
-          );
-
-          res.json(result);
-        } catch (ex) {
-          sendError(res, ex, 500);
-        }
-      },
-    );
   }
 
-  /* INDICADORES LEGADOS */
-
-  const indic_forms_old = await FormManager.getForms('ppea/indics');
-
-  for (let form of indic_forms_old) {
-    const indic_name = form.replace('indic_', '').replace('.yml', '');
-    const indic_form = await FormManager.getForm(`ppea/indics/indic_${indic_name}`);
-
-    router.get(`/:id/draft/indics/${indic_name}`, async (req, res) => {
-      try {
-        const result = await entity.getDraftIndicOld(indic_form, indic_name, req.params.id);
-
-        res.json(result);
-      } catch (ex) {
-        sendError(res, ex, 500);
-      }
-    });
-
-    router.put(`/:id/draft/indics/${indic_name}`, upload.fields(FormManager.upFields(indic_form)), async (req, res) => {
-      try {
-        const result = await entity.saveDraftIndicOld(
-          res.locals.user,
-          indic_form,
-          indic_name,
-          FormManager.parse(indic_form, req.body.entity) /* Transformations */,
-          req.files,
-          req.params.id,
-        );
-
-        res.json(result);
-      } catch (ex) {
-        sendError(res, ex, 500);
-      }
-    });
-  }
+  router.put('/:id/draft', upload.fields(FormManager.upFields(form1)), save);
+  router.post('/draft', upload.fields(FormManager.upFields(form1)), save);
 
   /* VERIFY */
   router.get('/:id/verify', async (req, res) => {
@@ -486,93 +355,6 @@ router.post('/draft/timeline', upTimelineImage, async (req, res) => {
   });
 })();
 /* *** FORMS.End *** */
-
-router.put('/:id/draft/justification', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { value } = req.body;
-
-    const result = await entity.saveProjectJustDraft(id, value);
-
-    res.json(result);
-  } catch (ex) {
-    sendError(res, ex);
-  }
-});
-
-router.post('/upload-shp', fileUpload, async (req, res) => {
-  try {
-    const result = await entity.importSHP(req.file.path);
-
-    res.json(result);
-  } catch (error) {
-    sendError(res, error);
-  }
-});
-
-router.get('/statistics/institutions', async (req, res) => {
-
-  const { enquads } = req.query;
-
-  try {
-    const result = await entity.total_institutions({ enquads: enquads ? enquads.split(',') : null });
-
-    res.json(result);
-  } catch (ex) {
-    sendError(res, ex, 500);
-  }
-});
-
-router.get('/statistics/iniciatives', async (req, res) => {
-
-  const { enquads } = req.query;
-
-  try {
-    const result = await entity.total_iniciatives({ enquads: enquads ? enquads.split(',') : null });
-
-    res.json(result);
-  } catch (ex) {
-    sendError(res, ex, 500);
-  }
-});
-
-router.get('/statistics/members', async (req, res) => {
-
-  const { enquads } = req.query;
-
-  try {
-    const result = await entity.total_members({ enquads: enquads ? enquads.split(',') : null });
-
-    res.json(result);
-  } catch (ex) {
-    sendError(res, ex, 500);
-  }
-});
-
-router.put('/:id/publish', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    /* TODO: SO MODERADOR OU ADM */
-    const result = await entity.publish(id);
-
-    res.json(result);
-  } catch (ex) {
-    sendError(res, ex);
-  }
-});
-
-router.get('/for_participation/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const result = await entity.getInfoForParticipation(id);
-
-    res.json(result);
-  } catch (ex) {
-    sendError(res, ex);
-  }
-});
 
 /* TODO */
 router.get('/', async (req, res) => {

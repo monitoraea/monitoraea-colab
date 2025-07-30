@@ -72,7 +72,7 @@ export default function ECHomeTab() {
               <PageTitle title={`Iniciativas ${data ? `(${data.total})` : ''}`} />
               <div className="page-header-buttons">
                 <div>
-                  <button className="button-primary" onClick={() => changeRoute({ params: ['novo'] })}>
+                  <button className="button-primary" onClick={() => changeRoute({ params: ['gerenciar','novo'] })}>
                     <Plus></Plus>
                     adicionar
                   </button>

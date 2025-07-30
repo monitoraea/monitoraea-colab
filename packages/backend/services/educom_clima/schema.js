@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   /*TODO*/
   const Educomclima = sequelize.define(
-    'ppea',
+    'educomclima',
     {
       id: {
         type: DataTypes.INTEGER,

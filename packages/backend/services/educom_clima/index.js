@@ -214,9 +214,34 @@ class Service {
   }
 
   async saveDraft(user, form, entity, files, id) {
-    await db.models['Ppea'].update(entity, {
-      where: { politica_id: id, versao: 'draft' },
-    });
+
+    if (!!id) {
+      delete entity.id;
+      delete entity.versao;
+
+      // atualiza tanto draft quanto current, por enquanto
+      await db.models['Educom_clima'].update(entity, {
+        where: { iniciativa_id: id },
+      });
+
+    } else {
+
+
+      const result = await db.instance().query(
+      `
+      SELECT MAX(iniciativa_id)+1 as next from educom_clima.iniciativas
+      `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+        },
+      );
+
+      const iniciativa_id = result[0].next;
+
+      // current e draft por enquanto
+      await db.models['Educom_clima'].create({...entity, versao: 'draft', iniciativa_id});
+      await db.models['Educom_clima'].create({...entity, versao: 'current', iniciativa_id});
+    }
 
     return entity;
   }
