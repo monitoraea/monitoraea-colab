@@ -365,6 +365,7 @@ router.get('/', async (req, res) => {
     order,
     direction,
     limit,
+    name,
   } = req.query;
 
   try {
@@ -373,6 +374,7 @@ router.get('/', async (req, res) => {
       order: order ? order : 'nome',
       direction: direction ? direction : 'ASC',
       limit: limit && limit !== 'none' ? parseInt(limit) : 10,
+      name,
     });
 
     res.json(result);

@@ -3,6 +3,8 @@ const Sequelize = require('sequelize');
 
 const { getSegmentedId, applyWhere, parseBBOX, protect } = require('../../utils');
 
+const removeAccents = require('remove-accents')
+
 const AdmZip = require('adm-zip');
 
 const { check } = require('../../form_utils');
@@ -868,6 +870,11 @@ class Service {
       limit: config.limit,
       offset: config.offset || (config.page - 1) * config.limit,
     };
+
+    if(config.name?.length) {
+      where.push('unaccent(e.nome) ilike :search');
+      replacements.search = `%${removeAccents(config.name.trim())}%`
+    }
 
     const entities = await db.instance().query(
       `

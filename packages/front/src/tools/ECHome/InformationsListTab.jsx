@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Box, styled, TableBody, TableRow, TableSortLabel, Tooltip, IconButton, TablePagination } from '@mui/material';
+import { useState, useRef } from 'react';
+import { Box, styled, TableBody, TableRow, TableSortLabel, Tooltip, IconButton, TablePagination, InputBase } from '@mui/material';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
 import Edit from '../../components/icons/Edit';
@@ -14,32 +14,41 @@ import { useRouter, useDorothy } from 'dorothy-dna-react';
 
 import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
 
+import Search from '../../components/icons/Search';
+import Clean from '../../components/icons/delete.svg?react';
+
 /* components */
 
 // import Card from '../../components/Card';
 
 /* style */
-// import style from './information.module.scss';
+import styles from './information.module.scss';
 
+let timer
 export default function ECHomeTab() {
   const { server } = useDorothy();
   const { changeRoute, params } = useRouter();
   const queryClient = useQueryClient();
+  const InputBaseStyled = InputBase;
+  const searchInputRef = useRef(null);
 
   const [page, _page] = useState(1);
   const [order, _order] = useState('nome');
   const [direction, _direction] = useState('desc');
   const [perPage, _perPage] = useState(10);
 
+  const [searchField, _searchField] = useState('');
+  const [searchFieldFilter, _searchFieldFilter] = useState('');
+
   const [managing, _managing] = useState(null); /* null, 'novo' or content id */
   const [toRemove, _toRemove] = useState(null);
 
-  const { data } = useQuery(['educom_list', { page, order, direction, perPage }], {
+  const { data } = useQuery(['educom_list', { page, order, direction, perPage, searchFieldFilter }], {
     queryFn: async () =>
       (
         await axios.get(
           `${server}educom_clima/?version=draft&page=${page}&order=${order}&direction=${direction === 'asc' ? 'desc' : 'asc'
-          }&limit=${perPage}`,
+          }&limit=${perPage}${searchFieldFilter?.length ? `&name=${searchFieldFilter}` : ''}`,
         )
       ).data,
   });
@@ -72,6 +81,13 @@ export default function ECHomeTab() {
     _toRemove(null);
   };
 
+  const handleSearch = (e) => {
+    _searchField(e.target.value)
+
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => _searchFieldFilter(e.target.value), 500);
+  }
+
   return (
     <>
       {!managing && (
@@ -91,7 +107,19 @@ export default function ECHomeTab() {
             <div className="page-body">
               {data && (
                 <>
-                  <div className="tablebox">
+                  <div className="tablebox"><div className="tbox-header">
+                    <InputBaseStyled
+                      spellCheck="false"
+                      className="tbox-search"
+                      startAdornment={<button className={styles.adornment} onClick={() => searchInputRef.current?.focus()}><Search /></button>}
+                      endAdornment={<button className={styles.adornment} onClick={() => { _searchField(''); _searchFieldFilter(''); }}><Clean /></button>}
+                      inputRef={searchInputRef}
+                      placeholder="Pesquisar..."
+                      inputProps={{ 'aria-label': 'pesquisar grupos' }}
+                      value={searchField}
+                      onChange={handleSearch}
+                    />
+                  </div>
                     <div className="tbox-body">
                       <table className="tbox-table">
                         <thead>
