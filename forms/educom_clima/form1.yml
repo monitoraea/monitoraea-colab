@@ -81,14 +81,6 @@ fields:
     module: property
     key: racas_etnias
 
-- key: acao_enfrentamento
-  type: options
-  title: Ação/Enfrentamento
-  size: 4
-  list:
-    module: property
-    key: acao_enfrentamento
-
 - key: temas
   type: textarea
   title: Temas
@@ -177,7 +169,6 @@ blocks: # opcional
   - key: mais
     title: Mais informações
     elements:
-      - acao_enfrentamento
       - temas
       - midias
       - estrategias_educativas

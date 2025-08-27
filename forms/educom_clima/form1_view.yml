@@ -67,9 +67,6 @@
       size: 12
       key: estrategias_educativas
     - type: column
-      size: 3
-      key: acao_enfrentamento
-    - type: column
       size: 12
       key: noticia_falsa_recebeu 
     - type: column
