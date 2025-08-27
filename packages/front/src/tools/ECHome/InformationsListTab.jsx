@@ -86,7 +86,15 @@ export default function ECHomeTab() {
     _searchField(e.target.value)
 
     if (timer) clearTimeout(timer);
-    timer = setTimeout(() => _searchFieldFilter(e.target.value), 500);
+    timer = setTimeout(() => {
+      _searchFieldFilter(e.target.value)
+      _page(1);
+    }, 500);
+  }
+
+  const cleanSearch = () => {
+    _searchField('');
+    _searchFieldFilter('');
   }
 
   return (
@@ -103,7 +111,7 @@ export default function ECHomeTab() {
                 </button>
               </div>
               <div>
-                <button className="button-outline" onClick={() =>  window.open(`${server}educom_clima/spreadsheet`, '_blank')}>
+                <button className="button-outline" onClick={() => window.open(`${server}educom_clima/spreadsheet`, '_blank')}>
                   <Download />
                   Baixar planilha
                 </button>
@@ -119,7 +127,7 @@ export default function ECHomeTab() {
                       spellCheck="false"
                       className="tbox-search"
                       startAdornment={<button className={styles.adornment} onClick={() => searchInputRef.current?.focus()}><Search /></button>}
-                      endAdornment={<button className={styles.adornment} onClick={() => { _searchField(''); _searchFieldFilter(''); }}><Clean /></button>}
+                      endAdornment={<button className={styles.adornment} onClick={cleanSearch}><Clean /></button>}
                       inputRef={searchInputRef}
                       placeholder="Pesquisar..."
                       inputProps={{ 'aria-label': 'pesquisar grupos' }}
