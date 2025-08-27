@@ -2884,18 +2884,18 @@ class Service {
         },
       );
 
-      await db.instance().query(
-        `
-        delete from projetos__linhas_atuacao
-        where projeto_id = :id
-    `,
-        {
-          replacements: {
-            id: project.id,
-          },
-          type: Sequelize.QueryTypes.DELETE,
-        },
-      );
+    //   await db.instance().query(
+    //     `
+    //     delete from projetos__linhas_atuacao
+    //     where projeto_id = :id
+    // `,
+    //     {
+    //       replacements: {
+    //         id: project.id,
+    //       },
+    //       type: Sequelize.QueryTypes.DELETE,
+    //     },
+    //   );
 
       await db.instance().query(
         `
