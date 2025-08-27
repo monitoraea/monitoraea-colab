@@ -5,6 +5,7 @@ import { PageTitle } from '../../components/PageTitle/PageTitle';
 import Edit from '../../components/icons/Edit';
 import Trash from '../../components/icons/Trash';
 import Plus from '../../components/icons/Plus';
+import Download from '../../components/icons/Download';
 
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 
@@ -97,8 +98,14 @@ export default function ECHomeTab() {
             <div className="page-header-buttons">
               <div>
                 <button className="button-primary" onClick={() => changeRoute({ params: ['gerenciar', 'novo'] })}>
-                  <Plus></Plus>
+                  <Plus />
                   adicionar
+                </button>
+              </div>
+              <div>
+                <button className="button-outline" onClick={() =>  window.open(`${server}educom_clima/spreadsheet`, '_blank')}>
+                  <Download />
+                  Baixar planilha
                 </button>
               </div>
             </div>

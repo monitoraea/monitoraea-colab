@@ -1,9 +1,10 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
-const { getSegmentedId, applyWhere, parseBBOX, protect } = require('../../utils');
+const { applyWhere, parseBBOX, protect } = require('../../utils');
 
 const removeAccents = require('remove-accents')
+const dayjs = require('dayjs');
 
 const AdmZip = require('adm-zip');
 
@@ -871,7 +872,7 @@ class Service {
       offset: config.offset || (config.page - 1) * config.limit,
     };
 
-    if(config.name?.length) {
+    if (config.name?.length) {
       where.push('unaccent(e.nome) ilike :search');
       replacements.search = `%${removeAccents(config.name.trim())}%`
     }
@@ -1191,7 +1192,7 @@ class Service {
   }
 
   async delete(id, user) {
-    
+
     await db.models['Educom_clima'].destroy({
       where: {
         iniciativa_id: id,
@@ -1556,6 +1557,118 @@ class Service {
     });
 
     return projects.map(p => p.id);
+  }
+
+  async spreadsheet(type) {
+    const { lists } = YAML.parse(lists_file);
+
+    let data = [];
+
+    let header = [
+      '#',
+      'nome',
+      'email responsável',
+      'tipo organização',
+      'nível territorial',
+      'estados atuação',
+      'faixa etaria',
+      'gênero',
+      'etnia',
+      'recebeu notícia falsa?',
+      'exemplo notícia falsa',
+      'aborda desinformação?',
+      'exemplo desinformação',
+      'apresentacao',
+      'redes sociais',
+      'outros detalhes',
+      'temas',
+      'materiais didáticos',
+      'estratégia educativas',
+
+    ];
+
+    data.push(header);
+
+    const query =
+      `
+    select 
+      e.*,
+      array_agg(u.sigla_uf) as ufs
+    from educom_clima.iniciativas e
+    left join br_uf u on u.cd_uf::smallint = any(e.uf)
+    where e."deletedAt" is null
+    and e.versao = 'current'
+    group by e.id
+    order by e.nome
+    `;
+
+    const iniciativas = await db.instance().query(query, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    for (let idx in iniciativas) {
+      const p = iniciativas[idx];
+
+      let i_data = [];
+
+      i_data.push(p.id);
+      i_data.push(p.nome);
+      i_data.push(p.email);
+
+      const tipo_definicao = lists.find(i => i.key === 'definicao').options.filter(o => o.value !== -1);
+      i_data.push(tipo_definicao.find(ta => ta.value === p.definicao).label);
+
+      const tipo_nivel = lists.find(i => i.key === 'nivel').options.filter(o => o.value !== -1);
+      i_data.push(p.nivel.map(n => tipo_nivel.find(ta => ta.value === n).label));
+
+      i_data.push(p.ufs.join(','));
+
+      const tipo_faixa = lists.find(i => i.key === 'faixa_etaria').options.filter(o => o.value !== -1);
+      i_data.push(p.faixa_etaria.map(n => tipo_faixa.find(ta => ta.value === n).label));
+
+      const tipo_genero = lists.find(i => i.key === 'participantes_genero').options.filter(o => o.value !== -1);
+      i_data.push(p.participantes_genero.map(n => tipo_genero.find(ta => ta.value === n).label));
+
+      const tipo_etnia = lists.find(i => i.key === 'racas_etnias').options.filter(o => o.value !== -1);
+      i_data.push(p.racas_etnias.map(n => tipo_etnia.find(ta => ta.value === n).label));
+
+      i_data.push(p.noticia_falsa_recebeu == 1 ? 'sim' : 'não');
+      i_data.push(p.noticia_falsa_exemplo);
+      i_data.push(p.aborda_desinformacao == 1 ? 'sim' : 'não');
+      i_data.push(p.aborda_desinformacao_exemplo);
+
+      i_data.push(p.apresentacao);
+      i_data.push(p.redes_sociais);
+      i_data.push(p.conte_mais);
+      i_data.push(p.temas);
+      i_data.push(p.estrategias_educativas);
+      i_data.push(p.materiais_didaticos);
+
+      data.push(i_data);
+    }
+
+    // fileName
+    const fileName = `educom_clima_spreadsheet_${dayjs().format('YYYY.MM.DD')}`;
+
+    const csvFileName = `${fileName}.csv`;
+    const zipFileName = `${fileName}.zip`;
+
+    // 1. transformar em csv
+    let content = data.reduce((accum, row) => {
+      return `${accum.length ? `${accum}\n` : ''}${row
+        .map(c => String(c).replace(/\n/g, ' ').replace(/;/g, ',').trim())
+        .join('\t')}`;
+    }, '');
+
+    // 2. zipar e colocar na memoria
+
+    const zip = new AdmZip();
+    zip.addFile(csvFileName, Buffer.from(content, 'latin1'));
+
+    return {
+      zipFileName,
+      content: zip.toBuffer(), // get in-memory zip
+    };
   }
 }
 

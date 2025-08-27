@@ -24,6 +24,26 @@ fileUpload = multer({
   }),
 }).single('file');
 
+router.get('/spreadsheet', async (req, res) => {
+  const { type } = req.params;
+
+  try {
+    /* TODO: SO MODERADOR OU ADM */
+    const { zipFileName, content } = await entity.spreadsheet();
+    // download
+    const readStream = new stream.PassThrough();
+    readStream.end(content);
+
+    res.set('Content-disposition', 'attachment;filename=' + zipFileName);
+    res.set('Content-Type', 'application/octet-stream');
+
+    readStream.pipe(res);
+  } catch (e) {
+    console.log(e)
+    res.status(401).send({ error: e.message });
+  }
+});
+
 router.get('/geo', async (req, res) => {
   try {
     const { f_id } = req.query;
