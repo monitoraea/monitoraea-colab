@@ -152,3 +152,50 @@ lists:
       label: Sergipe
     - value: 17
       label: Tocantins
+
+  - key: temas
+    options:
+    - value: 1
+      label: Água
+    - value: 6
+      label: Biodiversidade 
+    - value: 8
+      label: Degradação Ambiental 
+    - value: 9
+      label: Educação Ambiental 
+    - value: 2
+      label: Emergência climática 
+    - value: 4
+      label: Energias Renováveis 
+    - value: 3
+      label: ODS - Agenda 2030
+    - value: 5
+      label: Resíduos e Reciclagem 
+    - value: 7
+      label: Transição energética
+
+  - key: midias
+    options:
+    - value: 4
+      label: Intervenções e projetos
+    - value: 5
+      label: Pesquisa 
+    - value: 3
+      label: Processos formativos
+    - value: 2
+      label: Produção de Conteúdo
+    - value: 1
+      label: Reunião Online
+
+  - key: estrategias_educativas
+    options:
+    - value: 5
+      label: Campanhas
+    - value: 1
+      label: Oficinas e Palestras
+    - value: 3
+      label: Pesquisa, Projetos Acadêmicos e Formação
+    - value: 4
+      label: Produção Cultural
+    - value: 2
+      label: Projetos Práticos

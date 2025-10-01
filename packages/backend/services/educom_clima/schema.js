@@ -40,13 +40,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ARRAY(DataTypes.INTEGER),
       },
       temas: {
-        type: DataTypes.TEXT,
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
       },
       midias: {
-        type: DataTypes.TEXT,
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
       },
       estrategias_educativas: {
-        type: DataTypes.TEXT,
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
       },
       noticia_falsa_recebeu: {
         type: DataTypes.INTEGER,

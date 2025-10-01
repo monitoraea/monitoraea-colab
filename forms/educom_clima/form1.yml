@@ -82,16 +82,22 @@ fields:
     key: racas_etnias
 
 - key: temas
-  type: textarea
+  type: multi_autocomplete
+  tag: true
   title: Temas
   size: 4
-  rows: 2
+  list:
+    module: property
+    key: temas
 
 - key: midias
-  type: textarea
+  type: multi_autocomplete
+  tag: true
   title: Mídias
   size: 4
-  rows: 2
+  list:
+    module: property
+    key: midias
 
 - key: materiais_didaticos
   type: textarea
@@ -100,10 +106,13 @@ fields:
   rows: 2
 
 - key: estrategias_educativas
-  type: textarea
+  type: multi_autocomplete
+  tag: true
   title: Estratégias Educativas
   size: 4
-  rows: 2
+  list:
+    module: property
+    key: estrategias_educativas
 
 - key: noticia_falsa_recebeu
   type: options
