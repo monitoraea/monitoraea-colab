@@ -270,9 +270,29 @@ router.get('/options', async (req, res) => {
   }
 });
 
-router.get('/regions', async (req, res) => {
+router.get('/linhas_acao', async (req, res) => {
   try {
-    const result = await service.getAllRegions();
+    const result = await service.getLinhasAcao();
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/regions_options', async (req, res) => {
+  try {
+    const result = await service.getRegions();
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/segmentos', async (req, res) => {
+  try {
+    const result = await service.getSegmentos();
 
     res.json(result);
   } catch (ex) {
@@ -285,6 +305,28 @@ router.get('/ufs', async (req, res) => {
     const { f_regioes } = req.query;
 
     const result = await service.getUFs(f_regioes);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/ufs_options', async (req, res) => {
+  try {
+    const { f_regioes } = req.query;
+
+    const result = await service.getUFs(f_regioes, true);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.get('/regions', async (req, res) => {
+  try {
+    const result = await service.getAllRegions();
 
     res.json(result);
   } catch (ex) {

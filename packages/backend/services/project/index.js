@@ -1038,9 +1038,9 @@ class Service {
             select p.id, p.nome
             from projetos p
             where id in (${ids
-              .split(',')
-              .map(id => parseInt(id))
-              .join(',')})
+        .split(',')
+        .map(id => parseInt(id))
+        .join(',')})
             order by p.nome
         `; /* TODO: melhor protecao contra injection? */
 
@@ -1086,9 +1086,9 @@ class Service {
     left join projetos_atuacao pa on pa.projeto_id = p.id
     left join municipios m on m.cd_mun = pa.cd_mun
             where p.id in (${ids
-              .split(',')
-              .map(id => parseInt(id))
-              .join(',')})
+        .split(',')
+        .map(id => parseInt(id))
+        .join(',')})
         group by p.id, i.nome
         order by p.nome
         `; /* TODO: melhor protecao contra injection? */
@@ -1376,6 +1376,49 @@ class Service {
     return municipios;
   }
 
+  async getLinhasAcao() {
+    return await db.instance().query(
+      `
+        select id as value, upper(nome) as "label"
+        from linhas_acao
+        order by nome
+        `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+  }
+
+  async getSegmentos() {
+    return await db.instance().query(
+      `
+        select id as value, nome as "label"
+        from segmentos
+        order by nome
+        `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+  }
+
+  async getRegions() {
+    let regioes = await db.instance().query(
+      `
+        select distinct pa.nm_regiao as value, upper(pa.nm_regiao) as "label"
+        from projetos p
+        inner join projetos_atuacao pa on pa.projeto_id = p.id
+        where nm_regiao <> 'NACIONAL'
+        order by "label"`,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+    regioes = [{ value: 'NACIONAL', label: 'NACIONAL' }, ...regioes];
+
+    return regioes;
+  }
+
   /* Retorna as listas de opcoes disponiveis */
   async getOptions(all = false) {
     /* se all, recupera todas as opcoes e nao somente aquelas que participam de projetos */
@@ -1468,7 +1511,7 @@ class Service {
   }
 
   /* Retorna uma lista de estados (UFs) que contem projetos  */
-  async getUFs(f_regioes) {
+  async getUFs(f_regioes, options = false) {
     const sequelize = db.instance();
 
     let where = '';
@@ -1479,7 +1522,7 @@ class Service {
         .join(',')})`;
 
     const query = `
-        select distinct u.id as value, u.nm_estado as "label"
+        select distinct ${options ? 'u.cd_geocuf' : 'u.id'} as value, u.nm_estado as "label"
         from projetos p
         inner join ufs u on u.id = any(p.ufs)
         ${where}
@@ -1725,9 +1768,8 @@ class Service {
       from: `Plataforma MonitoraEA <${process.env.CONTACT_EMAIL}>`,
       subject: `MonitoraEA - ${subject}`,
       text: `${message}\n\n${process.env.BASE_URL}/projeto/${pData.communityId}`,
-      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/projeto/${
-        pData.communityId
-      }">Clique aqui para acessar esta iniciativa</a>`,
+      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/projeto/${pData.communityId
+        }">Clique aqui para acessar esta iniciativa</a>`,
     };
 
     try {
@@ -2433,8 +2475,7 @@ class Service {
       await db.instance().query(
         `
         update instituicoes
-        set segmentos = '{${
-          !!data.instituicao_segmentos?.length ? data.instituicao_segmentos.map(s => s.id).join(',') : ''
+        set segmentos = '{${!!data.instituicao_segmentos?.length ? data.instituicao_segmentos.map(s => s.id).join(',') : ''
         }}',
             porte = :porte
         where id = :id
@@ -2831,9 +2872,8 @@ class Service {
     );
 
     /* refresh notification (LIVE) */
-    const watch = `indication_${data.sourceDraftId}_${data.indicationId}_${
-      data.type === 'apoia' ? 'apoia' : 'apoiada'
-    }`;
+    const watch = `indication_${data.sourceDraftId}_${data.indicationId}_${data.type === 'apoia' ? 'apoia' : 'apoiada'
+      }`;
     Messagery.refreshNotifications(watch);
 
     return { success: true };
@@ -2884,18 +2924,18 @@ class Service {
         },
       );
 
-    //   await db.instance().query(
-    //     `
-    //     delete from projetos__linhas_atuacao
-    //     where projeto_id = :id
-    // `,
-    //     {
-    //       replacements: {
-    //         id: project.id,
-    //       },
-    //       type: Sequelize.QueryTypes.DELETE,
-    //     },
-    //   );
+      //   await db.instance().query(
+      //     `
+      //     delete from projetos__linhas_atuacao
+      //     where projeto_id = :id
+      // `,
+      //     {
+      //       replacements: {
+      //         id: project.id,
+      //       },
+      //       type: Sequelize.QueryTypes.DELETE,
+      //     },
+      //   );
 
       await db.instance().query(
         `
@@ -3030,10 +3070,10 @@ class Service {
 
     analysis.information.contatos = this.check(
       !!project.contatos &&
-        !!project.contatos[0] &&
-        (project.contatos[0].nome.length > 0 ||
-          project.contatos[0].email.length > 0 ||
-          project.contatos[0].tel.length > 0),
+      !!project.contatos[0] &&
+      (project.contatos[0].nome.length > 0 ||
+        project.contatos[0].email.length > 0 ||
+        project.contatos[0].tel.length > 0),
       conclusion,
     );
 
@@ -3974,7 +4014,7 @@ class Service {
                     let value = 0;
                     try {
                       value = parseInt(indicDB[dbKey][question.id]);
-                    } catch (e) {}
+                    } catch (e) { }
 
                     analysis.indicators[dbKey].questions[question.id].accum += value;
                     analysis.indicators[dbKey].questions[question.id].qtd++;
@@ -4222,8 +4262,8 @@ module.exports = singletonInstance;
 function cleanItems(txt) {
   return txt
     ? txt
-        .split('\n')
-        .filter(t => t.length)
-        .join('\n')
+      .split('\n')
+      .filter(t => t.length)
+      .join('\n')
     : '';
 }
