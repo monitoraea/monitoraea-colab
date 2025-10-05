@@ -31,6 +31,7 @@ export default function InformationsManageTab({ entityId }) {
     /* states */
     const [entity, _entity] = useState({})
     const [files, _files] = useState({})
+    const [problems, _problems] = useState([]);
 
     const [originalEntity, _originalEntity] = useState({})
 
@@ -43,6 +44,7 @@ export default function InformationsManageTab({ entityId }) {
 
     useEffect(() => {
         if (data) _originalEntity(data)
+        _problems([]);
     }, [data])
 
     const handleDataChange = (entity, files) => {
@@ -55,6 +57,13 @@ export default function InformationsManageTab({ entityId }) {
     }
 
     const handleSave = async () => {
+
+        if (!entity.nome || !entity.nome.trim().length) {
+            _problems(['nome']);
+            return;
+        }
+
+        _problems([]);
 
         /* save */
         const data = getFormData(form, entity, files) // prepare information (Renderer)
@@ -134,7 +143,7 @@ export default function InformationsManageTab({ entityId }) {
                                     <div className="section-title"></div>
                                     <div className={`section-actions ${style.action}`}>
                                         <button className="button-outline" onClick={handleCancel}>
-                                            Cancelar
+                                            Sair
                                         </button>
                                         <button className="button-primary" onClick={handleSave}>
                                             <FilePlus></FilePlus>
@@ -148,7 +157,7 @@ export default function InformationsManageTab({ entityId }) {
                                     view={form_view}
                                     lists={lists}
                                     data={mapData2Form(originalEntity, form, lists)}
-                                    /* TODO: problems={problems} */
+                                    problems={problems}
                                     onDataChange={handleDataChange}
                                 />
 
