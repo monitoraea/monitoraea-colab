@@ -247,7 +247,7 @@ router.get('/municipios', async (req, res) => {
     const where = buildFiltersWhere(
       req.query,
       [`LOWER(unaccent(m.nm_mun)) like '%${nome.toLowerCase()}%'`],
-      ['f_municipios'],
+      ['f_municipios','f_instituicao_segmento'],
     );
 
     const result = await service.listMunicipiosByName(where);
