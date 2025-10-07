@@ -64,11 +64,11 @@ router.get('/:id/atuacoes', async (req, res) => {
 
 router.get('/geo', async (req, res) => {
   try {
-    const { f_id, limit, f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
+    const { f_id, limit, f_ids, f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
 
     let enquads = getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf);
 
-    const result = await entity.listProjectsIDs(f_id, { enquads });
+    const result = await entity.listProjectsIDs(f_id, { f_ids, enquads });
 
     res.json(result);
   } catch (ex) {
@@ -449,12 +449,12 @@ router.post('/upload-shp', fileUpload, async (req, res) => {
 });
 
 router.get('/statistics/institutions', async (req, res) => {
-  const { f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
+  const { f_ids, f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
 
   let enquads = getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf);
 
   try {
-    const result = await entity.total_institutions({ enquads });
+    const result = await entity.total_institutions({ f_ids, enquads });
 
     res.json(result);
   } catch (ex) {
@@ -463,12 +463,12 @@ router.get('/statistics/institutions', async (req, res) => {
 });
 
 router.get('/statistics/iniciatives', async (req, res) => {
-  const { f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
+  const { f_ids, f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
 
   let enquads = getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf);
 
   try {
-    const result = await entity.total_iniciatives({ enquads });
+    const result = await entity.total_iniciatives({ f_ids, enquads });
 
     res.json(result);
   } catch (ex) {
@@ -477,12 +477,12 @@ router.get('/statistics/iniciatives', async (req, res) => {
 });
 
 router.get('/statistics/members', async (req, res) => {
-  const { f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
+  const { f_ids, f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
 
   let enquads = getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf);
 
   try {
-    const result = await entity.total_members({ enquads });
+    const result = await entity.total_members({ f_ids, enquads });
 
     res.json(result);
   } catch (ex) {
@@ -517,12 +517,13 @@ router.get('/for_participation/:id', async (req, res) => {
 
 /* TODO */
 router.get('/', async (req, res) => {
-  const { page, limit, f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
+  const { page, limit, f_ids, f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
 
   let enquads = getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf);
 
   try {
     const result = await entity.list({
+      f_ids,
       enquads,
       page: page ? parseInt(page) : 1,
       limit: limit && limit !== 'none' ? parseInt(limit) : 6,

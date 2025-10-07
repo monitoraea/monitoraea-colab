@@ -777,7 +777,6 @@ class Service {
   }
 
   async getGeoDrawSave(id, geoms) {
-
     // encontra a versao draft desta politica
     const p_draft = await db.instance().query(
       `
@@ -847,6 +846,8 @@ class Service {
       offset: config.offset || (config.page - 1) * config.limit,
     };
 
+    if (config.f_ids) where.push(`p.politica_id IN (${config.f_ids})`);
+
     if (config.enquads) {
       where.push(`instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
     }
@@ -874,6 +875,8 @@ class Service {
       limit: config.limit,
       offset: config.offset || (config.page - 1) * config.limit,
     };
+
+    if (config.f_ids) where.push(`p.politica_id IN (${config.f_ids})`);
 
     if (config.enquads) {
       where.push(`instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
@@ -942,7 +945,9 @@ class Service {
   }
 
   async total_institutions(config) {
-    let where = ['p."deletedAt" is null', "p.versao='current'"]
+    let where = ['p."deletedAt" is null', "p.versao='current'"];
+
+    if (config.f_ids) where.push(`p.politica_id IN (${config.f_ids})`);
 
     if (config.enquads) {
       where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
@@ -964,7 +969,9 @@ class Service {
   }
 
   async total_iniciatives(config) {
-    let where = ['p."deletedAt" is null', "p.versao='current'"]
+    let where = ['p."deletedAt" is null', "p.versao='current'"];
+
+    if (config.f_ids) where.push(`p.politica_id IN (${config.f_ids})`);
 
     if (config.enquads) {
       where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
@@ -986,7 +993,9 @@ class Service {
   }
 
   async total_members(config) {
-    let where = ['p."deletedAt" is null', "p.versao='current'"]
+    let where = ['p."deletedAt" is null', "p.versao='current'"];
+
+    if (config.f_ids) where.push(`p.politica_id IN (${config.f_ids})`);
 
     if (config.enquads) {
       where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
@@ -1103,8 +1112,7 @@ class Service {
     }
 
     if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
-    else if (timeline_arquivo)
-      await this.updateFile2(entityModel, timeline_arquivo, 'timeline_arquivo', politica_id);
+    else if (timeline_arquivo) await this.updateFile2(entityModel, timeline_arquivo, 'timeline_arquivo', politica_id);
 
     return entityModel;
   }
