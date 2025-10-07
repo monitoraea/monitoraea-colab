@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 
 const { applyWhere, parseBBOX, protect } = require('../../utils');
 
-const removeAccents = require('remove-accents')
+const removeAccents = require('remove-accents');
 const dayjs = require('dayjs');
 
 const AdmZip = require('adm-zip');
@@ -83,7 +83,6 @@ class Service {
 
       const tipo_etnia = lists.find(i => i.key === 'racas_etnias').options.filter(o => o.value !== -1);
       entity.racas_etnias = entity.racas_etnias.map(n => tipo_etnia.find(ta => ta.value === n).label);
-
     } catch (e) {
       console.log(e);
     }
@@ -97,7 +96,7 @@ class Service {
     let atuacoes = await sequelize.query(
       `
         select u.id, ST_AsGeoJSON(u.geom) as geojson, ST_AsGeoJSON(ST_Envelope(u.geom)) as bbox
-        from br_uf u 
+        from br_uf u
         inner join educom_clima.iniciativas p on u.cd_uf::smallint = any(p.uf) and p.versao = 'current'
         where p.iniciativa_id =  ${parseInt(id)}
         `,
@@ -116,7 +115,7 @@ class Service {
       `
         with bounds as (
           select ST_Extent(geom) as bbox
-          from br_uf u 
+          from br_uf u
           inner join educom_clima.iniciativas p on u.cd_uf = any(p.uf::text[])
           where p.iniciativa_id = ${parseInt(id)}
         )
@@ -217,7 +216,6 @@ class Service {
   }
 
   async saveDraft(user, form, entity, files, id) {
-
     if (!!id) {
       delete entity.id;
       delete entity.versao;
@@ -226,10 +224,7 @@ class Service {
       await db.models['Educom_clima'].update(entity, {
         where: { iniciativa_id: id },
       });
-
     } else {
-
-
       const result = await db.instance().query(
         `
       SELECT MAX(iniciativa_id)+1 as next from educom_clima.iniciativas
@@ -874,7 +869,7 @@ class Service {
 
     if (config.name?.length) {
       where.push('unaccent(e.nome) ilike :search');
-      replacements.search = `%${removeAccents(config.name.trim())}%`
+      replacements.search = `%${removeAccents(config.name.trim())}%`;
     }
 
     const entities = await db.instance().query(
@@ -1192,7 +1187,6 @@ class Service {
   }
 
   async delete(id, user) {
-
     await db.models['Educom_clima'].destroy({
       where: {
         iniciativa_id: id,
@@ -1432,7 +1426,6 @@ class Service {
   }
 
   async list4Map(where, config) {
-
     let replacements = {
       limit: config.limit,
       offset: config.offset || (config.page - 1) * config.limit,
@@ -1466,7 +1459,7 @@ class Service {
         `
             with bounds as (
               select ST_Extent(geom) as bbox
-              from br_uf u 
+              from br_uf u
               inner join educom_clima.iniciativas p on u.cd_uf = any(p.uf::text[])
               where p.iniciativa_id = :iniciativa_id
             )
@@ -1498,24 +1491,25 @@ class Service {
     };
   }
 
-
-
   async getRegions(where) {
-    const entities = await db.instance().query(`
+    const entities = await db.instance().query(
+      `
     with all_ufs as (
       select distinct unnest(p.uf) as id
       from educom_w_region p
       ${where}
     )
-    select 
+    select
       distinct u.nm_regiao as value,
       u.nm_regiao as label
     from all_ufs au
     inner join ufs u on u.fid = au.id
     order by 2
-    `, {
-      type: Sequelize.QueryTypes.SELECT,
-    });
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
     return entities;
   }
@@ -1524,19 +1518,22 @@ class Service {
     let where = [];
 
     if (config.f_regioes) {
-      where.push(`u.nm_regia in (${config.f_regioes.split(',').map(r => `'${r.toUpperCase()}'`)})`)
+      where.push(`u.nm_regia in (${config.f_regioes.split(',').map(r => `'${r.toUpperCase()}'`)})`);
     }
 
-    const entities = await db.instance().query(`
-      select 
+    const entities = await db.instance().query(
+      `
+      select
         u.cd_uf as value,
         u.nm_uf as label
       from br_uf u
       ${applyWhere(where)}
       order by 2
-    `, {
-      type: Sequelize.QueryTypes.SELECT,
-    });
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
     return entities;
   }
@@ -1584,14 +1581,12 @@ class Service {
       'temas',
       'materiais didáticos',
       'estratégia educativas',
-
     ];
 
     data.push(header);
 
-    const query =
-      `
-    select 
+    const query = `
+    select
       e.*,
       array_agg(u.sigla_uf) as ufs
     from educom_clima.iniciativas e

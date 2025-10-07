@@ -39,7 +39,7 @@ router.get('/spreadsheet', async (req, res) => {
 
     readStream.pipe(res);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(401).send({ error: e.message });
   }
 });
@@ -48,10 +48,7 @@ router.get('/geo', async (req, res) => {
   try {
     const { f_id } = req.query;
 
-    const where = buildFiltersWhere(
-      req.query,
-      ['p."deletedAt" is null', "p.versao = 'current'"],
-    );
+    const where = buildFiltersWhere(req.query, ['p."deletedAt" is null', "p.versao = 'current'"]);
 
     const result = await entity.listProjectsIDs(f_id, where);
 
@@ -63,11 +60,7 @@ router.get('/geo', async (req, res) => {
 
 router.get('/regions', async (req, res) => {
   try {
-    const where = buildFiltersWhere(
-      req.query,
-      ['p."deletedAt" is null', "p.versao = 'current'"],
-      'f_regioes',
-    );
+    const where = buildFiltersWhere(req.query, ['p."deletedAt" is null', "p.versao = 'current'"], 'f_regioes');
 
     const result = await entity.getRegions(where);
 
@@ -78,11 +71,9 @@ router.get('/regions', async (req, res) => {
 });
 
 router.get('/ufs', async (req, res) => {
-
   const { f_regioes } = req.query;
 
   try {
-
     const result = await entity.getUFs({ f_regioes });
 
     res.json(result);
@@ -93,7 +84,6 @@ router.get('/ufs', async (req, res) => {
 
 /* TODO */
 router.get('/timeline', async (req, res) => {
-
   try {
     const result = await entity.getTimeline();
 
@@ -141,14 +131,10 @@ router.get('/:id/atuacoes', async (req, res) => {
   }
 });
 
-
 router.get('/formap/', async (req, res) => {
   const { page, limit } = req.query;
 
-  const where = buildFiltersWhere(
-    req.query,
-    ['p."deletedAt" is null', "p.versao = 'current'"],
-  );
+  const where = buildFiltersWhere(req.query, ['p."deletedAt" is null', "p.versao = 'current'"]);
 
   try {
     const result = await entity.list4Map(where, {
@@ -159,6 +145,22 @@ router.get('/formap/', async (req, res) => {
     res.json(result);
   } catch (ex) {
     sendError(res, ex, 500);
+  }
+});
+
+router.get('/formap/geo', async (req, res) => {
+
+  const { f_id } = req.query;
+
+  try {
+
+    const where = buildFiltersWhere(req.query, ['p."deletedAt" is null', "p.versao = 'current'"]);
+
+    const result = await entity.listProjectsIDs(f_id, where);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
   }
 });
 
@@ -289,7 +291,6 @@ router.delete('/:id', async (req, res) => {
 
 /* TODO */
 router.get('/draft/timeline', async (req, res) => {
-
   try {
     const result = await entity.getDraftTimeline();
 
@@ -355,7 +356,7 @@ router.post('/draft/timeline', upTimelineImage, async (req, res) => {
     } catch (ex) {
       sendError(res, ex, 500);
     }
-  }
+  };
 
   router.put('/:id/draft', upload.fields(FormManager.upFields(form1)), save);
   router.post('/draft', upload.fields(FormManager.upFields(form1)), save);
@@ -378,15 +379,8 @@ router.post('/draft/timeline', upTimelineImage, async (req, res) => {
 
 /* TODO */
 router.get('/', async (req, res) => {
-  const {  } = req.params;
-  const {
-    version,
-    page,
-    order,
-    direction,
-    limit,
-    name,
-  } = req.query;
+  const {} = req.params;
+  const { version, page, order, direction, limit, name } = req.query;
 
   try {
     const result = await entity.list(version, {
@@ -410,6 +404,9 @@ function buildFiltersWhere(filters, where = [], exclude = []) {
   //   whereArray.push(`array[${filters['f_regioes'].split(',').map(r => `'${r}'`)}] && p.regions`);
 
   if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`p.uf::int[] @> array[${filters['f_ufs']}]`);
+
+  if (filters['f_definicao'] && !exclude.includes('f_definicao'))
+    whereArray.push(`p.definicao in (${filters['f_definicao']})`);
 
   /* if (filters['f_instituicao'] && !exclude.includes('f_instituicao'))
     whereArray.push(`p.instituicao_id IN (${filters['f_instituicao']})`); */
