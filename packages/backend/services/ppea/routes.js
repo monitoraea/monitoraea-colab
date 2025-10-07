@@ -62,6 +62,20 @@ router.get('/:id/atuacoes', async (req, res) => {
   }
 });
 
+router.get('/geo', async (req, res) => {
+  try {
+    const { f_id, limit, f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
+
+    let enquads = getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf);
+
+    const result = await entity.listProjectsIDs(f_id, { enquads });
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 /* TODO */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
@@ -435,11 +449,12 @@ router.post('/upload-shp', fileUpload, async (req, res) => {
 });
 
 router.get('/statistics/institutions', async (req, res) => {
+  const { f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
 
-  const { enquads } = req.query;
+  let enquads = getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf);
 
   try {
-    const result = await entity.total_institutions({ enquads: enquads ? enquads.split(',') : null });
+    const result = await entity.total_institutions({ enquads });
 
     res.json(result);
   } catch (ex) {
@@ -448,11 +463,12 @@ router.get('/statistics/institutions', async (req, res) => {
 });
 
 router.get('/statistics/iniciatives', async (req, res) => {
+  const { f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
 
-  const { enquads } = req.query;
+  let enquads = getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf);
 
   try {
-    const result = await entity.total_iniciatives({ enquads: enquads ? enquads.split(',') : null });
+    const result = await entity.total_iniciatives({ enquads });
 
     res.json(result);
   } catch (ex) {
@@ -461,11 +477,12 @@ router.get('/statistics/iniciatives', async (req, res) => {
 });
 
 router.get('/statistics/members', async (req, res) => {
+  const { f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
 
-  const { enquads } = req.query;
+  let enquads = getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf);
 
   try {
-    const result = await entity.total_members({ enquads: enquads ? enquads.split(',') : null });
+    const result = await entity.total_members({ enquads });
 
     res.json(result);
   } catch (ex) {
@@ -500,11 +517,13 @@ router.get('/for_participation/:id', async (req, res) => {
 
 /* TODO */
 router.get('/', async (req, res) => {
-  const { page, limit, enquads } = req.query;
+  const { page, limit, f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf } = req.query;
+
+  let enquads = getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf);
 
   try {
     const result = await entity.list({
-      enquads: enquads ? enquads.split(',') : null,
+      enquads,
       page: page ? parseInt(page) : 1,
       limit: limit && limit !== 'none' ? parseInt(limit) : 6,
     });
@@ -514,5 +533,15 @@ router.get('/', async (req, res) => {
     sendError(res, ex, 500);
   }
 });
+
+function getEnquads(f_ppea_uc, f_ppea_reg, f_ppea_mun, f_ppea_uf) {
+  let enquads = [];
+  if (f_ppea_uf === '1') enquads.push(1);
+  if (f_ppea_mun === '1') enquads.push(2);
+  if (f_ppea_reg === '1') enquads.push(0);
+  if (f_ppea_uc === '1') enquads.push(5);
+
+  return enquads.length ? enquads : null;
+}
 
 module.exports = router;

@@ -839,6 +839,34 @@ class Service {
     return { geojson: simplify(feature, 0.001) };
   }
 
+  async listProjectsIDs(f_id, config) {
+    let where = ['p."deletedAt" is NULL', "p.versao = 'current'"];
+
+    let replacements = {
+      limit: config.limit,
+      offset: config.offset || (config.page - 1) * config.limit,
+    };
+
+    if (config.enquads) {
+      where.push(`instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
+    }
+
+    if (f_id) where = [...where, `p.id = ${f_id}`];
+
+    const query = `
+        select
+            distinct p.politica_id as id
+        from ppea.politicas p
+        ${applyWhere(where)}
+        `;
+
+    const initiatives = await db.instance().query(query, {
+      type: Sequelize.QueryTypes.SELECT,
+    });
+
+    return initiatives.map(p => p.id);
+  }
+
   async list(config) {
     let where = ['p."deletedAt" is NULL', "p.versao = 'current'"];
 
@@ -914,7 +942,7 @@ class Service {
   }
 
   async total_institutions(config) {
-    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
+    let where = ['p."deletedAt" is null', "p.versao='current'"]
 
     if (config.enquads) {
       where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
@@ -936,7 +964,7 @@ class Service {
   }
 
   async total_iniciatives(config) {
-    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
+    let where = ['p."deletedAt" is null', "p.versao='current'"]
 
     if (config.enquads) {
       where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
@@ -958,7 +986,7 @@ class Service {
   }
 
   async total_members(config) {
-    let where = ['p."deletedAt" is null'/* , "p.versao='current'" */]
+    let where = ['p."deletedAt" is null', "p.versao='current'"]
 
     if (config.enquads) {
       where.push(`p.instituicao_enquadramento in (${config.enquads.map(e => parseInt(e)).join(',')})`);
@@ -1027,7 +1055,7 @@ class Service {
                   lt.texto,
                   f.url,
                   f.file_name,
-                  p.id as politica_versao_id, 
+                  p.id as politica_versao_id,
                   p.politica_id as politica_id
               FROM ppea.linhas_do_tempo lt
               left join files f on f.id = lt.timeline_arquivo
