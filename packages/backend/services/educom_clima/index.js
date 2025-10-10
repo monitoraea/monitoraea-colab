@@ -1438,6 +1438,7 @@ class Service {
       p.iniciativa_id,
       p.nome,
       p.regions as regioes,
+      p.definicao,
       count(*) OVER() AS total_count
     from educom_w_region p
     ${where}

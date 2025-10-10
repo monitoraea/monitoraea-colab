@@ -149,11 +149,9 @@ router.get('/formap/', async (req, res) => {
 });
 
 router.get('/formap/geo', async (req, res) => {
-
   const { f_id } = req.query;
 
   try {
-
     const where = buildFiltersWhere(req.query, ['p."deletedAt" is null', "p.versao = 'current'"]);
 
     const result = await entity.listProjectsIDs(f_id, where);
@@ -400,16 +398,32 @@ router.get('/', async (req, res) => {
 function buildFiltersWhere(filters, where = [], exclude = []) {
   let whereArray = [...where];
 
-  // if (filters['f_regioes'] && !exclude.includes('f_regioes'))
-  //   whereArray.push(`array[${filters['f_regioes'].split(',').map(r => `'${r}'`)}] && p.regions`);
 
-  if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`p.uf::int[] @> array[${filters['f_ufs']}]`);
-
-  if (filters['f_definicao'] && !exclude.includes('f_definicao'))
+  if (filters['f_definicao'] && !exclude.includes('f_definicao')) {
     whereArray.push(`p.definicao in (${filters['f_definicao']})`);
+  }
 
-  /* if (filters['f_instituicao'] && !exclude.includes('f_instituicao'))
-    whereArray.push(`p.instituicao_id IN (${filters['f_instituicao']})`); */
+  if (filters['f_ufs'] && !exclude.includes('f_ufs')) {
+    whereArray.push(`p.uf::int[] && array[${filters['f_ufs']}]`);
+  }
+  if (filters['f_faixa_etaria'] && !exclude.includes('f_faixa_etaria')) {
+    whereArray.push(`p.faixa_etaria::int[] && array[${filters['f_faixa_etaria']}]`);
+  }
+  if (filters['f_racas_etnias'] && !exclude.includes('f_racas_etnias')) {
+    whereArray.push(`p.racas_etnias::int[] && array[${filters['f_racas_etnias']}]`);
+  }
+  if (filters['f_participantes_genero'] && !exclude.includes('f_participantes_genero')) {
+    whereArray.push(`p.participantes_genero::int[] && array[${filters['f_participantes_genero']}]`);
+  }
+  if (filters['f_temas'] && !exclude.includes('f_temas')) {
+    whereArray.push(`p.temas::int[] && array[${filters['f_temas']}]`);
+  }
+  if (filters['f_midias'] && !exclude.includes('f_midias')) {
+    whereArray.push(`p.midias::int[] && array[${filters['f_midias']}]`);
+  }
+  if (filters['f_estrategias_educativas'] && !exclude.includes('f_estrategias_educativas')) {
+    whereArray.push(`p.estrategias_educativas::int[] && array[${filters['f_estrategias_educativas']}]`);
+  }
 
   if (filters['f_ids'] && !exclude.includes('f_ids')) {
     whereArray.push(`p.uf::int[] @> array[${filters['f_ids']}]`);
