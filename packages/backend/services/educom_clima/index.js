@@ -1439,6 +1439,7 @@ class Service {
       p.nome,
       p.regions as regioes,
       p.definicao,
+      p.uf,
       count(*) OVER() AS total_count
     from educom_w_region p
     ${where}
