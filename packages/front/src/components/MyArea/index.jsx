@@ -21,11 +21,11 @@ import Arrows from '../../images/mj-v-arrows.png'
 
 const mapPerspective = {
     //key: ['TEXT', 'TOOL URL', 'NETWORK PATH']
-    ppea: ['Políticas Públicas', 'politica', 'rede_ppea'],
-    project: ['Iniciativa', 'projeto', 'rede_zcm'],
-    commission: ['Comissão', 'comissao', 'rede_ciea'],
-    cne: ['Centro', 'cne', 'rede_cne'],
-    iniciativa: ['Iniciativa não governamental', 'iniciativa', 'rede_iniciativas'],
+    ppea: ['Políticas Públicas', 'politica', 'rede_ppea', 'Nova Política Pública de Educação Ambiental (PPEA)'],
+    project: ['Iniciativa', 'projeto', 'rede_zcm', 'Novo Projeto ou Ação cinculados ao PPPZCM'],
+    commission: ['Comissão', 'comissao', 'rede_ciea', 'Nova Instância de Acompanhamento e Controle Social de EA'],
+    cne: ['Centro', 'cne', 'rede_cne', 'Novo Centro de Educação e Cooperação Socioambiental'],
+    iniciativa: ['Iniciativa não governamental', 'iniciativa', 'rede_iniciativas', 'Nova Iniciativa Não Governamental'],
 }
 
 export default function MyArea() {
@@ -323,7 +323,7 @@ function NewInitiativeDialog({ open, type, onCreate, onClose }) {
                 maxWidth="md"
                 fullWidth
             >
-                <DialogTitle id="alert-dialog-title">Nova iniciativa de {mapPerspective[type || 'ppea'][0]}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{mapPerspective[type || 'ppea'][3]}</DialogTitle>
                 <DialogContent>
                     <div className="row">
                         <div className="col-xs-12">
