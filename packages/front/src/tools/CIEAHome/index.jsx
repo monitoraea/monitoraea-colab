@@ -5,10 +5,8 @@ import axios from 'axios';
 /* components */
 import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
-// import InformationsTab_basic from './InformationsTab_basic';
-// import InformationsTab_remove from './InformationsTab_remove';
+import IndicatorsTab from './IndicatorsTab';
 import TimelineTab from './TimelineTab';
-// import MembersTab from './MembersTab';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
 import CheckCircle from '../../components/icons/CheckCircle';
@@ -44,10 +42,12 @@ const Manager = () => {
     refetchOnWindowFocus: false,
   });
 
-  /* const { data: analysis } = useQuery(['project_indics', { project_id: project?.id }], {
-    queryFn: async () => (await axios.get(`${server}project/${project?.id}/verify`)).data,
-    enabled: !!project?.id,
-  }); */
+  const { data: analysis } = useQuery(['ciea_analysis', { id: entity?.id }], {
+    queryFn: async () => (await axios.get(`${server}commission/${entity?.id}/verify`)).data,
+    enabled: !!entity?.id,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 
   const mutation = {
     publish: useMutation(() => axios.put(`${server}commission/${entityId}/publish`)),
@@ -57,7 +57,9 @@ const Manager = () => {
     _isAdmOrMod(
       user.membership
         .map(membership => {
-          return membership.id === 1 || (membership.id === currentCommunity.id && membership.type === 'adm'); /* TODO: analisar aqui e em projetos (depois que criei outros GT ADM) */
+          return (
+            membership.id === 1 || (membership.id === currentCommunity.id && membership.type === 'adm')
+          ); /* TODO: analisar aqui e em projetos (depois que criei outros GT ADM) */
         })
         .reduce((acc, curr) => acc || curr),
     );
@@ -151,7 +153,7 @@ const Manager = () => {
             <Download></Download>
             Baixar CSV
           </button>
-          
+
           {isAdmOrMod && isAdmOrMod === true && (
             <button className="button-primary" onClick={handlePublish}>
               <CheckCircle></CheckCircle>
@@ -160,23 +162,23 @@ const Manager = () => {
           )} */}
         </div>
       </div>
-      {tabindex && (
+      {analysis && tabindex && (
         <>
-          <Tabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} /* analysis={analysis} */ />
+          <Tabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} analysis={analysis} />
           {entityId && (
             <>
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} />}
-              {/* {tabindex === 'informacao_basic' && <InformationsTab_basic entityId={entityId} />} */}
-              {/* {tabindex === 'informacao_remove' && <InformationsTab_remove entityId={entityId} />} */}
+              {tabindex === 'indicadores' && (
+                <IndicatorsTab entityId={entityId} analysis={analysis} problems={analysis.analysis.question_problems} />
+              )}
               {tabindex === 'linha_tempo' && <TimelineTab entityId={entityId} />}
-              {/* {tabindex === 'membros' && <MembersTab entityId={entityId} />} */}
             </>
           )}
         </>
       )}
-      
+
       <Box display="flex" justifyContent="space-between"></Box>
-      
+
       <TermDialog open={showTermDialod} onClose={handleTermConfirmation} />
     </div>
   );
@@ -196,9 +198,7 @@ function TermDialog({ open, onClose }) {
         <DialogTitle id="alert-dialog-title">Termo de Adesão ao PPPZCM</DialogTitle>
         <DialogContent>
           <DialogContent id="alert-dialog-description" className={styles.term}>
-            <p>
-              TODO TODO TODO
-            </p>
+            <p>TODO TODO TODO</p>
           </DialogContent>
         </DialogContent>
         <DialogActions>

@@ -2,6 +2,7 @@ const db = require('../database');
 const Sequelize = require('sequelize');
 
 // const FormManager = require('../../FormsManager')
+const { check } = require('../../form_utils');
 
 const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId, parseBBOX } = require('../../utils');
 
@@ -15,14 +16,13 @@ const s3 = new aws.S3({
 
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-
 });
 
 const { Messagery } = require('dorothy-dna-services');
 
-var fs = require('fs')
-const YAML = require('yaml')
-const lists_file = fs.readFileSync(require.resolve(`../../../../forms/ciea/lists1.yml`), 'utf8')
+var fs = require('fs');
+const YAML = require('yaml');
+const lists_file = fs.readFileSync(require.resolve(`../../../../forms/ciea/lists1.yml`), 'utf8');
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -79,12 +79,13 @@ class Service {
     let entity = result[0];
 
     try {
-      const { lists } = YAML.parse(lists_file)
-      const tipo_coordenacao = lists.find(i => i.key === 'tipo_coordenacao').options.filter(o => o.value !== -1)
+      const { lists } = YAML.parse(lists_file);
+      const tipo_coordenacao = lists.find(i => i.key === 'tipo_coordenacao').options.filter(o => o.value !== -1);
 
       entity.coordenacao_name = tipo_coordenacao.find(tc => tc.value === entity.coordenacao).label;
-
-    } catch (e) { console.log(e) }
+    } catch (e) {
+      console.log(e);
+    }
 
     return entity;
   }
@@ -95,7 +96,7 @@ class Service {
     if (timeline.get('timeline_arquivo')) {
       /* remove file */
       await db.models['File'].destroy({
-        where: { id: timeline.get('timeline_arquivo') }
+        where: { id: timeline.get('timeline_arquivo') },
       });
     }
 
@@ -103,8 +104,8 @@ class Service {
       where: {
         id: tlId,
         comissao_id: id,
-      }
-    })
+      },
+    });
 
     return true;
   }
@@ -130,14 +131,14 @@ class Service {
     );
 
     for (let tl of commissionTLs) {
-      if (!!tl.url) tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'timeline_arquivo', tl.url)}`;
+      if (!!tl.url)
+        tl.timeline_arquivo = `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, 'timeline_arquivo', tl.url)}`;
     }
 
     return commissionTLs;
   }
 
   async saveDraftTimeline(user, entity, timeline_arquivo, id, tlid) {
-
     let entityModel;
     if (!tlid) {
       entityModel = await db.models['Commision_timeline'].create({
@@ -156,7 +157,8 @@ class Service {
     }
 
     if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
-    else if (timeline_arquivo) await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', entityModel.get('comissao_id'));
+    else if (timeline_arquivo)
+      await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', entityModel.get('comissao_id'));
 
     return entityModel;
   }
@@ -214,20 +216,30 @@ class Service {
       },
     );
 
-    let commission = { /* TODO: dá para simplificar com FormManager */
-      ...entity[0],
-      data_criacao: entity[0].data_criacao ? dayjs(`01-01-${entity[0].data_criacao}`, "MM-DD-YYYY") : null,
+    let commission = {
+      /* TODO: dá para simplificar com FormManager */ ...entity[0],
+      data_criacao: entity[0].data_criacao ? dayjs(`01-01-${entity[0].data_criacao}`, 'MM-DD-YYYY') : null,
     };
 
     /* TODO: dá para simplificar com FormManager */
-    for (let document of ['logo', 'documento_criacao', 'regimento_interno', 'ppea', 'ppea2', 'programa_estadual', 'plano_estadual']) {
+    for (let document of [
+      'logo',
+      'documento_criacao',
+      'regimento_interno',
+      'ppea',
+      'ppea2',
+      'programa_estadual',
+      'plano_estadual',
+    ]) {
       if (document !== 'logo') commission[`${document}_tipo`] = null;
 
       if (!!entity[0][`${document}_arquivo`]) {
-        const file_entity = await db.instance().query(
-          `select f.url, f.file_name, f.content_type from files f where f.id = :file_id`,
-          { replacements: { file_id: entity[0][`${document}_arquivo`] }, type: Sequelize.QueryTypes.SELECT }
-        );
+        const file_entity = await db
+          .instance()
+          .query(`select f.url, f.file_name, f.content_type from files f where f.id = :file_id`, {
+            replacements: { file_id: entity[0][`${document}_arquivo`] },
+            type: Sequelize.QueryTypes.SELECT,
+          });
 
         if (file_entity.length) {
           if (document === 'logo' || file_entity[0].content_type !== 'text/uri-list') {
@@ -239,7 +251,8 @@ class Service {
             commission[`${document}_arquivo`] = file_entity[0].file_name;
           }
 
-          if (document !== 'logo') commission[`${document}_tipo`] = file_entity[0].content_type === 'text/uri-list' ? 'link' : 'file';
+          if (document !== 'logo')
+            commission[`${document}_tipo`] = file_entity[0].content_type === 'text/uri-list' ? 'link' : 'file';
         }
       }
     }
@@ -248,23 +261,24 @@ class Service {
   }
 
   async saveDraft(user, form, entity, files, id) {
+    await db.models['Commission'].update(
+      {
+        ...entity,
 
-    await db.models['Commission'].update({
-      ...entity,
+        logo_arquivo: undefined /* TODO: files/thumbnail except those in link_or_file */,
 
-      logo_arquivo: undefined, /* TODO: files/thumbnail except those in link_or_file */
-
-      /* TODO: files in link_or_file */ /* ENTENDER!!!!!!! */
-      documento_criacao_arquivo: entity.documento_criacao_tipo === null ? null : undefined,
-      regimento_interno_arquivo: entity.regimento_interno_tipo === null ? null : undefined,
-      ppea_arquivo: entity.ppea_tipo === null ? null : undefined,
-      ppea2_arquivo: entity.ppea2_tipo === null ? null : undefined,
-      programa_estadual_arquivo: entity.programa_estadual_tipo === null ? null : undefined,
-      plano_estadual_arquivo: entity.plano_estadual_tipo === null ? null : undefined,
-
-    }, {
-      where: { id }
-    });
+        /* TODO: files in link_or_file */ /* ENTENDER!!!!!!! */
+        documento_criacao_arquivo: entity.documento_criacao_tipo === null ? null : undefined,
+        regimento_interno_arquivo: entity.regimento_interno_tipo === null ? null : undefined,
+        ppea_arquivo: entity.ppea_tipo === null ? null : undefined,
+        ppea2_arquivo: entity.ppea2_tipo === null ? null : undefined,
+        programa_estadual_arquivo: entity.programa_estadual_tipo === null ? null : undefined,
+        plano_estadual_arquivo: entity.plano_estadual_tipo === null ? null : undefined,
+      },
+      {
+        where: { id },
+      },
+    );
 
     const entityModel = await db.models['Commission'].findByPk(id);
 
@@ -272,23 +286,43 @@ class Service {
     if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
     else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
 
-    files = { /* TODO: recuperar em form - nem precisa existir, pode ser resolvido abaixo */
+    files = {
+      /* TODO: recuperar em form - nem precisa existir, pode ser resolvido abaixo */
       logo_arquivo: files.logo_arquivo && files.logo_arquivo.length ? files.logo_arquivo[0] : null,
-      documento_criacao_arquivo: files.documento_criacao_arquivo && files.documento_criacao_arquivo.length ? files.documento_criacao_arquivo[0] : null,
-      regimento_interno_arquivo: files.regimento_interno_arquivo && files.regimento_interno_arquivo.length ? files.regimento_interno_arquivo[0] : null,
+      documento_criacao_arquivo:
+        files.documento_criacao_arquivo && files.documento_criacao_arquivo.length
+          ? files.documento_criacao_arquivo[0]
+          : null,
+      regimento_interno_arquivo:
+        files.regimento_interno_arquivo && files.regimento_interno_arquivo.length
+          ? files.regimento_interno_arquivo[0]
+          : null,
       ppea_arquivo: files.ppea_arquivo && files.ppea_arquivo.length ? files.ppea_arquivo[0] : null,
       ppea2_arquivo: files.ppea2_arquivo && files.ppea2_arquivo.length ? files.ppea2_arquivo[0] : null,
-      programa_estadual_arquivo: files.programa_estadual_arquivo && files.programa_estadual_arquivo.length ? files.programa_estadual_arquivo[0] : null,
-      plano_estadual_arquivo: files.plano_estadual_arquivo && files.plano_estadual_arquivo.length ? files.plano_estadual_arquivo[0] : null,
-    }
+      programa_estadual_arquivo:
+        files.programa_estadual_arquivo && files.programa_estadual_arquivo.length
+          ? files.programa_estadual_arquivo[0]
+          : null,
+      plano_estadual_arquivo:
+        files.plano_estadual_arquivo && files.plano_estadual_arquivo.length ? files.plano_estadual_arquivo[0] : null,
+    };
 
     // !!!!! form.link_or_file_fields <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form
     /* TODO: GENERALIZAR: recuperar em form.yml - updateFile deveria ser único (util?) */
-    for (let wFile of ['documento_criacao', 'regimento_interno', 'ppea', 'ppea2', 'programa_estadual', 'plano_estadual']) {
-      if (entity[`${wFile}_tipo`] === 'link') await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
+    for (let wFile of [
+      'documento_criacao',
+      'regimento_interno',
+      'ppea',
+      'ppea2',
+      'programa_estadual',
+      'plano_estadual',
+    ]) {
+      if (entity[`${wFile}_tipo`] === 'link')
+        await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
       else if (entity[`${wFile}_tipo`] === 'file') {
         if (entity[`${wFile}_arquivo2`] === 'remove') await this.removeFile(entityModel, `${wFile}_arquivo`);
-        else if (files[`${wFile}_arquivo`]) await this.updateFile(entityModel, files[`${wFile}_arquivo`], `${wFile}_arquivo`);
+        else if (files[`${wFile}_arquivo`])
+          await this.updateFile(entityModel, files[`${wFile}_arquivo`], `${wFile}_arquivo`);
       }
     }
 
@@ -344,7 +378,6 @@ class Service {
   }
 
   async removeFile(entityModel, fieldName) {
-
     let fileId = entityModel.get(fieldName);
     entityModel.set(fieldName, null);
 
@@ -352,7 +385,7 @@ class Service {
 
     /* remove file */
     db.models['File'].destroy({
-      where: { id: fileId }
+      where: { id: fileId },
     });
 
     /* TODO: remove from S3? */
@@ -360,14 +393,21 @@ class Service {
 
   async updateFile(entityModel, file, fieldName, entityId) {
     // S3
-    await s3.putObject({
-      Bucket: s3BucketName,
-      Key: this.getFileKey(entityId || entityModel.get('id'), fieldName, file.originalname),
-      Body: file.buffer,
-      ACL: 'public-read',
-    }).promise()
+    await s3
+      .putObject({
+        Bucket: s3BucketName,
+        Key: this.getFileKey(entityId || entityModel.get('id'), fieldName, file.originalname),
+        Body: file.buffer,
+        ACL: 'public-read',
+      })
+      .promise();
 
-    await this.updateFileModel(entityModel, fieldName, file.originalname, file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`)
+    await this.updateFileModel(
+      entityModel,
+      fieldName,
+      file.originalname,
+      file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`,
+    );
   }
 
   async updateFileModel(entityModel, fieldName, file_name, content_type) {
@@ -377,7 +417,6 @@ class Service {
     }
 
     if (!!fileModel) {
-
       fileModel.file_name = file_name;
       fileModel.url = file_name;
       fileModel.document_type = `ciea_${fieldName}`;
@@ -399,7 +438,8 @@ class Service {
   }
 
   async getListForUser(user) {
-    const commissions = await db.instance().query(`
+    const commissions = await db.instance().query(
+      `
     with commissions as (
       select
         c.id,
@@ -640,20 +680,20 @@ class Service {
       email,
       message,
       isADM: !hasMembers,
-    }
+    };
 
     await Messagery.sendNotification({ id: 0 }, room, {
       content,
       userId: 0,
       tool: {
-        type: "native",
-        element: "NewContactFromSite"
+        type: 'native',
+        element: 'NewContactFromSite',
       },
     });
 
     return {
       success: true,
-    }
+    };
   }
 
   async enterInInitiative(user) {
@@ -675,7 +715,7 @@ class Service {
     await require('../gt').addMember(community_id, user.id, 'member', 99);
 
     /* retorna id da comunidade */
-    return { communityId: community_id }
+    return { communityId: community_id };
   }
 
   async getGeo(id) {
@@ -773,7 +813,6 @@ class Service {
           id: ciea,
         },
       });
-
     }
 
     // TODO: remove community and members
@@ -827,6 +866,214 @@ class Service {
       return 603;
     }
   }
+
+  async getDraftIndic(form, indic_name, id) {
+    const entity = await db.instance().query(
+      `
+      SELECT
+        indicadores as indicadores
+      FROM ciea.comissoes p
+      WHERE p.id = :id
+      AND versao = 'draft'
+      AND "deletedAt" is null
+        `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    let indicator = entity[0].indicadores?.[indic_name];
+
+    // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
+    for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
+      // console.log({ indicator, key: f.key })
+
+      if (indicator?.[f.key]) {
+        // recupera o arquivo
+        const fileModel = await db.models['File'].findByPk(indicator[f.key]);
+        // substitui o conteudo no campo
+        indicator[f.key] = {
+          url: `${process.env.S3_CONTENT_URL}/${this.getFileKey_i(id, 'ciea', f.key, fileModel.get('url'))}`,
+          file: { name: fileModel.get('file_name') },
+        };
+      }
+    }
+
+    return indicator || {};
+  }
+
+  async saveDraftIndic(user, form, indic_name, entity, files, id) {
+    const iniciativa = await db.models['Commission'].findOne(
+      { where: { id, versao: 'draft' } },
+      {
+        raw: true,
+        nest: true,
+      },
+    );
+    const model = iniciativa.get({ plain: true });
+
+    for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
+      console.log(f.key, entity[f.key] === 'remove', files[f.key], model.indicadores[indic_name]?.[f.key]);
+    }
+
+    // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
+    for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
+      if (entity[f.key] === 'remove') await this.removeFile_i(entity, f.key, model.indicadores[indic_name]?.[f.key]);
+      else if (files[f.key])
+        await this.updateFile_i(
+          id,
+          entity,
+          files[f.key][0],
+          f.key,
+          `ciea_indic_${f.key}`,
+          model.indicadores[indic_name]?.[f.key],
+        );
+      else entity[f.key] = model.indicadores[indic_name]?.[f.key];
+    }
+
+    // gravar JSON em indics na posicao certa (indic_name)
+    await db.models['Commission'].update(
+      { ...model, indicadores: { ...model.indicadores, [indic_name]: entity } },
+      {
+        where: { id: model.id },
+      },
+    );
+
+    // console.log('>>>>>>>>', { ...model, indicadores: {...model.indicadores, [indic_name]: entity }})
+
+    return entity;
+  }
+
+  async getDraftInfo(id) {
+    const entity = await db.instance().query(
+      `
+      SELECT
+
+        -- more fields
+
+        indicadores,
+        ("createdAt" = "updatedAt") as is_new
+      FROM ciea.comissoes p
+      WHERE id = :id
+      AND versao = 'draft'
+        `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    let iniciative = entity[0];
+
+    return iniciative;
+  }
+
+  async verify(id, form, indic_forms) {
+    // get data
+    const data = await this.getDraftInfo(id);
+
+    if (!data) return null;
+
+    let conclusion = { ready: true };
+
+    let analysis = {
+      dims: {},
+      indics: {},
+      question_problems: [],
+      is_new: data.is_new,
+    };
+
+    // check INDICATORES
+    for (let dbKey of Object.keys(indic_forms)) {
+      const dim = dbKey.split('_')[0]; /* DIM */
+
+      analysis.indics[dbKey] = {
+        ready: true,
+      };
+      analysis.dims[dim] = { ready: true };
+
+      const itemData = data.indicadores?.[dbKey];
+      const { is_form_valid, fields } = check(indic_forms[dbKey], itemData);
+
+      if (!is_form_valid) {
+        analysis.indics[dbKey].ready = false;
+        analysis.dims[dim].ready = false;
+        conclusion.ready = false;
+        for (let f_key of Object.keys(fields)) if (!fields[f_key]) analysis.question_problems.push(`${dbKey}_${f_key}`);
+      }
+    }
+
+    return {
+      ready: conclusion.ready,
+      analysis,
+    };
+  }
+
+  /* *********************** GENERALIZAR.Begin */ /* TODO */
+  async removeFile_i(entity, fieldName, fileId) {
+    entity[fieldName] = null;
+
+    /* remove file */
+    db.models['File'].destroy({
+      where: { id: fileId },
+    });
+
+    /* TODO: remove from S3? */
+
+    return entity;
+  }
+
+  async updateFile_i(id, entity, file, fieldName, document_type, existingFileId) {
+    // S3
+    await s3
+      .putObject({
+        Bucket: s3BucketName,
+        Key: this.getFileKey_i(id, 'ciea', fieldName, file.originalname),
+        Body: file.buffer,
+        ACL: 'public-read',
+      })
+      .promise();
+
+    await this.updateFileModel_i(
+      entity,
+      fieldName,
+      file.originalname,
+      file.originalname.includes('.pdf') ? `application/pdf` : `image/jpeg`,
+      document_type,
+      existingFileId,
+    );
+  }
+
+  async updateFileModel_i(entity, fieldName, file_name, content_type, document_type, existingFileId) {
+    let fileModel;
+    if (existingFileId) fileModel = await db.models['File'].findByPk(existingFileId);
+
+    if (!!fileModel) {
+      fileModel.file_name = file_name;
+      fileModel.url = file_name;
+      fileModel.document_type = document_type;
+      fileModel.content_type = content_type;
+
+      fileModel.save();
+    } else {
+      const fileModel = await db.models['File'].create({
+        file_name,
+        url: file_name,
+        document_type: document_type,
+        content_type,
+      });
+
+      entity[fieldName] = fileModel.id;
+    }
+  }
+
+  getFileKey_i(id, main_folder, folder, filename) {
+    const segmentedId = getSegmentedId(id);
+
+    return `${main_folder}/${segmentedId}/${folder}/original/${filename}`;
+  }
+  /* *********************** GENERALIZAR.End */
 }
 
 const singletonInstance = new Service();

@@ -89,6 +89,9 @@ module.exports = (sequelize, DataTypes) => {
       plano_estadual_lei: {
         type: DataTypes.STRING,
       },
+      indicadores: {
+        type: DataTypes.JSONB,
+      },
     },
     {
       tableName: 'comissoes',
@@ -119,7 +122,7 @@ module.exports = (sequelize, DataTypes) => {
     Commission.belongsTo(models["File"], {
       foreignKey: "plano_estadual_arquivo",
     })
-    
+
   }
 
   return Commission;
