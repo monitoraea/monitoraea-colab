@@ -1,0 +1,100 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Houve compromissos firmados entre o colegiado e setores e/ou instituições diversas para o desenvolvimento de ações conjuntas nos últimos 2 anos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: Quantos compromissos firmados com outros setores foram estabelecidos a partir das ações de articulação deste Colegiado nos últimos 2 anos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Até 05 compromissos firmados
+      - value: 2
+        label: Entre 6 a 10 compromissos firmados
+      - value: 3
+        label: Acima de 10 compromissos firmados
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: options
+    title: Os compromissos firmados foram documentados nos últimos 2 anos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 3 for for Não = 0
+        key: 3
+        value: 0
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: options
+    title: Como os compromissos foram registrados?
+    options:
+      - value: 0
+        label: Em acordos, termos de cooperação, protocolos formais
+      - value: 1
+        label: Contratos de parceria
+      - value: 2
+        label: Registrados por correspondência eletrônica como e-mail e troca de ofício
+      - value: 3
+        label: Outros
+    show:
+      target: # o texto só aparece se a resposta key 3 for Sim = 1
+        key: 3
+        value: 1
+    validation: not-empty
+
+  - key: 6
+    block: dependent
+    type: textarea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 3 for for Sim = 1
+        key: 3
+        value: 1
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

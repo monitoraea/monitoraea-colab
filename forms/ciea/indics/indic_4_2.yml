@@ -1,0 +1,94 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O colegiado tem estratégias para identificar as percepções de seus membros quanto aos sentimentos de pertencimento, satisfação e respeito na expressão de suas ideias  sem preconceitos e discriminação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais são as estratégicas para averiguar as percepções indicadas nos membros do colegiado?
+    options:
+      - value: 1
+        label: Aplicação de questionário
+      - value: 2
+        label: Realização de entrevista
+      - value: 3
+        label: Oficinas e Rodas de Conversa
+      - value: 4
+        label: Outra
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: at_least_one
+
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Explique
+    show:
+      target: # o texto só aparece se a resposta key 2 for for Sim = 1
+        key: 2
+        value: 1
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: options
+    title: Quais os resultados obtidos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Mais de 90% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação
+      - value: 2
+        label: Entre 90% a 75% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação
+      - value: 3
+        label: Entre 75% a 50% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação
+      - value: 4
+        label: Entre 50% a 25% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação
+      - value: 5
+        label: Menos de 25% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação
+    show:
+      target: # o texto só aparece se a resposta key 2 for Sim = 1
+        key: 2
+        value: 1
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: options
+    title: Qual a frequência da realização deste diagnóstico sobre as percepções?
+    options:
+      - value: -1
+        label: Anual
+      - value: 0
+        label: Buanual
+      - value: 1
+        label: Quadrianual
+    show:
+      target: # o texto só aparece se a resposta key 2 for Sim = 1
+        key: 2
+        value: 1
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

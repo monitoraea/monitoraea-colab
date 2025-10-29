@@ -1,0 +1,105 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O colegiado atuou para ampliar a participação da sociedade nos processos de políticas públicas de EA nos últimos 2 anos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais ações o Colegiado realizou/coordenou para possibilitar a participação social nos processos das políticas públicas de EA?
+    options:
+      - value: 1
+        label: Audiências públicas com ampla participação cidadã
+      - value: 2
+        label: Consultas públicas em plataformas digitais sobre políticas de EA
+      - value: 3
+        label: Oficinas, reuniões, grupos de trabalho, para informar, dialogar, ouvir e acolher propostas da sociedade de modo amplo
+      - value: 4
+        label: Outras
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: at_least_one
+
+  - key: 3
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 2 for Sim = 3
+        key: 2
+        value: 3
+
+  - key: 4
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório.
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: multi_autocomplete
+    title: As ações de ampliação da participação da sociedade nos processos de políticas públicas de EA promovidas/coordenadas pelo colegiado, contemplou algum dos grupos sociais?
+    options:
+      - value: 0
+        label: Povos e Comunidades Tradicionais
+      - value: 1
+        label: Movimentos Populares e Urbanos
+      - value: 2
+        label: Grupos Vulnerabilizados e Minorizados
+      - value: 3
+        label: Juventudes e Crianças
+      - value: 4
+        label: Pessoas Idosas
+      - value: 5
+        label: Trabalhadores e sindicatos
+      - value: 6
+        label: Mulheres e Movimentos Feministas
+      - value: 7
+        label: População negra e Grupos de combate ao racismo
+      - value: 8
+        label: Grupos ambientalistas e de justiça socioambiental e climátiva
+      - value: 9
+        label: Migrantes e Refugiados
+      - value: 10
+        label: Outro
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: at_least_one
+
+  - key: 6
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 5 for Outro = 10
+        key: 5
+        value: 10
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

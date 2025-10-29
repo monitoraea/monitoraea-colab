@@ -1,0 +1,99 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O colegiado possui um acordo de convivência construído de forma participativa e dialógica que reconhece a importância de uma metodologia de organização interna?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: O acordo de convivência prevê alguma atividade específica de acolhimento e cuidado para quem chega e/ou para quem sai do colegiado?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Quais? Explique
+    show:
+      target: # o texto só aparece se a resposta key 2 for for Sim = 1
+        key: 2
+        value: 1
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: options
+    title: O acordo de convivência prevê tempo e espaço em suas reuniões e atividades para que sejam feitas reflexões, compartilhamentos e construção coletiva de sentidos do colegiado?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: textarea
+    title: Como? Explique
+    show:
+      target: # o texto só aparece se a resposta key 4 for for Sim = 1
+        key: 4
+        value: 1
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: multi_autocomplete
+    title: Como são construídos coletivamente os sentidos do colegiado?
+    options:
+      - value: 1
+        label: Reflexão do grupo sobre a própria dinâmica de suas reuniões
+      - value: 2
+        label: Compartilhar dúvidas sobre o funcionamento do Colegiado
+      - value: 3
+        label: Compartilhar conceitos, questões e problemáticas
+      - value: 4
+        label: Construção coletiva de sentidos sobre os seus propósitos, sonhos e desafios
+    show:
+      target: # o texto só aparece se a resposta key 4 for Sim = 1
+        key: 4
+        value: 1
+    validation: at_least_one
+
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

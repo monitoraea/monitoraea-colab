@@ -1,0 +1,44 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O poder público /  governo demonstrou compromisso com as pautas propostas pelo colegiado?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: Quais foram os compromissos assumidos pelo governo/poder público a partir das pautas/reivindicações do colegiado?
+    options:
+      - value: 1
+        label: Respondeu formalmente às pautas, reivindicações, propostas e intervenções realizadas pelo colegiado
+      - value: 2
+        label: Realizou reuniões com o colegiado para negociação de suas pautas e reivindicações
+      - value: 3
+        label: Atuou positivamente para criar ou revisar normativas (leis, decretos, portarias, etc), programas e outros para contemplar as recomendações do colegiado
+      - value: 4
+        label: Realizou ações para contribuir no fortalecimento do colegiado e políticas públicas de EA acompanhadas pelo mesmo
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: at_least_one
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

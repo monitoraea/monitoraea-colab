@@ -1,0 +1,73 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: Existem mecanismos ou instrumentos de apoio financeiro e logístico para deslocamento, hospedagem e alimentação que garanta a participação dos membros nas atividades do colegiado?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: A quem é destinado o apoio financeiro e logístico para deslocamento, hospedagem e alimentação que garanta a participação dos membros nas atividades do Colegiado?
+    options:
+      - value: 1
+        label: Totalidade dos membros do colegiado
+      - value: 2
+        label: Apenas para membros da sociedade civil
+      - value: 3
+        label: Apenas para membros de grupos vulneráveis da sociedade civil
+      - value: 4
+        label: Apenas para quem solicita apoio
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: at_least_one
+
+  - key: 3
+    block: dependent
+    type: multi_autocomplete
+    title: Quais são os mecanismos existentes para o custeio destas atividades?
+    options:
+      - value: 0
+        label: O colegiado está previsto nominalmente no Plano Plurianual (PPA) e nas Leis Orçamentárias Anuais (LOAs) do órgão gestor da política pública correspondente à qual o colegiado está vinculado, sendo possível acessar os recursos necessários de acordo com o planejamento do Colegiado
+      - value: 1
+        label: O colegiado está incluído indiretamente no orçamento em ações, projetos e/ou programas específicos do órgão gestor da política pública correspondente no PPA e LOA, sem destinação exclusiva ao colegiado, mas, obtendo recursos de apoio quando necessário
+      - value: 2
+        label: O colegiado acessa recursos obtidos por meio de projetos pontuais elaborados esporadicamente pelo órgão gestor ou por alguma outra organização membro para suprir demandas específicas do colegiado
+      - value: 3
+        label: A coordenação do colegiado estimula que seus membros busquem recursos em suas próprias organizações para efetivar a participação de cada um, assumindo que não existe outra forma
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: at_least_one
+
+  - key: 4
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

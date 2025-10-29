@@ -1,0 +1,85 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O Colegiado está institucionalizado por meio de alguma normativa (lei, decreto, resolução, portaria, etc.)?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"  #Vínculo com campo  na aba "cadastro"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: Na normativa que institucionaliza o Colegiado,  ou em alguma outra normativa complementar, está definido o papel do colegiado em realizar  recomendações e diretrizes gerais para políticas públicas de EA correspondente a sua esfera de atuação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 2 for Não = 0
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: options
+    title: Como estão definidas estas relações do colegiado com as políticas públicas de EA correspondente a sua esfera de atuação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Participação obrigatória para propor recomendações e diretrizes gerais para políticas públicas de EA correspondente a sua esfera de atuação
+      - value: 2
+        label: Participação ocasional para propor recomendações e diretrizes gerais para políticas públicas de EA correspondente a sua esfera de atuação
+      - value: 3
+        label: Informalmente envolvido para opinar sobre políticas públicas de EA correspondente a sua esfera de atuação
+    show:
+      target: # o texto só aparece se a resposta key 2 for Sim = 1
+        key: 1
+        value: 1
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 5
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório
+    show:
+      target: # o texto só aparece se a resposta key 2 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

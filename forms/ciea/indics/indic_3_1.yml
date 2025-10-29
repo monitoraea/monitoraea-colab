@@ -1,0 +1,159 @@
+fields:
+  - key: 1 
+    block: main
+    type: options
+    title: O colegiado tem estratégias para enraizar e ampliar a capilaridade da EA nos territórios de sua abrangência?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"  
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: O Colegiado dedica-se a planejar, coordenar e pautar processos de formação de formadores, de articuladores, enraizadores ou lideranças territoriais com objetivos de enraizar os princípios da EA, articular e expandir ações, projetos e políticas públicas de EA nos territórios de sua abrangência?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"  
+    show: 
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Comente.
+    show: 
+      target: # o texto só aparece se a resposta key 2 for Não = 0
+        key: 2
+        value: 0
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: textarea
+    title: Especifique.
+    show: 
+      target: # o texto só aparece se a resposta key 2 for Sim = 1
+        key: 2
+        value: 1
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: textarea
+    title: Quantas pessoas foram formadas nos últimos 2 anos a partir do planejamento e coordenação do colegiado (Inserir dado numérico)?
+    show: 
+      target: # o texto só aparece se a resposta key 2 for Sim = 1
+        key: 2
+        value: 1
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: textarea
+    title: Comente.
+    show: 
+      target: # o texto só aparece se a resposta key 2 for Sim = 1
+        key: 2
+        value: 1
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório.
+    show: 
+      target: # o texto só aparece se a resposta key 2 for Sim = 1
+        key: 2
+        value: 1
+    validation: not_empty
+
+  - key: 8
+    block: dependent
+    type: options
+    title: O Colegiado articula com Redes de EA, Coletivos e Movimentos Socioambientais para atuarem de forma sinérgica e cooperativa com objetivo de ampliar e potencializar as ações nos territórios?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"  
+    show: 
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 9
+    block: dependent
+    type: textarea
+    title: Comente.
+    show: 
+      target: # o texto só aparece se a resposta key 8 for Não = 0
+        key: 8
+        value: 0
+    validation: not_empty
+
+  - key: 10
+    block: dependent
+    type: textarea
+    title: Especifique.
+    show: 
+      target: # o texto só aparece se a resposta key 8 for Sim = 1
+        key: 8
+        value: 1
+    validation: not_empty
+
+  - key: 11
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório.
+    show: 
+      target: # o texto só aparece se a resposta key 8 for Sim = 1
+        key: 8
+        value: 1
+    validation: not_empty
+
+  - key: 12
+    block: dependent
+    type: textarea
+    title: Quantas redes de EA foram articuladas pelo Colegiado em seu território de abrangência (Inserir dado numérico)?
+    show: 
+      target: # o texto só aparece se a resposta key 8 for Sim = 1
+        key: 8
+        value: 1
+    validation: not_empty
+
+  - key: 13
+    block: dependent
+    type: textarea
+    title: Quais (Abrir exatamente o número de linhas indicada no dado numérico)?
+    show: 
+      target: # o texto só aparece se a resposta key 8 for Sim = 1
+        key: 8
+        value: 1
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

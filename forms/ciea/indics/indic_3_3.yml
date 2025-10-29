@@ -1,0 +1,130 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O Colegiado promove processos de articulação entre setores para influenciar em políticas públicas socioambientais, assim como nas próprias políticas de educação Ambiental?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: Sem contar as instituições membros do próprio Colegiado, quantos setores ou instituições foram envolvidas na agenda do colegiado nos últimos 2 anos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: 1 setor
+      - value: 2
+        label: 2 setores
+      - value: 3
+        label: 3 setores
+      - value: 4
+        label: 4 setores
+      - value: 5
+        label: 5 setores
+      - value: 6
+        label: 6 setores
+      - value: 7
+        label: 7 setores
+      - value: 8
+        label: mais de 8 setores
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: multi_autocomplete
+    title: O colegiado envolveu em sua articulação, nos últimos 2 anos
+    options:
+      - value: 1
+        label: Atores
+      - value: 2
+        label: Temas
+      - value: 3
+        label: Políticas
+      - value: 4
+        label: Territórios
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: at_least_one
+
+  - key: 4
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 1 for for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: options
+    title: Houve a criação de grupos de trabalho intersetoriais para fortalecer a articulação e intersetorialidade?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 5 for Não = 0
+        key: 5
+        value: 0
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: textarea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 5 for Sim = 1
+        key: 5
+        value: 1
+    validation: not_empty
+
+  - key: 8
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório.
+    show:
+      target: # o texto só aparece se a resposta key 5 for Sim = 1
+        key: 5
+        value: 1
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

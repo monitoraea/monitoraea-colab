@@ -1,0 +1,52 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O colegiado realiza monitoramento e avaliação de sua própria atuação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: Como o monitoramento e avaliação é realizado pelo colegiado?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Possui um Plano de Monitoramento e Avaliação, com metas e indicadores
+      - value: 2
+        label: Avalia quando surge alguma oportunidade ou esporadicamente
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório.
+    show:
+      target: # o texto só aparece se a resposta key 2 for 0
+        key: 2
+        value: 0
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

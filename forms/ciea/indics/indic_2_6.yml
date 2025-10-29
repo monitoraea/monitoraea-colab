@@ -1,0 +1,129 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O colegiado, enquanto uma instância de acompanhamento e controle social, toma decisões no âmbito das políticas públicas de educação ambiental de sua competência?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: textarea
+    title: Quais foram os temas/assuntos das decisões tomadas pelo colegiado nos últimos 2 anos (comente)?
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: options
+    title: As decisões do colegiado são qualificadas?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 3 for Não = 0
+        key: 3
+        value: 0
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: multi_autocomplete
+    title: Baseadas em quais processos?
+    options:
+      - value: 1
+        label: Baseada em estudos e evidências, a partir de dados, diagnósticos, pesquisas e experiências concretas para embasar as decisões
+      - value: 2
+        label: Por escuta ativa e diálogo social, incorporando diferentes vozes e saberes através de rodas de escuta e espaços de diálogo
+      - value: 3
+        label: Com participação representativa e diversa, garantindo a presença de diferentes setores, territórios e identidades para decisões mais justas
+      - value: 4
+        label: Com mediação e construção de consensos, utilizando facilitação e mediação para construir acordos coletivos e evitar imposições
+      - value: 5
+        label: Com monitoramento e avaliação participativa.  permitindo revisar e aprimorar decisões com base em avaliações contínuas e colaborativas
+    show:
+      target: # o texto só aparece se a resposta key 3 for Sim = 1
+        key: 3
+        value: 1
+    validation: at_least_one
+
+  - key: 6
+    block: dependent
+    type: options
+    title: As tomadas de decisão/deliberações do colegiado foram concretizadas?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 6 for Não = 0
+        key: 6
+        value: 0
+    validation: not_empty
+
+  - key: 8
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 6 for Sim = 1
+        key: 6
+        value: 1
+
+  - key: 9
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório.
+    show:
+      target: # o texto só aparece se a resposta key 6 for Sim = 1
+        key: 6
+        value: 1
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

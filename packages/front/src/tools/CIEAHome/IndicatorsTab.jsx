@@ -94,12 +94,12 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {/* hook
     const handleNavigation = (childId, rootId) => () => {
         _originalEntity({})
         _navBranch(rootId);
-        if (!changed) changeRoute({ params: ['indicadores_novos', childId] });
+        if (!changed) changeRoute({ params: ['indicadores', childId] });
         else _toNavigate(childId);
     };
 
     const handleConfirmation = async action => {
-        if (action === 'confirm') changeRoute({ params: ['indicadores_novos', toNavigate] });
+        if (action === 'confirm') changeRoute({ params: ['indicadores', toNavigate] });
 
         _toNavigate(null);
     };

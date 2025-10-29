@@ -1,0 +1,213 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O colegiado promove a transparência sobre sua atuação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: O Colegiado tem canais de comunicação e informação específicos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 1 for Não = 0
+        key: 1
+        value: 0
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: textarea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: multi_autocomplete
+    title: Quais são os seus canais de comunicação?
+    options:
+      - value: 1
+        label: Site
+      - value: 2
+        label: Rede Social
+      - value: 3
+        label: Grupo de whatsapp (ou similar)
+      - value: 4
+        label: Email institucional
+      - value: 5
+        label: Outro
+    show:
+      target: # o texto só aparece se a resposta key 2 for Sim = 1
+        key: 2
+        value: 1
+    validation: at_least_one
+
+  - key: 6
+    block: dependent
+    type: TextArea
+    title: Indique o endereço.
+    show:
+      target: # o texto só aparece se a resposta key 5 for Site = 0
+        key: 5
+        value: 1
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: TextArea
+    title: Indique o endereço.
+    show:
+      target: # o texto só aparece se a resposta key 5 for Rede Social = 1
+        key: 5
+        value: 1
+    validation: not_empty
+
+  - key: 8
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 5 for Outro = 4
+        key: 5
+        value: 4
+
+  - key: 9
+    block: dependent
+    type: options
+    title: São disponibilizadas / publicadas informações sobre o funcionamento (atas, relatórios, etc.) e resultados do Colegiado em site próprio ou do órgão público correspondente à política de EA?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 10
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 9 for Não = 0
+        key: 9
+        value: 0
+    validation: not_empty
+
+  - key: 11
+    block: dependent
+    type: textarea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 9 for Sim = 1
+        key: 9
+        value: 1
+    validation: not_empty
+
+  - key: 12
+    block: dependent
+    type: TextArea
+    title: Indique o endereço.
+    show:
+      target: # o texto só aparece se a resposta key 9 for Sim = 1
+        key: 9
+        value: 1
+    validation: not_empty
+
+  - key: 13
+    block: dependent
+    type: options
+    title: Existem estratégias para a preservação da história dos processos de criação e desenvolvimento das ações do colegiado, incluindo as atas, relatórios e outros documentos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 14
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 13 for Não = 0
+        key: 13
+        value: 0
+    validation: not_empty
+
+  - key: 15
+    block: dependent
+    type: textarea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 13 for Sim = 1
+        key: 13
+        value: 1
+    validation: not_empty
+
+  - key: 16
+    block: dependent
+    type: multi_autocomplete
+    title: De que forma a história do colegiado é preservada
+    options:
+      - value: 1
+        label: Arquivada em drives compartilhados com todos os membros do Colegiado
+      - value: 2
+        label: Documentos e publicações
+      - value: 3
+        label: Disponível em site público governamental ou do próprio colegiado
+    show:
+      target: # o texto só aparece se a resposta key 13 for Sim = 1
+        key: 13
+        value: 1
+    validation: at_least_one
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

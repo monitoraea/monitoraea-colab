@@ -1,0 +1,35 @@
+fields:
+  - key: 1 
+    block: main
+    type: options
+    title: O Colegiado elaborou documentos, recomendações ou pareceres para influenciar a formulação, implementação e/ou tomada de decisão sobre alguma política pública nos últimos 2 anos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"  
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: textarea
+    title: Qual (Comente (Insira um novo campo por publicação gerada))?
+    show: 
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

@@ -1,0 +1,341 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O colegiado promove mecanismos e medidas para combater o racismo ambiental e injustiças socioambientais e climáticas?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: multi_autocomplete
+    title: A partir de quais mecanismos?
+    options:
+      - value: 1
+        label: Denúncias podem ser feitas por E-mail e/ou Telefone divulgado no âmbito do Colegiado
+      - value: 2
+        label: Denúncias podem ser feitas de forma anônima via Formulário online divulgado no âmbito do Colegiado
+      - value: 3
+        label: Foi criada um tipo de Ouvidoria, formada por um grupo de membros do Colegiado, que faz a escuta acolhedora das denúncias e dá encaminhamentos
+      - value: 4
+        label: Existe um Grupo de Trabalho do Colegiado dedicado ao monitoramento do racismo ambiental e injustiças socioambientais internas ao Colegiado e nos espaços das políticas públicas de EA de sua competência
+      - value: 5
+        label: São divulgados relatórios periódicos sobre as denúncias recebidas e encaminhamentos dados pelo Colegiado
+      - value: 6
+        label: Outros
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: at_least_one
+
+  - key: 3
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: options
+    title: Existe alguma garantia de que a denuncia não sofrerá retaliação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: textarea
+    title: Comente
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: options
+    title: O colegiado promove ou coordena capacitações, formações ou autoformações sobre equidade racial, racismo ambiental, justiça socioambiental, climática e direitos humanos para seus membros?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: textarea
+    title: Comente
+    show:
+      target: # o texto só aparece se a resposta key 6 for for Não = 0
+        key: 6
+        value: 0
+    validation: not_empty
+
+  - key: 8
+    block: dependent
+    type: textarea
+    title: Cite a última capacitação/formação realizada sobre este assunto (campo aberto)
+    show:
+      target: # o texto só aparece se a resposta key 6 for for Sim = 1
+        key: 6
+        value: 1
+    validation: not_empty
+
+  - key: 9
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório
+    show:
+      target: # o texto só aparece se a resposta key 6 for Sim = 1
+        key: 6
+        value: 1
+    validation: not_empty
+
+  - key: 10
+    block: dependent
+    type: textarea
+    title: Quantas capacitações internas foram promovidas (Inserir dado numérico)?
+    show:
+      target: # o texto só aparece se a resposta key 6 for for Sim = 1
+        key: 6
+        value: 1
+    validation: not_empty
+
+  - key: 11
+    block: dependent
+    type: options
+    title: O colegiado apoia ou  coordena a produção de materiais pedagógicos que valorizam e incluem diferentes identidades culturais e étnicas?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 12
+    block: dependent
+    type: textarea
+    title: Comente
+    validation: not_empty
+
+  - key: 13
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório
+    show:
+      target: # o texto só aparece se a resposta key 11 for Sim = 1
+        key: 11
+        value: 1
+    validation: not_empty
+
+  - key: 14
+    block: dependent
+    type: textarea
+    title: Quantos materiais foram produzidos nos últimos 2 anos sob a coordenação e/ou apoio do Colegiado (Inserir dado numérico)?
+    show:
+      target: # o texto só aparece se a resposta key 11 for Sim = 1
+        key: 11
+        value: 1
+    validation: not_empty
+
+  - key: 15
+    block: dependent
+    type: textarea
+    title: Comente
+    show:
+      target: # o texto só aparece se a resposta key 11 for Sim = 1
+        key: 11
+        value: 1
+    validation: not_empty
+
+  - key: 16
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório
+    show:
+      target: # o texto só aparece se a resposta key 11 for Sim = 1
+        key: 11
+        value: 1
+    validation: not_empty
+
+  - key: 17
+    block: dependent
+    type: options
+    title: As pautas do Colegiado consideram princípios antirracistas e de justiça socioambiental?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 18
+    block: dependent
+    type: textarea
+    title: Comente
+    validation: not_empty
+
+  - key: 19
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório
+    show:
+      target: # o texto só aparece se a resposta key 17 for Sim = 1
+        key: 17
+        value: 1
+    validation: not_empty
+
+  - key: 20
+    block: dependent
+    type: options
+    title: Há espaços formais para escuta e participação de comunidades afetadas pelas desigualdades socioambientais?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 21
+    block: dependent
+    type: textarea
+    title: Comente
+    show:
+      target: # o texto só aparece se a resposta key 20 for Não = 0
+        key: 20
+        value: 0
+    validation: not_empty
+
+  - key: 22
+    block: dependent
+    type: textarea
+    title: Descreva os espaços
+    show:
+      target: # o texto só aparece se a resposta key 20 for Sim = 1
+        key: 20
+        value: 1
+    validation: not_empty
+
+  - key: 23
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório
+    show:
+      target: # o texto só aparece se a resposta key 20 for Sim = 1
+        key: 20
+        value: 1
+    validation: not_empty
+
+  - key: 24
+    block: dependent
+    type: options
+    title: O colegiado realizou parcerias para fortalecer a sua atuação  em pautas antirracistas e de justiças socioambientais e climáticas?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 25
+    block: dependent
+    type: multi_autocomplete
+    title: Com quais grupos foram realizadas parcerias?
+    options:
+      - value: 1
+        label: Povos e Comunidades Tradicionais
+      - value: 2
+        label: Movimentos Populares e Urbanos
+      - value: 3
+        label: Grupos Vulnerabilizados e Minorizados
+      - value: 4
+        label: Juventudes e Crianças
+      - value: 5
+        label: Pessoas Idosas
+      - value: 6
+        label: Trabalhadores e sindicatos
+      - value: 7
+        label: Mulheres e Movimentos Feministas
+      - value: 8
+        label: População negra e Grupos de combate ao racismo
+      - value: 9
+        label: Grupos ambientalistas e de justiça socioambiental e climática
+      - value: 10
+        label: Migrantes e Refugiados
+      - value: 11
+        label: Outros
+    show:
+      target: # o texto só aparece se a resposta key 24 for Sim = 1
+        key: 24
+        value: 1
+    validation: at_least_one
+
+  - key: 26
+    block: dependent
+    type: textarea
+    title: Especifique
+    show:
+      target: # o texto só aparece se a resposta key 25 for Outros = 10
+        key: 25
+        value: 10
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

@@ -1,0 +1,108 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O Colegiado avalia o comprometimento de seus membros em seu âmbito de atuação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: textarea
+    title: Como o colegiado avalia o comprometimento de seus membros no âmbito de sua atuação? Comente.
+    show:
+      target: # o texto só aparece se a resposta key 1 for for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: options
+    title: Qual o nível de comprometimento de seus membros para com o colegiado?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Excelente
+      - value: 2
+        label: Bom/Regular
+      - value: 3
+        label: Ruim
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: options
+    title: Qual a frequência da realização desta avaliação ?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Anual
+      - value: 2
+        label: Bianual
+      - value: 3
+        label: Quadrianual
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 5
+    block: dependent
+    type: multi_autocomplete
+    title: Quais aspectos de comprometimento são demonstrados pelos membros do colegiado?
+    options:
+      - value: 1
+        label: São proativos, apresentam propostas e buscam soluções para os problemas do Colegiado
+      - value: 2
+        label: Cumprem prazos definidos, entregam produtos e resultados
+      - value: 3
+        label: Participam ativamente das atividades internas e externas do Colegiado
+      - value: 4
+        label: Trabalham em equipe
+      - value: 5
+        label: Compartilham aprendizados, experiências e informações
+      - value: 6
+        label: Cooperam uns com os outros
+      - value: 7
+        label: Outros
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: at_least_one
+
+  - key: 6
+    block: dependent
+    type: textarea
+    title: Especifique
+    show:
+      target: # o texto só aparece se a resposta key 5 for for Outros = 6
+        key: 5
+        value: 6
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

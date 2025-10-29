@@ -1,0 +1,161 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O Colegiado passou por algum processo formativo/autoformativo específico para ele nos últimos 2 anos?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: O processo formativo contemplou a articulação entre teoria e prática?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 4
+    block: dependent
+    type: multi_autocomplete
+    title: Quais foram as principais técnicas utilizadas no processo de formação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Técnicas expositivas (Aulas/palestras, etc)
+      - value: 2
+        label: Estudo de caso
+      - value: 3
+        label: Leitura compartilhada/ debates de textos
+      - value: 4
+        label: Oficinas, grupos de trabalho, rodas de conversa
+      - value: 5
+        label: Grupos de Estudo
+      - value: 6
+        label: Estudo do meio
+      - value: 7
+        label: Mostras, Feiras, Eventos diversos
+      - value: 8
+        label: Jogos pedagógicos e dinâmicas diversas
+      - value: 9
+        label: Resolução de exercícios
+      - value: 10
+        label: Trabalhos individuais
+      - value: 11
+        label: Multilinguagens (vídeo, teatro, música, fotografia, cinema, internet, rádio, etc)
+      - value: 12
+        label: Representação de papeis (dramatização, simulação de situações/cenários, etc)
+      - value: 13
+        label: Outros
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: at_least_one
+
+  - key: 5
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 4 for Outro = 12
+        key: 5
+        value: 13
+
+  - key: 6
+    block: dependent
+    type: options
+    title: Houve processo de avaliação sobre a Formação/autoformação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 8
+    block: dependent
+    type: multi_autocomplete
+    title: Quais instrumentos de avaliação foram utilizados no processo de formação?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Provas, testes, resolução de problemas, etc
+      - value: 2
+        label: Questionário / formulário
+      - value: 3
+        label: Entrevistas
+      - value: 4
+        label: Dinâmicas
+      - value: 5
+        label: Reunião / Roda de conversa
+      - value: 6
+        label: Outros
+    show:
+      target: # o texto só aparece se a resposta key 6 for Sim = 1
+        key: 6
+        value: 1
+    validation: at_least_one
+
+  - key: 9
+    block: dependent
+    type: TextArea
+    title: Especifique.
+    show:
+      target: # o texto só aparece se a resposta key 8 for Outro = 5
+        key: 6
+        value: 12
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

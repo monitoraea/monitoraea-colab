@@ -1,0 +1,54 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O colegiado realiza monitoramento e avaliação da PPEA que estão no âmbito do seu controle social?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: options
+    title: A PPEA está cadastrada e avaliada na perspectiva de PPEA do Sistema MonitoraEA?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: Não
+      - value: 1
+        label: Sim, mas nenhum membro do colegiado participa do GT que realiza a avaliação da PPEA no Sistema MonitoraEA
+      - value: 2
+        label: Sim, e membro(s) do colegiado participa(m) do GT que realiza a avaliação da PPEA no Sistema MonitoraEA
+    show:
+      target: # o texto só aparece se a resposta key 1 for Sim = 1
+        key: 1
+        value: 1
+    validation: not_empty
+
+  - key: 3
+    block: dependent
+    type: textarea
+    title: Quantos membros participam (inserir dado numérico)?
+    show:
+      target: # o texto só aparece se a resposta key 2 for 2
+        key: 2
+        value: 2
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1

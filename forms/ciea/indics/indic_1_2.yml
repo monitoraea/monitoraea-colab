@@ -1,0 +1,125 @@
+fields:
+  - key: 1
+    block: main
+    type: options
+    title: O Colegiado realiza planejamento interno para desenvolver suas ações?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 2
+    block: dependent
+    type: textarea
+    title: Inserir plano de ação
+    show: # o texto só aparece se a pergunta da key 1 for sim = 1
+      target:
+        key: 1
+        value: 1
+
+  - key: 3
+    block: dependent
+    type: options
+    title: Qual a periodicidade da realização deste planejamento?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Anual
+      - value: 2
+        label: Bianual
+      - value: 3
+        label: Quadrianual
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 4
+    block: dependent
+    type: options
+    title: Qual a porcentagem de envolvimento dos atores membros do colegiado?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Apenas a mesa diretora do colegiado
+      - value: 2
+        label: Menos de 50% dos membros do colegiado
+      - value: 3
+        label: Entre 50% e 75% dos membros do Colegiado
+      - value: 4
+        label: Mais de 75% dos membros do Colegiado
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 5
+    block: dependent
+    type: options
+    title: O colegiado monitora a execução de seu planejamento?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 0
+        label: "Não"
+      - value: 1
+        label: "Sim"
+    validation: not_empty
+
+  - key: 6
+    block: dependent
+    type: textarea
+    title: Comente.
+    show:
+      target: # o texto só aparece se a resposta key 5 for Não = 0
+        key: 5
+        value: 0
+    validation: not_empty
+
+  - key: 7
+    block: dependent
+    type: options
+    title: Qual a taxa de execução das atividades planejadas pelo Colegiado nos últimos 2 anos, considerando o número de ações realizadas conforme o plano de ação/planejamento que elaborou?
+    options:
+      - value: -1
+        label: Não respondido
+      - value: 1
+        label: Realizado menos de 25% das ações planejadas
+      - value: 2
+        label: Realizado entre 25% e 50% das ações planejadas
+      - value: 3
+        label: Realizado entre 50% e 75% das ações planejadas
+      - value: 4
+        label: Realizado mais de 75% das ações planejadas
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+
+  - key: 8
+    block: dependent
+    type: file
+    title: Inserir elemento comprobatório
+    show:
+      target: # o texto só aparece se a resposta key 5 for Sim = 1
+        key: 5
+        value: 1
+    validation: not_empty
+
+blocks:
+  - key: main
+
+  - key: dependent
+    show:
+      target:
+        key: 1
+        value: 1
