@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { useDorothy } from 'dorothy-dna-react';
+import { useDorothy, useUser } from 'dorothy-dna-react';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
+
+import { CMS_COMMUNITY } from '../../utils/configs.jsx';
 
 /* components */
 
@@ -14,45 +16,51 @@ import Card from '../../components/Card';
 
 import FilePlus from '../../components/icons/FilePlus';
 
-import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer'
+import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer';
 
-import form from '../../../../../forms/ppea/form1.yml'
-import form_view from '../../../../../forms/ppea/form1_view.yml'
-import lists from '../../../../../forms/ppea/lists1.yml'
+import form from '../../../../../forms/ppea/form1.yml';
+import form_view from '../../../../../forms/ppea/form1_view.yml';
+import lists from '../../../../../forms/ppea/lists1.yml';
 
 /* style */
 // import style from './information.module.scss';
 
 export default function InformationsTab({ entityId, problems }) {
   /* hooks */
-  const { server } = useDorothy()
-  const queryClient = useQueryClient()
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+  const { server } = useDorothy();
+  const { user } = useUser();
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   /* states */
-  const [entity, _entity] = useState([])
-  const [files, _files] = useState({})
+  const [entity, _entity] = useState([]);
+  const [files, _files] = useState({});
 
-  const [originalEntity, _originalEntity] = useState({})
+  const [originalEntity, _originalEntity] = useState({});
 
   //get policy_data
   const { data } = useQuery(['policy_info', { entityId }], {
     queryFn: async () => (await axios.get(`${server}ppea/${entityId}/draft/info`)).data,
-  })
+  });
+
+  const { data: content } = useQuery([`content_for_form_cad`], {
+    queryFn: async () => (await axios.get(`${server}content/for_form/pp/pp/info`)).data,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 
   useEffect(() => {
-    if (data) _originalEntity(data)
-  }, [data])
+    if (data) _originalEntity(data);
+  }, [data]);
 
   const handleDataChange = (entity, files) => {
-    _entity(entity)
-    _files(files)
-  }
+    _entity(entity);
+    _files(files);
+  };
 
   const handleSave = async () => {
-
     /* save */
-    const data = getFormData(form, entity, files) // prepare information (Renderer)
+    const data = getFormData(form, entity, files); // prepare information (Renderer)
 
     const snackKey = enqueueSnackbar('Gravando...', {
       /* variant: 'info', */
@@ -70,7 +78,7 @@ export default function InformationsTab({ entityId, problems }) {
       method = 'put';
       url = `${server}ppea/${entityId}/draft`;
 
-      /* const { data: response } =  */await axios({
+      /* const { data: response } =  */ await axios({
         method,
         url,
         data,
@@ -79,8 +87,8 @@ export default function InformationsTab({ entityId, problems }) {
 
       // console.log(response);
 
-      queryClient.invalidateQueries('policy_info')
-      queryClient.invalidateQueries('policy_analysis')
+      queryClient.invalidateQueries('policy_info');
+      queryClient.invalidateQueries('policy_analysis');
 
       // onSave(!_.isEqual(originalEntity, entity));
 
@@ -106,9 +114,9 @@ export default function InformationsTab({ entityId, problems }) {
         },
       });
     }
-  }
+  };
 
-  if (!data) return <></>
+  if (!data) return <></>;
 
   return (
     <>
@@ -117,7 +125,6 @@ export default function InformationsTab({ entityId, problems }) {
           <div className="page-body">
             <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
               <div className="p-3">
-
                 <Renderer
                   form={form}
                   view={form_view}
@@ -125,6 +132,11 @@ export default function InformationsTab({ entityId, problems }) {
                   data={mapData2Form(originalEntity, form)}
                   problems={problems}
                   onDataChange={handleDataChange}
+                  helpbox={{
+                    isADM: user.membership.find(m => m.id === CMS_COMMUNITY),
+                    content,
+                    prefix: 'pp.',
+                  }}
                 />
 
                 <div className="section-header">
@@ -136,9 +148,7 @@ export default function InformationsTab({ entityId, problems }) {
                     </button>
                   </div>
                 </div>
-
               </div>
-
             </Card>
 
             {/* <Helpbox content={contentText} onClose={() => _contentText(null)} /> */}

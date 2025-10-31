@@ -26,7 +26,6 @@ export default function HelpBoxButton({ type, keyRef, openHelpbox }) {
     });
 
     useEffect(() => {
-      // console.log('keyRef', keyRef);
       if (!keyRef) return;
 
       _keyRefTxt(keyRef.join(','));

@@ -131,15 +131,14 @@ class Service {
     return entity;
   }
 
-  async getForIndic(portal, form) {
-    let where = [
-      'c."publishedAt" is not null',
-      "h.type = 'indic'",
-      'c.portal = :portal',
-      'h.key_ref like :form_string',
-    ];
+  async getForForm(portal, form, type) {
+    let where = ['c."publishedAt" is not null', 'h.type = :type', 'c.portal = :portal'];
+
+    if (type === 'indic') where.push('h.key_ref like :form_string');
+
     let replacements = {
       portal,
+      type,
       form_string: `%.${form}.%`,
     };
 
@@ -157,8 +156,10 @@ class Service {
     );
 
     return entities.map(k => {
-      let segment = k.key_ref.split(`.${form}.`)[1];
-      return segment === 'base' ? '1' : segment;
+      if (type === 'indic') {
+        let segment = k.key_ref.split(`.${form}.`)[1];
+        return segment === 'base' ? '1' : segment;
+      } else return k.key_ref.replace(`${portal}.`,'');
     }); // somente parte relevante (E em A.B.C_D.E)
   }
 

@@ -68,8 +68,8 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {
     refetchOnWindowFocus: false,
   });
 
-  const { data: content } = useQuery([`content_for_indic_${currentIndics}`], {
-    queryFn: async () => (await axios.get(`${server}content/for_indic/pp/${currentIndics}`)).data,
+  const { data: content } = useQuery([`content_for_form_${currentIndics}`], {
+    queryFn: async () => (await axios.get(`${server}content/for_form/pp/${currentIndics}/indic`)).data,
     enabled: !!currentIndics,
     retry: false,
     refetchOnWindowFocus: false,
@@ -240,8 +240,11 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {
                   data={mapData2Form(originalEntity, currentForm)}
                   problems={getFormProblems(currentIndics, currentProblems)}
                   onDataChange={handleDataChange}
-                  isADM={user.membership.find(m => m.id === CMS_COMMUNITY)}
-                  content={content}
+                  helpbox={{
+                    isADM: user.membership.find(m => m.id === CMS_COMMUNITY),
+                    content,
+                    prefix: `pp.${currentIndics.split('_')[0]}.${currentIndics}.`,
+                  }}
                 />
               )}
               <div className="section-header">

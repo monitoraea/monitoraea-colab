@@ -11,7 +11,7 @@ import HelpCircle from '../icons/HelpCircle.jsx';
 
 import { CMS_COMMUNITY } from '../../utils/configs.jsx';
 
-export default function HelpBoxButton({ type, keyRef, openHelpbox }) {
+export default function HelpBoxButton({ type, keyRef, prefix='', openHelpbox }) {
     const { server } = useDorothy();
     const { user } = useUser();
     const { currentCommunity } = useRouter();
@@ -26,10 +26,9 @@ export default function HelpBoxButton({ type, keyRef, openHelpbox }) {
     });
 
     useEffect(() => {
-      // console.log('keyRef', keyRef);
       if (!keyRef) return;
 
-      _keyRefTxt(keyRef.join(','));
+      _keyRefTxt(`${prefix}${keyRef.join(',')}`);
     }, [keyRef]);
 
     useEffect(() => {
