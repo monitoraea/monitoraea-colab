@@ -34,4 +34,5 @@ export const formFields = {
     'indic': 'Indicadores',
     'info': 'Informações',
     'redes': 'Redes',
+    'other': 'Outras',
   };

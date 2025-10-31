@@ -82,6 +82,8 @@ import 'ckeditor5/ckeditor5.css';
 
 import { useLocation, useHistory } from 'react-router-dom';
 
+import { cleanField, infos, trees } from './perspectives';
+
 const emptyEntity = {
   title: '',
   portal: 'none',
@@ -209,9 +211,13 @@ export default function CMS({ id, onClose, onSave }) {
         helpbox.type === 'indic'
           ? getDescription(helpbox?.keyref)
           : secureFindIndex(formFields[helpbox.type], helpbox.keyref, 1);
+
     else if (entity.portal === 'pppzcm') hd = secureFindIndex(formFields['other'], helpbox.keyref, 1);
-    else if (entity.portal !== 'none')
-      hd = !!entity.portal ? secureFindIndex(dynamicContents[entity.portal], helpbox.keyref, 1) : '';
+    else if (entity.portal !== 'pppzcm' && helpbox.type === 'other')
+      hd = secureFindIndex(dynamicContents[entity.portal], helpbox.keyref, 1);
+    else if(helpbox.type) {
+      hd = infos[entity.portal].fields.find(f => f.key === cleanField(helpbox.keyref))?.title
+    }
 
     _helpbox_description(hd);
     if(hd?.length) _entity(entity => ({ ...entity, title: hd }));
@@ -424,7 +430,7 @@ export default function CMS({ id, onClose, onSave }) {
                 Conteúdos
               </span>
               {' » '}
-              {id === 'novo' && !entity?.title?.length ? 'Novo' : entity?.title}
+              <strong>{id === 'novo' && !entity?.title?.length ? 'Novo' : entity?.title}</strong>
             </>
           }
         />
@@ -857,14 +863,14 @@ export default function CMS({ id, onClose, onSave }) {
                       {`${entity.helpbox?.keyref ? 'Alterar' : 'Selecionar'} vínculo`}
                     </button>
                   </div>
-                  <div className="col-md-9">
+                  {false && <div className="col-md-9">
                     <p className={styles.indicator_description}>
                       <span>
                         {entity.helpbox?.type ? types[entity.helpbox?.type] : portals[entity.portal] || ''}:{' '}
                         {helpbox_description || ''}
                       </span>
                     </p>
-                  </div>
+                  </div>}
                 </div>
               )}
 

@@ -25,6 +25,8 @@ import ContentRenderer from './../../commons/components/ContentRenderer';
 import { formFields } from './formFields';
 import { dynamicContents } from './dynamicContents';
 
+import { categories, infos, trees, getLAE, getINDICS } from './perspectives';
+
 const CMS_COMMUNITY = 604;
 
 export default function Helpbox({
@@ -44,7 +46,7 @@ export default function Helpbox({
   }, [preselectedType]);
 
   useEffect(() => {
-    _helpboxType(portal === 'pppzcm' ? 'indic' : null);
+    _helpboxType(portal === 'pppzcm' ? 'indic' : 'info');
   }, [portal]);
 
   const handleSelected = selectedIndicator => {
@@ -69,7 +71,7 @@ export default function Helpbox({
         <DialogContent dividers={true}>
           {manage && (
             <>
-              {['main', 'monitoraea', 'pp', 'anppea', 'ciea', 'risco'].includes(portal) && (
+              {categories['simple'].includes(portal) && (
                 <div className="row">
                   <FormLabel>Campos</FormLabel>
                   <div className={`col-xs-12`}>
@@ -82,7 +84,88 @@ export default function Helpbox({
                   </div>
                 </div>
               )}
-              {['cecsa','pppzcm'].includes(portal) && (
+              {categories['complex'].includes(portal) && (
+                <div>
+                  <div className="row">
+                    <FormLabel id="select-helpbox">Tipo de conteúdo auxiliar:</FormLabel>
+                    <div className={`col-xs-12`}>
+                      <RadioGroup
+                        aria-labelledby="select-helpbox"
+                        onChange={e => _helpboxType(e.target.value)}
+                        name="helpbox-type-group"
+                        value={helpboxType}
+                        size="small"
+                        row
+                        className={`${styles.helpbox_type_radio_group}`}
+                      >
+                        <FormControlLabel
+                          value={'info'}
+                          control={<Radio />}
+                          label={'informações'}
+                          className={`${styles.radio_input}`}
+                        />
+                        <FormControlLabel
+                          value={'indic'}
+                          control={<Radio />}
+                          label={'indicadores'}
+                          className={`${styles.radio_input}`}
+                        />
+                        <FormControlLabel
+                          value={'other'}
+                          control={<Radio />}
+                          label={'Outros'}
+                          className={`${styles.radio_input}`}
+                        />
+                      </RadioGroup>
+                    </div>
+                  </div>
+
+                  {helpboxType === 'info' && (
+                    <div className="row">
+                      <FormLabel>Campos</FormLabel>
+                      <div className={`col-xs-12`}>
+                        <InfoViewModern
+                          portal={portal}
+                          onSelected={selectedIndicator => handleSelected(selectedIndicator)}
+                          onClose={onClose}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {helpboxType === 'indic' && (
+                    <div className="row">
+                      <FormLabel>
+                        Árvore <small>(clique para expandir):</small>
+                      </FormLabel>
+                      <div className={`col-xs-12`}>
+                        <TreeView
+                          portal={portal}
+                          root={getLAE(trees[portal])}
+                          branches={getINDICS(trees[portal])}
+                          onSelected={selectedIndicator => handleSelected(selectedIndicator)}
+                          onClose={onClose}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {helpboxType === 'other' && (
+                    <div className="row">
+                      <FormLabel>Campos</FormLabel>
+                      <div className={`col-xs-12`}>
+                        <DynamicView
+                          portal={portal}
+                          helpboxType={helpboxType}
+                          onSelected={selectedIndicator => handleSelected(selectedIndicator)}
+                          onClose={onClose}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              {portal === 'pppzcm' && (
                 <div>
                   <div className="row">
                     <FormLabel id="select-helpbox">Tipo de conteúdo auxiliar:</FormLabel>
@@ -131,6 +214,7 @@ export default function Helpbox({
                       </FormLabel>
                       <div className={`col-xs-12`}>
                         <TreeView
+                          portal={portal}
                           root={LAEs}
                           branches={INDICs}
                           onSelected={selectedIndicator => handleSelected(selectedIndicator)}
@@ -160,7 +244,7 @@ export default function Helpbox({
           )}
           {content && <ContentRenderer text={content.text || 'Não preenchido!'} />}
           {!content && !manage && <>...</>}
-          {JSON.stringify(content)}
+          {/*JSON.stringify(content)*/}
         </DialogContent>
         <DialogActions>
           {user.membership.find(m => m.id === CMS_COMMUNITY) && (
@@ -193,6 +277,27 @@ export default function Helpbox({
     </>
   );
 }
+
+const InfoViewModern = ({ portal, onSelected, onClose }) => {
+  const handleSelected = (keyref, description) => {
+    onSelected({
+      keyref: `${portal}.${keyref}`,
+      description,
+    });
+    onClose();
+  };
+
+  return (<>
+    <ul className={styles.helpbox_indicator_tree}>
+      <li>
+        {infos[portal].fields.map(f => (
+          <FormItem key={f.key} question={f.title} handleSelected={() => handleSelected(f.key, f.title)} />
+        ))}
+      </li>
+    </ul>
+    {/*JSON.stringify(infos[portal].fields)*/}
+  </>);
+};
 
 const InfoView = ({ helpboxType, onSelected, onClose }) => {
   const handleSelected = (keyref, description) => {
@@ -236,7 +341,7 @@ const DynamicView = ({ portal, onSelected, onClose }) => {
   );
 };
 
-const TreeView = ({ root, branches, onSelected, onClose }) => {
+const TreeView = ({ portal, root, branches, onSelected, onClose }) => {
   useEffect(() => {
     if (!root || !branches) return;
   }, [root, branches]);
@@ -259,7 +364,7 @@ const TreeView = ({ root, branches, onSelected, onClose }) => {
 
   const handleSelected = (keyref, { lae, indic, question }) => {
     onSelected({
-      keyref,
+      keyref: portal === 'pppzcm' ? keyref : `${portal}.${keyref}`,
       description: `${lae} ${indic ? `>> ${indic}` : ''} ${question ? `>> ${question}` : ''}`.trim(),
     });
     onClose();
