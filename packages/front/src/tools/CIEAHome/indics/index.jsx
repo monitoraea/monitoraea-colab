@@ -6,7 +6,6 @@ import indic_1_3 from '../../../../../../forms/ciea/indics/indic_1_3.yml'
 import indic_2_1 from '../../../../../../forms/ciea/indics/indic_2_1.yml'
 import indic_2_2 from '../../../../../../forms/ciea/indics/indic_2_2.yml'
 import indic_2_3 from '../../../../../../forms/ciea/indics/indic_2_3.yml'
-import indic_2_4 from '../../../../../../forms/ciea/indics/indic_2_4.yml'
 import indic_2_5 from '../../../../../../forms/ciea/indics/indic_2_5.yml'
 import indic_2_6 from '../../../../../../forms/ciea/indics/indic_2_6.yml'
 import indic_2_7 from '../../../../../../forms/ciea/indics/indic_2_7.yml'
@@ -32,19 +31,19 @@ export default [
     "indics": [
       {
         "id": "1_1",
-        "title": "Indicador 1",
+        "title": "Diagnóstico Participativo do Colegiado",
         "ready": false,
         "form": indic_1_1
       },
       {
         "id": "1_2",
-        "title": "Indicador 2",
+        "title": "Planejamento Participativo do Colegiado",
         "ready": false,
         "form": indic_1_2
       },
       {
         "id": "1_3",
-        "title": "Indicador 3",
+        "title": "Processo Formativo do Colegiado",
         "ready": false,
         "form": indic_1_3
       },
@@ -58,43 +57,37 @@ export default [
     "indics": [
       {
         "id": "2_1",
-        "title": "Indicador 1",
+        "title": "Normativas de institucionalização e inclusão do Colegiado",
         "ready": false,
         "form": indic_2_1
       },
       {
         "id": "2_2",
-        "title": "Indicador 2",
+        "title": "Apoio financeiro e logístico à participação dos membros nas atividades do Colegiado",
         "ready": false,
         "form": indic_2_2
       },
       {
         "id": "2_3",
-        "title": "Indicador 3",
+        "title": "Transparência",
         "ready": false,
         "form": indic_2_3
       },
       {
-        "id": "2_4",
-        "title": "Indicador 4",
-        "ready": false,
-        "form": indic_2_4
-      },
-      {
         "id": "2_5",
-        "title": "Indicador 5",
+        "title": "Monitoramento e Avaliação da PPEA em seu âmbito de controle social",
         "ready": false,
         "form": indic_2_5
       },
       {
         "id": "2_6",
-        "title": "Indicador 6",
+        "title": "Ampliação da participação da sociedade na formulação e implementação das políticas públicas de EA",
         "ready": false,
         "form": indic_2_6
       },
       {
         "id": "2_7",
-        "title": "Indicador 7",
+        "title": "Deliberações/Tomada de Decisão do Colegiado",
         "ready": false,
         "form": indic_2_7
       },

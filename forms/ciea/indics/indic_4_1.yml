@@ -26,11 +26,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 3
     block: dependent
@@ -53,11 +52,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 5
     block: dependent
@@ -87,7 +85,6 @@ fields:
         key: 4
         value: 1
     validation: at_least_one
-
 
 blocks:
   - key: main

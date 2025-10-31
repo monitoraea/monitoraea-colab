@@ -19,10 +19,7 @@ fields:
     block: dependent
     type: textarea
     title: Inserir plano de ação
-    show: # o texto só aparece se a pergunta da key 1 for sim = 1
-      target:
-        key: 1
-        value: 1
+    validation: not_empty
 
   - key: 3
     block: dependent
@@ -73,7 +70,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 6
     block: dependent
@@ -100,6 +100,10 @@ fields:
         label: Realizado entre 50% e 75% das ações planejadas
       - value: 4
         label: Realizado mais de 75% das ações planejadas
+    show:
+      target: # o texto só aparece se a resposta key 5 for Sim = 1
+        key: 5
+        value: 1
     validation:
       - type: neq
         value: -1

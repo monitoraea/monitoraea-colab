@@ -32,20 +32,12 @@ fields:
         label: São divulgados relatórios periódicos sobre as denúncias recebidas e encaminhamentos dados pelo Colegiado
       - value: 6
         label: Outros
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: at_least_one
 
   - key: 3
     block: dependent
     type: file
     title: Inserir elemento comprobatório
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: not_empty
 
   - key: 4
@@ -59,11 +51,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 5
     block: dependent
@@ -82,11 +73,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 7
     block: dependent
@@ -139,11 +129,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 12
     block: dependent
@@ -202,11 +191,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 18
     block: dependent
@@ -235,11 +223,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 21
     block: dependent
@@ -282,11 +269,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 25
     block: dependent
@@ -326,9 +312,9 @@ fields:
     type: textarea
     title: Especifique
     show:
-      target: # o texto só aparece se a resposta key 25 for Outros = 10
+      target: # o texto só aparece se a resposta key 25 for Outros = 11
         key: 25
-        value: 10
+        value: 11
     validation: not_empty
 
 blocks:

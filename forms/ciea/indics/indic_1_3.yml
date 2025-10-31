@@ -26,20 +26,15 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 3
     block: dependent
     type: textarea
     title: Comente.
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: not_empty
 
   - key: 4
@@ -75,10 +70,6 @@ fields:
         label: Representação de papeis (dramatização, simulação de situações/cenários, etc)
       - value: 13
         label: Outros
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: at_least_one
 
   - key: 5
@@ -86,9 +77,10 @@ fields:
     type: TextArea
     title: Especifique.
     show:
-      target: # o texto só aparece se a resposta key 4 for Outro = 12
+      target: # o texto só aparece se a resposta key 4 for Outros = 13
         key: 5
         value: 13
+    validation: not_empty
 
   - key: 6
     block: dependent
@@ -101,19 +93,18 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 7
     block: dependent
     type: textarea
     title: Comente.
     show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
+      target: # o texto só aparece se a resposta key 6 for Sim = 1
+        key: 6
         value: 1
     validation: not_empty
 
@@ -147,9 +138,10 @@ fields:
     type: TextArea
     title: Especifique.
     show:
-      target: # o texto só aparece se a resposta key 8 for Outro = 5
-        key: 6
-        value: 12
+      target: # o texto só aparece se a resposta key 8 for Outros = 6
+        key: 8
+        value: 6
+    validation: not_empty
 
 blocks:
   - key: main

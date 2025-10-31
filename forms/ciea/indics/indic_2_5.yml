@@ -28,11 +28,10 @@ fields:
         label: Sim, mas nenhum membro do colegiado participa do GT que realiza a avaliação da PPEA no Sistema MonitoraEA
       - value: 2
         label: Sim, e membro(s) do colegiado participa(m) do GT que realiza a avaliação da PPEA no Sistema MonitoraEA
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 3
     block: dependent

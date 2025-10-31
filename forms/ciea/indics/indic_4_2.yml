@@ -28,20 +28,16 @@ fields:
         label: Oficinas e Rodas de Conversa
       - value: 4
         label: Outra
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: at_least_one
 
   - key: 3
     block: dependent
     type: textarea
-    title: Explique
+    title: Especifique
     show:
-      target: # o texto só aparece se a resposta key 2 for for Sim = 1
+      target: # o texto só aparece se a resposta key 2 for for Outra = 4
         key: 2
-        value: 1
+        value: 4
     validation: not_empty
 
   - key: 4
@@ -61,11 +57,10 @@ fields:
         label: Entre 50% a 25% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação
       - value: 5
         label: Menos de 25% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação
-    show:
-      target: # o texto só aparece se a resposta key 2 for Sim = 1
-        key: 2
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 5
     block: dependent
@@ -73,16 +68,17 @@ fields:
     title: Qual a frequência da realização deste diagnóstico sobre as percepções?
     options:
       - value: -1
-        label: Anual
-      - value: 0
-        label: Buanual
+        label: Não respondido
       - value: 1
+        label: Anual
+      - value: 2
+        label: Bianual
+      - value: 3
         label: Quadrianual
-    show:
-      target: # o texto só aparece se a resposta key 2 for Sim = 1
-        key: 2
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
 blocks:
   - key: main

@@ -19,10 +19,6 @@ fields:
     block: dependent
     type: textarea
     title: Como o colegiado avalia o comprometimento de seus membros no âmbito de sua atuação? Comente.
-    show:
-      target: # o texto só aparece se a resposta key 1 for for Sim = 1
-        key: 1
-        value: 1
     validation: not_empty
 
   - key: 3
@@ -38,11 +34,10 @@ fields:
         label: Bom/Regular
       - value: 3
         label: Ruim
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 4
     block: dependent
@@ -61,7 +56,10 @@ fields:
       target: # o texto só aparece se a resposta key 1 for Sim = 1
         key: 1
         value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 5
     block: dependent
@@ -82,10 +80,6 @@ fields:
         label: Cooperam uns com os outros
       - value: 7
         label: Outros
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: at_least_one
 
   - key: 6
@@ -93,9 +87,9 @@ fields:
     type: textarea
     title: Especifique
     show:
-      target: # o texto só aparece se a resposta key 5 for for Outros = 6
+      target: # o texto só aparece se a resposta key 5 for for Outros = 7
         key: 5
-        value: 6
+        value: 7
     validation: not_empty
 
 blocks:

@@ -19,13 +19,15 @@ fields:
     block: dependent
     type: textarea
     title: Quais foram os temas/assuntos das decisões tomadas pelo colegiado nos últimos 2 anos (comente)?
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: not_empty
 
   - key: 3
+    block: dependent
+    type: textarea
+    title: Comente.
+    validation: not_empty
+
+  - key: 4
     block: dependent
     type: options
     title: As decisões do colegiado são qualificadas?
@@ -36,23 +38,22 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
-  - key: 4
+  - key: 5
     block: dependent
     type: textarea
     title: Comente.
     show:
-      target: # o texto só aparece se a resposta key 3 for Não = 0
-        key: 3
+      target: # o texto só aparece se a resposta key 4 for Não = 0
+        key: 4
         value: 0
     validation: not_empty
 
-  - key: 5
+  - key: 6
     block: dependent
     type: multi_autocomplete
     title: Baseadas em quais processos?
@@ -68,12 +69,12 @@ fields:
       - value: 5
         label: Com monitoramento e avaliação participativa.  permitindo revisar e aprimorar decisões com base em avaliações contínuas e colaborativas
     show:
-      target: # o texto só aparece se a resposta key 3 for Sim = 1
-        key: 3
+      target: # o texto só aparece se a resposta key 4 for Sim = 1
+        key: 4
         value: 1
     validation: at_least_one
 
-  - key: 6
+  - key: 7
     block: dependent
     type: options
     title: As tomadas de decisão/deliberações do colegiado foram concretizadas?
@@ -84,38 +85,38 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
-  - key: 7
+  - key: 8
     block: dependent
     type: textarea
     title: Comente.
     show:
-      target: # o texto só aparece se a resposta key 6 for Não = 0
-        key: 6
+      target: # o texto só aparece se a resposta key 7 for Não = 0
+        key: 7
         value: 0
     validation: not_empty
 
-  - key: 8
+  - key: 9
     block: dependent
     type: TextArea
     title: Especifique.
     show:
-      target: # o texto só aparece se a resposta key 6 for Sim = 1
-        key: 6
+      target: # o texto só aparece se a resposta key 7 for Sim = 1
+        key: 7
         value: 1
+    validation: not_empty
 
-  - key: 9
+  - key: 10
     block: dependent
     type: file
     title: Inserir elemento comprobatório.
     show:
-      target: # o texto só aparece se a resposta key 6 for Sim = 1
-        key: 6
+      target: # o texto só aparece se a resposta key 7 for Sim = 1
+        key: 7
         value: 1
     validation: not_empty
 

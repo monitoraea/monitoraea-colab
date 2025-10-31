@@ -19,12 +19,7 @@ fields:
     block: dependent
     type: textarea
     title: Qual (Comente (Insira um novo campo por intervenção gerada))?
-    show: 
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: not_empty
-
 
 blocks:
   - key: main

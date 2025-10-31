@@ -26,19 +26,18 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 3
     block: dependent
     type: textarea
     title: Comente.
     show:
-      target: # o texto só aparece se a resposta key 1 for Não = 0
-        key: 1
+      target: # o texto só aparece se a resposta key 2 for Não = 0
+        key: 2
         value: 0
     validation: not_empty
 
@@ -47,8 +46,8 @@ fields:
     type: textarea
     title: Especifique.
     show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
+      target: # o texto só aparece se a resposta key 2 for Sim = 1
+        key: 2
         value: 1
     validation: not_empty
 
@@ -78,7 +77,7 @@ fields:
     type: TextArea
     title: Indique o endereço.
     show:
-      target: # o texto só aparece se a resposta key 5 for Site = 0
+      target: # o texto só aparece se a resposta key 5 for Site = 1
         key: 5
         value: 1
     validation: not_empty
@@ -88,9 +87,9 @@ fields:
     type: TextArea
     title: Indique o endereço.
     show:
-      target: # o texto só aparece se a resposta key 5 for Rede Social = 1
+      target: # o texto só aparece se a resposta key 5 for Rede Social = 2
         key: 5
-        value: 1
+        value: 2
     validation: not_empty
 
   - key: 8
@@ -98,9 +97,10 @@ fields:
     type: TextArea
     title: Especifique.
     show:
-      target: # o texto só aparece se a resposta key 5 for Outro = 4
+      target: # o texto só aparece se a resposta key 5 for Outro = 5
         key: 5
-        value: 4
+        value: 5
+    validation: not_empty
 
   - key: 9
     block: dependent
@@ -113,11 +113,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 10
     block: dependent
@@ -160,12 +159,11 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
-
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
+      
   - key: 14
     block: dependent
     type: textarea

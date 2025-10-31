@@ -28,10 +28,6 @@ fields:
         label: Atuou positivamente para criar ou revisar normativas (leis, decretos, portarias, etc), programas e outros para contemplar as recomendações do colegiado
       - value: 4
         label: Realizou ações para contribuir no fortalecimento do colegiado e políticas públicas de EA acompanhadas pelo mesmo
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: at_least_one
 
 blocks:

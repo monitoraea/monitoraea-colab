@@ -38,11 +38,10 @@ fields:
         label: 7 setores
       - value: 8
         label: mais de 8 setores
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 3
     block: dependent
@@ -57,20 +56,12 @@ fields:
         label: Políticas
       - value: 4
         label: Territórios
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: at_least_one
 
   - key: 4
     block: dependent
     type: textarea
     title: Comente.
-    show:
-      target: # o texto só aparece se a resposta key 1 for for Sim = 1
-        key: 1
-        value: 1
     validation: not_empty
 
   - key: 5
@@ -84,10 +75,6 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: not_empty
 
   - key: 6

@@ -28,10 +28,6 @@ fields:
         label: Oficinas, reuniões, grupos de trabalho, para informar, dialogar, ouvir e acolher propostas da sociedade de modo amplo
       - value: 4
         label: Outras
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: at_least_one
 
   - key: 3
@@ -39,18 +35,15 @@ fields:
     type: TextArea
     title: Especifique.
     show:
-      target: # o texto só aparece se a resposta key 2 for Sim = 3
+      target: # o texto só aparece se a resposta key 2 for Outras 4
         key: 2
-        value: 3
+        value: 4
+    validation: not_empty
 
   - key: 4
     block: dependent
     type: file
     title: Inserir elemento comprobatório.
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: not_empty
 
   - key: 5
@@ -58,32 +51,28 @@ fields:
     type: multi_autocomplete
     title: As ações de ampliação da participação da sociedade nos processos de políticas públicas de EA promovidas/coordenadas pelo colegiado, contemplou algum dos grupos sociais?
     options:
-      - value: 0
-        label: Povos e Comunidades Tradicionais
       - value: 1
-        label: Movimentos Populares e Urbanos
+        label: Povos e Comunidades Tradicionais
       - value: 2
-        label: Grupos Vulnerabilizados e Minorizados
+        label: Movimentos Populares e Urbanos
       - value: 3
-        label: Juventudes e Crianças
+        label: Grupos Vulnerabilizados e Minorizados
       - value: 4
-        label: Pessoas Idosas
+        label: Juventudes e Crianças
       - value: 5
-        label: Trabalhadores e sindicatos
+        label: Pessoas Idosas
       - value: 6
-        label: Mulheres e Movimentos Feministas
+        label: Trabalhadores e sindicatos
       - value: 7
-        label: População negra e Grupos de combate ao racismo
+        label: Mulheres e Movimentos Feministas
       - value: 8
-        label: Grupos ambientalistas e de justiça socioambiental e climátiva
+        label: População negra e Grupos de combate ao racismo
       - value: 9
-        label: Migrantes e Refugiados
+        label: Grupos ambientalistas e de justiça socioambiental e climátiva
       - value: 10
+        label: Migrantes e Refugiados
+      - value: 11
         label: Outro
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
     validation: at_least_one
 
   - key: 6
@@ -91,9 +80,9 @@ fields:
     type: TextArea
     title: Especifique.
     show:
-      target: # o texto só aparece se a resposta key 5 for Outro = 10
+      target: # o texto só aparece se a resposta key 5 for Outro = 11
         key: 5
-        value: 10
+        value: 11
 
 blocks:
   - key: main

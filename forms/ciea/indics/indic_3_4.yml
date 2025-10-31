@@ -28,11 +28,10 @@ fields:
         label: Entre 6 a 10 compromissos firmados
       - value: 3
         label: Acima de 10 compromissos firmados
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 3
     block: dependent
@@ -45,11 +44,10 @@ fields:
         label: "Não"
       - value: 1
         label: "Sim"
-    show:
-      target: # o texto só aparece se a resposta key 1 for Sim = 1
-        key: 1
-        value: 1
-    validation: not_empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 4
     block: dependent
@@ -66,28 +64,31 @@ fields:
     type: options
     title: Como os compromissos foram registrados?
     options:
-      - value: 0
-        label: Em acordos, termos de cooperação, protocolos formais
       - value: 1
-        label: Contratos de parceria
+        label: Em acordos, termos de cooperação, protocolos formais
       - value: 2
-        label: Registrados por correspondência eletrônica como e-mail e troca de ofício
+        label: Contratos de parceria
       - value: 3
+        label: Registrados por correspondência eletrônica como e-mail e troca de ofício
+      - value: 4
         label: Outros
     show:
       target: # o texto só aparece se a resposta key 3 for Sim = 1
         key: 3
         value: 1
-    validation: not-empty
+    validation:
+      - type: neq
+        value: -1
+      - type: not_empty
 
   - key: 6
     block: dependent
     type: textarea
     title: Especifique.
     show:
-      target: # o texto só aparece se a resposta key 3 for for Sim = 1
-        key: 3
-        value: 1
+      target: # o texto só aparece se a resposta key 5 for for Outros 4
+        key: 5
+        value: 4
     validation: not_empty
 
 blocks:
