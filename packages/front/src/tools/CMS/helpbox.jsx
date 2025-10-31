@@ -27,7 +27,7 @@ import { dynamicContents } from './dynamicContents';
 
 import { categories, infos, trees, getLAE, getINDICS } from './perspectives';
 
-const CMS_COMMUNITY = 604;
+import { CMS_COMMUNITY } from '../../utils/configs.jsx';
 
 export default function Helpbox({
   open,

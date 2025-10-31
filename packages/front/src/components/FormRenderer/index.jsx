@@ -210,6 +210,8 @@ export function Renderer(props) {
 function BasicRenderer({
   form,
   readonly,
+  content,
+  isADM,
   showOrphans = false,
   data,
   handleDataChange,
@@ -235,6 +237,8 @@ function BasicRenderer({
                 <div className={`col-xs-${f.size || 12}`}>
                   <FieldRenderer
                     readonly={readonly}
+                    content={content}
+                    isADM={isADM}
                     problems={problems}
                     blocks={form.blocks || []}
                     f={f}
@@ -307,6 +311,8 @@ function BasicRenderer({
                     <div className={`col-xs-${field.size || 12}`}>
                       <FieldRenderer
                         readonly={readonly}
+                        content={content}
+                        isADM={isADM}
                         problems={problems}
                         blocks={form.blocks || []}
                         f={field}
@@ -349,6 +355,8 @@ function BasicRenderer({
                   <div className={`col-xs-${f.size}`}>
                     <FieldRenderer
                       readonly={readonly}
+                      content={content}
+                      isADM={isADM}
                       problems={problems}
                       blocks={form.blocks || []}
                       f={f}
@@ -388,6 +396,8 @@ function ViewRenderer({
   view,
   data,
   readonly,
+  content,
+  isADM,
   handleDataChange,
   onRemoveIterative,
   onAddIterative,
@@ -399,6 +409,8 @@ function ViewRenderer({
     <Element
       v={{ type: 'start', elements: view }}
       readonly={readonly}
+      content={content}
+      isADM={isADM}
       problems={problems}
       form={form}
       data={data}
@@ -413,6 +425,8 @@ function ViewRenderer({
 function Element(props) {
   const {
     readonly,
+    content,
+    isADM,
     form,
     v,
     data,
@@ -432,6 +446,8 @@ function Element(props) {
           <Element
             key={idx}
             readonly={readonly}
+            content={content}
+            isADM={isADM}
             problems={problems}
             form={form}
             v={v}
@@ -513,6 +529,8 @@ function Element(props) {
         <div className={`col-xs-${v.size || 12}`}>
           <FieldRenderer
             readonly={readonly}
+            content={content}
+            isADM={isADM}
             problems={problems}
             blocks={form.blocks || []}
             f={field}
@@ -534,6 +552,8 @@ function Element(props) {
             <Element
               key={idx}
               readonly={readonly}
+              content={content}
+              isADM={isADM}
               problems={problems}
               form={form}
               v={v}
@@ -564,6 +584,8 @@ function Element(props) {
           {v.elements.map((v, idx) => (
             <Element
               readonly={readonly}
+              content={content}
+              isADM={isADM}
               problems={problems}
               key={idx}
               form={form}
@@ -595,6 +617,8 @@ function Element(props) {
 }
 function Row({
   readonly,
+  content,
+  isADM,
   form,
   v,
   data,
@@ -614,6 +638,8 @@ function Row({
         <Element
           key={idx}
           readonly={readonly}
+          content={content}
+          isADM={isADM}
           problems={problems}
           form={form}
           v={v}
@@ -638,6 +664,8 @@ export function FieldRenderer({
   f,
   size,
   readonly,
+  content,
+  isADM,
   keyRef,
   blocks,
   data,
@@ -782,9 +810,9 @@ export function FieldRenderer({
     return (
       <div className={styles.component}>
         {Component}
-        {f.helpbox && f.helpbox.type && f.helpbox.keyref && (
+        {(!f.helpbox || f.helpbox !== 'no') && !f.helpbox?.file && (isADM || content.includes(String(f.key))) && (
           <div>
-            <HelpBoxButton type={f.helpbox.type} keyRef={f.helpbox.keyref} openHelpbox={onContentData} />
+            <HelpBoxButton keyRef={[f.key]} openHelpbox={onContentData} />
           </div>
         )}
         {f.helpbox && f.helpbox.file && (

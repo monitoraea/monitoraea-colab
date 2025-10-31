@@ -9,7 +9,7 @@ import styles from './styles.module.scss';
 
 import HelpCircle from '../icons/HelpCircle.jsx';
 
-const CMS_COMMUNITY = 604;
+import { CMS_COMMUNITY } from '../../utils/configs.jsx';
 
 export default function HelpBoxButton({ type, keyRef, openHelpbox }) {
     const { server } = useDorothy();

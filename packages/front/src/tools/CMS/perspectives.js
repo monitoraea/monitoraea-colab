@@ -2,7 +2,7 @@ import PP_INFO from '../../../../../forms/ppea/form1.yml';
 import ING_INFO from '../../../../../forms/iniciativa/form1.yml';
 import CIEA_INFO from '../../../../../forms/ciea/form1.yml';
 
-import PP_INDIC from '../PPEAHome/indics';
+import PP_INDIC from '../PPEAHome/indics2024';
 import ING_INDIC from '../IniciativasHome/indics';
 import CIEA_INDIC from '../CIEAHome/indics';
 

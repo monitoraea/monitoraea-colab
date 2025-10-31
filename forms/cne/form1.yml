@@ -21,8 +21,9 @@ fields:
   type: options
   title: Tipologia
   size: 4
-  helpbox:
-    file: https://pppzcm-files.s3.us-east-2.amazonaws.com/Centros.Nucelos.e.Equipamentos.de.Educacao.e.Cooperacao.Socioambiental.pdf
+  # helpbox: no
+  # helpbox:
+    # file: https://pppzcm-files.s3.us-east-2.amazonaws.com/Centros.Nucelos.e.Equipamentos.de.Educacao.e.Cooperacao.Socioambiental.pdf
   options:
     - value: -1
       label: Não respondido

@@ -33,8 +33,11 @@ class Service {
     from contents c
     left join helpboxes h on h.content_id = c.id
     ${applyWhere(where)}
-    order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}, c.title` : 'p."updatedAt" desc'
-      }
+    order by ${
+      !config.last
+        ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}, c.title`
+        : 'p."updatedAt" desc'
+    }
     ${!config.last && config.order === 'type' ? ', title' : ''}
     LIMIT ${!config.all ? ':limit' : 'NULL'}
     OFFSET ${!config.all ? ':offset' : 'NULL'}
@@ -87,11 +90,11 @@ class Service {
   }
 
   async listFeatured(portal) {
-    let where = ['c."deletedAt" is null','c."level" = 1'];
+    let where = ['c."deletedAt" is null', 'c."level" = 1'];
 
     let replacements = {};
 
-    if(!!portal && portal !== 'main') {
+    if (!!portal && portal !== 'main') {
       where.push('portal = :portal');
       replacements.portal = portal;
     }
@@ -128,6 +131,37 @@ class Service {
     return entity;
   }
 
+  async getForIndic(portal, form) {
+    let where = [
+      'c."publishedAt" is not null',
+      "h.type = 'indic'",
+      'c.portal = :portal',
+      'h.key_ref like :form_string',
+    ];
+    let replacements = {
+      portal,
+      form_string: `%.${form}.%`,
+    };
+
+    const entities = await db.instance().query(
+      `
+      select h.key_ref
+      from contents c
+      inner join helpboxes h on h.content_id = c.id
+      ${applyWhere(where)}
+      `,
+      {
+        replacements,
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return entities.map(k => {
+      let segment = k.key_ref.split(`.${form}.`)[1];
+      return segment === 'base' ? '1' : segment;
+    }); // somente parte relevante (E em A.B.C_D.E)
+  }
+
   async getByType(config) {
     let where = ['c."deletedAt" is NULL', 'c.published = true', `c."type" = :type`].filter(w => w);
 
@@ -155,8 +189,9 @@ class Service {
         count(*) OVER() AS total_count
     from contents c
     ${applyWhere(where)}
-    order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'p."updatedAt" desc'
-      }
+    order by ${
+      !config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'p."updatedAt" desc'
+    }
     ${!config.last && config.order === 'type' ? ', title' : ''}
     LIMIT ${!config.all ? ':limit' : 'NULL'}
     OFFSET ${!config.all ? ':offset' : 'NULL'}
@@ -209,7 +244,7 @@ class Service {
         type: 'faq',
         published: true,
         deletedAt: null,
-      }
+      },
     });
   }
 

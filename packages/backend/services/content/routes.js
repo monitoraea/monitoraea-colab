@@ -33,6 +33,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+
+/* TODO */
+router.get('/for_indic/:portal/:form', async (req, res) => {
+  const { portal, form } = req.params;
+
+  try {
+    const result = await entity.getForIndic(portal, form);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
 /* TODO */
 router.get('/related', async (req, res) => {
   const { type } = req.query;

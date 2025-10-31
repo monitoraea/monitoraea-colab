@@ -11,3 +11,5 @@ export const perspeciveXentity = {
   4: 'ppea',
   5: 'cne',
 };
+
+export const CMS_COMMUNITY = 604;
