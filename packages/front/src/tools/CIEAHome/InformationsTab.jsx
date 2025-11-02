@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { useDorothy } from 'dorothy-dna-react';
+import { useDorothy, useUser } from 'dorothy-dna-react';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
+
+import { CMS_COMMUNITY } from '../../utils/configs.jsx';
 
 /* components */
 
@@ -14,11 +16,11 @@ import Card from '../../components/Card';
 
 import FilePlus from '../../components/icons/FilePlus';
 
-import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer'
+import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer';
 
-import form from '../../../../../forms/ciea/form1.yml'
-import form_view from '../../../../../forms/ciea/form1_view.yml'
-import lists from '../../../../../forms/ciea/lists1.yml'
+import form from '../../../../../forms/ciea/form1.yml';
+import form_view from '../../../../../forms/ciea/form1_view.yml';
+import lists from '../../../../../forms/ciea/lists1.yml';
 
 /* style */
 // import style from './information.module.scss';
@@ -26,6 +28,7 @@ import lists from '../../../../../forms/ciea/lists1.yml'
 export default function InformationsTab({ entityId }) {
   /* hooks */
   const { server } = useDorothy();
+  const { user } = useUser();
   const queryClient = useQueryClient();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -33,29 +36,33 @@ export default function InformationsTab({ entityId }) {
   // const [originalEntity, _originalEntity] = useState({});
   const [entity, _entity] = useState({});
   const [files, _files] = useState({});
-  const [originalEntity, _originalEntity] = useState({})
+  const [originalEntity, _originalEntity] = useState({});
 
   //get commission_data
   const { data } = useQuery(['commission_info', { entityId }], {
     queryFn: async () => (await axios.get(`${server}commission/${entityId}/draft`)).data,
     retry: false,
     refetchOnWindowFocus: false,
-  })
+  });
 
+  const { data: content } = useQuery([`content_for_form_cad`], {
+    queryFn: async () => (await axios.get(`${server}content/for_form/ciea/ciea/info`)).data,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 
   useEffect(() => {
-    if (data) _originalEntity(data)
-  }, [data])
+    if (data) _originalEntity(data);
+  }, [data]);
 
   const handleDataChange = (entity, files) => {
-    _entity(entity)
-    _files(files)
-  }
+    _entity(entity);
+    _files(files);
+  };
 
   const handleSave = async () => {
-
     /* save */
-    const data = getFormData(form, entity, files) // prepare information (Renderer)
+    const data = getFormData(form, entity, files); // prepare information (Renderer)
 
     const snackKey = enqueueSnackbar('Gravando...', {
       /* variant: 'info', */
@@ -73,7 +80,7 @@ export default function InformationsTab({ entityId }) {
       method = 'put';
       url = `${server}commission/${entityId}/draft`;
 
-      /* const { data: response } =  */await axios({
+      /* const { data: response } =  */ await axios({
         method,
         url,
         data,
@@ -110,7 +117,7 @@ export default function InformationsTab({ entityId }) {
     }
   };
 
-  if (!data) return <></>
+  if (!data) return <></>;
 
   return (
     <>
@@ -119,7 +126,6 @@ export default function InformationsTab({ entityId }) {
           <div className="page-body">
             <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
               <div className="p-3">
-
                 <div className="section-header">
                   <div className="section-title"></div>
                   <div className="section-actions">
@@ -136,6 +142,12 @@ export default function InformationsTab({ entityId }) {
                   lists={lists}
                   data={mapData2Form(originalEntity, form)}
                   onDataChange={handleDataChange}
+                  helpbox={{
+                    isADM: user.membership.find(m => m.id === CMS_COMMUNITY),
+                    content,
+                    prefix: 'ciea.',
+                    type: 'info',
+                  }}
                 />
 
                 <div className="section-header">
@@ -147,9 +159,7 @@ export default function InformationsTab({ entityId }) {
                     </button>
                   </div>
                 </div>
-
               </div>
-
             </Card>
 
             {/* <Helpbox content={contentText} onClose={() => _contentText(null)} /> */}

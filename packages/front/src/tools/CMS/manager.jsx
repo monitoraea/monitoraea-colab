@@ -111,6 +111,7 @@ const perspectiva_portal = {
   3: 'ciea',
   4: 'pp',
   5: 'cecsa',
+  6: 'ing',
 };
 
 export default function CMS({ id, onClose, onSave }) {
@@ -220,6 +221,7 @@ export default function CMS({ id, onClose, onSave }) {
     else if(helpbox.type) {
       if(helpbox.type !== 'indic') {
         hd = infos[entity.portal].fields.find(f => f.key === cleanField(helpbox.keyref))?.title
+
       } else {
         hd = getIndicDescription(cleanField(helpbox.keyref), trees[entity.portal]);
       }
