@@ -5,6 +5,14 @@
   - type: row
     elements:
     - type: column
+      size: 8
+      key: tipo
+    - type: column
+      size: 4
+      key: tipo_especifique
+  - type: row
+    elements:
+    - type: column
       size: 12
       key: nome
     - type: column
@@ -14,7 +22,7 @@
       size: 6
       key: area_tematica
   - type: row
-    elements: 
+    elements:
     - type: column
       size: 12
       key: link
@@ -33,7 +41,7 @@
   block: responsavel
   elements:
   - type: row
-    elements:  
+    elements:
     - type: column
       size: 6
       key: responsavel_nome # poderia ser o index do campo entre os elementos do clock (index: 0)
@@ -51,12 +59,12 @@
 
 - type: row
   block: more
-  elements:  
+  elements:
   - type: row
-    elements:  
+    elements:
     - type: column
       size: 4
-      key: fase  
+      key: fase
     - type: column
       size: 4
       key: fase_ano

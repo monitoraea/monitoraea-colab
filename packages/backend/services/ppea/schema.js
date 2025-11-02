@@ -103,6 +103,13 @@ module.exports = (sequelize, DataTypes) => {
       atuacao_naplica_just: {
         type: DataTypes.TEXT,
       },
+
+      tipo: {
+        type: DataTypes.INTEGER,
+      },
+      tipo_especifique: {
+        type: DataTypes.STRING,
+      },
     },
     {
       tableName: 'politicas',

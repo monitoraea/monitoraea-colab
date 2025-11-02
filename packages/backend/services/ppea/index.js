@@ -136,6 +136,8 @@ class Service {
         atuacao_aplica,
         atuacao_naplica_just,
         indicadores2024,
+        tipo,
+        tipo_especifique,
         ("createdAt" = "updatedAt") as is_new
       FROM ppea.politicas p
       WHERE p.politica_id = :id

@@ -1,5 +1,20 @@
 lists:
 
+  - key: tipos
+    options:
+    - value: -1
+      label: Não respondido
+    - value: 1
+      label: 'Política'
+    - value: 2
+      label: 'Programa'
+    - value: 3
+      label: 'Plano'
+    - value: 4
+      label: 'Projeto'
+    - value: 5
+      label: 'Outro'
+
   - key: enquadramentos
     options:
     - value: -1

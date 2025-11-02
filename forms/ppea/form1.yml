@@ -2,15 +2,37 @@
 
 fields:
 
+- key: tipo
+  type: options
+  title: Este cadastro se refere a
+  size: 6
+  list:
+    module: property
+    key: tipos
+  validation:
+    - type: neq
+      value: -1
+    - type: not_empty
+
+- key: tipo_especifique
+  type: text
+  title: Especifique
+  size: 6
+  show:
+    target:
+      key: tipo
+      value: 5
+  validation: not_empty
+
 - key: nome
   type: text
-  title: Nome da Política Pública
+  title: Nome da Iniciativa Governamental
   size: 12
   client_validation: not_empty # not implemented yet
 
 - key: area
   type: options
-  title: Área da Política Pública
+  title: Área da Iniciativa Governamental
   size: 6
   list:
     module: property
@@ -41,7 +63,7 @@ fields:
 - key: instituicao_enquadramento
   block: inst
   type: options
-  title: Nível da PPEA
+  title: Nível da iniciativa
   size: 8
   list:
     module: property
@@ -75,18 +97,18 @@ fields:
 
 - key: link
   type: text
-  title: Link para acesso à informações da Política Pública
+  title: Link para acesso à informações da Iniciativa Governamental
   size: 12
 
 - key: contemplados
   type: textarea
   rows: 8
-  title: Cite quais as ações, projetos, programas e planos estão contemplados pela PPEA
+  title: Cite quais as ações, projetos, programas e planos estão contemplados pela iniciativa
   size: 12
 
 - key: fase
   type: options
-  title: Fase atual da Política Pública
+  title: Fase atual da Iniciativa Governamental
   size: 4
   list:
     module: property
@@ -98,7 +120,7 @@ fields:
 
 - key: fase_ano
   type: yearpicker
-  title: Desde que ano esta etapa da política política vem sendo desenvolvida
+  title: Desde que ano esta etapa da iniciativa vem sendo desenvolvida
   size: 4
 
 - key: fase_descricao
@@ -109,7 +131,7 @@ fields:
 - key: dificuldades
   type: multi_autocomplete
   # tag: true
-  title: Principais dificuldades no processo de construção/implementação da política
+  title: Principais dificuldades no processo de construção/implementação da iniciativa
   size: 12
   options:
     - value: 0
@@ -139,7 +161,7 @@ fields:
 blocks: # opcional
 
   - key: ppea # só é necessário se tem regras ou com view?
-    title: Sobre a Política Pública # optional
+    title: Sobre a Iniciativa Governamental # optional
     elements:
       - nome
       - area
