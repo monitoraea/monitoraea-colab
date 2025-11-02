@@ -82,7 +82,7 @@ import 'ckeditor5/ckeditor5.css';
 
 import { useLocation, useHistory } from 'react-router-dom';
 
-import { cleanField, infos, trees } from './perspectives';
+import { cleanField, infos, trees, getIndicDescription } from './perspectives';
 
 const emptyEntity = {
   title: '',
@@ -200,23 +200,29 @@ export default function CMS({ id, onClose, onSave }) {
   }, [query]);
 
   useEffect(() => {
-    if (!entity.helpbox) return;
+    if (!entity.helpbox || id !== 'novo') return;
 
     const helpbox = entity.helpbox;
 
     let hd = '';
 
-    if (entity.portal === 'pppzcm' && !!helpbox.type)
+    if (entity.portal === 'pppzcm' && !!helpbox.type) {
+
       hd =
         helpbox.type === 'indic'
           ? getDescription(helpbox?.keyref)
           : secureFindIndex(formFields[helpbox.type], helpbox.keyref, 1);
+    }
 
     else if (entity.portal === 'pppzcm') hd = secureFindIndex(formFields['other'], helpbox.keyref, 1);
     else if (entity.portal !== 'pppzcm' && helpbox.type === 'other')
       hd = secureFindIndex(dynamicContents[entity.portal], helpbox.keyref, 1);
     else if(helpbox.type) {
-      hd = infos[entity.portal].fields.find(f => f.key === cleanField(helpbox.keyref))?.title
+      if(helpbox.type !== 'indic') {
+        hd = infos[entity.portal].fields.find(f => f.key === cleanField(helpbox.keyref))?.title
+      } else {
+        hd = getIndicDescription(cleanField(helpbox.keyref), trees[entity.portal]);
+      }
     }
 
     _helpbox_description(hd);

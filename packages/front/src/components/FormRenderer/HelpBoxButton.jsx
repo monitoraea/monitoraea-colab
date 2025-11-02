@@ -47,7 +47,7 @@ export default function HelpBoxButton({ type, keyRef, prefix='', openHelpbox }) 
     return (
       <>
         {showHelpboxButton && (
-          <button className={`button-link ${styles.helpbox_button}`} onClick={() => openHelpbox(helpContent || { type: type || 'indic', key_ref: keyRef, community: currentCommunity })}>
+          <button className={`button-link ${styles.helpbox_button}`} onClick={() => openHelpbox(helpContent || { type: type || 'indic', key_ref: `${prefix}${keyRef.join(',')}`, community: currentCommunity })}>
             <HelpCircle />
           </button>
         )}

@@ -28,7 +28,7 @@ export default function HelpBoxButton({ type, keyRef, openHelpbox }) {
     useEffect(() => {
       if (!keyRef) return;
 
-      _keyRefTxt(keyRef.join(','));
+      _keyRefTxt(keyRef.join('.'));
     }, [keyRef]);
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export default function HelpBoxButton({ type, keyRef, openHelpbox }) {
     return (
       <>
         {showHelpboxButton && (
-          <button className={`button-link ${styles.helpbox_button}`} onClick={() => openHelpbox(helpContent || { type: type || 'indic', key_ref: keyRef, community: currentCommunity })}>
+          <button className={`button-link ${styles.helpbox_button}`} onClick={() => openHelpbox(helpContent || { type: type || 'indic', key_ref: keyRefTxt, community: currentCommunity })}>
             <HelpCircle />
           </button>
         )}

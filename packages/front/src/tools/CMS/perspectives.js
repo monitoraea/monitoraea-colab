@@ -63,3 +63,14 @@ export const getINDICS = data => {
 
   return result;
 };
+
+export const getIndicDescription = (key, tree) => {
+  let [dimKey, indicKey, questionKey] = key.split('.');
+  if (questionKey === 'base') questionKey = '1';
+
+  const dim = tree.find(d => d.id === dimKey);
+  const indic = dim.indics.find(i => i.id === indicKey);
+  const question = indic.form.fields.find(f => f.key == questionKey);
+
+  return `${dim.title} >> ${indic.title} >> ${question.title}`;
+}

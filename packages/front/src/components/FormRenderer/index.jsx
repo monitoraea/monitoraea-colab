@@ -798,7 +798,7 @@ export function FieldRenderer({
         {Component}
         {(!f.helpbox || f.helpbox !== 'no') && !f.helpbox?.file && (helpbox?.isADM || helpbox?.content.includes(String(f.key))) && (
           <div>
-            <HelpBoxButton prefix={helpbox.prefix} keyRef={[f.key === 1 ? 'base' : f.key]} openHelpbox={onContentData} />
+            <HelpBoxButton type={helpbox.type} prefix={helpbox.prefix} keyRef={[f.key === 1 ? 'base' : f.key]} openHelpbox={onContentData} />
           </div>
         )}
         {f.helpbox && f.helpbox.file && (

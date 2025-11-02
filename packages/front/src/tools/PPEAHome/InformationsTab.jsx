@@ -136,6 +136,7 @@ export default function InformationsTab({ entityId, problems }) {
                     isADM: user.membership.find(m => m.id === CMS_COMMUNITY),
                     content,
                     prefix: 'pp.',
+                    type: 'info',
                   }}
                 />
 
