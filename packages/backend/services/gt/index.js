@@ -11,8 +11,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const config = require('../../config');
 
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const { sendEmail } = require('../email/index')
 
 const baseURL = process.env.BASE_URL || 'https://www.monitoraea.org.br';
 
@@ -612,16 +611,16 @@ class Service {
     `;
 
     const msg = {
-      to: pData.user_email,
-      from: `Plataforma MonitoraEA <${process.env.FROM_EMAIL}>`,
-      subject: `MonitoraEA - ${subject}`,
+      to_name: pData.user_name,
+      to_email: pData.user_email,
+      subject: `Plataforma MonitoraEA - ${subject}`,
       text: `${message}\n\n${process.env.BASE_URL}/colabora/projeto/${pData.communityId}`,
       html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/colabora/projeto/${pData.communityId
         }">Clique aqui para acessar esta iniciativa</a>`,
     };
 
     try {
-      await sgMail.send(msg);
+      await sendEmail(msg);
     } catch (err) {
       console.log('participation confirmation email error', {
         error: err.toString(),

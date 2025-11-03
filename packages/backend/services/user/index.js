@@ -3,6 +3,8 @@ const db = require('../database');
 
 const { applyJoins, applyWhere, getSegmentedId } = require('../../utils');
 
+const { sendEmail } = require('../email/index')
+
 const crypto = require('crypto');
 
 const aws = require('aws-sdk');
@@ -14,9 +16,6 @@ const s3 = new aws.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
-
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const dayjs = require('dayjs');
 
@@ -35,18 +34,16 @@ class Service {
 
     /* send email */
 
-    const to = `${user.name} <${email}>`;
-
     const message = `Link para recuperação de senha: <a href="${process.env.PLATFORM_URL}login/recuperar/${code}">clique aqui</a>`;
 
     const msg = {
-      to,
-      from: process.env.CONTACT_EMAIL,
+      to_name: user.name,
+      to_email: email,
       subject: `MonitoraEA - Recuperação de senha`,
       html: message,
     };
 
-    await sgMail.send(msg);
+    await sendEmail(msg);
 
     return code;
   }
@@ -226,7 +223,7 @@ class Service {
 
   async getExtendedInfo(id) {
     const entities = await db.instance().query(`
-    SELECT 
+    SELECT
         du.id,
         du."name",
         coalesce(u.about,'') as about
@@ -245,7 +242,7 @@ class Service {
 
   async setExtendedInfo(id, data) {
     await db.instance().query(`
-    UPDATE dorothy_users 
+    UPDATE dorothy_users
     set "name" = :name
     where id = :id
     `, {
@@ -254,10 +251,10 @@ class Service {
     });
 
     await db.instance().query(`
-    insert into user_ext_info(id, about) 
+    insert into user_ext_info(id, about)
     values(:id, :about)
     ON CONFLICT ON CONSTRAINT user_ext_info_pk
-    do update set about = :about 
+    do update set about = :about
     `, {
       replacements: { id, about: data.about },
       type: Sequelize.QueryTypes.UPDATE,

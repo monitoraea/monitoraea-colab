@@ -1,6 +1,8 @@
 const Sequelize = require('sequelize');
 const db = require('../database');
 
+const { sendEmail } = require('../email/index')
+
 /* TODO: review messagery */
 /* const { MessageService } = require('dorothy-dna-services');*/
 
@@ -26,9 +28,7 @@ const s3 = new AWS.S3({
 
 const { Messagery } = require('dorothy-dna-services');
 
-const sgMail = require('@sendgrid/mail');
 const { applyWhere, parseBBOX, getSegmentedId } = require('../../utils');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const defaultLimit = 5;
 
@@ -1764,16 +1764,16 @@ class Service {
     `;
 
     const msg = {
-      to: pData.user_email,
-      from: `Plataforma MonitoraEA <${process.env.CONTACT_EMAIL}>`,
-      subject: `MonitoraEA - ${subject}`,
+      to_name: pData.user_name,
+      to_email: pData.user_email,
+      subject: `Plataforma MonitoraEA - ${subject}`,
       text: `${message}\n\n${process.env.BASE_URL}/projeto/${pData.communityId}`,
       html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/projeto/${pData.communityId
         }">Clique aqui para acessar esta iniciativa</a>`,
     };
 
     try {
-      await sgMail.send(msg);
+      await sendEmail(msg);
     } catch (err) {
       console.log('participation confirmation email error', {
         error: err.toString(),
