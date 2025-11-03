@@ -633,7 +633,7 @@ class Service {
           ...cne_draft.get({ plain: true }),
           id: undefined,
           versao: 'draft',
-          logo_arquivo: new_file[0].id,
+          logo_arquivo: new_file.length ? new_file[0].id : null,
         },
         {
           transaction,
@@ -1761,7 +1761,6 @@ class Service {
           cne_id,
         },
       });
-
     }
 
     // TODO: remove community and members
