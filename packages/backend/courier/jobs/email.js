@@ -56,7 +56,7 @@ let query, result;
               html: message.replace(/(?:\r\n|\r|\n)/g, '<br>'),
             };
 
-            await sendEmail(msg);
+            // await sendEmail(msg);
 
             // marcar como enviado!
             query = `
