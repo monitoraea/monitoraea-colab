@@ -18,7 +18,7 @@ export default function UploaderField({
   type = 'preview',
   alt = 'photo',
   filename = '',
-  accept = 'image/*, application/pdf',
+  accept = 'image/*, application/pdf, application/zip, application/x-zip-compressed',
   contentType,
   className,
   title,
@@ -70,11 +70,14 @@ export default function UploaderField({
   return (
     <>
       <div className={`uploader-wrapper ${type}`}>
-        {!!title && <div className={`uploader-title ${error ? 'error' : ''}  ${disabled ? 'disabled' : ''}`}>{title}</div>}
+        {!!title && (
+          <div className={`uploader-title ${error ? 'error' : ''}  ${disabled ? 'disabled' : ''}`}>{title}</div>
+        )}
         <div
           className={`drop_zone  ${error ? 'error' : ''} ${disabled ? 'disabled' : ''} ${!!className ? `uploader-${className}` : ''} ${!previewUrl ? (type !== 'file' ? 'no-image' : 'file-no-image') : ''}`}
           style={{
-            backgroundImage: !previewUrl && type !== 'file' ? `url(${!disabled ? uploadIcon : uploadIconDisabled})` : 'unset',
+            backgroundImage:
+              !previewUrl && type !== 'file' ? `url(${!disabled ? uploadIcon : uploadIconDisabled})` : 'unset',
           }}
           onDragOver={handleDragOver}
           onDrop={handleOnDrop}
@@ -112,29 +115,33 @@ export default function UploaderField({
             <button className="remove" onClick={handleRemove} disabled={disabled}>
               <img src={deleteIcon} alt="delete" />
             </button>
-            {viewer && <>
-              {!tmpIsPDF && (
-                <button
-                  className="viewer"
-                  onClick={() => {
-                    // console.log({ contentType, tmpIsPDF })
-                    type !== 'file' && contentType !== 'application/pdf' ? _view(true) : window.open(url, 'file_preview');
-                  }}
-                >
-                  <img src={magnifierIcon} alt="view" />
-                </button>
-              )}
-              {tmpIsPDF && (
-                <button
-                  className="viewer"
-                  alt="o arquivo só pode ser visualizado após o envio"
-                  disabled
-                  style={{ opacity: '0.3' }}
-                >
-                  <img src={magnifierIcon} alt="view" />
-                </button>
-              )}
-            </>}
+            {viewer && (
+              <>
+                {!tmpIsPDF && (
+                  <button
+                    className="viewer"
+                    onClick={() => {
+                      // console.log({ contentType, tmpIsPDF })
+                      type !== 'file' && contentType !== 'application/pdf'
+                        ? _view(true)
+                        : window.open(url, 'file_preview');
+                    }}
+                  >
+                    <img src={magnifierIcon} alt="view" />
+                  </button>
+                )}
+                {tmpIsPDF && (
+                  <button
+                    className="viewer"
+                    alt="o arquivo só pode ser visualizado após o envio"
+                    disabled
+                    style={{ opacity: '0.3' }}
+                  >
+                    <img src={magnifierIcon} alt="view" />
+                  </button>
+                )}
+              </>
+            )}
           </>
         )}
       </div>
