@@ -103,9 +103,9 @@ fields:
     type: textarea
     title: Comente.
     show:
-      target: # o texto só aparece se a resposta key 6 for Sim = 1
+      target: # o texto só aparece se a resposta key 6 for Não = 0
         key: 6
-        value: 1
+        value: 0
     validation: not_empty
 
   - key: 8

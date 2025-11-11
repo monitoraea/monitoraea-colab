@@ -41,15 +41,15 @@ fields:
         value: 0
     validation: not_empty
 
-  - key: 4
-    block: dependent
-    type: textarea
-    title: Especifique.
-    show:
-      target: # o texto só aparece se a resposta key 2 for Sim = 1
-        key: 2
-        value: 1
-    validation: not_empty
+#  - key: 4
+#    block: dependent
+#    type: textarea
+#    title: Especifique.
+#    show:
+#      target: # o texto só aparece se a resposta key 2 for Sim = 1
+#        key: 2
+#        value: 1
+#    validation: not_empty
 
   - key: 5
     block: dependent
@@ -174,15 +174,15 @@ fields:
         value: 0
     validation: not_empty
 
-  - key: 15
-    block: dependent
-    type: textarea
-    title: Especifique.
-    show:
-      target: # o texto só aparece se a resposta key 13 for Sim = 1
-        key: 13
-        value: 1
-    validation: not_empty
+#  - key: 15
+#    block: dependent
+#    type: textarea
+#    title: Especifique.
+#    show:
+#      target: # o texto só aparece se a resposta key 13 for Sim = 1
+#        key: 13
+#        value: 1
+#    validation: not_empty
 
   - key: 16
     block: dependent
