@@ -478,17 +478,17 @@ class Service {
     return `ciea/${segmentedId}/${folder}/original/${filename}`;
   }
 
-  async list(page, f_id, where, limit) {
+  async list(page, f_ids, where, limit) {
     const sequelize = db.instance();
 
     const specificLimit = limit || defaultLimit;
 
     let query;
 
-    if (f_id) where = `${where} AND c.id = ${f_id}`;
+    if (f_ids) where = `${where} AND u.id in (${f_ids})`;
 
     query = `
-            select c.id, CONCAT('CIEA-',u.sigla) as nome, u.nm_regiao, c.uf,
+            select distinct c.id, u.sigla, CONCAT('CIEA-',u.sigla) as nome, u.nm_regiao, c.uf,
             count(*) OVER() AS total_count
             from ciea.comissoes c
             left join ufs u on u.id = c.uf
@@ -558,13 +558,13 @@ class Service {
     };
   }
 
-  async listIDs(f_id, where) {
+  async listIDs(f_ids, where) {
     const sequelize = db.instance();
 
-    if (f_id) where = `${where} AND p.id = ${f_id}`;
+    if (f_ids) where = `${where} AND c.id in (${f_ids})`;
 
     const query = `
-            select distinct u.id
+            select distinct c.id
             from ciea.comissoes c
             left join ufs u on u.id = c.uf
             ${where}
@@ -625,9 +625,7 @@ class Service {
       regioes = regions.list;
     }
 
-    return {
-      regioes,
-    };
+    return regioes;
   }
 
   async sendContact(id, name, email, message) {

@@ -219,11 +219,11 @@ router.post('/:id/participate', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const { page, f_id, limit } = req.query;
+    const { page, f_ids, limit } = req.query;
 
     const where = buildFiltersWhere(req.query, ["versao = 'draft'"]); // TODO: 'current'
 
-    const result = await entity.list(page ? parseInt(page) : 1, f_id, where, limit);
+    const result = await entity.list(page ? parseInt(page) : 1, f_ids, where, limit);
 
     res.json(result);
   } catch (ex) {
@@ -233,11 +233,11 @@ router.get('/', async (req, res) => {
 
 router.get('/geo', async (req, res) => {
   try {
-    const { f_id } = req.query;
+    const { f_ids } = req.query;
 
     const where = buildFiltersWhere(req.query, ["versao = 'draft'"]); // TODO: 'current'
 
-    const result = await entity.listIDs(f_id, where);
+    const result = await entity.listIDs(f_ids, where);
 
     res.json(result);
   } catch (ex) {
