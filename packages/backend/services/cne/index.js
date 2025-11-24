@@ -879,14 +879,14 @@ class Service {
     }
   }
 
-  async list(page, f_id, where, limit) {
+  async list(page, f_ids, where, limit) {
     const sequelize = db.instance();
 
     const specificLimit = limit || defaultLimit;
 
     let query;
 
-    if (f_id) where = `${where} AND c.id = ${f_id}`;
+    if (f_ids) where = `${where} AND c.cne_id = ${f_ids}`;
 
     query = `
               select c.id, c.nome, u.nm_regiao, c.uf, c.cne_id,
@@ -973,10 +973,10 @@ class Service {
     };
   }
 
-  async listIDs(f_id, where) {
+  async listIDs(f_ids, where) {
     const sequelize = db.instance();
 
-    if (f_id) where = `${where} AND c.id = ${f_id}`;
+    if (f_ids) where = `${where} AND c.cne_id in (${f_ids})`;
 
     const query = `
             select distinct c.cne_id
@@ -1040,9 +1040,7 @@ class Service {
       regioes = regions.list;
     }
 
-    return {
-      regioes,
-    };
+    return regioes;
   }
 
   async listMunicipiosByName(where) {
@@ -1080,12 +1078,13 @@ class Service {
     return entities;
   }
 
-  async listIntituicoesByName(nome) {
+  async listIntituicoesByName(where) {
     const sequelize = db.instance();
 
     const query = `
               select distinct i.id as value, i.nome as "label"
               from instituicoes i
+              inner join cne.cnes c on c.instituicao_id = i.id
               ${where}
               order by "label"
           `;

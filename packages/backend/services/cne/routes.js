@@ -6,11 +6,9 @@ const entity = require('./index');
 const multer = require('multer');
 const upload = multer(); // Memory
 
-const FormManager = require('../../FormsManager')
+const FormManager = require('../../FormsManager');
 
-const upTimelineImage = upload.fields([
-  { name: 'imagem', maxCount: 1 },
-]);
+const upTimelineImage = upload.fields([{ name: 'imagem', maxCount: 1 }]);
 
 /* TODO */
 router.get('/:id/draft/info', async (req, res) => {
@@ -123,7 +121,6 @@ router.post('/:id/send_contact', async (req, res) => {
 
 router.post('/enter_in_network', async (req, res) => {
   try {
-
     const result = await entity.enterInInitiative(res.locals.user);
 
     res.json(result);
@@ -133,7 +130,6 @@ router.post('/enter_in_network', async (req, res) => {
 });
 
 router.get('/statistics/cnes', async (req, res) => {
-
   try {
     const result = await entity.total_cnes();
 
@@ -141,7 +137,7 @@ router.get('/statistics/cnes', async (req, res) => {
   } catch (ex) {
     sendError(res, ex, 500);
   }
-})
+});
 
 router.put('/:id/publish', async (req, res) => {
   try {
@@ -207,11 +203,8 @@ router.get('/:id/draft/timeline', async (req, res) => {
   }
 });
 
-
-
 router.get('/:id/draft/network', async (req, res) => {
   try {
-
     const { id } = req.params;
 
     const result = await entity.getDraftNetwork(id);
@@ -231,11 +224,12 @@ router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
   const { imagem } = req.files;
 
   try {
-    const result = await entity.saveDraftTimeline(res.locals.user,
+    const result = await entity.saveDraftTimeline(
+      res.locals.user,
       JSON.parse(entityData),
       imagem && imagem.length ? imagem[0] : null,
       id,
-      tlid
+      tlid,
     );
 
     res.json(result);
@@ -250,10 +244,11 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
   const { imagem } = req.files;
 
   try {
-    const result = await entity.saveDraftTimeline(res.locals.user,
+    const result = await entity.saveDraftTimeline(
+      res.locals.user,
       JSON.parse(entityData),
       imagem && imagem.length ? imagem[0] : null,
-      id
+      id,
     );
 
     res.json(result);
@@ -264,26 +259,24 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
 
 /* *** FORMS.Begin *** */
 (async function setupForms() {
-
   /* INFORMAÇÃO */
-  const form1 = await FormManager.getForm('cne/form1')
+  const form1 = await FormManager.getForm('cne/form1');
 
-  router.put("/:id/draft", upload.fields(FormManager.upFields(form1)), async (req, res) => {
-
+  router.put('/:id/draft', upload.fields(FormManager.upFields(form1)), async (req, res) => {
     try {
       const result = await entity.saveDraft(
         res.locals.user,
         form1,
         FormManager.parse(form1, req.body.entity) /* Transformations */,
         req.files,
-        req.params.id
+        req.params.id,
       );
 
       res.json(result);
     } catch (ex) {
       sendError(res, ex, 500);
     }
-  })
+  });
 
   /* VERIFY */
   router.get('/:id/verify', async (req, res) => {
@@ -298,8 +291,7 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
       sendError(res, ex);
     }
   });
-
-})()
+})();
 /* *** FORMS.End *** */
 
 router.put('/:id/draft/justification', async (req, res) => {
@@ -330,11 +322,11 @@ router.put('/:id/draft/network', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const { page, f_id, limit } = req.query;
+    const { page, f_ids, limit } = req.query;
 
-    const where = buildFiltersWhere(req.query, ["versao = 'current'",'"deletedAt" IS NULL']);
+    const where = buildFiltersWhere(req.query, ["versao = 'current'", '"deletedAt" IS NULL']);
 
-    const result = await entity.list(page ? parseInt(page) : 1, f_id, where, limit);
+    const result = await entity.list(page ? parseInt(page) : 1, f_ids, where, limit);
 
     res.json(result);
   } catch (ex) {
@@ -358,11 +350,11 @@ router.delete('/:id', async (req, res) => {
 
 router.get('/geo', async (req, res) => {
   try {
-    const { f_id } = req.query;
+    const { f_ids } = req.query;
 
     const where = buildFiltersWhere(req.query, ["versao = 'current'"]);
 
-    const result = await entity.listIDs(f_id, where);
+    const result = await entity.listIDs(f_ids, where);
 
     res.json(result);
   } catch (ex) {
@@ -400,7 +392,7 @@ router.get('/municipios', async (req, res) => {
 
     const where = buildFiltersWhere(
       req.query,
-      [`LOWER(unaccent(m.nm_mun)) like '%${nome.toLowerCase()}%'`,"versao = 'current'"],
+      [`LOWER(unaccent(m.nm_mun)) like '%${nome.toLowerCase()}%'`, "versao = 'current'"],
       ['f_municipios'],
     );
 
@@ -434,7 +426,7 @@ router.get('/instiuicao/list', async (req, res) => {
     const { nome } = req.query;
 
     const where = buildFiltersWhere(req.query, [
-      `LOWER(unaccent(nome)) like '%${nome.toLowerCase()}%'`,
+      `LOWER(unaccent(i.nome)) like '%${nome.toLowerCase()}%'`,
       "versao = 'current'",
     ]);
 
@@ -449,6 +441,8 @@ router.get('/instiuicao/list', async (req, res) => {
 function buildFiltersWhere(filters, where = [], exclude = []) {
   let whereArray = [...where];
 
+  whereArray.push('"deletedAt" is null');
+
   if (filters['f_regioes'] && !exclude.includes('f_regioes'))
     whereArray.push(
       `u.nm_regiao IN (${filters['f_regioes']
@@ -456,12 +450,10 @@ function buildFiltersWhere(filters, where = [], exclude = []) {
         .map(r => `'${r}'`)
         .join(',')})`,
     );
-  if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`u.id IN (${filters['f_ufs']})`);
+  if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`m.cd_uf IN (${filters['f_ufs']})`);
 
   return whereArray.length ? `WHERE ${whereArray.join(' AND ')}` : '';
 }
-
-
 
 router.get('/:id/atuacoes', async (req, res) => {
   try {
