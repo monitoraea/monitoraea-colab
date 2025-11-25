@@ -11,7 +11,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const config = require('../../config');
 
-const { sendEmail } = require('../email/index')
+const { sendEmail } = require('../email/index');
 
 const baseURL = process.env.BASE_URL || 'https://www.monitoraea.org.br';
 
@@ -29,7 +29,6 @@ class Service {
   }
 
   async getPerspectivesUser(user) {
-
     return await db.instance().query(
       `
     select
@@ -72,7 +71,8 @@ class Service {
     if (!community.length) throw new Error('Unknown community!');
     const type = community[0].type.trim();
 
-    if (!['adm', 'facilitador', 'adm_zcm', 'adm_ciea', 'adm_ppea', 'adm_cne', 'adm_iniciativas'].includes(type)) throw new Error('Permission denied!');
+    if (!['adm', 'facilitador', 'adm_zcm', 'adm_ciea', 'adm_ppea', 'adm_cne', 'adm_iniciativas'].includes(type))
+      throw new Error('Permission denied!');
 
     if (type === 'adm') return this.list4Adm(communityId, config);
     else if (type === 'facilitador') return this.list4Facilit(communityId, config);
@@ -81,10 +81,11 @@ class Service {
     else if (type === 'adm_ppea') return this.list4AdmPPEA(communityId, config);
     else if (type === 'adm_cne') return this.list4AdmCNE(communityId, config);
     else if (type === 'adm_iniciativas') return this.list4AdmIniciative(communityId, config);
-    else return {
-      entities: [],
-      total: 0,
-    }
+    else
+      return {
+        entities: [],
+        total: 0,
+      };
   }
 
   async list4Adm(communityId, config) {
@@ -343,10 +344,11 @@ class Service {
         from dorothy_users du
         inner join dorothy_members dm on dm."userId" = du.id
         ${applyWhere(where)}
-        order by ${!config.last
-        ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}`
-        : 'i."updatedAt" desc'
-      }
+        order by ${
+          !config.last
+            ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}`
+            : 'i."updatedAt" desc'
+        }
         LIMIT :limit
         OFFSET :offset
         `,
@@ -390,8 +392,9 @@ class Service {
         count(*) OVER() AS total_count
     from invites i
     ${applyWhere(where)}
-    order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'i."updatedAt" desc'
-      }
+    order by ${
+      !config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'i."updatedAt" desc'
+    }
     LIMIT :limit
     OFFSET :offset
     `,
@@ -468,8 +471,9 @@ class Service {
     inner join ${process.env.DB_PREFIX}users du on du.id = p."userId"
     inner join ${process.env.DB_PREFIX}communities dc on dc.id = p."communityId"
     ${applyWhere(where)}
-    order by ${!config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'p."updatedAt" desc'
-      }
+    order by ${
+      !config.last ? `"${protect.order(config.order)}" ${protect.direction(config.direction)}` : 'p."updatedAt" desc'
+    }
     LIMIT :limit
     OFFSET :offset
     `,
@@ -597,8 +601,8 @@ class Service {
         },
         userId: 0,
         tool: {
-          type: "native",
-          element: "NewGTADMNotification"
+          type: 'native',
+          element: 'NewGTADMNotification',
         },
       });
     }
@@ -615,8 +619,9 @@ class Service {
       to_email: pData.user_email,
       subject: `Plataforma MonitoraEA - ${subject}`,
       text: `${message}\n\n${process.env.BASE_URL}/colabora/projeto/${pData.communityId}`,
-      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/colabora/projeto/${pData.communityId
-        }">Clique aqui para acessar esta iniciativa</a>`,
+      html: `${message.replace(/(?:\r\n|\r|\n)/g, '<br>')}\n\n<a href="${process.env.BASE_URL}/colabora/projeto/${
+        pData.communityId
+      }">Clique aqui para acessar esta iniciativa</a>`,
     };
 
     try {
@@ -687,15 +692,15 @@ class Service {
     Para confirmar a sua participação, clique no link a seguir: <a href="${link}">${link}</a></p>`;
 
     const msg = {
-      to: email,
-      from: config.invite.from,
+      to_name: name,
+      to_email: email,
       subject: config.invite.subject,
       text,
       html,
     };
 
     try {
-      await sgMail.send(msg);
+      await sendEmail(msg);
       return { ok: true };
     } catch (error) {
       console.error(error);
@@ -782,7 +787,7 @@ class Service {
     let content = {
       message,
       tags: ['broadcasting'],
-    }
+    };
 
     // send message to SEC
     await Messagery.sendNotification({ id: 0 }, `room_c1_t1`, {
@@ -793,8 +798,8 @@ class Service {
       },
       userId: 0,
       tool: {
-        type: "native",
-        element: "SendingBroadcastNotification"
+        type: 'native',
+        element: 'SendingBroadcastNotification',
       },
     });
 
@@ -804,13 +809,13 @@ class Service {
         content,
         userId: 0,
         tool: {
-          type: "native",
-          element: "BroadcastNotification"
+          type: 'native',
+          element: 'BroadcastNotification',
         },
       });
-    };
+    }
 
-    return { success: true }
+    return { success: true };
   }
 
   async signup(password, uuid) {
@@ -914,7 +919,7 @@ class Service {
 
     /****************
      * NOTIFICACAO
-    *****************/
+     *****************/
 
     /* se for isADM, notificacao e' para o contato da sec executiva */
     /* se nao for isADM, descobre moderadores, se nao tiver moderador, envia para a sec executiva */
@@ -932,7 +937,7 @@ class Service {
           type: Sequelize.QueryTypes.SELECT,
         },
       );
-      if (total > 0) to = 'gt'
+      if (total > 0) to = 'gt';
     }
 
     let content = {
@@ -942,12 +947,13 @@ class Service {
       userName: user.name,
       isADM,
       to,
-    }
+    };
 
     let room = `room_c${communityId}_t1`;
     if (to === 'sec') {
       // descobre a comunidade adm da comunidade referida
-      const adms = await db.instance().query(`
+      const adms = await db.instance().query(
+        `
       select
         p.adm_community_id
       from community_types ct
@@ -959,7 +965,7 @@ class Service {
           replacements: { communityId },
           type: Sequelize.QueryTypes.SELECT,
         },
-      )
+      );
 
       if (adms.length && adms[0].adm_community_id) room = `room_c${adms[0].adm_community_id}_t1`;
     }
@@ -968,8 +974,8 @@ class Service {
       content,
       userId: 0,
       tool: {
-        type: "native",
-        element: "ParticipationNotification"
+        type: 'native',
+        element: 'ParticipationNotification',
       },
     });
 
@@ -980,7 +986,8 @@ class Service {
     /* type: MEMBER */
 
     // recupera as comunidades do usuário
-    const communities = await db.instance().query(`
+    const communities = await db.instance().query(
+      `
     select
       coalesce(array_agg(dm."communityId"::text), '{}') as communities,
 	    coalesce(max(dm."order"),0)::integer as "max_order"
@@ -995,7 +1002,7 @@ class Service {
 
     // verifica se já é membro da comunidade em questão
     // se já é membro da comunidade, retorna
-    if (communities[0].communities.includes(String(communityId))) return { error: 'already_in_community' }
+    if (communities[0].communities.includes(String(communityId))) return { error: 'already_in_community' };
 
     // inclui como membro da comunidade em questao
     await db.instance().query(
@@ -1037,7 +1044,8 @@ class Service {
     }
 
     // recupera a rede da comunidade em questão
-    const networks = await db.instance().query(`
+    const networks = await db.instance().query(
+      `
     select p.network_community_id::text
     from dorothy_communities dc
     inner join community_types ct on ct.alias = trim(dc.alias)
@@ -1053,9 +1061,7 @@ class Service {
     // se não há rede retorna
     let result;
     if (!networks.length || !networks[0].network_community_id) {
-
-      result = { success: true, network: null }
-
+      result = { success: true, network: null };
     } else {
       // verifica se usuário já é membdo a rede da comunidade em questão
       if (!communities[0].communities.includes(networks[0].network_community_id)) {
@@ -1065,13 +1071,18 @@ class Service {
             values(:communityId, :userId, :type, NOW(), NOW(), :order)
             `,
           {
-            replacements: { communityId: networks[0].network_community_id, userId, type: 'member', order: communities[0].max_order + 1 },
+            replacements: {
+              communityId: networks[0].network_community_id,
+              userId,
+              type: 'member',
+              order: communities[0].max_order + 1,
+            },
             type: Sequelize.QueryTypes.INSERT,
           },
         );
       }
 
-      result = { success: true, network: networks[0].network_community_id }
+      result = { success: true, network: networks[0].network_community_id };
     }
 
     // comando instantane para atualizar GTs do usuário
@@ -1081,7 +1092,8 @@ class Service {
   }
 
   async getTotalMembersInPerspective(perspective_id) {
-    const members = await db.instance().query(`
+    const members = await db.instance().query(
+      `
       select count(distinct dm."userId")::integer as total
       from dorothy_communities dc
       inner join dorothy_members dm on dm."communityId" = dc.id
