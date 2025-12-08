@@ -5,14 +5,17 @@ const { sendError } = require('dorothy-dna-services').util;
 
 const entity = require('./index');
 
-/* v2 */
-
 router.get('/', async (req, res) => {
-  const { avoid } = req.query;
+  const { page, order, direction, limit, filter } = req.query;
 
   try {
-
-    const result = await entity.list(avoid?.length ? avoid.split(',') : []);
+    const result = await entity.list({
+      filter,
+      page: page ? parseInt(page) : 1,
+      order: order ? order : 'nome',
+      direction: direction ? direction : 'ASC',
+      limit: limit && limit !== 'none' ? parseInt(limit) : 10,
+    });
 
     res.json(result);
   } catch (ex) {
@@ -20,30 +23,28 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+router.get('/similar/:id/:level?', async (req, res) => {
+  const { id, level } = req.params;
 
   try {
-      const result = await entity.get(id);
-
-      res.json(result);
-  } catch (ex) {
-      sendError(res, ex, 500);
-  }
-});
-
-router.post("/", async (req, res) => {
-  const model = req.body;
-
-  try {
-    const result = await entity.add(model);
+    const result = await entity.getSimilar(id, level || 40);
 
     res.json(result);
   } catch (ex) {
-    sendError(res, ex, 500);
+    sendError(res, ex);
   }
 });
 
-/* .v2 */
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await entity.get(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
 
 module.exports = router;

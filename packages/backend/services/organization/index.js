@@ -1,44 +1,87 @@
 const Sequelize = require('sequelize');
 const db = require('../database');
-const { applyWhere } = require('../../utils');
-
+const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect } = require('../../utils');
 
 class Service {
+  async list(config) {
+    let where = ['o."deletedAt" is NULL'];
 
-  /* v2 */
+    let replacements = {
+      limit: config.limit,
+      offset: config.offset || (config.page - 1) * config.limit,
+    };
 
-  async list(avoid) {
-    let where  = [];
-    if(avoid.length) where.push(`i.id not in (${avoid.join(',')})`);
+    if (config.filter) {
+      where.push(`o."nome" ilike '%${config.filter}%'`); // NOT PROTECTED!!!
+    }
 
-    const list = await db.instance().query(`
-      select i.id, i.nome as "name" 
-      from organizacoes i  
-      ${applyWhere(where)}    
-      order by i.nome
-        `, {
-      type: Sequelize.QueryTypes.SELECT,
-    });
+    const entities = await db.instance().query(
+      `
+    select
+        o.id,
+        o."nome",
+        o."legacy",
+        count(*) OVER() AS total_count
+    from organizacoes o
+    ${applyWhere(where)}
+    order by ${`"${protect.order(config.order)}" ${protect.direction(config.direction)}, o.nome`}
+    LIMIT :limit
+    OFFSET :offset
+    `,
+      {
+        replacements,
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
-    return { list }
+    let preparedEntities = entities;
+
+    /* pages (count), hasPrevious, hasNext */
+    const total = entities.length ? parseFloat(entities[0]['total_count']) : 0;
+    const rawPages = entities.length ? parseInt(total) / config.limit : 0;
+    let pages = rawPages === Math.trunc(rawPages) ? rawPages : Math.trunc(rawPages) + 1;
+    let hasPrevious = config.page > 1;
+    let hasNext = config.page !== pages;
+
+    return {
+      entities: preparedEntities,
+      pages,
+      total,
+      hasPrevious,
+      hasNext,
+    };
   }
 
   async get(id) {
-    const entity = await db.models['Organization'].findByPk(id);
-
-    return entity
+    return await db.models['Organization'].findByPk(id);
   }
 
-  async add(entity) {
+  async getSimilar(id, level) {
+    const realLevel = level / 100; // 0.1 - 0.5
 
-    entity.segmentos = entity.segmentos?.map(s => s.id);
+    // recupera o produto
+    const orgModel = await this.get(id);
 
-    const e = await db.models['Organization'].create(entity);
+    const entities = await db.instance().query(
+      `
+    with orgs as (
+      select o.id, o."nome", unaccent(lower(o."nome")) as "simplerName"
+      from organizacoes o
+      where o."deletedAt" is NULL
+    )
+    select o.id, o."nome"
+    from orgs o
+    where similarity(lower(o."simplerName")::text,unaccent(lower(:name))) > :realLevel
+    and o.id <> :id
+    `,
+      {
+        replacements: { id, realLevel, name: orgModel.get('nome') },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
-    return e;
+    return entities;
   }
-
-  /* .v2 */
 }
 
 const singletonInstance = new Service();

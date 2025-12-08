@@ -36,6 +36,8 @@ const tools = {
   BasicReportNotification: lazy(() => import('./notifications/BasicReportNotification')),
   NewContactFromSite: lazy(() => import('./notifications/NewContactFromSite')),
   NewGeneralContactFromSite: lazy(() => import('./notifications/NewGeneralContactFromSite')),
+
+  ORGTest: lazy(() => import('./ORGTest')),
 };
 
 export default tools;
