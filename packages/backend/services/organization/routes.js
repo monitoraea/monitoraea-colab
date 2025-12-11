@@ -23,8 +23,9 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/similar/:id/:level?', async (req, res) => {
-  const { id, level } = req.params;
+router.get('/similar/:id', async (req, res) => {
+  const { id } = req.params;
+  const { level } = req.query;
 
   try {
     const result = await entity.getSimilar(id, level || 40);
