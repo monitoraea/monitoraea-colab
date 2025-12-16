@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../database');
 const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect } = require('../../utils');
+const removeAccents = require('remove-accents');
 
 class Service {
   async list(config) {
@@ -12,7 +13,7 @@ class Service {
     };
 
     if (config.filter) {
-      where.push(`o."nome" ilike '%${config.filter}%'`); // NOT PROTECTED!!!
+      where.push(`unaccent(o."nome") ilike '%${removeAccents(config.filter)}%'`); // NOT PROTECTED!!!
     }
 
     const entities = await db.instance().query(
