@@ -29,3 +29,15 @@
   gap: 20px;
   margin-top: 10px;
 }
+
+.similar_orgs {
+  display: flex;
+
+  .org_id {
+    min-width: 70px;
+  }
+
+  .org_name {
+    font-weight: 500;
+  }
+}

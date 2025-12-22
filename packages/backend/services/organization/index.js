@@ -74,6 +74,7 @@ class Service {
     from orgs o
     where similarity(lower(o."simplerName")::text,unaccent(lower(:name))) > :realLevel
     and o.id <> :id
+    order by 2
     `,
       {
         replacements: { id, realLevel, name: orgModel.get('nome') },

@@ -290,8 +290,9 @@ const View = ({ id }) => {
                 {similars &&
                   similars.map(s => (
                     <div className={styles.similarListItem} key={s.id}>
-                      <span onClick={() => changeRoute({ params: [s.id] })} className={styles.goProduct}>
-                        {s.nome} ({s.id})
+                      <span onClick={() => changeRoute({ params: [s.id] })} className={styles.similar_orgs}>
+                        <span className={styles.org_id}>#{s.id}</span>
+                        <span className={styles.org_name}>{s.nome}</span>
                       </span>
                     </div>
                   ))}
