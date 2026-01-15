@@ -1,0 +1,24 @@
+@use '../../sass/theme/app_variables' as *;
+
+.nenhum {
+    font-weight: bold;
+    text-align: center;
+}
+
+.files {
+    ul {
+        li {
+            line-height: 0.5rem;
+
+            &.url {
+                cursor: pointer;
+                text-decoration: none;
+
+                &:hover {
+                    font-weight: 600;
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}

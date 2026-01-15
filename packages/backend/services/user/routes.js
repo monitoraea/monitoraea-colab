@@ -128,6 +128,19 @@ router.get('/has_thumb', async (req, res) => {
 });
 
 /* TODO */
+router.get('/files', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await entity.getFiles(res.locals.user.id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
+/* TODO */
 router.get('/info', async (req, res) => {
   const { id } = req.params;
 

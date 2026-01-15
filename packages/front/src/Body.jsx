@@ -9,6 +9,7 @@ import SignupPanel from './components/Login/SignupPanel';
 import ParticipatePanel from './components/Login/ParticipatePanel';
 import MyArea from './components/MyArea';
 import Profile from './components/Profile';
+import MyFiles from './components/MyFiles';
 import Home from './components/Home';
 
 export default function Body() {
@@ -87,6 +88,20 @@ export default function Body() {
               <Navbar />
               <div className="page-wrapper">
                 <Profile />
+              </div>
+            </>
+          )}
+          {!isLogged && <Redirect to={`/login/?next=${location.pathname}`} />}
+        </Route>
+
+
+
+        <Route path="/meus_arquivos">
+          {isLogged && (
+            <>
+              <Navbar />
+              <div className="page-wrapper">
+                <MyFiles />
               </div>
             </>
           )}

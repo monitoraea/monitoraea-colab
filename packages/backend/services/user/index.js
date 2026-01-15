@@ -238,6 +238,24 @@ class Service {
     return { success: true };
   }
 
+  async getFiles(user_id) {
+    const entities = await db.instance().query(
+    `
+    select *
+    from user_files uf 
+    where uf.user_id = :user_id
+    and uf."deletedAt" is null
+    order by uf.title
+    `,
+      {
+        replacements: { user_id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return entities;
+  }
+
   async getExtendedInfo(id) {
     const entities = await db.instance().query(
       `

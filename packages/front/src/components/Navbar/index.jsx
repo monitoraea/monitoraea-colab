@@ -422,6 +422,7 @@ export default function Navbar() {
               <MenuItem onClick={openProfile}>Informações de perfil</MenuItem>
               <MenuItem onClick={openProfileImage}>{hasThumb ? <>Alterar a</> : <>Enviar</>} foto do perfil</MenuItem>
               <MenuItem onClick={handleChangePasswwordRequest}>Trocar senha</MenuItem>
+              <MenuItem onClick={() => history.push('/meus_arquivos')}>Meus arquivos</MenuItem>
               {/* <MenuItem onClick={openPerspectives}>Perspectivas</MenuItem> */}
               <MenuItem onClick={handleLogout}>Sair</MenuItem>
 
