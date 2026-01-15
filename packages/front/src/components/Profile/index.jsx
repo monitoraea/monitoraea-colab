@@ -41,7 +41,7 @@ export default function InformationsTab() {
 
   //get commission_data
   const { data } = useQuery(['user_info', { user_id: user.id }], {
-    queryFn: async () => (await axios.get(`${server}user/${user.id}/draft`)).data,
+    queryFn: async () => (await axios.get(`${server}user/${user.id}REMOVER!/draft`)).data, // TODO: REMOVER user.id! servidor tem o id logado pelo token!!
     retry: false,
     refetchOnWindowFocus: false,
   });
