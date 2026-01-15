@@ -3,7 +3,7 @@ const db = require('../database');
 
 const { applyJoins, applyWhere, getSegmentedId } = require('../../utils');
 
-const { sendEmail } = require('../email/index')
+const { sendEmail } = require('../email/index');
 
 const crypto = require('crypto');
 
@@ -25,7 +25,7 @@ const perspectives_networks = {
   pppzcm: process.env.PPPZCM_NETWORK_GT,
   ciea: process.env.CIEA_NETWORK_GT,
   ppea: process.env.PPEA_NETWORK_GT,
-}
+};
 
 class Service {
   /* Entity */
@@ -49,28 +49,37 @@ class Service {
   }
 
   async thumb(id) {
-    const entities = await db.instance().query(`
+    const entities = await db.instance().query(
+      `
     SELECT u.id, u.avatar
     from dorothy_users u
     where u.id = :id
-    `, {
-      replacements: { id },
-      type: Sequelize.QueryTypes.SELECT,
-    });
+    `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
     /* Tem foto? Nao tem? */
 
     if (!entities.length || !entities[0].avatar) {
-      return await s3.getObject({ // S3
-        Bucket: s3BucketName,
-        Key: `users/no_photo.png`,
-      }).promise();
+      return await s3
+        .getObject({
+          // S3
+          Bucket: s3BucketName,
+          Key: `users/no_photo.png`,
+        })
+        .promise();
     }
 
-    return await s3.getObject({ // S3
-      Bucket: s3BucketName,
-      Key: this.getFileKey(id, entities[0].avatar),
-    }).promise();
+    return await s3
+      .getObject({
+        // S3
+        Bucket: s3BucketName,
+        Key: this.getFileKey(id, entities[0].avatar),
+      })
+      .promise();
   }
 
   async signup({ email, name, password, perspectives }) {
@@ -120,11 +129,10 @@ class Service {
 
     return {
       following: !!entities.length,
-    }
+    };
   }
 
   async follow(userId, room, communityId, following) {
-
     const entities = await db.instance().query(
       `
         SELECT f.id
@@ -154,7 +162,6 @@ class Service {
     if (!entities.length && following) {
       /* INSERT */
 
-
       await db.instance().query(
         `
         INSERT INTO dorothy_following("userId", room, "communityId")
@@ -171,58 +178,69 @@ class Service {
   }
 
   async setThumb(user, thumb) {
-
     const fileName = `${dayjs().format('YYYY.MM.DD')}.jpg`;
 
-    await s3.putObject({
-      Bucket: s3BucketName,
-      Key: this.getFileKey(user.id, fileName),
-      Body: thumb.buffer,
-      ACL: 'public-read',
-      ContentEncoding: 'base64',
-      ContentType: 'image/jpeg',
-    }).promise()
+    await s3
+      .putObject({
+        Bucket: s3BucketName,
+        Key: this.getFileKey(user.id, fileName),
+        Body: thumb.buffer,
+        ACL: 'public-read',
+        ContentEncoding: 'base64',
+        ContentType: 'image/jpeg',
+      })
+      .promise();
 
-    await db.instance().query(`
+    await db.instance().query(
+      `
     UPDATE dorothy_users
     SET avatar = :fileName
     where id = :id
-    `, {
-      replacements: { id: user.id, fileName },
-      type: Sequelize.QueryTypes.UPDATE,
-    });
+    `,
+      {
+        replacements: { id: user.id, fileName },
+        type: Sequelize.QueryTypes.UPDATE,
+      },
+    );
 
-    return { success: true }
+    return { success: true };
   }
 
   async hasThumb(id) {
-    const entities = await db.instance().query(`
+    const entities = await db.instance().query(
+      `
     SELECT u.id, u.avatar
     from dorothy_users u
     where u.id = :id
-    `, {
-      replacements: { id },
-      type: Sequelize.QueryTypes.SELECT,
-    });
+    `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
-    return (!!entities.length && !!entities[0].avatar);
+    return !!entities.length && !!entities[0].avatar;
   }
 
   async removeThumb(id) {
-    await db.instance().query(`
+    await db.instance().query(
+      `
     UPDATE dorothy_users
     SET avatar = NULL
     where id = :id
-    `, {
-      replacements: { id },
-      type: Sequelize.QueryTypes.UPDATE,
-    });
+    `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.UPDATE,
+      },
+    );
 
     return { success: true };
   }
 
   async getExtendedInfo(id) {
-    const entities = await db.instance().query(`
+    const entities = await db.instance().query(
+      `
     SELECT
         du.id,
         du."name",
@@ -230,46 +248,68 @@ class Service {
     from dorothy_users du
     left join user_ext_info u on u.id = du.id
     where du.id = :id
-    `, {
-      replacements: { id },
-      type: Sequelize.QueryTypes.SELECT,
-    });
+    `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
 
     return entities[0];
   }
 
-
-
   async setExtendedInfo(id, data) {
-    await db.instance().query(`
+    await db.instance().query(
+      `
     UPDATE dorothy_users
     set "name" = :name
     where id = :id
-    `, {
-      replacements: { id, name: data.name },
-      type: Sequelize.QueryTypes.UPDATE,
-    });
+    `,
+      {
+        replacements: { id, name: data.name },
+        type: Sequelize.QueryTypes.UPDATE,
+      },
+    );
 
-    await db.instance().query(`
+    await db.instance().query(
+      `
     insert into user_ext_info(id, about)
     values(:id, :about)
     ON CONFLICT ON CONSTRAINT user_ext_info_pk
     do update set about = :about
-    `, {
-      replacements: { id, about: data.about },
-      type: Sequelize.QueryTypes.UPDATE,
-    });
+    `,
+      {
+        replacements: { id, about: data.about },
+        type: Sequelize.QueryTypes.UPDATE,
+      },
+    );
 
-    return { success: true }
+    return { success: true };
   }
 
   getFileKey(id, filename) {
-
     const segmentedId = getSegmentedId(id);
 
     return `users/${segmentedId}/original/${filename}`;
   }
 
+  async getDraft(id) {
+    const entity = await db.instance().query(
+      `
+      SELECT
+        p.*
+      FROM dorothy_users u
+      LEFT JOIN profiles p on p.user_id = u.id
+      WHERE u.id = :id
+        `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return entity[0];
+  }
 }
 
 const singletonInstance = new Service();

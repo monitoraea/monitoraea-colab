@@ -44,4 +44,5 @@ module.exports = [
   'iniciativa_timeline',
   'educom_clima',
   'educom_clima_timeline',
+  'area_interesse',
 ];

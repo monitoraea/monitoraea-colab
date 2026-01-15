@@ -8,6 +8,7 @@ import InvitePanel from './components/Login/InvitePanel';
 import SignupPanel from './components/Login/SignupPanel';
 import ParticipatePanel from './components/Login/ParticipatePanel';
 import MyArea from './components/MyArea';
+import Profile from './components/Profile';
 import Home from './components/Home';
 
 export default function Body() {
@@ -32,14 +33,12 @@ export default function Body() {
       });
     else if (query.get('next')) window.location = query.get('next');
     else if (query.get('portal')) window.location = query.get('portal');
-    else history.push('/')
-  }
+    else history.push('/');
+  };
 
   return (
     <>
-
       <Switch>
-
         <Route path="/cadastro">
           <div className="page-wrapper login">
             <SignupPanel />
@@ -71,36 +70,54 @@ export default function Body() {
         </Route>
 
         <Route path="/minha_area">
-          {isLogged && (<>
-            <Navbar />
-            <div className="page-wrapper">
-              <MyArea />
-            </div>
-          </>)}
+          {isLogged && (
+            <>
+              <Navbar />
+              <div className="page-wrapper">
+                <MyArea />
+              </div>
+            </>
+          )}
+          {!isLogged && <Redirect to={`/login/?next=${location.pathname}`} />}
+        </Route>
+
+        <Route path="/perfil">
+          {isLogged && (
+            <>
+              <Navbar />
+              <div className="page-wrapper">
+                <Profile />
+              </div>
+            </>
+          )}
           {!isLogged && <Redirect to={`/login/?next=${location.pathname}`} />}
         </Route>
 
         {!isLogged && (
           <Route>
-            <Redirect to={`${location.pathname.length && location.pathname !== '/' ? `/login/?next=${location.pathname}` : 'login'}`} />
+            <Redirect
+              to={`${location.pathname.length && location.pathname !== '/' ? `/login/?next=${location.pathname}` : 'login'}`}
+            />
           </Route>
         )}
 
-        {isLogged && user.membership.length && (<>
-          <Route path="/" exact>
-            <Navbar />
-            <div className="page-wrapper">
-              <Home />
-            </div>
-          </Route>
+        {isLogged && user.membership.length && (
+          <>
+            <Route path="/" exact>
+              <Navbar />
+              <div className="page-wrapper">
+                <Home />
+              </div>
+            </Route>
 
-          <Route path="/:community/:community_id">
-            <Navbar />
-            <div className="page-wrapper">
-              <CommunityRouter />
-            </div>
-          </Route>
-        </>)}
+            <Route path="/:community/:community_id">
+              <Navbar />
+              <div className="page-wrapper">
+                <CommunityRouter />
+              </div>
+            </Route>
+          </>
+        )}
         {isLogged && !user.membership.length && (
           <Route>
             <Navbar />

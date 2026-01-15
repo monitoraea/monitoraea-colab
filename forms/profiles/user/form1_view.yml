@@ -1,0 +1,22 @@
+- type: row
+  elements:
+    - type: row
+      elements:
+        - type: column
+          size: 3
+          key: identifier
+        - type: column
+          size: 3
+          key: permalink
+
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: apresentacao
+
+    - type: row
+      elements:
+        - type: column
+          size: 4
+          key: areas_interesse

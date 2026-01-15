@@ -1,0 +1,65 @@
+fields:
+  - key: identifier
+    block: detalhes
+    type: text
+    title: Identificador
+    size: 6
+
+  - key: permalink
+    block: detalhes
+    type: text
+    title: Permalink
+    size: 6
+
+  - key: apresentacao
+    block: detalhes
+    type: textarea
+    title: Apresentação
+    size: 6
+
+  - key: areas_interesse
+    block: detalhes
+    type: options
+    remote: area_interesse
+    title: Áreas de interesse
+    size: 6
+
+  - key: contato_descricao
+    block: contatos
+    type: text
+    title: Nome %index%
+    size: 6
+
+  - key: contato_info
+    block: contatos
+    type: integer
+    title: Contato %index%
+    size: 6
+
+  - key: link_descricao
+    block: links
+    type: text
+    title: Descrição %index%
+    size: 6
+
+  - key: link_info
+    block: links
+    type: integer
+    title: Link %index%
+    size: 6
+
+blocks:
+  - key: detalhes
+    title: Detalhes do usuário
+
+  - key: contatos
+    iterate:
+      target: none
+      index: default
+      add: Adicionar contato
+
+  - key: links
+    iterate:
+      target: none
+      index: default
+      add: Adicionar link
