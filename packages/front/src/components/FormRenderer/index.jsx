@@ -968,7 +968,7 @@ export function mapForm2Data(data, form) {
 
   // multi_autocomplete
   for (let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
-    mappedData[f.key] = data[f.key].map(d => d.value);
+    mappedData[f.key] = data[f.key] ? data[f.key].map(d => d.value) : [];
   }
 
   // async_autocomplete

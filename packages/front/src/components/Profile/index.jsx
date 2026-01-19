@@ -28,8 +28,8 @@ import form_view from '../../../../../forms/profiles/user/form1_view.yml';
 
 export default function InformationsTab() {
   /* hooks */
-  const { server } = useDorothy();
   const { user } = useUser();
+  const { server } = useDorothy();
   const queryClient = useQueryClient();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
@@ -39,9 +39,9 @@ export default function InformationsTab() {
   const [files, _files] = useState({});
   const [originalEntity, _originalEntity] = useState({});
 
-  //get commission_data
-  const { data } = useQuery(['user_info', { user_id: user.id }], {
-    queryFn: async () => (await axios.get(`${server}user/${user.id}REMOVER!/draft`)).data, // TODO: REMOVER user.id! servidor tem o id logado pelo token!!
+  //get user_data
+  const { data } = useQuery(['user_info'], {
+    queryFn: async () => (await axios.get(`${server}user/draft`)).data,
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -62,6 +62,7 @@ export default function InformationsTab() {
   };
 
   const handleSave = async () => {
+
     /* save */
     const data = getFormData(form, entity, files); // prepare information (Renderer)
 
@@ -79,7 +80,7 @@ export default function InformationsTab() {
       let method, url;
       /* edit */
       method = 'put';
-      url = `${server}commission/${user.id}/draft`;
+      url = `${server}user/draft`;
 
       /* const { data: response } =  */ await axios({
         method,
@@ -90,7 +91,7 @@ export default function InformationsTab() {
 
       // console.log(response);
 
-      queryClient.invalidateQueries('commission_info');
+      queryClient.invalidateQueries('user_info');
 
       // onSave(!_.isEqual(originalEntity, entity));
 

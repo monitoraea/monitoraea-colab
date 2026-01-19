@@ -5,9 +5,6 @@
         - type: column
           size: 3
           key: identifier
-        - type: column
-          size: 3
-          key: permalink
 
     - type: row
       elements:
@@ -20,3 +17,57 @@
         - type: column
           size: 4
           key: areas_interesse
+
+- type: row
+  block: contatos
+  elements:
+  - type: row
+    block: contatos_it
+    elements:
+      - type: column
+        size: 3
+        key: contato_descricao
+      - type: column
+        size: 3
+        key: contato_info
+      - type: column
+        size: 1
+        elements:
+          - type: remove
+  - type: add
+    block: contatos_it
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar contato
+
+- type: row
+  block: links
+  elements:
+  - type: row
+    block: links_it
+    elements:
+      - type: column
+        size: 3
+        key: link_descricao
+      - type: column
+        size: 3
+        key: link_info
+      - type: column
+        size: 1
+        elements:
+          - type: remove
+  - type: add
+    block: links_it
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar link

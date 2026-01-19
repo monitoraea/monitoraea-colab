@@ -193,11 +193,9 @@ router.post('/thumb', upFields, async (req, res) => {
 (async function setupForms() {
   const form1 = await FormManager.getForm('profiles/user/form1');
 
-  router.get('/:id/draft', async (req, res) => {
-    const { id } = req.params;
-
+  router.get('/draft', async (req, res) => {
     try {
-      const result = await entity.getDraft(id);
+      const result = await entity.getDraft(res.locals.user.id);
 
       res.json(result);
     } catch (ex) {
@@ -205,14 +203,13 @@ router.post('/thumb', upFields, async (req, res) => {
     }
   });
 
-  router.put('/:id/draft', upload.fields(FormManager.upFields(form1)), async (req, res) => {
+  router.put('/draft', upload.fields(FormManager.upFields(form1)), async (req, res) => {
     try {
       const result = await entity.saveDraft(
-        res.locals.user,
         form1,
         FormManager.parse(form1, req.body.entity) /* Transformations */,
         req.files,
-        req.params.id,
+        res.locals.user.id,
       );
 
       res.json(result);

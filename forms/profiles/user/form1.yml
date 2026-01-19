@@ -5,12 +5,6 @@ fields:
     title: Identificador
     size: 6
 
-  - key: permalink
-    block: detalhes
-    type: text
-    title: Permalink
-    size: 6
-
   - key: apresentacao
     block: detalhes
     type: textarea
@@ -19,32 +13,37 @@ fields:
 
   - key: areas_interesse
     block: detalhes
-    type: options
-    remote: area_interesse
+    type: multi_autocomplete
+    tag: true
+    options:
+    - value: 1
+      label: Área 1
+    - value: 19
+      label: Área 2
     title: Áreas de interesse
     size: 6
 
   - key: contato_descricao
-    block: contatos
+    block: contatos_it
     type: text
-    title: Nome %index%
+    title: Título %index%
     size: 6
 
   - key: contato_info
-    block: contatos
-    type: integer
+    block: contatos_it
+    type: text
     title: Contato %index%
     size: 6
 
   - key: link_descricao
-    block: links
+    block: links_it
     type: text
-    title: Descrição %index%
+    title: Título %index%
     size: 6
 
   - key: link_info
-    block: links
-    type: integer
+    block: links_it
+    type: text
     title: Link %index%
     size: 6
 
@@ -53,13 +52,25 @@ blocks:
     title: Detalhes do usuário
 
   - key: contatos
+    title: Contatos
+    elements:
+      - type: block
+        key: contatos_it
+
+  - key: contatos_it
+    iterate:
+      target: none
+      index: default
+      add: Adicionar contato  
+
+  - key: links
+    title: Links
+    elements:
+      - type: block
+        key: links_it
+
+  - key: links_it
     iterate:
       target: none
       index: default
       add: Adicionar contato
-
-  - key: links
-    iterate:
-      target: none
-      index: default
-      add: Adicionar link

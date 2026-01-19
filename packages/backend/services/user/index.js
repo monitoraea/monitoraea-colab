@@ -240,7 +240,7 @@ class Service {
 
   async getFiles(user_id) {
     const entities = await db.instance().query(
-    `
+      `
     select *
     from user_files uf 
     where uf.user_id = :user_id
@@ -326,7 +326,67 @@ class Service {
       },
     );
 
-    return entity[0];
+    if(!entity.length) return null;
+
+    return {
+      ...entity[0],
+      contatos_it: entity[0].contatos, 
+      links_it: entity[0].links, 
+    };
+  }
+
+  async saveDraft(form, entity, files, id) {
+
+    const profile = await db.instance().query(
+      `
+      SELECT
+        id
+      FROM profiles p
+      WHERE p.user_id = :id
+        `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    let replacements = {
+      ...entity,
+      user_id: id,
+      areas_interesse: `{ ${entity.areas_interesse.join(',')} }`,
+      contatos: JSON.stringify(entity.contatos_it),
+      links: JSON.stringify(entity.links_it),
+    };
+
+    if (!profile.length) {
+      // NEW
+      await db.instance().query(
+        `
+      INSERT INTO profiles(user_id, identifier, apresentacao, areas_interesse, contatos, links)
+      VALUES(:user_id, :identifier, :apresentacao, :areas_interesse, :contatos, :links) 
+
+        `,
+        {
+          replacements,
+          type: Sequelize.QueryTypes.INSERT,
+        },
+      );
+    } else {
+      // TODO: UPDATE (id)
+      await db.instance().query(
+        `
+        UPDATE profiles
+        SET user_id = :user_id, identifier = :identifier, apresentacao = :apresentacao, areas_interesse = :areas_interesse, contatos = :contatos, links = :links
+        WHERE user_id = :user_id
+        `,
+        {
+          replacements,
+          type: Sequelize.QueryTypes.INSERT,
+        },
+      );
+    }
+
+    return true;
   }
 }
 
