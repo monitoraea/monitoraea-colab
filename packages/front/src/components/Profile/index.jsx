@@ -26,6 +26,7 @@ import form_view from '../../../../../forms/profiles/user/form1_view.yml';
 /* style */
 // import style from './information.module.scss';
 
+let timer;
 export default function InformationsTab() {
   /* hooks */
   const { user } = useUser();
@@ -38,6 +39,9 @@ export default function InformationsTab() {
   const [entity, _entity] = useState({});
   const [files, _files] = useState({});
   const [originalEntity, _originalEntity] = useState({});
+
+  const [problems, _problems] = useState([]);
+  const [nickOk, _nickOk] = useState(true);
 
   //get user_data
   const { data } = useQuery(['user_info'], {
@@ -56,12 +60,55 @@ export default function InformationsTab() {
     if (data) _originalEntity(data);
   }, [data]);
 
-  const handleDataChange = (entity, files) => {
-    _entity(entity);
+  let snackKey;
+  const handleDataChange = (new_entity, files) => {
+    if (entity.identifier !== new_entity.identifier) {
+      if(problems.includes('identifier')) _problems([])
+
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(async () => {
+        const available = await checkNick(new_entity.identifier);
+
+        
+        if (!available) {
+
+          _problems(['identifier']);
+
+          enqueueSnackbar('Este identificador já é utilizado em nossa rede!', {
+            variant: 'error',            
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+            },
+          });
+
+        }
+      }, 500)
+    }
+
+    _entity(new_entity);
     _files(files);
   };
 
+  const checkNick = async (nick) => {
+    const { data: available } = await axios.get(`${server}user/check_nick_availability/${nick}`);
+    return available;
+  }
+
   const handleSave = async () => {
+
+    let hasErrors = false;
+    let newErrors = [];
+
+    if (!entity.identifier || !entity.identifier.length) {
+      newErrors.push('identifier');
+      hasErrors = true;
+    }
+
+    _problems(newErrors);
+    if (hasErrors) {
+      return;
+    }
 
     /* save */
     const data = getFormData(form, entity, files); // prepare information (Renderer)
@@ -152,12 +199,13 @@ export default function InformationsTab() {
                     prefix: 'user.',
                     type: 'info',
                   }}
+                  problems={problems}
                 />
 
                 <div className="section-header">
                   <div className="section-title"></div>
                   <div className="section-actions">
-                    <button className="button-primary" onClick={handleSave}>
+                    <button disabled={problems.length} className="button-primary" onClick={handleSave}>
                       <FilePlus></FilePlus>
                       Gravar
                     </button>

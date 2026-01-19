@@ -29,6 +29,23 @@ const perspectives_networks = {
 
 class Service {
   /* Entity */
+  async checkNickAvailability(nick, user_id) {
+    const entities = await db.instance().query(
+      `
+    SELECT p.id
+    from profiles p
+    where p.identifier = :nick
+    and p.user_id <> :user_id
+    `,
+      {
+        replacements: { nick, user_id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return !entities.length; // TRUE: availabe, FALSE: not available
+  }
+
   async requestRecoveryCode(email) {
     const { code, user } = await User.requestRecoveryCode(email);
 

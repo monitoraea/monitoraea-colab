@@ -12,6 +12,19 @@ const upload = multer(); // Memory
 const entity = require('./index');
 
 /* TODO */
+router.get('/check_nick_availability/:nick', async (req, res) => {
+  const { nick } = req.params;
+
+  try {
+    const result = await entity.checkNickAvailability(nick, res.locals.user.id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
+/* TODO */
 router.get('/request_recovery_code/:email', async (req, res) => {
   const { email } = req.params;
 
