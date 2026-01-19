@@ -24,7 +24,7 @@ import form from '../../../../../forms/profiles/user/form1.yml';
 import form_view from '../../../../../forms/profiles/user/form1_view.yml';
 
 /* style */
-// import style from './information.module.scss';
+import styles from './styles.module.scss';
 
 let timer;
 export default function InformationsTab() {
@@ -177,7 +177,7 @@ export default function InformationsTab() {
         <div className="page-content">
           <div className="page-body">
             <Card middle /*  sx={{ button: { color: 'inherit' } }} */ headerless>
-              <div className="p-3">
+              <div className={styles.body}>
                 <div className="section-header">
                   <div className="section-title"></div>
                   <div className="section-actions">

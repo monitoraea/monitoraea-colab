@@ -9,13 +9,13 @@
     - type: row
       elements:
         - type: column
-          size: 8
+          size: 12
           key: apresentacao
 
     - type: row
       elements:
         - type: column
-          size: 4
+          size: 8
           key: areas_interesse
 
 - type: row
@@ -25,10 +25,10 @@
     block: contatos_it
     elements:
       - type: column
-        size: 3
+        size: 6
         key: contato_descricao
       - type: column
-        size: 3
+        size: 5
         key: contato_info
       - type: column
         size: 1
@@ -52,10 +52,10 @@
     block: links_it
     elements:
       - type: column
-        size: 3
+        size: 6
         key: link_descricao
       - type: column
-        size: 3
+        size: 5
         key: link_info
       - type: column
         size: 1
