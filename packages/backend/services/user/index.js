@@ -29,6 +29,46 @@ const perspectives_networks = {
 
 class Service {
   /* Entity */
+  async getProfile(identifier) {
+    let where = [];
+
+    if (isNaN(identifier)) {
+      where.push('p.identifier = :identifier')
+    } else {
+      where.push('du.id = :identifier')
+    }
+
+    const entities = await db.instance().query(
+      `
+    select
+      p.*,
+      p.id as profile_id,
+      du.id,
+      du.name,
+      du.avatar
+    from dorothy_users du
+    left join profiles p on p.user_id = du.id 
+    ${applyWhere(where)}
+    `,
+      {
+        replacements: { identifier },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if(entities.length) {
+      let profile = entities[0];
+
+      profile.filledProfile = (!!profile.profile_id);
+
+      profile.hasAvatar = (!!profile.avatar);
+      delete profile.avatar;
+
+      return profile;
+    }
+    return null;
+  }
+
   async checkNickAvailability(nick, user_id) {
     const entities = await db.instance().query(
       `
@@ -343,12 +383,12 @@ class Service {
       },
     );
 
-    if(!entity.length) return null;
+    if (!entity.length) return null;
 
     return {
       ...entity[0],
-      contatos_it: entity[0].contatos, 
-      links_it: entity[0].links, 
+      contatos_it: entity[0].contatos,
+      links_it: entity[0].links,
     };
   }
 

@@ -12,6 +12,19 @@ const upload = multer(); // Memory
 const entity = require('./index');
 
 /* TODO */
+router.get('/profile/:identifier', async (req, res) => {
+  const { identifier } = req.params;
+
+  try {
+    const result = await entity.getProfile(identifier);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+});
+
+/* TODO */
 router.get('/check_nick_availability/:nick', async (req, res) => {
   const { nick } = req.params;
 
