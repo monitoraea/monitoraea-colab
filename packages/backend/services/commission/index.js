@@ -204,7 +204,16 @@ class Service {
         c.plano_estadual_decreto,
         c.plano_estadual_lei,
         c.plano_estadual_arquivo,
-        c.membros
+        c.membros,
+        c.ppea_outra_tem,
+        c.ppea_outra_decreto,
+        c.ppea_outra_lei,
+        c.ppea_outra_arquivo,
+        c.tipo_colegiado,
+        c.tipo_colegiado_outro,
+        c.nivel_atuacao,
+        c.nivel_atuacao_outro,
+        c.coordenacao_quem
       FROM ciea.comissoes c
       inner join ufs u on u.id = c.uf
       WHERE c.id = :id
@@ -230,6 +239,7 @@ class Service {
       'ppea2',
       'programa_estadual',
       'plano_estadual',
+      'ppea_outra',
     ]) {
       if (document !== 'logo') commission[`${document}_tipo`] = null;
 
@@ -274,6 +284,7 @@ class Service {
         ppea2_arquivo: entity.ppea2_tipo === null ? null : undefined,
         programa_estadual_arquivo: entity.programa_estadual_tipo === null ? null : undefined,
         plano_estadual_arquivo: entity.plano_estadual_tipo === null ? null : undefined,
+        ppea_outra_arquivo: entity.ppea_outra_tipo === null ? null : undefined,
       },
       {
         where: { id },
@@ -305,6 +316,7 @@ class Service {
           : null,
       plano_estadual_arquivo:
         files.plano_estadual_arquivo && files.plano_estadual_arquivo.length ? files.plano_estadual_arquivo[0] : null,
+      ppea_outra_arquivo: files.ppea_outra_arquivo && files.ppea_outra_arquivo.length ? files.ppea_outra_arquivo[0] : null,
     };
 
     // !!!!! form.link_or_file_fields <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form
@@ -316,6 +328,7 @@ class Service {
       'ppea2',
       'programa_estadual',
       'plano_estadual',
+      'ppea_outra',
     ]) {
       if (entity[`${wFile}_tipo`] === 'link')
         await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');

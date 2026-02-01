@@ -28,3 +28,33 @@ lists:
       label: Instituição da Sociedade Civil
     - value: 6
       label: Instituição de outro segmento
+    - value: 7
+      label: Outro
+
+  - key: tipo_colegiado    
+    options:
+    - value: 1
+      label: Comitê assessor da PNEA
+    - value: 2
+      label: CIEA
+    - value: 3
+      label: CIMEA
+    - value: 4
+      label: Câmara Técnica de EA em Conselho de Política Pública
+    - value: 5
+      label: Câmara Técnica de EA em Conselho Gestor de UC
+    - value: 6
+      label: Câmara Técnica de EA em Comitê de Bacia Hidrográfica
+    - value: 7
+      label: Outro
+
+  - key: nivel_atuacao    
+    options:
+    - value: 1
+      label: Federal
+    - value: 2
+      label: Regional
+    - value: 3
+      label: Municipal
+    - value: 4
+      label: Outro

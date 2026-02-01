@@ -92,6 +92,30 @@ module.exports = (sequelize, DataTypes) => {
       indicadores: {
         type: DataTypes.JSONB,
       },
+      ppea_outra_tem: {
+        type: DataTypes.BOOLEAN,
+      },
+      ppea_outra_decreto: {
+        type: DataTypes.STRING,
+      },
+      ppea_outra_lei: {
+        type: DataTypes.STRING,
+      },
+      coordenacao_quem: {
+        type: DataTypes.JSONB,
+      },
+      tipo_colegiado: {
+        type: DataTypes.INTEGER,
+      },
+      tipo_colegiado_outro: {
+        type: DataTypes.STRING,
+      },
+      nivel_atuacao: {
+        type: DataTypes.INTEGER,
+      },
+      nivel_atuacao_outro: {
+        type: DataTypes.STRING,
+      },
     },
     {
       tableName: 'comissoes',
@@ -121,6 +145,9 @@ module.exports = (sequelize, DataTypes) => {
     })
     Commission.belongsTo(models["File"], {
       foreignKey: "plano_estadual_arquivo",
+    })
+    Commission.belongsTo(models["File"], {
+      foreignKey: "ppea_outra_arquivo",
     })
 
   }

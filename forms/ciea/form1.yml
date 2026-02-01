@@ -1,32 +1,70 @@
 fields:
 
-- key: logo_arquivo
+- key: tipo_colegiado
   block: detalhes
+  type: options
+  title: Tipo de Colegiado
+  size: 4
+  list: 
+    module: property
+    key: tipo_colegiado
+
+- key: tipo_colegiado_outro
+  block: detalhes
+  type: text
+  title: Especifique o tipo de colegiado
+  size: 6
+  show:
+    target:
+      key: tipo_colegiado
+      value: 7
+
+- key: nivel_atuacao
+  block: detalhes
+  type: options
+  title: Nível de atuação
+  size: 4
+  list: 
+    module: property
+    key: nivel_atuacao
+
+- key: nivel_atuacao_outro
+  block: detalhes
+  type: text
+  title: Especifique o nível de atuação
+  size: 6
+  show:
+    target:
+      key: nivel_atuacao
+      value: 4
+
+- key: logo_arquivo
+  block: detalhes2
   type: thumbnail
   title: Logotipo
   db_field: logo_arquivo
   size: 2
 
 - key: uf_nome
-  block: detalhes
+  block: detalhes2
   type: read_only
   title: Estado
   size: 3
 
 - key: regiao
-  block: detalhes
+  block: detalhes2
   type: read_only
   title: Região
   size: 3
 
 - key: data_criacao
-  block: detalhes
+  block: detalhes2
   type: yearpicker
   title: Data da criação
   size: 3
 
 - key: ativo
-  block: detalhes
+  block: detalhes2
   type: options
   title: Ativo
   size: 3
@@ -39,7 +77,7 @@ fields:
       label: 'Não'
 
 - key: link
-  block: detalhes
+  block: detalhes2
   type: text
   title: Link para o site
   size: 12
@@ -113,7 +151,7 @@ fields:
 - key: coordenacao
   block: coordenacao_block
   type: options
-  title: Órgão gestor
+  title: Tipo de órgão gestor
   size: 6
   list: 
     module: property
@@ -127,7 +165,37 @@ fields:
   show:
     target:
       key: coordenacao
-      value: [4,6]
+      value: [4,6,7]
+
+- key: nome
+  block: coordenacao_quem
+  type: text
+  title: Nome %index%
+  size: 6
+
+- key: email
+  block: coordenacao_quem
+  type: text
+  title: E-mail %index%
+  size: 6
+
+- key: telefone
+  block: coordenacao_quem
+  type: text
+  title: Telefone %index%
+  size: 6
+
+- key: mandato_ini
+  block: coordenacao_quem
+  type: monthpicker
+  title: Início do mandato %index%
+  size: 6
+
+- key: mandato_fim
+  block: coordenacao_quem
+  type: monthpicker
+  title: Fim do mandato %index%
+  size: 6
 
 - key: regimento_interno_tem
   block: regimento_interno_block
@@ -229,7 +297,7 @@ fields:
 - key: ppea_tem
   block: ppea_block
   type: options
-  title: Tem política pública?
+  title: Há Política Pública de EA?
   size: 4
   list: 
     module: property
@@ -286,7 +354,7 @@ fields:
 - key: ppea2_tem
   block: ppea2_block
   type: options
-  title: Tem política pública?
+  title: Existe?
   size: 4
   list: 
     module: property
@@ -343,7 +411,7 @@ fields:
 - key: programa_estadual_tem
   block: programa_estadual_block
   type: options
-  title: Tem programa estadual?
+  title: Acompanha?
   size: 4
   list: 
     module: property
@@ -400,7 +468,7 @@ fields:
 - key: plano_estadual_tem
   block: plano_estadual_block
   type: options
-  title: Tem plano estadual?
+  title: Desdobrou?
   size: 4
   list: 
     module: property
@@ -454,12 +522,74 @@ fields:
   title: Lei
   size: 3
 
+##
+
+- key: ppea_outra_tem
+  block: ppea_outra_block
+  type: options
+  title: Acompanha?
+  size: 4
+  list: 
+    module: property
+    key: sim_nao
+
+- key: ppea_outra_tipo
+  block: ppea_outra_tem_block
+  type: options
+  title: Tipo de documento
+  size: 2
+  onchange:
+    - key: ppea_outra_arquivo
+      value:
+    - key: ppea_outra_arquivo2
+      value:
+  list: 
+    module: property
+    key: tipo_arquivo
+
+- key: ppea_outra_arquivo
+  block: ppea_outra_tem_block
+  type: text
+  title: Link para a política pública
+  size: 6
+  show:
+    target:
+      key: ppea_outra_tipo
+      value: link
+
+- key: ppea_outra_arquivo2
+  block: ppea_outra_tem_block
+  type: file
+  accept: application/pdf
+  title: Arquivo da política pública
+  db_field: ppea_outra_arquivo
+  size: 6
+  show:
+    target:
+      key: ppea_outra_tipo
+      value: file
+
+- key: ppea_outra_decreto
+  block: ppea_outra_tem_block
+  type: text
+  title: Decreto
+  size: 3
+
+- key: ppea_outra_lei
+  block: ppea_outra_tem_block
+  type: text
+  title: Lei
+  size: 3
+
 ################################################################
 
 blocks:
 
   - key: detalhes
-    title: Detalhes da comissão
+    title: Sobre o colegiado
+
+  - key: detalhes2
+    title: Detalhes do colegiado
   
   - key: documento
     title: Documento de criação
@@ -478,7 +608,19 @@ blocks:
       add: Adicionar setor
   
   - key: coordenacao_block
+    title: Órgão Gestor
+
+  - key: coordenacao_quem_block
     title: Coordenação
+    elements:
+      - type: block 
+        key: coordenacao_quem
+
+  - key: coordenacao_quem
+    iterate:
+      target: none
+      index: default
+      add: Adicionar coordenador
 
   - key: regimento_interno_block
     title: Regimento interno
@@ -496,7 +638,7 @@ blocks:
     title: Organização interna
 
   - key: ppea_block
-    title: Política Pública Estadual de Educação Ambiental
+    title: Identifique a Política Pública de EA que o colegiado acompanha em seu nível de atuação
     elements:
       - type: block
         key: ppea_tem_block
@@ -508,7 +650,7 @@ blocks:
         value: true
 
   - key: ppea2_block
-    title: Política Pública Estadual de Mudanças do Clima
+    title: Existe Política Pública de Mudanças do Clima em seu nível de atuação?
     elements:
       - type: block
         key: ppea2_tem_block
@@ -520,7 +662,7 @@ blocks:
         value: true
   
   - key: programa_estadual_block
-    title: Programa Estadual de Educação Ambiental
+    title: A política de EA que este colegiado acompanha se desdobrou em um Programa de EA?
     elements:
       - type: block
         key: programa_estadual_tem_block
@@ -532,7 +674,7 @@ blocks:
         value: true
   
   - key: plano_estadual_block
-    title: Plano Estadual de Educação Ambiental     
+    title: A política de EA que este colegiado acompanha se desdobrou em um Plano de EA?     
     # show: # TODO este teste não funciona com VIEW
     #   target:
     #     key: programa_estadual_tem
@@ -547,6 +689,18 @@ blocks:
         key: plano_estadual_tem
         value: true
 
+  - key: ppea_outra_block
+    title: O colegiado acompanha alguma outra política pública?
+    elements:
+      - type: block
+        key: ppea_outra_tem_block
+
+  - key: ppea_outra_tem_block
+    show:
+      target:
+        key: ppea_outra_tem
+        value: true
+
 ################################################################
 # objetos livres não definida no protocolo, para fins de abastecer o servidor com mais informações
 
@@ -557,3 +711,4 @@ link_or_file_fields:
   - ppea2
   - programa_estadual
   - plano_estadual  
+  - ppea_outra

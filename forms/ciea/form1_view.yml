@@ -7,6 +7,28 @@
     - type: row
       elements:
       - type: column
+        size: 6
+        key: tipo_colegiado
+      - type: column
+        size: 6
+        key: tipo_colegiado_outro
+    - type: row
+      elements:
+      - type: column
+        size: 6
+        key: nivel_atuacao
+      - type: column
+        size: 6
+        key: nivel_atuacao_outro
+
+- type: separator
+
+- type: row
+  block: detalhes2
+  elements:        
+    - type: row
+      elements:
+      - type: column
         size: 2
         key: logo_arquivo
     - type: row
@@ -85,6 +107,8 @@
             elements:
               - type: button
                 title: Adicionar setor
+
+- type: separator
   
 - type: row
   block: coordenacao_block
@@ -95,6 +119,46 @@
     - type: column
       size: 6
       key: coordenacao_especifique
+
+- type: separator
+
+- type: row
+  block: coordenacao_quem_block
+  elements:
+  - type: row
+    block: coordenacao_quem # iterative!
+    elements:
+      - type: column
+        size: 3
+        key: nome
+      - type: column
+        size: 2
+        key: email
+      - type: column
+        size: 2
+        key: telefone
+      - type: column
+        size: 2
+        key: mandato_ini
+      - type: column
+        size: 2
+        key: mandato_fim
+      - type: column
+        size: 1
+        elements:
+          - type: remove
+  - type: add
+    block: coordenacao_quem # iterative - show if block shows!
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar coordenador
+
+- type: separator
 
 - type: row
   block: regimento_interno_block
@@ -142,6 +206,8 @@
               size: 6
               key: organizacao_interna_estrutura_especifique
 
+- type: separator
+
 - type: row
   block: ppea_block
   elements:
@@ -174,39 +240,6 @@
             - type: column
               size: 3
               key: ppea_lei
-
-- type: row
-  block: ppea2_block
-  elements:
-    - type: column
-      size: 4
-      key: ppea2_tem
-
-- type: row
-  block: ppea2_tem_block
-  elements:
-    - type: column
-      size: 12
-      elements:
-        - type: row
-          elements:
-            - type: column
-              size: 6
-              key: ppea2_tipo
-            - type: column
-              size: 6
-              key: ppea2_arquivo      
-            - type: column
-              size: 6
-              key: ppea2_arquivo2        
-        - type: row
-          elements:
-            - type: column
-              size: 3
-              key: ppea2_decreto
-            - type: column
-              size: 3
-              key: ppea2_lei
 
 - type: row
   block: programa_estadual_block
@@ -273,3 +306,69 @@
             - type: column
               size: 3
               key: plano_estadual_lei
+
+- type: row
+  block: ppea_outra_block
+  elements:
+    - type: column
+      size: 4
+      key: ppea_outra_tem
+
+- type: row
+  block: ppea_outra_tem_block
+  elements:
+    - type: column
+      size: 12
+      elements:
+        - type: row
+          elements:
+            - type: column
+              size: 6
+              key: ppea_outra_tipo
+            - type: column
+              size: 6
+              key: ppea_outra_arquivo      
+            - type: column
+              size: 6
+              key: ppea_outra_arquivo2        
+        - type: row
+          elements:
+            - type: column
+              size: 3
+              key: ppea_outra_decreto
+            - type: column
+              size: 3
+              key: ppea_outra_lei
+
+- type: row
+  block: ppea2_block
+  elements:
+    - type: column
+      size: 4
+      key: ppea2_tem
+
+- type: row
+  block: ppea2_tem_block
+  elements:
+    - type: column
+      size: 12
+      elements:
+        - type: row
+          elements:
+            - type: column
+              size: 6
+              key: ppea2_tipo
+            - type: column
+              size: 6
+              key: ppea2_arquivo      
+            - type: column
+              size: 6
+              key: ppea2_arquivo2        
+        - type: row
+          elements:
+            - type: column
+              size: 3
+              key: ppea2_decreto
+            - type: column
+              size: 3
+              key: ppea2_lei
