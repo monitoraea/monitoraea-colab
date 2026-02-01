@@ -339,6 +339,7 @@ class Service {
             du.id,
             du.email,
             du."name",
+			      dm.type,
 
             count(*) OVER() AS total_count
         from dorothy_users du

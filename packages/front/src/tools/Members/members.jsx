@@ -20,6 +20,12 @@ import { useRouter, useDorothy } from 'dorothy-dna-react';
 
 import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
 
+const membership_type = {
+    'adm': 'coordenador',
+    'member': 'membro',
+    'organizer': 'articulador',
+}
+
 const Members = () => {
     const { server } = useDorothy();
     const { currentCommunity } = useRouter();
@@ -84,6 +90,7 @@ const Members = () => {
                                         <th>
                                             <TableSortColumn text="E-mail" column="email" order={order} direction={direction} onClick={orderBy} />
                                         </th>
+                                        <th>Papel</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
@@ -99,6 +106,9 @@ const Members = () => {
                                             <td>
                                                 {row.email}
                                             </td>
+                                            <td>
+                                                {row.type ? membership_type[row.type.trim()] : membership_type['member']}
+                                            </td>                                            
                                             <td className='tbox-table-actions'>
                                                 <div>
                                                     <Tooltip title="Remover"><IconButton onClick={() => remove(row)}><Trash /></IconButton></Tooltip>
