@@ -7,7 +7,7 @@ import styles from './styles.module.scss'
 const mapPerspective = {
     1: ['MonitoraEA'],
     2: ['PPPZCM'],
-    3: ['CIEA'],
+    3: ['Colegiados'],
     4: ['PPEA'],
     5: ['Centros'],
     6: ['Iniciativas Não Governamentais'],

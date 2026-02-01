@@ -214,7 +214,7 @@ export default function MyArea() {
                 <button onClick={handleAsk('ppea')}>Colaborar com uma <span>Políticas Públicas de EA (PPEA)</span> cadastrada</button>
                 <button onClick={handleAsk('iniciativa')}>Colaborar com uma <span>Iniciativa Não Governamental</span> cadastrada</button>
                 <button onClick={handleAsk('project')}>Colaborar com um Projeto ou Ações vinculados ao  <span>PPPZCM</span> cadastrada</button>
-                <button onClick={handleAsk('commission')}>Colaborar com uma <span>Instância</span> de Acompanhamento e Controle Social de EA cadastrada</button>
+                <button onClick={handleAsk('commission')}>Colaborar com um <span>Colegiado</span> de Políticas Públicas de EA <br/> cadastrado</button>
                 <button onClick={handleAsk('cne')}>Colaborar com um <span>Centro de Educação</span> e Cooperação Socioambiental cadastrado</button>
             </div>
         </div>
@@ -244,7 +244,7 @@ export default function MyArea() {
                 <button onClick={() => _showNIDialog('ppea')}>Cadastrar uma nova <span>Políticas Públicas de EA (PPEA)</span></button>
                 <button onClick={() => _showNIDialog('iniciativa')}>Cadastrar uma nova <span>Iniciativa Não Governamental</span></button>
                 <button onClick={() => _showNIDialog('project')}>Cadastrar um novo Projeto ou Ação vinculados ao  <span>PPPZCM</span></button>
-                <button onClick={() => _showNIDialog('commission')}>Cadastrar uma nova <span>Instância</span> de Acompanhamento e Controle Social de EA</button>
+                <button onClick={() => _showNIDialog('commission')}>Cadastrar uma novo <span>Colegiado</span>  de Políticas Públicas de EA</button>
                 <button onClick={() => _showNIDialog('cne')}>Cadastrar um novo <span>Centro de Educação</span> e Cooperação Socioambiental </button>
             </div>
         </div>

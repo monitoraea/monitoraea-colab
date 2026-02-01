@@ -83,7 +83,7 @@ export default function NetworkHomeCIEA() {
         <div className="page-content">
           <div className="page-body">
             <div className="tablebox" style={{ padding: '20px' }}>
-              <h4>A Rede de Comunidades de Aprendizagens do CIEA é composta pelas seguintes comissões:</h4>
+              <h4>A Rede de Comunidades de Aprendizagens dos Colegiados é composta por:</h4>
               <ul className={styles['commission_list']}>
                 {!data && <>Carregando...</>}
                 {data && data.map(c => <li key={c.id} className={styles['commission']}>
