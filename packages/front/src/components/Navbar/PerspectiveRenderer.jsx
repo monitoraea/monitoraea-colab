@@ -12,7 +12,7 @@ import ppea from '../../images/perspectives/ppea.png';
 const logos = {
     'monitoraea': 'monitoraEA',
     'zcm': 'pppzcm',
-    'ciea': 'ciea',
+    'ciea': 'colegiados',
     'ppea': 'ppea',
     'cne': 'centros/núcleos/equipamentos',
 }
