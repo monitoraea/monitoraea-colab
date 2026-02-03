@@ -13,3 +13,4 @@ docker_postgres_backup.sql
 # VENVS
 *.venv*
 **/data/
+**/dist
