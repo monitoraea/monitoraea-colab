@@ -1,6 +1,6 @@
 node_modules/
 build/
-dist/
+/dist
 .idea
 docker_postgres_backup.sql
 .env.local
