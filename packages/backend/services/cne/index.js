@@ -668,7 +668,7 @@ class Service {
             ...tl.get({ plain: true }),
             id: undefined,
             cne_versao_id: cne_clone.id,
-            timeline_arquivo: new_file[0].id,
+            timeline_arquivo: new_file[0]?.id,
           },
           {
             transaction,

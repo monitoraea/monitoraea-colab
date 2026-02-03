@@ -1504,7 +1504,7 @@ class Service {
             ...tl.get({ plain: true }),
             id: undefined,
             politica_versao_id: politica_clone.id,
-            timeline_arquivo: new_file[0].id,
+            timeline_arquivo: new_file[0]?.id,
           },
           {
             transaction,
