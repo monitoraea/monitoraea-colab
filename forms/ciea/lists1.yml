@@ -54,6 +54,8 @@ lists:
       label: Federal
     - value: 2
       label: Regional
+    - value: 5
+      label: Estadual
     - value: 3
       label: Municipal
     - value: 4
