@@ -1,0 +1,1 @@
+import{j as e,C as s}from"./index-DLt25zcS.js";function r(){return e.jsx(e.Fragment,{children:e.jsx("div",{className:"page-content",children:e.jsx("div",{className:"page-body",children:e.jsx(s,{middle:!0,headerless:!0,children:e.jsx("div",{className:"p-3",children:"[NEW]"})})})})})}export{r as default};

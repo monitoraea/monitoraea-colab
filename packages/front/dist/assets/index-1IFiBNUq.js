@@ -1,0 +1,1 @@
+import"./index-DLt25zcS.js";Array.apply(null,Array(new Date().getFullYear()+1-2014)).map((n,r)=>2014+r);const l=(n,r,e)=>{if(!n)return null;const t=n.find(([a])=>a===r);return t?t[e]:null};async function o(n){return new Promise((r,e)=>{navigator.clipboard.writeText(n).then(r).catch(e)})}export{o as c,l as s};
