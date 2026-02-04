@@ -450,7 +450,12 @@ function buildFiltersWhere(filters, where = [], exclude = []) {
         .map(r => `'${r}'`)
         .join(',')})`,
     );
-  if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`m.cd_uf IN (${filters['f_ufs']})`);
+
+  if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`u.id IN (${filters['f_ufs']})`);
+
+  if (filters['f_municipios'] && !exclude.includes('f_municipios')) whereArray.push(`municipio IN (${filters['f_municipios']})`);
+
+  if (filters['f_id'] && !exclude.includes('f_id')) whereArray.push(`c.id IN (${filters['f_id']})`);
 
   return whereArray.length ? `WHERE ${whereArray.join(' AND ')}` : '';
 }
