@@ -25,5 +25,6 @@ class Service {
 }
 
 module.exports = function (...args) {
-    return new Service(...args);
+    // return new Service(...args);
+    return false;
 }
