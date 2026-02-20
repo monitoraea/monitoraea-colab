@@ -23,6 +23,7 @@ export default function HelpBoxButton({ type, keyRef, prefix='', openHelpbox, st
     const { data: helpContent } = useQuery(['help_content', { key_ref: keyRefTxt }], {
       queryFn: async () => (await axios.get(`${server}helpbox/${keyRefTxt}`)).data,
       enabled: !!keyRefTxt,
+      refetchOnWindowFocus: false,
       staleTime,
     });
 
