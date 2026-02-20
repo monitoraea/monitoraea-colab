@@ -4,7 +4,11 @@ const multer = require('multer');
 
 const stream = require('stream');
 
-const upload = multer(); // Memory
+const upload = multer({
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+}); // Memory
 const { sendError } = require('dorothy-dna-services').util;
 const entity = require('./index');
 
@@ -20,6 +24,9 @@ fileUpload = multer({
     },
     filename: function (req, file, cb) {
       cb(null, file.originalname);
+    },
+    limits: {
+      fileSize: 10 * 1024 * 1024,
     },
   }),
 }).single('file');

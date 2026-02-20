@@ -25,10 +25,17 @@ fileUpload = multer({
     filename: function (req, file, cb) {
       cb(null, file.originalname);
     },
+    limits: {
+      fileSize: 10 * 1024 * 1024,
+    }
   }),
 }).single('file');
 
-const upload = multer(); // Memory
+const upload = multer({
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+}); // Memory
 
 const upTimelineImage = upload.fields([{ name: 'imagem', maxCount: 1 }]);
 
@@ -247,7 +254,7 @@ router.get('/municipios', async (req, res) => {
     const where = buildFiltersWhere(
       req.query,
       [`LOWER(unaccent(m.nm_mun)) like '%${nome.toLowerCase()}%'`],
-      ['f_municipios','f_instituicao_segmento'],
+      ['f_municipios', 'f_instituicao_segmento'],
     );
 
     const result = await service.listMunicipiosByName(where);
