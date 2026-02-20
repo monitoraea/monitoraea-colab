@@ -11,7 +11,7 @@ import HelpCircle from '../icons/HelpCircle.jsx';
 
 import { CMS_COMMUNITY } from '../../utils/configs.jsx';
 
-export default function HelpBoxButton({ type, keyRef, prefix='', openHelpbox }) {
+export default function HelpBoxButton({ type, keyRef, prefix='', openHelpbox, staleTime = 60 * 60 }) {
     const { server } = useDorothy();
     const { user } = useUser();
     const { currentCommunity } = useRouter();
@@ -23,6 +23,7 @@ export default function HelpBoxButton({ type, keyRef, prefix='', openHelpbox }) 
     const { data: helpContent } = useQuery(['help_content', { key_ref: keyRefTxt }], {
       queryFn: async () => (await axios.get(`${server}helpbox/${keyRefTxt}`)).data,
       enabled: !!keyRefTxt,
+      staleTime,
     });
 
     useEffect(() => {
