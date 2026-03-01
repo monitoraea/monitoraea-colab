@@ -26,6 +26,8 @@ import no_thumb from '../../images/no_thumb.png';
 /* styles */
 import styles from './timeline.module.scss';
 
+const MAX_FILE_SIZE = 25;
+
 export default function TimelineTab({ entityId }) {
   /* hooks */
   const { server } = useDorothy();
@@ -114,8 +116,8 @@ export default function TimelineTab({ entityId }) {
               <div className="p-3">
                 <section id="details">
                   A linha do tempo é uma ferramenta para a apresentação e o registro dos principais marcos/eventos da iniciativa.
-Insira o mês/ano em que o marco/evento aconteceu, uma imagem ilustrativa (pode ser uma fotografia real ou um ícone/desenho) e um texto descritivo. A ferramenta organiza automaticamente a apresentação dos marcos/eventos em ordem cronológica.<br/>
-Alguns exemplos de marcos/eventos: criação da iniciativa, realização de atividades relevantes, eventos públicos, publicação de normativas, relatórios, materiais educomunicativos, etc.
+                  Insira o mês/ano em que o marco/evento aconteceu, uma imagem ilustrativa (pode ser uma fotografia real ou um ícone/desenho) e um texto descritivo. A ferramenta organiza automaticamente a apresentação dos marcos/eventos em ordem cronológica.<br />
+                  Alguns exemplos de marcos/eventos: criação da iniciativa, realização de atividades relevantes, eventos públicos, publicação de normativas, relatórios, materiais educomunicativos, etc.
                 </section>
               </div>
             </Card>
@@ -214,7 +216,7 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
   const [texto, _texto] = useState(null);
 
   useEffect(() => {
-    if(add) {
+    if (add) {
       _date(new Date())
       _texto(null);
     } else {
@@ -252,11 +254,11 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
       let method, url;
       /* save */
 
-      if(add) { /* insert */
+      if (add) { /* insert */
         method = 'post';
         url = `${server}commission/${entityId}/draft/timeline`;
       } else {
-       /* edit */
+        /* edit */
         method = 'put';
         url = `${server}commission/${entityId}/draft/timeline/${editing.id}`;
       }
@@ -309,6 +311,16 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
     }
   };
 
+  const maxFileSizeError = () => {
+    enqueueSnackbar(`O arquivo não pode exceder o limite de ${MAX_FILE_SIZE}Mb`, {
+      variant: 'error',
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'center',
+      },
+    });
+  }
+
   return (<div className={`row ${!add && !!editing ? styles.editing : ''}`}>
     <div className={`col-xs-2 ${styles['vcentered']}`}>
       <DatePicker
@@ -330,6 +342,8 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
         title="Imagem"
         disabled={add && !!editing}
         viewer={false}
+        maxFileSize={MAX_FILE_SIZE}
+        onMaxFileSizeError={maxFileSizeError}
       />
     </div>
 

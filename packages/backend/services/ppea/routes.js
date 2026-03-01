@@ -33,10 +33,10 @@ fileUpload = multer({
     filename: function (req, file, cb) {
       cb(null, file.originalname);
     },
-    limits: {
-      fileSize: 25 * 1024 * 1024,
-    },
   }),
+  limits: {
+    fileSize: 25 * 1024 * 1024,
+  },
 }).single('file');
 
 /* TODO */

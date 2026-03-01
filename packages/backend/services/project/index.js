@@ -4204,12 +4204,15 @@ class Service {
   }
 
   async updateFile(entityModel, file, fieldName, entityId) {
+
+    const fileStream = fs.createReadStream(file.path);
+
     // S3
     await s3
       .putObject({
         Bucket: BUCKET_NAME,
         Key: this.getFileKey(entityId || entityModel.get('projeto_id'), fieldName, file.originalname),
-        Body: file.buffer,
+        Body: fileStream,
         ACL: 'public-read',
       })
       .promise();

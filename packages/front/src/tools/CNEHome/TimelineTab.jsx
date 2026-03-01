@@ -26,6 +26,8 @@ import no_thumb from '../../images/no_thumb.png';
 /* styles */
 import styles from './timeline.module.scss';
 
+const MAX_FILE_SIZE = 25;
+
 export default function TimelineTab({ entityId }) {
   /* hooks */
   const { server } = useDorothy();
@@ -309,6 +311,16 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
     }
   };
 
+  const maxFileSizeError = () => {
+    enqueueSnackbar(`O arquivo não pode exceder o limite de ${MAX_FILE_SIZE}Mb`, {
+      variant: 'error',
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'center',
+      },
+    });
+  }
+
   return (<div className={`row ${!add && !!editing ? styles.editing : ''}`}>
     <div className={`col-xs-2 ${styles['vcentered']}`}>
       <DatePicker
@@ -330,6 +342,8 @@ function TimelineManager({ add, entityId, editing, onHighlight, onCancel, onSave
         title="Imagem"
         disabled={add && !!editing}
         viewer={false}
+        maxFileSize={MAX_FILE_SIZE}
+        onMaxFileSizeError={maxFileSizeError}
       />
     </div>
 

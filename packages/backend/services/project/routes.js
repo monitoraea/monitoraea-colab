@@ -24,18 +24,26 @@ fileUpload = multer({
     },
     filename: function (req, file, cb) {
       cb(null, file.originalname);
-    },
-    limits: {
-      fileSize: 10 * 1024 * 1024,
     }
   }),
+  limits: {
+    fileSize: 25 * 1024 * 1024,
+  },
 }).single('file');
 
 const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, process.env.TMP_DIR);
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname);
+    },
+  }),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: 25 * 1024 * 1024, // 25MB
   },
-}); // Memory
+}); // DiskStorage
 
 const upTimelineImage = upload.fields([{ name: 'imagem', maxCount: 1 }]);
 
