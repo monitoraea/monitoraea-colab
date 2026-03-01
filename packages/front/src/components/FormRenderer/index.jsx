@@ -1381,7 +1381,10 @@ function FileField({ f, readonly, index, dataValue, accept, onChange, error, onA
       title={titleAndIndex(f.title, index)}
       disabled={readonly}
       error={error}
-      onMaxFileSizeError={()=>!!onAlert && onAlert({ type: 'max_file_size', data: { max_size: MAX_FILE_SIZE }}) }
+      onMaxFileSizeError={() => {
+        // console.log({ onAlert })
+        !!onAlert && onAlert({ type: 'max_file_size', data: { max_size: MAX_FILE_SIZE } })
+      }}
     />
   );
 }
@@ -1402,7 +1405,7 @@ function ThumbnailField({ f, readonly, index, dataValue, onChange, error, onAler
       viewer={false}
       disabled={readonly}
       error={error}
-      onMaxFileSizeError={()=>!!onAlert && onAlert({ type: 'max_file_size', data: { max_size: MAX_FILE_SIZE }}) }
+      onMaxFileSizeError={() => !!onAlert && onAlert({ type: 'max_file_size', data: { max_size: MAX_FILE_SIZE } })}
     />
   );
 }

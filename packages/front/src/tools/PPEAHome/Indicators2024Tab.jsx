@@ -186,6 +186,18 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {
     }
   };
 
+  const handleAlert = (alert) => {
+    if (alert.type === 'max_file_size') {
+      enqueueSnackbar(`O arquivo não pode exceder o limite de ${alert.size || '25'}Mb`, {
+        variant: 'error',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+    }
+  }
+
   if (!data) return <></>;
 
   return (
@@ -245,6 +257,7 @@ export default function IndicatorsTab({ entityId, analysis, problems }) {
                     content,
                     prefix: `pp.${currentIndics.split('_')[0]}.${currentIndics}.`,
                   }}
+                  onAlert={handleAlert}
                 />
               )}
               <div className="section-header">

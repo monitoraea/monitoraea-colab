@@ -246,7 +246,7 @@ class Service {
     for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
       // console.log({ indicator, key: f.key })
 
-      if (indicator?.[f.key]) {
+      if (indicator?.[f.key] && !isNaN(indicator?.[f.key])) {
         // recupera o arquivo
         const fileModel = await db.models['File'].findByPk(indicator[f.key]);
         // substitui o conteudo no campo
@@ -289,8 +289,6 @@ class Service {
       else entity[f.key] = model.indicadores2024[indic_name]?.[f.key];
     }
 
-    console.log({ entity });
-
     // gravar JSON em indics na posicao certa (indic_name)
     await db.models['Ppea'].update(
       { ...model, indicadores2024: { ...model.indicadores2024, [indic_name]: entity } },
@@ -323,7 +321,7 @@ class Service {
 
     // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
     for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
-      if (indicator[f.key]) {
+      if (indicator[f.key] && !isNaN(indicator[f.key])) {
         // recupera o arquivo
         const fileModel = await db.models['File'].findByPk(indicator[f.key]);
         // substitui o conteudo no campo
@@ -390,12 +388,15 @@ class Service {
   }
 
   async updateFile(id, entity, file, fieldName, document_type, existingFileId) {
+
+    const fileStream = fs.createReadStream(file.path);
+
     // S3
     await s3
       .putObject({
         Bucket: s3BucketName,
         Key: this.getFileKey(id, 'ppea', fieldName, file.originalname),
-        Body: file.buffer,
+        Body: fileStream,
         ACL: 'public-read',
       })
       .promise();
@@ -412,7 +413,7 @@ class Service {
 
   async updateFileModel(entity, fieldName, file_name, content_type, document_type, existingFileId) {
     let fileModel;
-    if (existingFileId) fileModel = await db.models['File'].findByPk(existingFileId);
+    if (existingFileId && !isNaN(existingFileId)) fileModel = await db.models['File'].findByPk(existingFileId);
 
     if (!!fileModel) {
       fileModel.file_name = file_name;
@@ -422,15 +423,15 @@ class Service {
 
       fileModel.save();
     } else {
-      const fileModel = await db.models['File'].create({
+      fileModel = await db.models['File'].create({
         file_name,
         url: file_name,
         document_type: document_type,
         content_type,
       });
 
-      entity[fieldName] = fileModel.id;
     }
+    entity[fieldName] = fileModel.id;
   }
 
   getFileKey(id, main_folder, folder, filename) {
@@ -1161,12 +1162,15 @@ class Service {
   }
 
   async updateFile2(entityModel, file, fieldName, entityId) {
+
+    const fileStream = fs.createReadStream(file.path);
+
     // S3
     await s3
       .putObject({
         Bucket: s3BucketName,
         Key: this.getFileKey(entityId, fieldName, file.originalname),
-        Body: file.buffer,
+        Body: fileStream,
         ACL: 'public-read',
       })
       .promise();
@@ -1181,7 +1185,7 @@ class Service {
 
   async updateFileModel2(entityModel, fieldName, file_name, content_type) {
     let fileModel;
-    if (!!entityModel[fieldName]) {
+    if (!!entityModel[fieldName] && !isNaN(entityModel[fieldName])) {
       fileModel = await db.models['File'].findByPk(entityModel[fieldName]);
     }
 
@@ -1193,17 +1197,17 @@ class Service {
 
       fileModel.save();
     } else {
-      const fileModel = await db.models['File'].create({
+      fileModel = await db.models['File'].create({
         file_name,
         url: file_name,
         document_type: `politica_${fieldName}`,
         content_type,
       });
 
-      entityModel.set(fieldName, fileModel.id);
-
-      await entityModel.save();
     }
+    
+    entityModel.set(fieldName, fileModel.id);
+    await entityModel.save();
   }
 
   async delete(id, user) {

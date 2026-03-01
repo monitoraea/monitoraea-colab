@@ -5,10 +5,18 @@ const multer = require('multer');
 const stream = require('stream');
 
 const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, process.env.TMP_DIR);
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname);
+    },
+  }),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: 25 * 1024 * 1024, // 25MB
   },
-}); // Memory
+}); // DiskStorage
 const { sendError } = require('dorothy-dna-services').util;
 const entity = require('./index');
 
@@ -26,7 +34,7 @@ fileUpload = multer({
       cb(null, file.originalname);
     },
     limits: {
-      fileSize: 10 * 1024 * 1024,
+      fileSize: 25 * 1024 * 1024,
     },
   }),
 }).single('file');

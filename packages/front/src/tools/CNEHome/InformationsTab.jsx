@@ -108,6 +108,18 @@ export default function InformationsTab({ entityId, problems }) {
     }
   }
 
+  const handleAlert = (alert) => {
+    if(alert.type === 'max_file_size') {
+      enqueueSnackbar(`O arquivo não pode exceder o limite de ${alert.size || '25'}Mb`, {
+        variant: 'error',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+    }
+  }
+
   if (!data) return <></>
 
   return (
@@ -125,6 +137,7 @@ export default function InformationsTab({ entityId, problems }) {
                   data={mapData2Form(originalEntity, form)}
                   problems={problems}
                   onDataChange={handleDataChange}
+                  onAlert={handleAlert}
                 />
 
                 <div className="section-header">
