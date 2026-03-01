@@ -24,6 +24,8 @@ export default function UploaderField({
   title,
   disabled,
   error = false,
+  maxFileSize = 20,
+  onMaxFileSizeError,
 }) {
   const fileInput = useRef();
 
@@ -36,6 +38,13 @@ export default function UploaderField({
   }, [url]);
 
   const handleFile = file => {
+
+    const maxSize = maxFileSize * 1_000_000;
+    if(file?.size > maxSize) {
+      !!onMaxFileSizeError && onMaxFileSizeError();
+      return;
+    }
+
     const url = URL.createObjectURL(file);
 
     onChange({

@@ -834,12 +834,14 @@ class Service {
   }
 
   async updateFile(entityModel, file, fieldName, entityId) {
+    const fileStream = fs.createReadStream(file.path);
+
     // S3
     await s3
       .putObject({
         Bucket: s3BucketName,
         Key: this.getFileKey(entityId || entityModel.get('cne_versao_id'), fieldName, file.originalname),
-        Body: file.buffer,
+        Body: fileStream,
         ACL: 'public-read',
       })
       .promise();
@@ -854,7 +856,7 @@ class Service {
 
   async updateFileModel(entityModel, fieldName, file_name, content_type) {
     let fileModel;
-    if (!!entityModel[fieldName]) {
+    if (!!entityModel[fieldName] && !isNaN(entityModel[fieldName])) {
       fileModel = await db.models['File'].findByPk(entityModel[fieldName]);
     }
 
@@ -866,17 +868,16 @@ class Service {
 
       fileModel.save();
     } else {
-      const fileModel = await db.models['File'].create({
+      fileModel = await db.models['File'].create({
         file_name,
         url: file_name,
         document_type: `cne_${fieldName}`,
         content_type,
       });
-
-      entityModel.set(fieldName, fileModel.id);
-
-      await entityModel.save();
     }
+
+    entityModel.set(fieldName, fileModel.id);
+    await entityModel.save();
   }
 
   async list(page, f_ids, where, limit) {

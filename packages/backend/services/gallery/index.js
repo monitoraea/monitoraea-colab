@@ -31,9 +31,8 @@ class Service {
         FROM gallery_images gi
         ${applyJoins(joins)} 
         ${applyWhere(where)}
-        ORDER BY ${
-          !config.last ? `${protect.order(config.order)} ${protect.direction(config.direction)}` : 'gi."createdAt" DESC'
-        }
+        ORDER BY ${!config.last ? `${protect.order(config.order)} ${protect.direction(config.direction)}` : 'gi."createdAt" DESC'
+      }
         
         `,
       {
@@ -81,18 +80,21 @@ class Service {
         },
         type: Sequelize.QueryTypes.SELECT,
       },
-    );    
+    );
 
     return { new_image_id: result[0].id };
   }
 
   async updateFile(file) {
+
+    const fileStream = fs.createReadStream(file.path);
+
     // S3
     await s3
       .putObject({
         Bucket: s3ContentBucketName,
         Key: `content/images/${file.originalname}`,
-        Body: file.buffer,
+        Body: fileStream,
         ACL: 'public-read',
       })
       .promise();
@@ -184,7 +186,7 @@ class Service {
     return fileUrl;
   }
 
-  
+
 }
 
 const singletonInstance = new Service();

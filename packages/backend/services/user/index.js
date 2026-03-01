@@ -236,12 +236,14 @@ class Service {
 
   async setThumb(user, thumb) {
     const fileName = `${dayjs().format('YYYY.MM.DD')}.jpg`;
+    
+    const fileStream = fs.createReadStream(thumb.path);
 
     await s3
       .putObject({
         Bucket: s3BucketName,
         Key: this.getFileKey(user.id, fileName),
-        Body: thumb.buffer,
+        Body: fileStream,
         ACL: 'public-read',
         ContentEncoding: 'base64',
         ContentType: 'image/jpeg',

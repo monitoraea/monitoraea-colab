@@ -35,6 +35,8 @@ import Helpbox from '../../tools/CMS/helpbox';
 import HelpBoxButton from './HelpBoxButton';
 import HelpCircle from '../icons/HelpCircle.jsx';
 
+const MAX_FILE_SIZE = 20;
+
 export function Renderer(props) {
   const { form, view, data, lists } = props;
   const [imported, _imported] = useState(false);
@@ -218,6 +220,7 @@ function BasicRenderer({
   onAddIterative,
   problems,
   onContentData,
+  onAlert,
 }) {
   const [blocks, _blocks] = useState([]);
   const [otherFields, _otherFields] = useState([]);
@@ -245,6 +248,7 @@ function BasicRenderer({
                     data={data}
                     handleDataChange={handleDataChange}
                     onContentData={onContentData}
+                    onAlert={onAlert}
                   />
                 </div>
               </div>
@@ -319,6 +323,7 @@ function BasicRenderer({
                         iterative={index === undefined ? undefined : { k, index }}
                         handleDataChange={handleDataChange}
                         onContentData={onContentData}
+                        onAlert={onAlert}
                       />
                     </div>
                   </div>
@@ -361,6 +366,7 @@ function BasicRenderer({
                       data={data}
                       handleDataChange={handleDataChange}
                       onContentData={onContentData}
+                      onAlert={onAlert}
                     />
                   </div>
                 </div>
@@ -399,6 +405,7 @@ function ViewRenderer({
   addBlock,
   problems,
   onContentData,
+  onAlert,
 }) {
   return (
     <Element
@@ -413,6 +420,7 @@ function ViewRenderer({
       addBlock={addBlock}
       onAddIterative={onAddIterative}
       onContentData={onContentData}
+      onAlert={onAlert}
     />
   );
 }
@@ -430,6 +438,7 @@ function Element(props) {
     addBlock,
     problems,
     onContentData,
+    onAlert,
   } = props;
 
   if (v.type === 'start')
@@ -449,6 +458,7 @@ function Element(props) {
             addBlock={addBlock}
             onAddIterative={onAddIterative}
             onContentData={onContentData}
+            onAlert={onAlert}
           />
         ))}
       </>
@@ -531,6 +541,7 @@ function Element(props) {
             iterative={iterative}
             handleDataChange={handleDataChange}
             onContentData={onContentData}
+            onAlert={onAlert}
           />
         </div>
       );
@@ -554,6 +565,7 @@ function Element(props) {
               addBlock={addBlock}
               onAddIterative={onAddIterative}
               onContentData={onContentData}
+              onAlert={onAlert}
             />
           ))}
         </div>
@@ -586,6 +598,7 @@ function Element(props) {
               addBlock={block}
               onAddIterative={onAddIterative}
               onContentData={onContentData}
+              onAlert={onAlert}
             />
           ))}
         </Block>
@@ -617,6 +630,7 @@ function Row({
   onAddIterative,
   problems,
   onContentData,
+  onAlert,
 }) {
   // console.log(v.elements)
 
@@ -637,6 +651,7 @@ function Row({
           addBlock={addBlock}
           onAddIterative={onAddIterative}
           onContentData={onContentData}
+          onAlert={onAlert}
         />
       ))}
     </div>
@@ -659,6 +674,7 @@ export function FieldRenderer({
   handleDataChange,
   problems,
   onContentData,
+  onAlert,
 }) {
   const [doShow, _doShow] = useState(false);
 
@@ -745,6 +761,7 @@ export function FieldRenderer({
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
         accept={f.accept}
+        onAlert={onAlert}
       />
     );
   else if (f.type === 'thumbnail')
@@ -755,6 +772,7 @@ export function FieldRenderer({
         f={f}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
+        onAlert={onAlert}
       />
     );
   else
@@ -1345,7 +1363,7 @@ function DatePickerField({ f, type, readonly, index, dataValue, onChange, error 
   );
 }
 
-function FileField({ f, readonly, index, dataValue, accept, onChange, error }) {
+function FileField({ f, readonly, index, dataValue, accept, onChange, error, onAlert }) {
   const [value, _value] = useState(null);
 
   useEffect(() => {
@@ -1354,6 +1372,7 @@ function FileField({ f, readonly, index, dataValue, accept, onChange, error }) {
 
   return (
     <UploaderField
+      maxFileSize={f.max || MAX_FILE_SIZE}
       onChange={onChange}
       url={value?.url}
       type="file"
@@ -1362,11 +1381,12 @@ function FileField({ f, readonly, index, dataValue, accept, onChange, error }) {
       title={titleAndIndex(f.title, index)}
       disabled={readonly}
       error={error}
+      onMaxFileSizeError={()=>!!onAlert && onAlert({ type: 'max_file_size', data: { max_size: MAX_FILE_SIZE }}) }
     />
   );
 }
 
-function ThumbnailField({ f, readonly, index, dataValue, onChange, error }) {
+function ThumbnailField({ f, readonly, index, dataValue, onChange, error, onAlert }) {
   const [value, _value] = useState(null);
 
   useEffect(() => {
@@ -1382,6 +1402,7 @@ function ThumbnailField({ f, readonly, index, dataValue, onChange, error }) {
       viewer={false}
       disabled={readonly}
       error={error}
+      onMaxFileSizeError={()=>!!onAlert && onAlert({ type: 'max_file_size', data: { max_size: MAX_FILE_SIZE }}) }
     />
   );
 }

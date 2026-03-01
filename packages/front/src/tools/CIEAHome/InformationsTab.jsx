@@ -117,6 +117,18 @@ export default function InformationsTab({ entityId }) {
     }
   };
 
+  const handleAlert = (alert) => {
+    if(alert.type === 'max_file_size') {
+      enqueueSnackbar(`O arquivo não pode exceder o limite de ${alert.size || '25'}Mb`, {
+        variant: 'error',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+    }
+  }
+
   if (!data) return <></>;
 
   return (
@@ -148,6 +160,7 @@ export default function InformationsTab({ entityId }) {
                     prefix: 'ciea.',
                     type: 'info',
                   }}
+                  onAlert={handleAlert}
                 />
 
                 <div className="section-header">

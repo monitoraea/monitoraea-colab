@@ -7,7 +7,19 @@ const { User } = require('dorothy-dna-services');
 const FormManager = require('../../FormsManager');
 
 const multer = require('multer');
-const upload = multer(); // Memory
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, process.env.TMP_DIR);
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname);
+    },
+  }),
+  limits: {
+    fileSize: 25 * 1024 * 1024, // 25MB
+  },
+}); // DiskStorage
 
 const entity = require('./index');
 

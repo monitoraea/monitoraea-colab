@@ -295,7 +295,7 @@ class Service {
 
     /* TODO: GENERALIZAR: recuperar em form.yml - files/thumbnai que não em link_or_file <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form */
     if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
-    else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo, 'logo_arquivo');
+    else if (files.logo_arquivo) await this.updateFile(entityModel, files.logo_arquivo[0], 'logo_arquivo');
 
     files = {
       /* TODO: recuperar em form - nem precisa existir, pode ser resolvido abaixo */
@@ -405,12 +405,15 @@ class Service {
   }
 
   async updateFile(entityModel, file, fieldName, entityId) {
+
+    const fileStream = fs.createReadStream(file.path);
+
     // S3
     await s3
       .putObject({
         Bucket: s3BucketName,
         Key: this.getFileKey(entityId || entityModel.get('id'), fieldName, file.originalname),
-        Body: file.buffer,
+        Body: fileStream,
         ACL: 'public-read',
       })
       .promise();
@@ -425,7 +428,7 @@ class Service {
 
   async updateFileModel(entityModel, fieldName, file_name, content_type) {
     let fileModel;
-    if (!!entityModel[fieldName]) {
+    if (!!entityModel[fieldName] && !isNaN(entityModel[fieldName])) {
       fileModel = await db.models['File'].findByPk(entityModel[fieldName]);
     }
 
@@ -437,17 +440,16 @@ class Service {
 
       fileModel.save();
     } else {
-      const fileModel = await db.models['File'].create({
+      fileModel = await db.models['File'].create({
         file_name,
         url: file_name,
         document_type: `ciea_${fieldName}`,
         content_type,
       });
-
-      entityModel.set(fieldName, fileModel.id);
-
-      await entityModel.save();
     }
+
+    entityModel.set(fieldName, fileModel.id);
+    await entityModel.save();
   }
 
   async getListForUser(user) {
@@ -900,7 +902,7 @@ class Service {
     for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
       // console.log({ indicator, key: f.key })
 
-      if (indicator?.[f.key]) {
+      if (indicator?.[f.key] && !isNaN(indicator?.[f.key])) {
         // recupera o arquivo
         const fileModel = await db.models['File'].findByPk(indicator[f.key]);
         // substitui o conteudo no campo
@@ -924,9 +926,9 @@ class Service {
     );
     const model = iniciativa.get({ plain: true });
 
-    for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
-      console.log(f.key, entity[f.key] === 'remove', files[f.key], model.indicadores[indic_name]?.[f.key]);
-    }
+    // for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
+    //   console.log(f.key, entity[f.key] === 'remove', files[f.key], model.indicadores[indic_name]?.[f.key]);
+    // }
 
     // para cada campo file - remove ou atualiza file - substituir valor de file por ID em files
     for (let f of form.fields.filter(f => ['file', 'thumbnail'].includes(f.type))) {
@@ -1036,12 +1038,14 @@ class Service {
   }
 
   async updateFile_i(id, entity, file, fieldName, document_type, existingFileId) {
+    const fileStream = fs.createReadStream(file.path);
+
     // S3
     await s3
       .putObject({
         Bucket: s3BucketName,
         Key: this.getFileKey_i(id, 'ciea', fieldName, file.originalname),
-        Body: file.buffer,
+        Body: fileStream,
         ACL: 'public-read',
       })
       .promise();
@@ -1058,7 +1062,7 @@ class Service {
 
   async updateFileModel_i(entity, fieldName, file_name, content_type, document_type, existingFileId) {
     let fileModel;
-    if (existingFileId) fileModel = await db.models['File'].findByPk(existingFileId);
+    if (existingFileId && !isNaN(existingFileId)) fileModel = await db.models['File'].findByPk(existingFileId);
 
     if (!!fileModel) {
       fileModel.file_name = file_name;
@@ -1068,15 +1072,15 @@ class Service {
 
       fileModel.save();
     } else {
-      const fileModel = await db.models['File'].create({
+      fileModel = await db.models['File'].create({
         file_name,
         url: file_name,
         document_type: document_type,
         content_type,
       });
 
-      entity[fieldName] = fileModel.id;
     }
+    entity[fieldName] = fileModel.id;
   }
 
   getFileKey_i(id, main_folder, folder, filename) {
