@@ -29,6 +29,47 @@ const server = http.createServer(app);
 
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
 
+const routeMemoryStats = {};
+if (process.env.MONITORING == '1') {
+  setInterval(() => {
+    const { heapUsed, rss, heapTotal } = process.memoryUsage();
+
+    console.log(
+      `[MEMORY] HeapUsed: ${(heapUsed / 1024 / 1024).toFixed(2)} MB | ` +
+      `HeapTotal: ${(heapTotal / 1024 / 1024).toFixed(2)} MB | ` +
+      `RSS: ${(rss / 1024 / 1024).toFixed(2)} MB`
+    );
+  }, 10000);
+
+
+  app.use((req, res, next) => {
+    const startHeap = process.memoryUsage().heapUsed;
+
+    res.on("finish", () => {
+      const endHeap = process.memoryUsage().heapUsed;
+      const diffMB = (endHeap - startHeap) / 1024 / 1024;
+
+      const route = `${req.method} ${req.route?.path}`;
+
+      if (!routeMemoryStats[route]) {
+        routeMemoryStats[route] = [];
+      }
+
+      routeMemoryStats[route].push(diffMB);
+
+      const avg =
+        routeMemoryStats[route].reduce((a, b) => a + b, 0) /
+        routeMemoryStats[route].length;
+
+      console.log(
+        `[REQ] ${route} | Heap Δ: ${diffMB.toFixed(2)} MB | Avg: ${avg.toFixed(2)} MB`
+      );
+    });
+
+    next();
+  });
+}
+
 app.use(require('./services/routes'));
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, '..', 'portal', 'dist', 'index.html'));
