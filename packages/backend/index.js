@@ -29,8 +29,45 @@ const server = http.createServer(app);
 
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
 
+const MEMORY_ALERT_MB = 100;
 const routeMemoryStats = {};
-if (process.env.MONITORING == '1') {
+
+const monitoringLevel = !process.env.MONITORING ? 0 : parseInt(process.env.MONITORING);
+
+if (monitoringLevel === 0) console.log('<><><><><><><><><><><><><><><><><><> MONITORING OFF <><>');
+
+if (monitoringLevel === 1) {
+  console.log('<><><><><><><><><><><><><><><><><><> ALERT MONITORING ON <><>');
+
+  app.use((req, res, next) => {
+    const startHeap = process.memoryUsage().heapUsed;
+    const start = process.hrtime.bigint();
+
+    res.on("finish", () => {
+      const endHeap = process.memoryUsage().heapUsed;
+      const diffMB = (endHeap - startHeap) / 1024 / 1024;
+
+      if (diffMB < MEMORY_ALERT_MB) return;
+
+      const duration =
+        Number(process.hrtime.bigint() - start) / 1_000_000;
+
+      console.error(`
+        [MEMORY ALERT] ${req.method} ${req.originalUrl}
+        Heap Δ: ${diffMB.toFixed(2)} MB
+        Duration: ${duration.toFixed(2)} ms
+        Params: ${JSON.stringify(req.params)}
+        Query: ${JSON.stringify(req.query)}` // Body: ${JSON.stringify(req.body)}
+      );
+    });
+
+    next();
+  });
+}
+
+if (monitoringLevel === 2) {
+  console.log('<><><><><><><><><><><><><><><><><><> CONTINUOS MONITORING ON <><>');
+
   setInterval(() => {
     const { heapUsed, rss, heapTotal } = process.memoryUsage();
 
