@@ -1,0 +1,1 @@
+alter table dorothy_messages add column "sentAt" timestamp NULL DEFAULT now()

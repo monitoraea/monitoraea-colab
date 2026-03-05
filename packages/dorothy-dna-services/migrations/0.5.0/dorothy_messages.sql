@@ -1,0 +1,1 @@
+ALTER TABLE public.dorothy_messages ADD "deletedAt" timestamp NULL;

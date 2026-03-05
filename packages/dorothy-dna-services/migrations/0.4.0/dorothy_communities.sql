@@ -1,0 +1,1 @@
+ALTER TABLE public.dorothy_communities ADD "deletedAt" timestamp NULL;

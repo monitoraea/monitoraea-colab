@@ -1,0 +1,1 @@
+ALTER TABLE public.dorothy_tools ALTER COLUMN "class" TYPE varchar USING "class"::varchar;
