@@ -56,13 +56,24 @@ const LoginPanel = ({ onLogin, next, doing_login }) => {
     } catch (e) {
       closeSnackbar(snack);
 
-      enqueueSnackbar('Erro ao requisitar a recuperação de senha', {
-        variant: 'error',
-        anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
-        },
-      });
+      if (e.response?.data?.error.includes('user not found')) {
+        enqueueSnackbar('Este e-mail não está cadastrado na plataforma MonitoraEA!', {
+          variant: 'error',
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+        });
+      } else {
+        enqueueSnackbar('Erro ao requisitar a recuperação de senha', {
+          variant: 'error',
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+        });
+      }
+
     }
   }
 
@@ -124,7 +135,7 @@ const LoginPanel = ({ onLogin, next, doing_login }) => {
     } catch (e) {
       closeSnackbar(snack);
 
-      enqueueSnackbar('Erro ao requisitar a recuperação de senha', {
+      enqueueSnackbar('Erro ao requisitar a alteração de senha', {
         variant: 'error',
         anchorOrigin: {
           vertical: 'top',
@@ -156,7 +167,7 @@ const LoginPanel = ({ onLogin, next, doing_login }) => {
                   <TextField className="input-text" id="text-email" label="E-mail" value={email} onChange={(e) => _email(e.target.value)} onKeyDown={verifyEnterKey} />
                 </div>
                 <div className='row mb-3'>
-                  <TextField className="input-text" type="password" id="text-pass" label="Senha" value={password} onChange={(e) => _password(e.target.value)}  onKeyDown={verifyEnterKey} />
+                  <TextField className="input-text" type="password" id="text-pass" label="Senha" value={password} onChange={(e) => _password(e.target.value)} onKeyDown={verifyEnterKey} />
                 </div>
                 <div className='row mb-3 end-xs middle-xs'>
                   <span className='mr-3' style={{ cursor: 'pointer' }} onClick={() => history.push(`/login/esqueci${!!query ? `?${query}` : ''}`)}>esqueci a senha</span>

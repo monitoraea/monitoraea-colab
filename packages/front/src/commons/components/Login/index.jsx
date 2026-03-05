@@ -133,7 +133,7 @@ const LoginPanel = ({ onLogin, next, doing_login, appLogo, subTitle }) => {
     } catch (e) {
       closeSnackbar(snack);
 
-      enqueueSnackbar('Erro ao requisitar a recuperação de senha', {
+      enqueueSnackbar('Erro ao requisitar a alteração de senha', {
         variant: 'error',
         anchorOrigin: {
           vertical: 'top',
