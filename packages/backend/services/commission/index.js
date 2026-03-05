@@ -983,6 +983,8 @@ class Service {
   }
 
   async verify(id, form, indic_forms) {
+    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> MEMORY','verify function called' );
+
     // get data
     const data = await this.getDraftInfo(id);
 

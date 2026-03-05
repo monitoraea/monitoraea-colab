@@ -177,7 +177,10 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
   }
 
   /* VERIFY */
+  // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> MEMORY','/:id/verify endpoint instatiated' );
   router.get('/:id/verify', async (req, res) => {
+    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> MEMORY','/:id/verify call received' );
+
     try {
       const { id } = req.params;
 
