@@ -1147,7 +1147,7 @@ class Service {
       const { lists } = YAML.parse(lists_file);
       const tipo_resultados = lists.find(i => i.key === 'tipo_resultados').options.filter(o => o.value !== -1);
 
-      for (let r of entity.outcomes_it) {
+      if(entity.outcomes_it && Array.isArray(entity.outcomes_it)) for (let r of entity.outcomes_it) {
         r.resultado_tipo = tipo_resultados.find(tr => tr.value === r.resultado_tipo)?.label;
       }
     } catch (e) {
