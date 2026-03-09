@@ -82,7 +82,7 @@ class Service {
       const { lists } = YAML.parse(lists_file);
       const tipo_coordenacao = lists.find(i => i.key === 'tipo_coordenacao').options.filter(o => o.value !== -1);
 
-      entity.coordenacao_name = tipo_coordenacao.find(tc => tc.value === entity.coordenacao).label;
+      entity.coordenacao_name = tipo_coordenacao.find(tc => tc.value === entity.coordenacao)?.label || '';
     } catch (e) {
       console.log(e);
     }
