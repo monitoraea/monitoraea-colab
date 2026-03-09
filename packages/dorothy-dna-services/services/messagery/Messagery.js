@@ -103,9 +103,9 @@ class InstantMessageServer {
         console.log('📡 Messagery instantiated');
 
         this.io.on('connection', (socket) => {
-            if(process.env.LOG_SOCKET === '1') console.log(`Socket ${socket.id} connected!`);
+            if (process.env.LOG_SOCKET === '1') console.log(`Socket ${socket.id} connected!`);
 
-            socket.on("disconnect", () => {if(process.env.LOG_SOCKET === '1') console.log(`Socket ${socket.id} disconnected!`)});
+            socket.on("disconnect", () => { if (process.env.LOG_SOCKET === '1') console.log(`Socket ${socket.id} disconnected!`) });
 
             socket.on('token', (token) => {
                 if (token) {
@@ -205,12 +205,16 @@ class InstantMessageServer {
 
         // sockets.forEach(({ data: { user }}) => console.log(user))
 
-        sockets
-            .filter(({ data: { user } }) => alerts.find(a => a.userId === user.id)) /* sockets de usuarios que estao em alertas */
-            .forEach(s => {
-                let alert = alerts.find(a => a.userId === s.data.user.id);
-                s.emit("command", 'new_alert', { alert: alert['alert'] })
-            }) /* para cada socket que esta em alertas */
+        try {
+            sockets
+                .filter(({ data: { user } }) => alerts.find(a => user && a.userId === user.id)) /* sockets de usuarios que estao em alertas */
+                .forEach(s => {
+                    let alert = alerts.find(a => a.userId === s.data.user.id);
+                    s.emit("command", 'new_alert', { alert: alert['alert'] })
+                }) /* para cada socket que esta em alertas */
+        } catch (e) {
+            console.log('>>>> sendAlerts ERROR', e)
+        }
 
     }
 }
