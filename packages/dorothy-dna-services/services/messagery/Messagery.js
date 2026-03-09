@@ -103,9 +103,9 @@ class InstantMessageServer {
         console.log('📡 Messagery instantiated');
 
         this.io.on('connection', (socket) => {
-            console.log(`Socket ${socket.id} connected!`);
+            if(process.env.LOG_SOCKET === '1') console.log(`Socket ${socket.id} connected!`);
 
-            socket.on("disconnect", () => console.log(`Socket ${socket.id} disconnected!`));
+            socket.on("disconnect", () => {if(process.env.LOG_SOCKET === '1') console.log(`Socket ${socket.id} disconnected!`)});
 
             socket.on('token', (token) => {
                 if (token) {
