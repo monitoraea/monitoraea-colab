@@ -147,7 +147,7 @@ const Manager = () => {
   return (
     <div className="page">
       <div className="page-header">
-        <PageTitle title="Comissão" />
+        <PageTitle title="Colegiado" />
         <div className="page-header-buttons">
           {/* <button className="button-outline" onClick={handleDownload}>
             <Download></Download>

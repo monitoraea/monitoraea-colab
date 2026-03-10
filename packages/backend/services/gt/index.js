@@ -101,7 +101,7 @@ class Service {
           case
             when TRIM(dc.type) = 'policy' then 'Política'
             when TRIM(dc.type) = 'project' then 'Projeto'
-            when TRIM(dc.type) = 'commission' then 'Comissão'
+            when TRIM(dc.type) = 'commission' then 'Colegiado'
             when TRIM(dc.type) = 'cne' then 'Centro/Núcleo/Equipamento'
             else 'Facilitador'
           end as "typeName",
