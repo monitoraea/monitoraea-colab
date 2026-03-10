@@ -34,3 +34,5 @@ SELECT cv.id as iniciativa_versao_id,
 clt."date", clt.texto, clt.timeline_arquivo, clt.ordem, clt."createdAt", clt."updatedAt"
 FROM ciea.linhas_do_tempo clt
 inner join current_version cv on cv.iniciativa_id = clt.iniciativa_versao_id 
+
+DROP INDEX ciea.comissoes_uf_idx;

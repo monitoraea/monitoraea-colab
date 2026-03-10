@@ -8,6 +8,9 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
+      community_id: {
+        type: DataTypes.INTEGER,
+      },
       iniciativa_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -16,6 +19,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       data_criacao: {
+        type: DataTypes.INTEGER,
+      },
+      uf: {
         type: DataTypes.INTEGER,
       },
       link: {
@@ -118,6 +124,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       nivel_atuacao_outro: {
+        type: DataTypes.STRING,
+      },
+      versao: {
         type: DataTypes.STRING,
       },
     },

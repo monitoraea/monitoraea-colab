@@ -62,6 +62,19 @@ router.get('/:id/draft/timeline', async (req, res) => {
   }
 });
 
+router.put('/:id/publish', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    /* TODO: SO MODERADOR OU ADM */
+    const result = await entity.publish(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.put('/:id/draft/timeline/:tlid', upTimelineImage, async (req, res) => {
   const { id, tlid } = req.params;
   const { entity: entityData } = req.body;

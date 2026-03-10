@@ -58,7 +58,7 @@ const Manager = () => {
       user.membership
         .map(membership => {
           return (
-            membership.id === 1 || (membership.id === currentCommunity.id && membership.type === 'adm')
+            membership.id === 601 /* TODO: hardcoded - gestao CIEA */ || (membership.id === currentCommunity.id && membership.type === 'adm')
           ); /* TODO: analisar aqui e em projetos (depois que criei outros GT ADM) */
         })
         .reduce((acc, curr) => acc || curr),
@@ -101,7 +101,7 @@ const Manager = () => {
       if (data.success) {
         window.location = `${window.location}`;
 
-        enqueueSnackbar('Comissão publicada com sucesso!', {
+        enqueueSnackbar('Colegiado publicado com sucesso!', {
           variant: 'success',
           anchorOrigin: {
             vertical: 'top',
@@ -112,7 +112,7 @@ const Manager = () => {
         enqueueSnackbar(
           <div>
             <p>
-              <strong>Esta comissão ainda não esta pronta para ser publicada!</strong>
+              <strong>Este colegiado ainda não esta pronta para ser publicado!</strong>
             </p>
             <p>Verifique se todos os campos das abas de Informações estão completamente preenchidos.</p>
           </div>,
@@ -130,7 +130,7 @@ const Manager = () => {
 
       console.error(error);
 
-      enqueueSnackbar('Erro ao publicar a comissão!', {
+      enqueueSnackbar('Erro ao publicar o colegiado!', {
         variant: 'error',
         anchorOrigin: {
           vertical: 'top',
@@ -152,14 +152,14 @@ const Manager = () => {
           {/* <button className="button-outline" onClick={handleDownload}>
             <Download></Download>
             Baixar CSV
-          </button>
+          </button>*/}
 
           {isAdmOrMod && isAdmOrMod === true && (
             <button className="button-primary" onClick={handlePublish}>
               <CheckCircle></CheckCircle>
               Publicar
             </button>
-          )} */}
+          )}
         </div>
       </div>
       {analysis && tabindex && (
@@ -198,7 +198,27 @@ function TermDialog({ open, onClose }) {
         <DialogTitle id="alert-dialog-title">Termo de Adesão ao PPPZCM</DialogTitle>
         <DialogContent>
           <DialogContent id="alert-dialog-description" className={styles.term}>
-            <p>TODO TODO TODO</p>
+            <p>
+              Declaro estar ciente e de acordo com as diretrizes político-pedagógicas do Sistema MonitoraEA e que
+              reconheço a Plataforma MonitoraEA como um instrumento de gestão de dados das iniciativas de educação
+              ambiental (políticas, projetos, instâncias, entre outros) no Brasil.
+            </p>
+            <p>
+              Neste sentido, declaro a adesão ao Sistema MonitoraEA por meio da inserção da iniciativa ora cadastrada na
+              Plataforma MonitoraEA. Declaro que a execução técnica e financeira da referida iniciativa está sob a
+              responsabilidade integral da instituição proponente e, eventualmente, seus parceiros.
+            </p>
+            <p>
+              Ainda, declaro concordar com a divulgação pública dos dados da iniciativa ora inserida – por meio da
+              Plataforma MonitoraEA - e assumo a inteira responsabilidade pelo teor e veracidade das informações
+              cadastradas.
+            </p>
+            <p>
+              Por fim, declaro meu consentimento com a coleta, uso e tratamento de meus dados pessoais pela ANPPEA, que
+              atuará como gestora de dados, nos termos da Lei 13.709/2018, e que tenho ciência de que poderei solicitar,
+              a qualquer momento, a exclusão de meus dados do banco de dados da Plataforma MonitoraEA, bem como a
+              revogação deste consentimento.
+            </p>
           </DialogContent>
         </DialogContent>
         <DialogActions>

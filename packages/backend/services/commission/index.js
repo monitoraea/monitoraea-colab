@@ -1095,6 +1095,189 @@ class Service {
     return `${main_folder}/${segmentedId}/${folder}/original/${filename}`;
   }
   /* *********************** GENERALIZAR.End */
+
+
+  async publish(iniciativa_id) {
+
+    const transaction = await db.instance().transaction();
+
+    try {
+      /**** >>> A.REMOVE CURRENT (if exists) <<< ****/
+      const iniciativa_current = await db.models['Commission'].findOne({
+        where: {
+          iniciativa_id,
+          versao: 'current',
+        },
+      });
+      if (iniciativa_current) {
+        const timelines = await db.models['Commision_timeline'].findAll({ 
+          where: {
+            iniciativa_versao_id: iniciativa_current.id,
+          },
+        });
+        for (let tl of timelines) {
+          // A.1A REMOVE TIMELINE FILES
+          if (tl.timeline_arquivo) {
+            await db.models['File'].destroy({
+              where: { id: tl.timeline_arquivo },
+              transaction,
+            });
+          }
+          // A.1B REMOVE TIMELINE
+          await db.models['Commision_timeline'].destroy({
+            where: { id: tl.id },
+            transaction,
+          });
+        }
+        // A.2 REMOVE GEOM
+        // await db.instance().query(
+        //   `
+        //     DELETE FROM cne.cnes_atuacao
+        //     WHERE iniciativa_versao_id = :iniciativa_versao_id
+        //   `,
+        //   {
+        //     replacements: { iniciativa_versao_id: iniciativa_current.id },
+        //     type: Sequelize.QueryTypes.DELETE,
+        //     transaction,
+        //   },
+        // );
+        // // A.3 REMOVE FILES
+        // if (iniciativa_current.logo_arquivo) {
+        //   await db.models['File'].destroy({
+        //     where: { id: iniciativa_current.logo_arquivo },
+        //     transaction,
+        //   });
+        // }
+        // A.4 REMOVE CNE
+        iniciativa_current.destroy({ transaction });
+      }
+
+      /**** >>> B.DRAFT->CURRENT <<< ****/
+      const iniciativa_draft = await db.models['Commission'].findOne({
+        where: {
+          iniciativa_id,
+          versao: 'draft',
+        },
+      });
+      if (!iniciativa_draft) throw new Error('Colegiado without draft');
+      iniciativa_draft.versao = 'current';
+      await iniciativa_draft.save({
+        transaction,
+      });
+
+      /**** >>> C.CLONE new CURRENT -> DRAFT <<< ****/
+
+      // C.1 CLONE FILE
+      const new_file = await db.instance().query(
+        `
+        insert into files(file_name, description, "content_type", "createdAt", "updatedAt", tags, url, file_size, legacy_id, origin, document_type, send_date)
+        SELECT file_name, description, "content_type", NOW(), NOW(), tags, url, file_size, legacy_id, origin, document_type, send_date
+        FROM files
+        WHERE id = :file_id
+        RETURNING id
+      `,
+        {
+          replacements: { file_id: iniciativa_draft.logo_arquivo },
+          type: Sequelize.QueryTypes.SELECT,
+          transaction,
+        },
+      );
+
+      // TODO: e os outros arquivos?????????????
+
+      // C.2 CLONE Colegiado
+      const iniciativa_clone = await db.models['Commission'].create(
+        {
+          ...iniciativa_draft.get({ plain: true }),
+          id: undefined,
+          versao: 'draft',
+          logo_arquivo: new_file.length ? new_file[0].id : null, 
+          // TODO: outros arquivos!!!!!!
+        },
+        {
+          transaction,
+        },
+      );
+
+      // C.3A CLONE TIMELINE
+      const timelines = await db.models['Commision_timeline'].findAll({
+        where: {
+          iniciativa_versao_id: iniciativa_draft.id,
+        },
+      });
+      for (let tl of timelines) {
+        // C.3B CLONE TIMELINE FILES
+        const new_file = await db.instance().query(
+          `
+          insert into files(file_name, description, "content_type", "createdAt", "updatedAt", tags, url, file_size, legacy_id, origin, document_type, send_date)
+          SELECT file_name, description, "content_type", NOW(), NOW(), tags, url, file_size, legacy_id, origin, document_type, send_date
+          FROM files
+          WHERE id = :file_id
+          RETURNING id
+        `,
+          {
+            replacements: { file_id: tl.timeline_arquivo },
+            type: Sequelize.QueryTypes.SELECT,
+            transaction,
+          },
+        );
+
+        await db.models['Commision_timeline'].create(
+          {
+            ...tl.get({ plain: true }),
+            id: undefined,
+            iniciativa_versao_id: iniciativa_clone.id,
+            timeline_arquivo: new_file[0]?.id,
+          },
+          {
+            transaction,
+          },
+        );
+      }
+
+      // C.4 CLONE GEOM
+      // await db.instance().query(
+      //   `
+      //   INSERT INTO cne.cnes_atuacao(iniciativa_versao_id, geom)
+      //   SELECT ${iniciativa_clone.id} as iniciativa_versao_id, geom FROM cne.cnes_atuacao
+      //   WHERE iniciativa_versao_id = :iniciativa_versao_id
+      // `,
+      //   {
+      //     replacements: { iniciativa_versao_id: iniciativa_draft.id },
+      //     type: Sequelize.QueryTypes.INSERT,
+      //     transaction,
+      //   },
+      // );
+
+      /* atualiza o nome da comunidade */
+      await db.instance().query(
+        `
+      update dorothy_communities
+      set descriptor_json = jsonb_set(descriptor_json , '{"title"}', jsonb '"${iniciativa_draft.nome}"', true)
+      where id = :id
+      `,
+        {
+          replacements: {
+            id: iniciativa_draft.community_id,
+          },
+          type: Sequelize.QueryTypes.UPDATE,
+          transaction,
+        },
+      );
+
+      // COMMIT TRANSACTION
+      await transaction.commit();
+
+      // SEND NOTIFICATION --> TODO (ISSUE)
+
+      return { success: true };
+    } catch (error) {
+      // ROLLBACK TRANSACTION
+
+      await transaction.rollback();
+      throw error;
+    }
+  }
 }
 
 const singletonInstance = new Service();
