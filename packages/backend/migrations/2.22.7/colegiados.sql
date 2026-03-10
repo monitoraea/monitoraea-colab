@@ -36,3 +36,10 @@ FROM ciea.linhas_do_tempo clt
 inner join current_version cv on cv.iniciativa_id = clt.iniciativa_versao_id 
 
 DROP INDEX ciea.comissoes_uf_idx;
+
+ALTER TABLE ciea.comissoes ADD nome varchar NULL;
+
+UPDATE ciea.comissoes c
+SET nome = CONCAT('CIEA - ', u.nm_estado)
+FROM ufs u
+WHERE c.uf = u.id;

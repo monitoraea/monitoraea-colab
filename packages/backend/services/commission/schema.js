@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      nome: {
+        type: DataTypes.STRING,
+      },
       ativo: {
         type: DataTypes.INTEGER,
       },

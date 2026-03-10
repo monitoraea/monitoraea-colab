@@ -1,5 +1,11 @@
 fields:
 
+- key: nome
+  block: detalhes
+  type: text
+  title: Nome do Colegiado
+  size: 4
+
 - key: tipo_colegiado
   block: detalhes
   type: options

@@ -34,7 +34,7 @@ class Service {
     const result = await db.instance().query(
       `
       select
-        CONCAT('CIEA-',u.sigla) as nome,
+        c.nome,
         u.nm_estado,
         c.data_criacao,
         c.coordenacao,
@@ -169,6 +169,7 @@ class Service {
     const entity = await db.instance().query(
       `
       SELECT
+        c.nome,
         c.uf,
         u.nm_estado as uf_nome,
         u.nm_regiao as regiao,
@@ -507,7 +508,7 @@ class Service {
     if (f_ids) where = `${where} AND u.id in (${f_ids})`;
 
     query = `
-            select distinct c.id, u.sigla, CONCAT('CIEA-',u.sigla) as nome, u.nm_regiao, c.uf,
+            select distinct c.id, u.sigla, c.nome, u.nm_regiao, c.uf,
             count(*) OVER() AS total_count
             from ciea.comissoes c
             left join ufs u on u.id = c.uf
@@ -653,7 +654,7 @@ class Service {
 
     entities = await db.instance().query(
       `
-      select CONCAT('CIEA-',u.sigla) as nome,
+      select p.nome,
           p.community_id
       from ciea.comissoes p
       inner join ufs u on u.id = p.uf
@@ -787,7 +788,7 @@ class Service {
 
     result = await sequelize.query(
       `
-        select p.id, CONCAT('CIEA-',u.sigla) as nome
+        select p.id, p.nome
         from ciea.comissoes p
         inner join ufs u on u.id = p.uf
         where p.id = ${parseInt(id)}

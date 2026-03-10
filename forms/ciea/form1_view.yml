@@ -7,6 +7,11 @@
     - type: row
       elements:
       - type: column
+        size: 8
+        key: nome
+    - type: row
+      elements:
+      - type: column
         size: 6
         key: tipo_colegiado
       - type: column
