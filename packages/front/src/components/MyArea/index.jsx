@@ -244,7 +244,7 @@ export default function MyArea() {
                 <button onClick={() => _showNIDialog('ppea')}>Cadastrar uma nova <span>Políticas Públicas de EA (PPEA)</span></button>
                 <button onClick={() => _showNIDialog('iniciativa')}>Cadastrar uma nova <span>Iniciativa Não Governamental</span></button>
                 <button onClick={() => _showNIDialog('project')}>Cadastrar um novo Projeto ou Ação vinculados ao  <span>PPPZCM</span></button>
-                <button onClick={() => _showNIDialog('commission')}>Cadastrar uma novo <span>Colegiado</span>  de Políticas Públicas de EA</button>
+                <button onClick={() => _showNIDialog('commission')}>Cadastrar um novo <span>Colegiado</span>  de Políticas Públicas de EA</button>
                 <button onClick={() => _showNIDialog('cne')}>Cadastrar um novo <span>Centro de Educação</span> e Cooperação Socioambiental </button>
             </div>
         </div>

@@ -90,8 +90,29 @@ class Service {
     return entity;
   }
 
+  async getCIEADraftId(iniciativa_id) {
+    // encontra a versao draft desta ciea
+    const p_draft = await db.instance().query(
+      `
+            select id
+            from ciea.comissoes p
+            where p.iniciativa_id = :iniciativa_id
+            and p.versao = 'draft'
+        `,
+      {
+        replacements: { iniciativa_id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!p_draft.length) throw new Error('Unknow draft!');
+
+    return p_draft[0].id;
+  }
+
   async removeDraftTimeline(id, tlId) {
     const timeline = await db.models['Commision_timeline'].findByPk(tlId);
+    const iniciativa_versao_id = await this.getCIEADraftId(id);
 
     if (timeline.get('timeline_arquivo')) {
       /* remove file */
@@ -103,7 +124,7 @@ class Service {
     await db.models['Commision_timeline'].destroy({
       where: {
         id: tlId,
-        iniciativa_versao_id: id,
+        iniciativa_versao_id,
       },
     });
 
@@ -141,11 +162,13 @@ class Service {
   }
 
   async saveDraftTimeline(user, entity, timeline_arquivo, id, tlid) {
+    const iniciativa_versao_id = await this.getCIEADraftId(id);
+
     let entityModel;
     if (!tlid) {
       entityModel = await db.models['Commision_timeline'].create({
         ...entity,
-        iniciativa_versao_id: id,
+        iniciativa_versao_id,
         timeline_arquivo: undefined,
       });
     } else {
@@ -159,8 +182,8 @@ class Service {
     }
 
     if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
-    else if (timeline_arquivo)
-      await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', entityModel.get('iniciativa_versao_id'));
+    else if (timeline_arquivo) 
+      await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', id);
 
     return entityModel;
   }
@@ -218,7 +241,7 @@ class Service {
         c.nivel_atuacao_outro,
         c.coordenacao_quem
       FROM ciea.comissoes c
-      inner join ufs u on u.id = c.uf
+      left join ufs u on u.id = c.uf
       WHERE c.iniciativa_id = :id
       AND versao = 'draft'
         `,
@@ -417,7 +440,7 @@ class Service {
     await s3
       .putObject({
         Bucket: s3BucketName,
-        Key: this.getFileKey(entityId || entityModel.get('id'), fieldName, file.originalname),
+        Key: this.getFileKey(entityId || entityModel.get('iniciativa_id'), fieldName, file.originalname),
         Body: fileStream,
         ACL: 'public-read',
       })
@@ -1111,7 +1134,7 @@ class Service {
         },
       });
       if (iniciativa_current) {
-        const timelines = await db.models['Commision_timeline'].findAll({ 
+        const timelines = await db.models['Commision_timeline'].findAll({
           where: {
             iniciativa_versao_id: iniciativa_current.id,
           },
@@ -1192,7 +1215,7 @@ class Service {
           ...iniciativa_draft.get({ plain: true }),
           id: undefined,
           versao: 'draft',
-          logo_arquivo: new_file.length ? new_file[0].id : null, 
+          logo_arquivo: new_file.length ? new_file[0].id : null,
           // TODO: outros arquivos!!!!!!
         },
         {
@@ -1278,6 +1301,88 @@ class Service {
       await transaction.rollback();
       throw error;
     }
+  }
+
+  async createInitiative(nome, user) {
+    let query, result;
+
+    /* community for project */
+    result = await db.instance().query(
+      `
+          select * from dorothy_community_recipes where name = 'commission'
+          `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const communityRecipe = result[0];
+
+    result = await db.instance().query(
+      `
+          INSERT INTO dorothy_communities(
+            descriptor_json,
+            "createdAt",
+            "updatedAt",
+            alias,
+            type
+          )
+          VALUES(
+              '${JSON.stringify(communityRecipe['descriptor_json']).replace('%TITLE%', nome.replace(/"/g, ''))}',
+              NOW(),
+              NOW(),
+              '${communityRecipe['alias']}',
+              '${communityRecipe['type']}'
+          ) RETURNING id
+          `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const community_id = result[0].id;
+
+    // institution
+    result = await db.instance().query(
+      `
+          INSERT INTO public.instituicoes(nome, "createdAt", "updatedAt")
+          VALUES(:nome, now(), now())
+          RETURNING id
+          `,
+      {
+        replacements: { nome },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const instituicao_id = result[0].id;
+
+    result = await db.instance().query(
+      `
+          SELECT MAX(iniciativa_id)+1 as next from ciea.comissoes
+          `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const iniciativa_id = result[0].next;
+
+    result = await db.instance().query(
+      `
+          INSERT INTO ciea.comissoes(nome, community_id, iniciativa_id, versao, "createdAt", "updatedAt", instituicao_id)
+          values(:nome, :community_id, :iniciativa_id, 'draft', NOW(), NOW(), :instituicao_id)
+          `,
+      {
+        replacements: { nome, community_id, iniciativa_id, instituicao_id },
+        type: Sequelize.QueryTypes.INSERT,
+      },
+    );
+
+    /* torna o criador membro da iniciativa */
+    await require('../gt').addMember(community_id, user.id);
+
+    return { communityId: community_id };
   }
 }
 

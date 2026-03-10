@@ -245,6 +245,18 @@ router.post('/:id/participate', async (req, res) => {
   }
 });
 
+router.post('/', async (req, res) => {
+  try {
+    const { nome } = req.body;
+
+    const result = await entity.createInitiative(nome, res.locals.user);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
     const { page, f_ids, limit } = req.query;

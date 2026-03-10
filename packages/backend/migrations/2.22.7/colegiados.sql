@@ -34,8 +34,13 @@ SELECT cv.id as iniciativa_versao_id,
 clt."date", clt.texto, clt.timeline_arquivo, clt.ordem, clt."createdAt", clt."updatedAt"
 FROM ciea.linhas_do_tempo clt
 inner join current_version cv on cv.iniciativa_id = clt.iniciativa_versao_id 
+----------------------------
+
+---------------------------- OUTROS
 
 DROP INDEX ciea.comissoes_uf_idx;
+
+ALTER TABLE ciea.comissoes ALTER COLUMN uf DROP NOT NULL;
 
 ALTER TABLE ciea.comissoes ADD nome varchar NULL;
 
@@ -43,3 +48,7 @@ UPDATE ciea.comissoes c
 SET nome = CONCAT('CIEA - ', u.nm_estado)
 FROM ufs u
 WHERE c.uf = u.id;
+
+INSERT INTO public.dorothy_community_recipes
+(id, "name", obs, descriptor_json, "createdAt", "updatedAt", "type", alias)
+VALUES(8, 'commission', NULL, '{"title": "%TITLE%", "tools": [{"id": 18}, {"id": 4}, {"id": 1}], "includes": [], "perspective": 3}'::jsonb, '2026-03-10 16:39:29.000', '2026-03-10 16:39:29.000', 'commission          ', 'comissao');
