@@ -52,3 +52,12 @@ WHERE c.uf = u.id;
 INSERT INTO public.dorothy_community_recipes
 (id, "name", obs, descriptor_json, "createdAt", "updatedAt", "type", alias)
 VALUES(8, 'commission', NULL, '{"title": "%TITLE%", "tools": [{"id": 18}, {"id": 4}, {"id": 1}], "includes": [], "perspective": 3}'::jsonb, '2026-03-10 16:39:29.000', '2026-03-10 16:39:29.000', 'commission          ', 'comissao');
+
+---------------------------- GEO
+CREATE TABLE ciea.comissao_atuacao (
+	id serial4 NOT NULL,
+	iniciativa_versao_id int4 NOT NULL,
+	geom public.geometry NOT NULL,
+	CONSTRAINT ciea_atuacao_pk PRIMARY KEY (id)
+);
+CREATE INDEX ciea_atuacao_iniciativa_versao_id_idx ON ciea.comissao_atuacao USING btree (iniciativa_versao_id);

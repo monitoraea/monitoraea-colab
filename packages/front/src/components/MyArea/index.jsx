@@ -23,7 +23,7 @@ const mapPerspective = {
     //key: ['TEXT', 'TOOL URL', 'NETWORK PATH']
     ppea: ['Políticas Públicas', 'politica', 'rede_ppea', 'Nova Política Pública de Educação Ambiental (PPEA)'],
     project: ['Iniciativa', 'projeto', 'rede_zcm', 'Novo Projeto ou Ação cinculados ao PPPZCM'],
-    commission: ['Comissão', 'comissao', 'rede_ciea', 'Nova Instância de Acompanhamento e Controle Social de EA'],
+    commission: ['Colegiados', 'comissao', 'rede_ciea', 'Novo Colegiado de EA'],
     cne: ['Centro', 'cne', 'rede_cne', 'Novo Centro de Educação e Cooperação Socioambiental'],
     iniciativa: ['Iniciativa não governamental', 'iniciativa', 'rede_iniciativas', 'Nova Iniciativa Não Governamental'],
 }
