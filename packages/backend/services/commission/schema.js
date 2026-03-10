@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
+      iniciativa_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       ativo: {
         type: DataTypes.INTEGER,
       },

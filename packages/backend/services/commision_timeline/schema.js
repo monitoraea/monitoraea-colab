@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
 
   CommissionTimeline.associate = function (models) {
     CommissionTimeline.belongsTo(models["Commission"], {
-      foreignKey: "comissao_id",
+      foreignKey: "iniciativa_versao_id",
     });
     CommissionTimeline.belongsTo(models["File"], {
       foreignKey: "timeline_arquivo",

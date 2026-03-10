@@ -103,7 +103,7 @@ class Service {
     await db.models['Commision_timeline'].destroy({
       where: {
         id: tlId,
-        comissao_id: id,
+        iniciativa_versao_id: id,
       },
     });
 
@@ -121,7 +121,9 @@ class Service {
           f.file_name
       FROM ciea.linhas_do_tempo lt
       left join files f on f.id = lt.timeline_arquivo
-      WHERE lt.comissao_id = :id
+      inner join ciea.comissoes p on p.id = lt.iniciativa_versao_id
+      where p.iniciativa_id = :id
+      and p.versao = 'draft'
       order by lt."date"
         `,
       {
@@ -143,7 +145,7 @@ class Service {
     if (!tlid) {
       entityModel = await db.models['Commision_timeline'].create({
         ...entity,
-        comissao_id: id,
+        iniciativa_versao_id: id,
         timeline_arquivo: undefined,
       });
     } else {
@@ -158,7 +160,7 @@ class Service {
 
     if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
     else if (timeline_arquivo)
-      await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', entityModel.get('comissao_id'));
+      await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', entityModel.get('iniciativa_versao_id'));
 
     return entityModel;
   }
@@ -216,7 +218,7 @@ class Service {
         c.coordenacao_quem
       FROM ciea.comissoes c
       inner join ufs u on u.id = c.uf
-      WHERE c.id = :id
+      WHERE c.iniciativa_id = :id
       AND versao = 'draft'
         `,
       {
@@ -287,11 +289,11 @@ class Service {
         ppea_outra_arquivo: entity.ppea_outra_tipo === null ? null : undefined,
       },
       {
-        where: { id },
+        where: { iniciativa_id: id, versao: 'draft' },
       },
     );
 
-    const entityModel = await db.models['Commission'].findByPk(id);
+    const entityModel = await db.models['Commission'].findOne({ where: { iniciativa_id: id, versao: 'draft' } });
 
     /* TODO: GENERALIZAR: recuperar em form.yml - files/thumbnai que não em link_or_file <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form */
     if (entity.logo_arquivo === 'remove') await this.removeFile(entityModel, 'logo_arquivo');
@@ -330,6 +332,8 @@ class Service {
       'plano_estadual',
       'ppea_outra',
     ]) {
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', `${wFile}_tipo`, entity[`${wFile}_tipo`])
+
       if (entity[`${wFile}_tipo`] === 'link')
         await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
       else if (entity[`${wFile}_tipo`] === 'file') {
@@ -374,7 +378,7 @@ class Service {
     let result;
 
     result = await sequelize.query(
-      ` select  c.id
+      ` select c.iniciativa_id as id
         from ciea.comissoes c
         where c.community_id = :community_id`,
       {
@@ -886,7 +890,7 @@ class Service {
       SELECT
         indicadores as indicadores
       FROM ciea.comissoes p
-      WHERE p.id = :id
+      WHERE p.iniciativa_id = :id
       AND versao = 'draft'
       AND "deletedAt" is null
         `,
@@ -918,7 +922,7 @@ class Service {
 
   async saveDraftIndic(user, form, indic_name, entity, files, id) {
     const iniciativa = await db.models['Commission'].findOne(
-      { where: { id, versao: 'draft' } },
+      { where: { iniciativa_id: id, versao: 'draft' } },
       {
         raw: true,
         nest: true,
@@ -968,7 +972,7 @@ class Service {
         indicadores,
         ("createdAt" = "updatedAt") as is_new
       FROM ciea.comissoes p
-      WHERE id = :id
+      WHERE iniciativa_id = :id
       AND versao = 'draft'
         `,
       {
