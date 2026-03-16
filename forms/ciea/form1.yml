@@ -137,6 +137,12 @@ fields:
   title: Link para o site
   size: 12
 
+- key: obs
+  block: detalhes2
+  type: textarea
+  title: Observações
+  size: 12
+
 - key: documento_criacao
   block: documento
   type: text

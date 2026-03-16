@@ -5,6 +5,8 @@
 ALTER TABLE ciea.comissoes ADD iniciativa_id int4 NULL;
 CREATE INDEX comissoes_iniciativa_id_idx ON ciea.comissoes (iniciativa_id);
 
+ALTER TABLE ciea.comissoes ADD obs text NULL;
+
 update ciea.comissoes c 
 set iniciativa_id = c.id 
 where true

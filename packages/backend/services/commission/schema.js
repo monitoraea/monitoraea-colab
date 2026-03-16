@@ -135,6 +135,15 @@ module.exports = (sequelize, DataTypes) => {
       versao: {
         type: DataTypes.STRING,
       },
+      atuacao_aplica: {
+        type: DataTypes.BOOLEAN,
+      },
+      atuacao_naplica_just: {
+        type: DataTypes.TEXT,
+      },
+      obs: {
+        type: DataTypes.TEXT,
+      },
     },
     {
       tableName: 'comissoes',

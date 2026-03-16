@@ -52,6 +52,11 @@
       - type: column
         size: 12
         key: link
+    - type: row
+      elements:
+      - type: column
+        size: 12
+        key: obs
 
 - type: separator
 

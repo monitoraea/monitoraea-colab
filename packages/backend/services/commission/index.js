@@ -237,7 +237,8 @@ class Service {
         c.tipo_colegiado_outro,
         c.nivel_atuacao,
         c.nivel_atuacao_outro,
-        c.coordenacao_quem
+        c.coordenacao_quem,
+        c.obs
       FROM ciea.comissoes c
       left join ufs u on u.id = c.uf
       WHERE c.iniciativa_id = :id
@@ -1172,25 +1173,25 @@ class Service {
           });
         }
         // A.2 REMOVE GEOM
-        // await db.instance().query(
-        //   `
-        //     DELETE FROM cne.cnes_atuacao
-        //     WHERE iniciativa_versao_id = :iniciativa_versao_id
-        //   `,
-        //   {
-        //     replacements: { iniciativa_versao_id: iniciativa_current.id },
-        //     type: Sequelize.QueryTypes.DELETE,
-        //     transaction,
-        //   },
-        // );
-        // // A.3 REMOVE FILES
-        // if (iniciativa_current.logo_arquivo) {
-        //   await db.models['File'].destroy({
-        //     where: { id: iniciativa_current.logo_arquivo },
-        //     transaction,
-        //   });
-        // }
-        // A.4 REMOVE CNE
+        await db.instance().query(
+          `
+            DELETE FROM ciea.comissao_atuacao
+            WHERE iniciativa_versao_id = :iniciativa_versao_id
+          `,
+          {
+            replacements: { iniciativa_versao_id: iniciativa_current.id },
+            type: Sequelize.QueryTypes.DELETE,
+            transaction,
+          },
+        );
+        // A.3 REMOVE FILES
+        if (iniciativa_current.logo_arquivo) {
+          await db.models['File'].destroy({
+            where: { id: iniciativa_current.logo_arquivo },
+            transaction,
+          });
+        }
+        // A.4 REMOVE CIEA
         iniciativa_current.destroy({ transaction });
       }
 
@@ -1278,18 +1279,18 @@ class Service {
       }
 
       // C.4 CLONE GEOM
-      // await db.instance().query(
-      //   `
-      //   INSERT INTO cne.cnes_atuacao(iniciativa_versao_id, geom)
-      //   SELECT ${iniciativa_clone.id} as iniciativa_versao_id, geom FROM cne.cnes_atuacao
-      //   WHERE iniciativa_versao_id = :iniciativa_versao_id
-      // `,
-      //   {
-      //     replacements: { iniciativa_versao_id: iniciativa_draft.id },
-      //     type: Sequelize.QueryTypes.INSERT,
-      //     transaction,
-      //   },
-      // );
+      await db.instance().query(
+        `
+        INSERT INTO ciea.comissao_atuacao(iniciativa_versao_id, geom)
+        SELECT ${iniciativa_clone.id} as iniciativa_versao_id, geom FROM ciea.comissao_atuacao
+        WHERE iniciativa_versao_id = :iniciativa_versao_id
+      `,
+        {
+          replacements: { iniciativa_versao_id: iniciativa_draft.id },
+          type: Sequelize.QueryTypes.INSERT,
+          transaction,
+        },
+      );
 
       /* atualiza o nome da comunidade */
       await db.instance().query(
