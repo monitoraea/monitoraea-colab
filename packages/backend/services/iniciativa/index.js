@@ -616,7 +616,7 @@ class Service {
       `
     update iniciativas.iniciativas
     set atuacao_aplica = :isAbleString
-    where politica_id = :id`,
+    where politica_id = :id and versao = 'draft'`,
       {
         replacements: { id, isAbleString },
         type: Sequelize.QueryTypes.UPDATE,
