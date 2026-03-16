@@ -490,7 +490,8 @@ class Service {
         count(dm.*) > 0 as "has_members"
       from ciea.comissoes c
       inner join dorothy_communities dc on dc.id = c.community_id
-      left join dorothy_members dm on dm."communityId" = dc.id
+      left join dorothy_members dm on dm."communityId" = dc.id      
+      where c.versao = 'draft'
       group by c.id, dc.id
     )
     select
