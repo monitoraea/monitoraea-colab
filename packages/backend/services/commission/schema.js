@@ -27,8 +27,8 @@ module.exports = (sequelize, DataTypes) => {
       data_criacao: {
         type: DataTypes.INTEGER,
       },
-      uf: {
-        type: DataTypes.INTEGER,
+      ufs: {
+        type: DataTypes.ARRAY(DataTypes.INTEGER)
       },
       link: {
         type: DataTypes.STRING,

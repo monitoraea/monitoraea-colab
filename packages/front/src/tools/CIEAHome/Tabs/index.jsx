@@ -5,8 +5,12 @@ import { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 
 export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
+
+  const [infoIsReady, _infoIsReady] = useState(false);
   const [indicatorIsReady, _indicatorIsReady] = useState(false);
   const [indicProblemCounter, _indicProblemCounter] = useState(0);
+  const [atuacaoIsReady, _atuacaoIsReady] = useState(false);
+  const [infoProblemCounter, _infoProblemCounter] = useState(0);
 
   const handleChange = e => {
     onTabChange(e.target.id);
@@ -28,7 +32,19 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
 
     filterObj(analysis.analysis.indics, x => x.ready === false);
     _indicProblemCounter(filterCounter);
+
+    filterCounter = 0;
+    const groupByNotReady = filterObj(analysis.analysis.information, item => item === false);
+    _infoProblemCounter(filterCounter);
+
+    const isEmpty = obj => {
+      return Object.keys(obj).length === 0;
+    };
+
+    _infoIsReady(isEmpty(groupByNotReady));
+
     _indicatorIsReady(Object.values(analysis.analysis.indics).reduce((acc, i) => { if (!i.ready) { return false } else { return acc } }, true));
+    _atuacaoIsReady(analysis.analysis.geo);
 
   }, [analysis]);
 
@@ -40,7 +56,15 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           <Tab
             disableRipple
             label="Cadastro"
-            {...a11yProps('informacao')}
+            {...a11yProps('informacao', infoProblemCounter > 0 ? infoProblemCounter : '')}
+            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['not-ready']} ${infoProblemCounter < 10 && styles['fixed-size']
+              }`}
+          />
+          <Tab
+            disableRipple
+            label="Abrangência" className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
+              }`}
+            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
           />
           <Tab
             disableRipple

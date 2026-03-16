@@ -182,7 +182,7 @@ class Service {
     }
 
     if (entity.timeline_arquivo === 'remove') await this.removeFile(entityModel, 'timeline_arquivo');
-    else if (timeline_arquivo) 
+    else if (timeline_arquivo)
       await this.updateFile(entityModel, timeline_arquivo, 'timeline_arquivo', id);
 
     return entityModel;
@@ -193,9 +193,7 @@ class Service {
       `
       SELECT
         c.nome,
-        c.uf,
-        u.nm_estado as uf_nome,
-        u.nm_regiao as regiao,
+        c.ufs,
         c.logo_arquivo,
         c.link,
         c.data_criacao,
@@ -253,7 +251,7 @@ class Service {
 
     let commission = {
       /* TODO: dá para simplificar com FormManager */ ...entity[0],
-      data_criacao: entity[0].data_criacao ? dayjs(`01-01-${entity[0].data_criacao}`, 'MM-DD-YYYY') : null,
+      // data_criacao: entity[0].data_criacao ? dayjs(`01-01-${entity[0].data_criacao}`, 'MM-DD-YYYY') : null,
     };
 
     /* TODO: dá para simplificar com FormManager */
@@ -991,6 +989,7 @@ class Service {
       `
       SELECT
 
+        p.ufs,
         -- more fields
 
         indicadores,
@@ -1023,9 +1022,28 @@ class Service {
     let analysis = {
       dims: {},
       indics: {},
+      geo: true,
       question_problems: [],
       is_new: data.is_new,
     };
+
+    // ATUACAO
+    if (data.atuacao_aplica === null) {
+      analysis.geo = false;
+      conclusion.ready = false;
+    }
+    if (data.atuacao_aplica === false && (!data.atuacao_naplica_just || !data.atuacao_naplica_just.length)) {
+      analysis.geo = false;
+      conclusion.ready = false;
+
+      if (!data.atuacao_naplica_just || !data.atuacao_naplica_just.length)
+        analysis.question_problems.push('naplica_just');
+    }
+
+    // check INFORMACOES
+    const { is_form_valid, fields } = check(form, data);
+    if (!is_form_valid) conclusion.ready = false;
+    analysis.information = { ...fields };
 
     // check INDICATORES
     for (let dbKey of Object.keys(indic_forms)) {
@@ -1383,6 +1401,268 @@ class Service {
     await require('../gt').addMember(community_id, user.id);
 
     return { communityId: community_id };
+  }
+
+  async getGeoDraw(id) {
+    const sequelize = db.instance();
+
+    const geoms = await sequelize.query(
+      `
+      select ST_AsGeoJSON((ST_Dump(ST_Simplify(pa.geom,0.001))).geom)::jsonb as geojson
+      from ciea.comissao_atuacao pa
+      inner join ciea.comissoes p on p.id = pa.iniciativa_versao_id
+      where p.iniciativa_id = :id
+      and p.versao = 'draft'`,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    const bbox = await sequelize.query(
+      `
+      select
+            st_xmin(bb) as bbxmin,
+            st_ymin(bb) as bbymin,
+            st_xmax(bb) as bbxmax,
+            st_ymax(bb) as bbymax
+        from (select ST_Extent(geom) as bb
+				      from ciea.comissao_atuacao pa
+              inner join ciea.comissoes p on p.id = pa.iniciativa_versao_id
+              where p.iniciativa_id = :id
+              and p.versao = 'draft'
+			       ) s1
+      `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return {
+      geoms: geoms.map(({ geojson }) => geojson),
+      bbox: [
+        [bbox[0].bbymin, bbox[0].bbxmin],
+        [bbox[0].bbymax, bbox[0].bbxmax],
+      ],
+    };
+  }
+
+
+
+  async hasGeo(id) {
+    const sequelize = db.instance();
+
+    let [{ atuacao_aplica, atuacao_naplica_just, ufs }] = await sequelize.query(
+      `
+      select 
+        atuacao_aplica, 
+        atuacao_naplica_just, 
+        ufs
+      from ciea.comissoes pa
+      where pa.iniciativa_id = :id
+      and pa.versao = 'draft'`,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!!ufs && ufs.length) {
+      ufs = await db.instance().query(
+        `
+        select
+          u.id,
+          u.nm_estado as "value",
+          u.nm_estado as "label",
+          u.nm_regiao as "region"
+        from ufs u
+        where u.id in (${ufs.join(',')})`,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+        },
+      );
+    }
+
+    return { atuacao_aplica, atuacao_naplica_just, ufs };
+  }
+
+  async getGeoDrawSave(id, geoms) {
+
+    // encontra a versao draft desta politica
+    const p_draft = await db.instance().query(
+      `
+    select id
+    from ciea.comissoes p
+    where p.iniciativa_id = :id
+    and p.versao = 'draft'
+    `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!p_draft.length) throw new Error('Unknow draft!');
+
+    const iniciativa_versao_id = p_draft[0].id;
+
+    /* apaga os registro para este projeto id */
+    await db.instance().query(
+      `
+        delete from ciea.comissao_atuacao where iniciativa_versao_id = :iniciativa_versao_id`,
+      {
+        replacements: { iniciativa_versao_id },
+        type: Sequelize.QueryTypes.DELETE,
+      },
+    );
+
+    /* grava os novos registro para este projeto id */
+    for (let idx = 0; idx < geoms.length; idx++) {
+      const geom = geoms[idx];
+
+      await db.instance().query(
+        `
+        insert into ciea.comissao_atuacao(iniciativa_versao_id, geom)
+        values(:iniciativa_versao_id, ST_GeomFromGeoJSON(:geom))`,
+        {
+          replacements: { iniciativa_versao_id, geom: JSON.stringify(geom) },
+          type: Sequelize.QueryTypes.INSERT,
+        },
+      );
+    }
+
+    /* identifica e atualiza os estados */
+    const ufs = await db.instance().query(
+      `
+      with w_points as (
+          select
+              CASE
+          WHEN ST_GeometryType(par.geom) = 'ST_Point' then ST_Buffer(par.geom, 0.00001, 'quad_segs=8')
+          else par.geom
+          end as geom,
+              par.iniciativa_versao_id
+          from ciea.comissao_atuacao par
+      ), u_geom as (
+          select
+              ST_Transform(ST_Union(ST_MakeValid(ST_SetSRID(geom,4326), 'method=structure')),3857) as geom
+          from w_points
+        where iniciativa_versao_id = :iniciativa_versao_id
+      ), a_geom as (
+          select st_area(geom) as area from u_geom
+      ), inter as (
+          select
+              u.id,
+              u.nm_estado,
+              ST_AREA(ST_intersection(u_geom.geom, u.geom)) as area_inter
+          from u_geom
+          inner join ufs u on ST_intersects(u_geom.geom, u.geom) and u.id <> 28
+      ), percent as (
+          select
+              id,
+              nm_estado as label,
+              nm_estado as value,
+              area_inter / a_geom.area * 100 as percent_area_inter
+          from inter
+          inner join a_geom on true
+          order by 3 desc
+      )
+      select *
+      from percent p
+      where p.percent_area_inter >= 0.5
+  `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { iniciativa_versao_id },
+      },
+    );
+
+    await db.instance().query(
+      `
+      update ciea.comissoes
+      set ufs = '{${ufs.map(u => u.id).join(',')}}'
+      where iniciativa_id = :id
+      and versao = 'draft'
+    `,
+      {
+        replacements: {
+          id,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return { ok: true, ufs };
+  }
+
+  async geoAble(id, isAble) {
+    let isAbleString = null;
+    if (isAble === '1') isAbleString = true;
+    if (isAble === '0') isAbleString = false;
+
+    await db.instance().query(
+      `
+    update ciea.comissoes
+    set atuacao_aplica = :isAbleString
+    where iniciativa_id = :id and versao = 'draft'`,
+      {
+        replacements: { id, isAbleString },
+        type: Sequelize.QueryTypes.UPDATE,
+      },
+    );
+
+    return { success: true };
+  }
+
+  async saveProjectJustDraft(id, value) {
+    await db.instance().query(
+      `
+        update ciea.comissoes
+        set atuacao_naplica_just = :value
+        where iniciativa_id = :id and versao = 'draft'`,
+      {
+        replacements: {
+          id,
+          value,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return { ok: true };
+  }
+
+  async saveProjectUFsDraft(id, ufs) {
+    await db.instance().query(
+      `
+          update ciea.comissoes
+          set ufs = '{${ufs.map(u => u.id).join(',')}}'
+          where iniciativa_id = :id and versao = 'draft'
+        `,
+      {
+        replacements: {
+          id,
+        },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return { ok: true };
+  }
+
+  async importSHP(filePath) {
+    const source = await shapefile.openShp(filePath);
+    const result = await source.read();
+
+    const feature = {
+      type: 'Feature',
+      geometry: result.value,
+      properties: {
+        name: 'co2',
+      },
+    };
+
+    return { geojson: simplify(feature, 0.001) };
   }
 }
 

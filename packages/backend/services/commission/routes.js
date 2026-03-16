@@ -208,6 +208,42 @@ router.post('/:id/draft/timeline', upTimelineImage, async (req, res) => {
 })();
 /* *** FORMS.End *** */
 
+router.put('/:id/draft/justification', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { value } = req.body;
+
+    const result = await entity.saveProjectJustDraft(id, value);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.put('/:id/draft/ufs', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ufs } = req.body;
+
+    const result = await entity.saveProjectUFsDraft(id, ufs);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+router.post('/upload-shp', fileUpload, async (req, res) => {
+  try {
+    const result = await entity.importSHP(req.file.path);
+
+    res.json(result);
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
 /* TODO */
 router.get('/mine', async (req, res) => {
   try {
@@ -229,6 +265,55 @@ router.get('/id_from_community/:community_id', async (req, res) => {
     res.json(result);
   } catch (ex) {
     sendError(res, ex);
+  }
+});
+
+router.get('/:id/geo-draw/has-geo', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await entity.hasGeo(id);
+
+    res.json(result);
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
+router.put('/:id/geo-draw/:isAble', async (req, res) => {
+  try {
+    const { id, isAble } = req.params;
+
+    const result = await entity.geoAble(id, isAble);
+
+    res.json(result);
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
+router.get('/:id/geo-draw', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await entity.getGeoDraw(id);
+
+    res.json(result);
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
+router.post('/:id/geo-draw', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { geoms } = req.body;
+
+    const result = await entity.getGeoDrawSave(id, geoms);
+
+    res.json(result);
+  } catch (error) {
+    sendError(res, error);
   }
 });
 

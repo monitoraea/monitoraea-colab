@@ -37,13 +37,10 @@
         size: 2
         key: logo_arquivo
     - type: row
-      elements:
+      elements:      
       - type: column
-        size: 3
-        key: uf_nome
-      - type: column
-        size: 3
-        key: regiao
+        size: 6
+        key: ufs
       - type: column
         size: 3
         key: data_criacao

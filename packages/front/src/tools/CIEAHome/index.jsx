@@ -6,6 +6,7 @@ import axios from 'axios';
 import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
 import IndicatorsTab from './IndicatorsTab';
+import AtuacaoTab from './ActingTab';
 import TimelineTab from './TimelineTab';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
@@ -168,6 +169,7 @@ const Manager = () => {
           {entityId && (
             <>
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} />}
+              {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
               {tabindex === 'indicadores' && (
                 <IndicatorsTab entityId={entityId} analysis={analysis} problems={analysis.analysis.question_problems} />
               )}

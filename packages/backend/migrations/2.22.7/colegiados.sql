@@ -61,3 +61,26 @@ CREATE TABLE ciea.comissao_atuacao (
 	CONSTRAINT ciea_atuacao_pk PRIMARY KEY (id)
 );
 CREATE INDEX ciea_atuacao_iniciativa_versao_id_idx ON ciea.comissao_atuacao USING btree (iniciativa_versao_id);
+
+INSERT INTO ciea.comissao_atuacao
+(iniciativa_versao_id, geom)
+select c.id, u.geom  
+from ciea.comissoes c 
+inner join ufs u on u.id = c.uf
+    
+ALTER TABLE ciea.comissoes ADD atuacao_aplica bool NULL;
+
+ALTER TABLE ciea.comissoes ADD atuacao_naplica_just text NULL;
+
+ALTER TABLE ciea.comissoes ADD ufs _int4 NULL;
+
+update ciea.comissoes
+set atuacao_aplica = true
+where atuacao_aplica is null
+
+UPDATE ciea.comissoes
+SET ufs = ARRAY[uf]
+where true
+
+UPDATE ciea.comissao_atuacao
+SET geom = ST_Transform(geom, 4326);

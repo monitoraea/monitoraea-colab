@@ -51,17 +51,66 @@ fields:
   db_field: logo_arquivo
   size: 2
 
-- key: uf_nome
-  block: detalhes2
-  type: read_only
-  title: Estado
-  size: 3
-
-- key: regiao
-  block: detalhes2
-  type: read_only
-  title: Região
-  size: 3
+- key: ufs
+  type: multi_autocomplete
+  tag: true
+  title: Estados
+  size: 8  
+  options:
+    - value: 25
+      label: ACRE
+    - value: 19
+      label: ALAGOAS
+    - value: 7
+      label: AMAPÁ
+    - value: 4
+      label: AMAZONAS
+    - value: 17
+      label: BAHIA
+    - value: 20
+      label: CEARÁ
+    - value: 24
+      label: DISTRITO FEDERAL
+    - value: 3
+      label: ESPÍRITO SANTO
+    - value: 6
+      label: GOIÁS
+    - value: 2
+      label: MARANHÃO
+    - value: 16
+      label: MATO GROSSO
+    - value: 15
+      label: MATO GROSSO DO SUL
+    - value: 18
+      label: MINAS GERAIS
+    - value: 22
+      label: PARANÁ
+    - value: 9
+      label: PARAÍBA
+    - value: 26
+      label: PARÁ
+    - value: 13
+      label: PERNAMBUCO
+    - value: 10
+      label: PIAUÍ
+    - value: 14
+      label: RIO DE JANEIRO
+    - value: 21
+      label: RIO GRANDE DO NORTE
+    - value: 8
+      label: RIO GRANDE DO SUL
+    - value: 23
+      label: RONDÔNIA
+    - value: 5
+      label: RORAIMA
+    - value: 12
+      label: SANTA CATARINA
+    - value: 1
+      label: SERGIPE
+    - value: 11
+      label: SÃO PAULO
+    - value: 27
+      label: TOCANTINS
 
 - key: data_criacao
   block: detalhes2
