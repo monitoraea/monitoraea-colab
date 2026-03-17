@@ -35,7 +35,6 @@ class Service {
       `
       select
         c.nome,
-        u.nm_estado,
         c.data_criacao,
         c.coordenacao,
         c.coordenacao_especifique,
@@ -63,12 +62,13 @@ class Service {
         f3.url as plano_estadual_link,
         f4.url as programa_estadual_link
       from ciea.comissoes c
-      inner join ufs u on u.id = c.uf
       left join files f1 on f1.id = c.ppea_arquivo
       left join files f2 on f2.id = c.ppea2_arquivo
       left join files f3 on f3.id = c.plano_estadual_arquivo
       left join files f4 on f4.id = c.programa_estadual_arquivo
-      where c.id = :id
+      where c.iniciativa_id = :id
+      and c.versao = 'current'
+      and c."deletedAt" is null
         `,
       {
         replacements: { id },
@@ -528,15 +528,14 @@ class Service {
 
     let query;
 
-    if (f_ids) where = `${where} AND u.id in (${f_ids})`;
+    if (f_ids) where = `${where} AND c.iniciativa_id in (${f_ids})`;
 
     query = `
-            select distinct c.id, u.sigla, c.nome, u.nm_regiao, c.uf,
+            select distinct c.id, c.nome, c.iniciativa_id,
             count(*) OVER() AS total_count
             from ciea.comissoes c
-            left join ufs u on u.id = c.uf
             ${where}
-            order by u.sigla
+            order by c.nome
             LIMIT ${specificLimit}
             OFFSET ${(page - 1) * specificLimit}
         `;
@@ -552,17 +551,18 @@ class Service {
       const [bbox] = await sequelize.query(
         `
         with bounds as (
-            select ST_Extent(ST_Transform(geom,4326)) as bbox
-            from ufs u
-            inner join ciea.comissoes c on c.uf = u.id
-            where c.id = ${parseInt(c.id)}
-            and u.geom is not null
+          select ST_Extent(geom) as bbox
+          from ciea.comissao_atuacao pa
+          inner join ciea.comissoes p on p.id = pa.iniciativa_versao_id and p.versao = 'draft'
+          where p.iniciativa_id = :iniciativa_id
+          and pa.geom is not null
         )
         select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
         from bounds
         `,
         {
           type: Sequelize.QueryTypes.SELECT,
+          replacements: { iniciativa_id: c.iniciativa_id },
         },
       );
 
@@ -604,10 +604,10 @@ class Service {
   async listIDs(f_ids, where) {
     const sequelize = db.instance();
 
-    if (f_ids) where = `${where} AND c.id in (${f_ids})`;
+    if (f_ids) where = `${where} AND c.iniciativa_id in (${f_ids})`;
 
     const query = `
-            select distinct c.id
+            select distinct c.iniciativa_id as id
             from ciea.comissoes c
             left join ufs u on u.id = c.uf
             ${where}
@@ -764,11 +764,11 @@ class Service {
 
     let atuacoes = await sequelize.query(
       `
-        select u.id, ST_AsGeoJSON(ST_Transform(u.geom,4326)) as geojson, ST_AsGeoJSON(ST_Envelope(ST_Transform(u.geom,4326))) as bbox
-        from ufs u
-        inner join ciea.comissoes c on c.uf = u.id
-        where c.id = ${parseInt(id)}
-        and u.geom is not null
+        select pa.id, ST_AsGeoJSON(pa.geom) as geojson, ST_AsGeoJSON(ST_Envelope(pa.geom)) as bbox
+        from ciea.comissao_atuacao pa
+        inner join ciea.comissoes p on p.id = pa.iniciativa_versao_id and p.versao = 'current'
+        where p.iniciativa_id = ${parseInt(id)}
+        and pa.geom is not null
         `,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -784,14 +784,14 @@ class Service {
     const bbox = await sequelize.query(
       `
         with bounds as (
-            select ST_Extent(ST_Transform(geom,4326)) as bbox
-            from ufs u
-            inner join ciea.comissoes c on c.uf = u.id
-            where c.id = ${parseInt(id)}
-            and u.geom is not null
-        )
-        select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
-        from bounds
+          select ST_Extent(geom) as bbox
+          from ciea.comissao_atuacao pa
+          inner join ciea.comissoes p on p.id = pa.iniciativa_versao_id and p.versao = 'current'
+          where p.iniciativa_id = ${parseInt(id)}
+          and pa.geom is not null
+      )
+      select ST_YMin(bbox) as y1, ST_XMin(bbox) as x1, ST_YMax(bbox) as y2, ST_XMax(bbox) as x2
+      from bounds
         `,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -813,9 +813,8 @@ class Service {
       `
         select p.id, p.nome
         from ciea.comissoes p
-        inner join ufs u on u.id = p.uf
-        where p.id = ${parseInt(id)}
-        and p.versao = 'draft'`,
+        where p.iniciativa_id = ${parseInt(id)}
+        and p.versao = 'current'`,
       {
         type: Sequelize.QueryTypes.SELECT,
       },
@@ -831,7 +830,7 @@ class Service {
       from dorothy_members m
       inner join ciea.comissoes p on p.community_id = m."communityId"
       where p.versao = 'draft'
-      and p.id = ${parseInt(id)}
+      and p.iniciativa_id = ${parseInt(id)}
       `,
       {
         type: Sequelize.QueryTypes.SELECT,

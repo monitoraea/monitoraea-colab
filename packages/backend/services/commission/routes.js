@@ -346,7 +346,7 @@ router.get('/', async (req, res) => {
   try {
     const { page, f_ids, limit } = req.query;
 
-    const where = buildFiltersWhere(req.query, ["versao = 'draft'"]); // TODO: 'current'
+    const where = buildFiltersWhere(req.query, ["versao = 'current'"]);
 
     const result = await entity.list(page ? parseInt(page) : 1, f_ids, where, limit);
 
@@ -360,7 +360,7 @@ router.get('/geo', async (req, res) => {
   try {
     const { f_ids } = req.query;
 
-    const where = buildFiltersWhere(req.query, ["versao = 'draft'"]); // TODO: 'current'
+    const where = buildFiltersWhere(req.query, ["versao = 'current'"]);
 
     const result = await entity.listIDs(f_ids, where);
 
@@ -397,14 +397,16 @@ router.get('/options', async (req, res) => {
 function buildFiltersWhere(filters, where = [], exclude = []) {
   let whereArray = [...where];
 
-  if (filters['f_regioes'] && !exclude.includes('f_regioes'))
-    whereArray.push(
-      `u.nm_regiao IN (${filters['f_regioes']
-        .split(',')
-        .map(r => `'${r}'`)
-        .join(',')})`,
-    );
-  if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`u.id IN (${filters['f_ufs']})`);
+  whereArray.push('"deletedAt" is null');
+
+  // if (filters['f_regioes'] && !exclude.includes('f_regioes'))
+  //   whereArray.push(
+  //     `u.nm_regiao IN (${filters['f_regioes']
+  //       .split(',')
+  //       .map(r => `'${r}'`)
+  //       .join(',')})`,
+  //   );
+  // if (filters['f_ufs'] && !exclude.includes('f_ufs')) whereArray.push(`u.id IN (${filters['f_ufs']})`);
 
   return whereArray.length ? `WHERE ${whereArray.join(' AND ')}` : '';
 }
