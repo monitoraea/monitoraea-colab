@@ -21,7 +21,7 @@ import { useRouter, useDorothy } from 'dorothy-dna-react';
 import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
 
 const membership_type = {
-    'adm': 'coordenador',
+    'adm': 'moderador',
     'member': 'membro',
     'organizer': 'articulador',
 }
@@ -90,7 +90,7 @@ const Members = () => {
                                         <th>
                                             <TableSortColumn text="E-mail" column="email" order={order} direction={direction} onClick={orderBy} />
                                         </th>
-                                        <th>Papel</th>
+                                        <th>Papel na plataforma</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
