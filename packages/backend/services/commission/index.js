@@ -355,7 +355,7 @@ class Service {
       'plano_estadual',
       'ppea_outra',
     ]) {
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', `${wFile}_tipo`, entity[`${wFile}_tipo`])
+      // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', `${wFile}_tipo`, entity[`${wFile}_tipo`])
 
       if (entity[`${wFile}_tipo`] === 'link')
         await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
