@@ -240,7 +240,7 @@ const WorkingGroups = () => {
                           <div onClick={() => changeRoute({ community: row.id })}>
                             <Eye></Eye>
                           </div>
-                          <div className={styles['svg-icon-box']}>
+                          <div className={`${styles['svg-icon-box']} ${styles['remove_icon']}`}>
                             {isAdmOrMod && isAdmOrMod === true && (
                               <Tooltip title="Remover">
                                 <IconButton onClick={() => remove(row.id)}>
