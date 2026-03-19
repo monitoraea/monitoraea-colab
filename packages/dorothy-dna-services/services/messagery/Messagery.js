@@ -128,7 +128,7 @@ class InstantMessageServer {
             socket.on('remember', (rooms) => {
                 rooms.map(room => socket.join(room));
 
-                console.log(`Client ${socket.id} reconnected - ${rooms.length ? `${rooms.join(',')}` : 'no rooms'}!`);
+                if (process.env.LOG_SOCKET === '1') console.log(`Client ${socket.id} reconnected - ${rooms.length ? `${rooms.join(',')}` : 'no rooms'}!`);
             })
             socket.on('new_message', async (room, optimistic_message, callback) => {
 
