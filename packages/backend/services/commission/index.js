@@ -990,11 +990,9 @@ class Service {
       `
       SELECT
 
-        p.ufs,
-        -- more fields
-
-        indicadores,
+        *,
         ("createdAt" = "updatedAt") as is_new
+        
       FROM ciea.comissoes p
       WHERE iniciativa_id = :id
       AND versao = 'draft'
