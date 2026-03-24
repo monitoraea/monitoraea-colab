@@ -11,6 +11,7 @@ import FilePlus from '../../components/icons/FilePlus';
 import Card from '../../components/Card';
 import AsyncAutocomplete from '../../components/AsyncAutocomplete';
 import AsyncAutocompleteSuggest from '../../components/AsyncAutocompleteSuggest';
+import RealAsyncAutocomplete from '../../components/RealAsyncAutocomplete';
 import AsyncAutocompleteMultiple from '../../components/AsyncAutocompleteMultiple';
 import FreeMultiple from '../../components/FreeMultiple';
 import FreeMultipleContacts from '../../components/FreeMultiple/FreeMultipleContacts';
@@ -79,6 +80,20 @@ export default function InformationsTab({ projectId, problems }) {
       if (reason === 'clear') newProjectInfo = { ...entity, nome: '', indicado: null };
       else if (['input', 'reset'].includes(reason)) newProjectInfo = { ...entity, nome: eValue };
       else return;
+    } else if (field === 'instituicao_id' && !!value) {
+      if (typeof value === 'object') {
+        newProjectInfo = {
+          ...entity,
+          instituicao_id: value.id,
+          instituicao_name: value.name,
+        }
+      } else {
+        newProjectInfo = {
+          ...entity,
+          instituicao_id: value,
+        }
+        delete newProjectInfo.instituicao_name;
+      }
     } else if (field === 'indicado' && !value) {
       return;
     } else if (field === 'atuacao') {
@@ -103,31 +118,11 @@ export default function InformationsTab({ projectId, problems }) {
     _entity(newProjectInfo);
   };
 
-  const handleFieldCreate = (newEntity, other) => async name => {
-    console.log(`creating ${newEntity}: ${name}`);
+  const handleFieldCreate = (newEntity) => async value => {
+    console.log(`creating ${newEntity}: ${JSON.stringify(value)}`);
 
-    let data = {
-      entity: newEntity,
-      data: {
-        name,
-      },
-    };
-
-    if (other && other.length) for (let field of other) data.data[field] = entity[field];
-
-    const { data: result } = await mutationCreate.mutateAsync(data);
-
-    return result;
+    handleFieldChange(newEntity)(value)
   };
-
-  const mutationCreate = useMutation(
-    ({ entity, data }) => {
-      return axios.post(`${server}${entity}/`, data);
-    },
-    {
-      onSuccess: () => queryClient.invalidateQueries(`project/${projectId}/draft/info`),
-    },
-  );
 
   const mutationSave = useMutation(
     entity => {
@@ -219,45 +214,16 @@ export default function InformationsTab({ projectId, problems }) {
                   </div>
                   <div className="row">
                     <div className="col-xs-6" style={{ display: 'flex' }}>
-                      <AsyncAutocompleteSuggest
-                        label="Nome da instituição"
-                        url="institution"
+                      <RealAsyncAutocomplete
+                        label="Nome da organização"
+                        url="entity"
                         onChange={handleFieldChange('instituicao_id')}
                         creatable={true}
-                        onCreate={handleFieldCreate('institution', ['instituicao_id'])}
+                        onCreate={handleFieldCreate('instituicao_id')}
                         value={entity.instituicao_id}
                         error={problems.includes('instituicao_id')}
                       />
                       <HelpBoxButton type="info" keyRef={['instituicao_id']} openHelpbox={_contentData} />
-                    </div>
-                    <div className="col-xs-4" style={{ display: 'flex' }}>
-                      <AsyncAutocompleteMultiple
-                        label="Segmento da instituição"
-                        url="segmento/related"
-                        urlSingle="segmento"
-                        onChange={handleFieldChange('instituicao_segmentos')}
-                        value={entity.instituicao_segmentos}
-                        multiple
-                        error={problems.includes('instituicao_segmentos')}
-                      />
-                      <HelpBoxButton type="info" keyRef={['segmento']} openHelpbox={_contentData} />
-                    </div>
-                    <div className="col-xs-2" style={{ display: 'flex' }}>
-                      <TextField
-                        select
-                        id="money-select"
-                        label="Porte da instituição"
-                        className="input-select"
-                        value={entity.instituicao_porte || 'none'}
-                        onChange={e => handleFieldChange('instituicao_porte')(e.target.value)}
-                        error={problems.includes('instituicao_porte')}
-                      >
-                        <MenuItem value="none">Não respondido</MenuItem>
-                        <MenuItem value="pequeno">Pequeno - até 10 colaboradores</MenuItem>
-                        <MenuItem value="medio">Médio - até 50 colaboradores</MenuItem>
-                        <MenuItem value="grande">Grande - mais de 50 colaboradores</MenuItem>
-                      </TextField>
-                      <HelpBoxButton type="info" keyRef={['porte']} openHelpbox={_contentData} />
                     </div>
                   </div>
                 </section>
@@ -352,7 +318,7 @@ export default function InformationsTab({ projectId, problems }) {
                       <HelpBoxButton type="info" keyRef={['status_desenvolvimento']} openHelpbox={_contentData} />
                     </div>
                     <div className="col-xs-3" style={{ display: 'flex' }}>
-                      {['nao_iniciada','em_desenvolvimento', 'finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && <DatePicker
+                      {['nao_iniciada', 'em_desenvolvimento', 'finalizada', 'interrompida'].includes(entity.status_desenvolvimento) && <DatePicker
                         className="input-datepicker"
                         label={entity.status_desenvolvimento === 'nao_iniciada' ? 'Previsão de inicio' : 'Inicio do desenvolvimento'}
                         value={entity.mes_inicio}
@@ -365,7 +331,7 @@ export default function InformationsTab({ projectId, problems }) {
                     </div>
 
                     <div className="col-xs-3" style={{ display: 'flex' }}>
-                      {['nao_iniciada','finalizada', 'interrompida','em_desenvolvimento'].includes(entity.status_desenvolvimento) && <DatePicker
+                      {['nao_iniciada', 'finalizada', 'interrompida', 'em_desenvolvimento'].includes(entity.status_desenvolvimento) && <DatePicker
                         className="input-datepicker"
                         label={['em_desenvolvimento', 'nao_iniciada'].includes(entity.status_desenvolvimento) ? 'Previsão de conclusão' : 'Término do desenvolvimento'}
                         value={entity.mes_fim}

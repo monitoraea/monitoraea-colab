@@ -27,8 +27,8 @@ const s3 = new AWS.S3({
 });
 
 const { Messagery } = require('dorothy-dna-services');
-
-const { createEntity, updateEntity } = require('../utils');
+ 
+const { createEntity, updateEntity, getEntity, getEntityBySpecificId, createRelation, removeRelation } = require('../utils');
 const { applyWhere, parseBBOX, getSegmentedId } = require('../../utils');
 
 const defaultLimit = 5;
@@ -2257,7 +2257,7 @@ class Service {
         select
         pr.id as "draft_id",
         pr.nome,
-        pr.instituicao_id,
+        -- pr.instituicao_id, -- deprecated: agora, usa relacoes
         pr.modalidade_id,
         pr.contatos,
         pr.objetivos_txt,
@@ -2359,6 +2359,10 @@ class Service {
       entity[0].tematicas = tematicas;
     }
 
+    // busca relacao com entidade proponente
+    const proponente = await getEntity('zcm', id);
+    entity[0].instituicao_id = proponente?.id;
+
     return entity[0];
   }
 
@@ -2389,6 +2393,7 @@ class Service {
   }
 
   async saveDraftInfo(id, data) {
+
     if (data.relacionado_ppea !== 'sim') data['qual_ppea'] = null;
 
     let mes_inicio_str = 'mes_inicio = NULL,';
@@ -2420,8 +2425,6 @@ class Service {
         set nome = :nome,
             modalidade_id = :modalidade_id,
 
-            instituicao_id = :instituicao_id,
-
             atuacao = :atuacao,
             objetivos_txt = :objetivos_txt,
             aspectos_gerais_txt = :aspectos_gerais_txt,
@@ -2450,8 +2453,6 @@ class Service {
 
           modalidade_id: data.modalidade_id,
 
-          instituicao_id: data.instituicao_id,
-
           atuacao: data.atuacao
             ? `{${data.atuacao.reduce((accum, item) => `${accum}${accum.length ? ',' : ''}"${item}"`, '')}}`
             : null,
@@ -2475,22 +2476,18 @@ class Service {
       },
     );
 
-    // sobrescreve segmentos e porte da instituicao
-    if (!!data.instituicao_id) {
-      await db.instance().query(
-        `
-        update instituicoes
-        set segmentos = '{${!!data.instituicao_segmentos?.length ? data.instituicao_segmentos.map(s => s.id).join(',') : ''
-        }}',
-            porte = :porte
-        where id = :id
-        `,
-        {
-          replacements: { id: data.instituicao_id, porte: data.instituicao_porte },
-          type: Sequelize.QueryTypes.UPDATE,
-        },
-      );
+    // -- RELACOES ---------------------------------------------------------------------
+    if (!!data.instituicao_name) { // cria entidade, se nova organização
+      await createEntity('organizacao', null, data.instituicao_name, data.instituicao_id);
     }
+    const e_id = await getEntityBySpecificId('zcm', id);
+    if (!!data.instituicao_id) { // cria relação, se proponente foi preenchido
+      if(e_id) await createRelation(e_id, data.instituicao_id, 1 /* proponente */, true /* somente um */);
+    } else {
+      // remove relacao
+      await removeRelation(e_id, null /* todas */, 1 /* proponente */);
+    }
+    // ---------------------------------------------------------------------------------
 
     // Trata de indicacao
     let entity = await db.instance().query(
@@ -3027,6 +3024,8 @@ class Service {
     if (!result.length) return null;
 
     const project = result[0];
+
+    project.instituicao_id = await getEntity('zcm', id);
 
     let conclusion = { ready: true };
 

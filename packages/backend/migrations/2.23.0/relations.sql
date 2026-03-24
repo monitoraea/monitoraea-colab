@@ -84,17 +84,28 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION create_entity(
-	e_type type_of_entity,
-	e_id int4,
-	e_name text
+  e_type type_of_entity,
+  e_id int4,
+  e_name text,
+  e_uuid uuid DEFAULT NULL
 )
-RETURNS int AS $$
+RETURNS uuid AS $$
+DECLARE
+  result_id uuid;
 BEGIN
-	-- RAISE NOTICE 'Args: %, %, %', entity_type, entity_id, entity_name;
-	INSERT INTO relations.entities
-	(id, "name", entity_type, entity_id, metadata, "createdAt", "updatedAt")
-	VALUES(gen_random_uuid(), e_name, e_type, e_id, json_build_object('origin', e_type || '_' || e_id), NOW(), NOW());
+  INSERT INTO relations.entities
+  (id, "name", entity_type, entity_id, metadata, "createdAt", "updatedAt")
+  VALUES (
+    COALESCE(e_uuid, gen_random_uuid()),
+    e_name,
+    e_type,
+    e_id,
+    json_build_object('origin', e_type || '_' || e_id),
+    NOW(),
+    NOW()
+  )
+  RETURNING id INTO result_id;
 
-	RETURN FOUND::int;
+  RETURN result_id;
 END;
 $$ LANGUAGE plpgsql;
