@@ -283,7 +283,7 @@ function TermDialog({ open, onClose }) {
         fullWidth
         maxWidth="md"
       >
-        <DialogTitle id="alert-dialog-title">Termo de Adesão ao PPPZCM</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Termo de Adesão</DialogTitle>
         <DialogContent>
           <DialogContent id="alert-dialog-description" className={styles.term}>
             <p>
