@@ -28,6 +28,7 @@ const s3 = new AWS.S3({
 
 const { Messagery } = require('dorothy-dna-services');
 
+const { createEntity, updateEntity } = require('../utils');
 const { applyWhere, parseBBOX, getSegmentedId } = require('../../utils');
 
 const defaultLimit = 5;
@@ -298,15 +299,19 @@ class Service {
     result = await db.instance().query(
       `
     INSERT into projetos(nome, community_id, facilitador_community_id) values(:nome, :community_id, :facilitador_community_id)
+    RETURNING id
     `,
       {
         replacements: { nome, community_id, facilitador_community_id: communityId || null },
-        type: Sequelize.QueryTypes.INSERT,
+        type: Sequelize.QueryTypes.SELECT,
       },
     );
 
     /* torna o criador membro do projeto */
     await require('../gt').addMember(community_id, user.id);
+
+    // create entity
+    await createEntity('zcm', result[0].id, nome.replace(/"/g, ''));
 
     return { communityId: community_id };
   }
@@ -3302,6 +3307,9 @@ class Service {
         type: Sequelize.QueryTypes.UPDATE,
       },
     );
+
+    // update entity
+    await updateEntity('zcm', id, draft.nome);
 
     /* tabelas relacionadas */
 

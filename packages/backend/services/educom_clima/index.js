@@ -1,6 +1,8 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
+const { createEntity, updateEntity } = require('../utils');
+
 const { applyWhere, parseBBOX, protect } = require('../../utils');
 
 const removeAccents = require('remove-accents');
@@ -224,6 +226,9 @@ class Service {
       await db.models['Educom_clima'].update(entity, {
         where: { iniciativa_id: id },
       });
+
+      // update entity
+      await updateEntity('educom', id, entity.nome);
     } else {
       const result = await db.instance().query(
         `
@@ -239,6 +244,9 @@ class Service {
       // current e draft por enquanto
       await db.models['Educom_clima'].create({ ...entity, versao: 'draft', iniciativa_id });
       await db.models['Educom_clima'].create({ ...entity, versao: 'current', iniciativa_id });
+
+      // create entity
+      await createEntity('educom', iniciativa_id, entity.nome);
     }
 
     return entity;

@@ -3,6 +3,7 @@ const Sequelize = require('sequelize');
 
 // const FormManager = require('../../FormsManager')
 
+const { createEntity, updateEntity } = require('../utils');
 const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId, parseBBOX } = require('../../utils');
 
 var fs = require('fs');
@@ -192,6 +193,9 @@ class Service {
 
     /* torna o criador membro da iniciativa */
     await require('../gt').addMember(community_id, user.id);
+
+    // create entity
+    await createEntity('centro', cne_id, nome.replace(/"/g, ''));
 
     return { communityId: community_id };
   }
@@ -705,6 +709,9 @@ class Service {
           transaction,
         },
       );
+
+      // update entity
+      await updateEntity('centro', cne_id, cne_draft.nome, transaction);
 
       // COMMIT TRANSACTION
       await transaction.commit();

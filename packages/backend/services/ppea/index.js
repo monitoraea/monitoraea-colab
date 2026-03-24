@@ -1,6 +1,7 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
+const { createEntity, updateEntity } = require('../utils');
 const { getSegmentedId, applyWhere, parseBBOX } = require('../../utils');
 
 const AdmZip = require('adm-zip');
@@ -673,6 +674,9 @@ class Service {
     /* torna o criador membro da iniciativa */
     await require('../gt').addMember(community_id, user.id);
 
+    // create entity
+    await createEntity('ppea', politica_id, nome.replace(/"/g, ''));
+
     return { communityId: community_id };
   }
 
@@ -1205,7 +1209,7 @@ class Service {
       });
 
     }
-    
+
     entityModel.set(fieldName, fileModel.id);
     await entityModel.save();
   }
@@ -1438,6 +1442,9 @@ class Service {
           transaction,
         },
       );
+
+      // update entity
+      await updateEntity('ppea', politica_id, politica_draft.nome, transaction);
 
       // COMMIT TRANSACTION
       await transaction.commit();

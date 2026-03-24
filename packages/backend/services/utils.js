@@ -22,3 +22,27 @@ module.exports.compatibilityAnalysis = async (item, field, model) => {
 
   return null;
 };
+
+module.exports.createEntity = async (e_type, e_id, e_name, transaction) => {
+    const response = await db.instance().query(`select create_entity(:e_type, :e_id, :e_name)`,
+        {
+            replacements: { e_type, e_id, e_name },
+            type: Sequelize.QueryTypes.SELECT,
+            transaction,
+        },
+    );
+
+    return response.length ? response[0] : null;
+}
+
+module.exports.updateEntity = async (e_type, e_id, e_name, transaction) => {
+    const response = await db.instance().query(`select update_entity(:e_type, :e_id, :e_name)`,
+        {
+            replacements: { e_type, e_id, e_name },
+            type: Sequelize.QueryTypes.SELECT,
+            transaction,
+        },
+    );
+
+    return response.length ? response[0] : null;
+}

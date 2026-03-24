@@ -1,6 +1,7 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
+const { createEntity, updateEntity } = require('../utils');
 const { getSegmentedId, applyWhere, parseBBOX } = require('../../utils');
 
 const AdmZip = require('adm-zip');
@@ -772,6 +773,9 @@ class Service {
     /* torna o criador membro da iniciativa */
     await require('../gt').addMember(community_id, user.id);
 
+    // create entity
+    await createEntity('iniciativa', politica_id, nome.replace(/"/g, ''));
+
     return { communityId: community_id };
   }
 
@@ -1529,6 +1533,9 @@ class Service {
           transaction,
         },
       );
+
+      // update entity
+      await updateEntity('iniciativa', politica_id, politica_draft.nome, transaction);
 
       /* atualiza o nome da comunidade */
       await db.instance().query(
