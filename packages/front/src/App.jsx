@@ -14,6 +14,8 @@ import Body from './Body';
 
 import { SnackbarProvider } from 'notistack';
 
+import ResetLogin from './components/ResetLogin';
+
 const config = {
   app_name: 'pppzcm',
   path: import.meta.env.VITE_PATH,
@@ -34,6 +36,8 @@ function App() {
       },
     },
   })
+
+  if(window.location.href.includes('logout')) return <ResetLogin/>
 
   return (<div id="App">
     <Dorothy config={config} preparingEl={<Prep />}>
