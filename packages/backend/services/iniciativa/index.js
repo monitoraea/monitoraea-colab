@@ -1,8 +1,9 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
-const { createEntity, updateEntity } = require('../utils');
+const { createEntity, updateEntity, getEntity, getEntityBySpecificId, createRelation, removeRelation } = require('../utils');
 const { getSegmentedId, applyWhere, parseBBOX } = require('../../utils');
+
 
 const AdmZip = require('adm-zip');
 
@@ -132,10 +133,6 @@ class Service {
         p.data_fim,
         p.publicos,
         p.financiadores,
-        p.instituicao_nome,
-        p.instituicao_segmento,
-        p.instituicao_porte,
-        p.instituicao_link,
         p.responsavel_items,
         atuacao_aplica,
         atuacao_naplica_just,
@@ -152,6 +149,12 @@ class Service {
     );
 
     let policy = entity[0];
+
+    // busca relacao com entidade proponente
+    const proponente = await getEntity('iniciativa', id);
+    policy.organizacao = {
+      id: proponente?.id,
+    }
 
     return policy;
   }
@@ -219,9 +222,23 @@ class Service {
   }
 
   async saveDraft(user, form, entity, files, id) {
-    await db.models['Iniciativa'].update(entity, {
-      where: { politica_id: id, versao: 'draft' },
-    });
+
+    // -- RELACOES ---------------------------------------------------------------------
+    if (!!entity.organizacao?.name) { // cria entidade, se nova organização
+      await createEntity('organizacao', null, entity.organizacao.name, entity.organizacao.id);
+    }
+    const e_id = await getEntityBySpecificId('iniciativa', id);
+    if (!!entity.organizacao?.id) { // cria relação, se proponente foi preenchido
+      if (e_id) await createRelation(e_id, entity.organizacao?.id, 1 /* proponente */, true /* somente um */);
+    } else {
+      // remove relacao
+      await removeRelation(e_id, null /* todas */, 1 /* proponente */);
+    }
+    // ---------------------------------------------------------------------------------
+
+    // await db.models['Iniciativa'].update(entity, {
+    //   where: { politica_id: id, versao: 'draft' },
+    // });
 
     return entity;
   }

@@ -31,11 +31,8 @@
   block: inst
   elements:
   - type: column
-    size: 6
-    key: instituicao_nome
-  - type: column
-    size: 6
-    key: instituicao_enquadramento
+    size: 12
+    key: organizacao
 
 - type: row
   block: responsavel

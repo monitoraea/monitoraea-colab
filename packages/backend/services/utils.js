@@ -95,6 +95,21 @@ module.exports.getEntityBySpecificId = async (e_type, e_id) => {
     return response.length ? response[0].id : null;
 }
 module.exports.createRelation = async (from_id, to_id, type_id, exclusive /* somente um */) => {
+
+    // se uma relação idêntica existe, não faz nada!
+    const exists = await db.instance().query(
+        `
+        select r.id
+        from relations.relations r
+        where r.from_id = :from_id and r.to_id = :to_id and r.type_id = :type_id
+        `,
+        {
+            replacements: { from_id, to_id, type_id },
+            type: Sequelize.QueryTypes.DELETE,
+        },
+    );
+    if(exists.length) return;
+
     if (exclusive) {
         // se exclusive, remove a relação from_id + type_id existente
         await db.instance().query(

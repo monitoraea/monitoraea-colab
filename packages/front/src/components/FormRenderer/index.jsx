@@ -2,7 +2,6 @@ import { useEffect, useState, cloneElement, Fragment } from 'react';
 import {
   TextField,
   MenuItem,
-  Autocomplete,
   Chip,
   FormGroup,
   FormControl,
@@ -12,11 +11,16 @@ import {
   Tooltip,
   IconButton,
 } from '@mui/material';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import Plus from '../icons/Plus';
 import Trash from '../icons/Trash';
 import DatePicker from '../DatePicker';
 import UploaderField from '../../components/UploaderField';
+
+import removeAccents from 'remove-accents';
+
+const filter = createFilterOptions();
 
 let context_modules = {}; // TODO: context?
 let context_lists = {}; // TODO: context?
@@ -719,6 +723,17 @@ export function FieldRenderer({
         onChange={onChange(keyRef, iterative)}
       />
     );
+  else if (f.type === 'real_async_autocomplete')
+    Component = (
+      <RealAsyncAutocomplete
+        readonly={readonly}
+        error={problems.includes(String(f.key))}
+        f={f}
+        dataValue={dataValue}
+        onChange={onChange(keyRef, iterative)}
+        data={data}
+      />
+    );
   else if (f.type === 'async_autocomplete')
     Component = (
       <AsyncAutocompleteField
@@ -1136,6 +1151,145 @@ function buildFilter(data, filters) {
   let filterQuery = '';
   for (let f of filters) filterQuery = `${filterQuery}&${f}=${data[f]}`;
   return filterQuery;
+}
+function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange, error, /* multiple, */ data: formData }) {
+
+  const [open, _open] = useState(false);
+  const [options, _options] = useState([]);
+  const [localValue, _localValue] = useState(null);
+  const [inputValue, _inputValue] = useState('');
+  const [debouncedInputValue, _debouncedInputValue] = useState('');
+
+  const [creating, _creating] = useState(false);
+
+  const { data: selected, isLoading: isLoadingSelected } = useQuery(`${f.remote_single ? f.remote_single : f.remote}/${value?.id}`, {
+    enabled: !!value?.id,
+  });
+
+  const { data, isLoading: isLoadingList } = useQuery(
+    `${f.remote}/?${f.query ? f.query : ''}${debouncedInputValue?.length ? `&filter=${debouncedInputValue}` : ''}${f.filter && Array.isArray(f.filter) ? buildFilter(formData, f.filter) : ''
+    }`,
+    { enabled: open },
+  );
+
+
+  useEffect(() => {
+    if (!data) _options([]);
+    else _options(data.list);
+  }, [data]);
+
+  useEffect(() => {
+    if (!value) _localValue(null);
+  }, [value]);
+
+  useEffect(() => {
+    if (!selected) return;
+
+    _localValue(selected);
+  }, [selected]);
+
+  useEffect(() => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      // console.log({ inputValue })
+      _debouncedInputValue(inputValue);
+    }, 500)
+  }, [inputValue])
+
+  const handleChange = async (_, value) => {
+    if (value && value.inputValue) {
+      _creating(true);
+      // só acontece quando cria
+      value = {
+        id: uuidv4(),
+        name: value.inputValue,
+      }
+
+      onChange(value ? value : null);
+      _creating(false);
+    } else {
+      onChange(value ? { id: value.id } : null);
+    }
+    
+    _localValue(value);
+  };
+
+  const handleInputChange = (event, newInputValue) => {
+    _inputValue(newInputValue);
+  }
+
+  return (
+    <>
+      <Autocomplete
+        className="input-autocomplete"
+        id="asynchronous-demo"
+        disabled={readonly || creating}
+        open={open}
+        onOpen={() => {
+          _open(true);
+        }}
+        onClose={() => {
+          _open(false);
+        }}
+        onChange={handleChange}
+        onInputChange={handleInputChange}
+        value={localValue}
+        autoHighlight
+        isOptionEqualToValue={(option, value) => option.id === value.id}
+        getOptionLabel={option => (f.title_field ? option[f.title_field] : option.name || '')}
+        options={options}
+        noOptionsText="Nenhuma opção"
+        filterOptions={(options, params) => {
+          const filtered = filter(options, params);
+
+          const { inputValue } = params;
+          // Suggest the creation of a new value
+          const isExisting = options.some(option => {
+            return removeAccents(inputValue?.trim().toLocaleLowerCase()) === removeAccents(option.name?.trim().toLocaleLowerCase())
+          });
+          if (inputValue !== '' && !isExisting) {
+            filtered.push({
+              inputValue,
+              name: `Adicionar "${inputValue}"`,
+            });
+          }
+
+          return filtered;
+        }}
+        renderOption={(props, option) => {
+          return (
+            <li {...props} key={`${option.id}-${option.name}`}>
+              {option.name}
+            </li>
+          );
+        }}
+        loading={isLoadingSelected || isLoadingList}
+        renderInput={params => {
+          return (
+            <TextField
+              sx={{
+                '& legend': { display: 'none' },
+                '& fieldset': { top: 0 },
+                width: 'inherit',
+              }}
+              {...params}
+              label={titleAndIndex(f.title, index)}
+              error={error}
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: (
+                  <Fragment>
+                    {isLoadingSelected || isLoadingList ? <CircularProgress color="inherit" size={20} /> : null}
+                    {params.InputProps.endAdornment}
+                  </Fragment>
+                ),
+              }}
+            />
+          );
+        }}
+      />
+    </>
+  );
 }
 function AsyncAutocompleteField({ f, readonly, index, dataValue, onChange, error, /* multiple, */ data: formData }) {
   const { server } = useDorothy();

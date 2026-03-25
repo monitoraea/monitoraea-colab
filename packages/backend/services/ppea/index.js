@@ -1,7 +1,7 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
-const { createEntity, updateEntity } = require('../utils');
+const { createEntity, updateEntity, getEntity, getEntityBySpecificId, createRelation, removeRelation } = require('../utils');
 const { getSegmentedId, applyWhere, parseBBOX } = require('../../utils');
 
 const AdmZip = require('adm-zip');
@@ -123,8 +123,6 @@ class Service {
         p.area,
         p.area_tematica,
         p.link,
-        instituicao_nome,
-        instituicao_enquadramento,
         responsavel_nome,
         responsavel_cargo,
         responsavel_telefone,
@@ -151,6 +149,12 @@ class Service {
     );
 
     let policy = entity[0];
+
+    // busca relacao com entidade proponente
+    const proponente = await getEntity('ppea', id);
+    policy.organizacao = {
+      id: proponente?.id,
+    }
 
     return policy;
   }
@@ -218,6 +222,20 @@ class Service {
   }
 
   async saveDraft(user, form, entity, files, id) {
+
+    // -- RELACOES ---------------------------------------------------------------------
+    if (!!entity.organizacao?.name) { // cria entidade, se nova organização
+      await createEntity('organizacao', null, entity.organizacao.name, entity.organizacao.id);
+    }
+    const e_id = await getEntityBySpecificId('ppea', id);
+    if (!!entity.organizacao?.id) { // cria relação, se proponente foi preenchido
+      if (e_id) await createRelation(e_id, entity.organizacao?.id, 1 /* proponente */, true /* somente um */);
+    } else {
+      // remove relacao
+      await removeRelation(e_id, null /* todas */, 1 /* proponente */);
+    }
+    // ---------------------------------------------------------------------------------
+
     await db.models['Ppea'].update(entity, {
       where: { politica_id: id, versao: 'draft' },
     });

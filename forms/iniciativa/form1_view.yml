@@ -46,16 +46,7 @@
   elements:
   - type: column
     size: 12
-    key: instituicao_nome
-  - type: column
-    size: 6
-    key: instituicao_segmento
-  - type: column
-    size: 6
-    key: instituicao_porte
-  - type: column
-    size: 12
-    key: instituicao_link
+    key: organizacao
 
 - type: row
   block: responsavel_list

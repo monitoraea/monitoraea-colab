@@ -120,59 +120,13 @@ fields:
   size: 4
   rows: 1
 
-- key: instituicao_nome
+- key: organizacao
   block: inst # opção para indicar o bloco ao qual o campo pertence
-  type: text
-  title: Nome da Instituição Executora
+  type: real_async_autocomplete
+  remote: entity
+  title: Nome da Organização Executora
   size: 6
   validation: not_empty
-
-- key: instituicao_segmento
-  type: options
-  title: Segmento da Instituição
-  size: 8  
-  options:
-  - value: -1
-    label: Não respondido
-  - value: 1
-    label: Sociedade civil organizada	
-  - value: 2
-    label: Rede
-  - value: 3
-    label: Coletivo educador
-  - value: 4
-    label: Movimentos sociais / sindicatos
-  - value: 5
-    label: Escolas
-  - value: 6
-    label: Instituições de ensino e pesquisa
-  - value: 7
-    label: Empresas/Setor privado
-  - value: 8
-    label: Órgão colegiado (comitês, conselhos, consórcios, ou similares)
-  - value: 9
-    label: Mídia
-  - value: 10
-    label: Individual
-
-- key: instituicao_porte
-  type: options
-  title: Porte da Instituição
-  size: 8  
-  options:
-  - value: -1
-    label: Não respondido
-  - value: 1
-    label: Pequeno - até 10 colaboradores
-  - value: 2
-    label: Médio - até 50 colaboradores
-  - value: 3
-    label: Grande - mais de 50 colaboradores
-
-- key: instituicao_link
-  type: text
-  title: Link para acesso à informações sobre a Instituição
-  size: 12
 
 - key: responsavel_nome
   block: responsavel_items
@@ -213,7 +167,7 @@ blocks: # opcional
       - area_tematica
 
   - key: inst
-    title: Sobre a Instituição
+    title: Sobre a Organização
 
   - key: responsavel_list
     title: Sobre a Responsável
