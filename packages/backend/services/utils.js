@@ -52,7 +52,10 @@ module.exports.updateEntity = async (e_type, e_id, e_name, transaction) => {
     return response.length ? response[0] : null;
 }
 
-module.exports.getEntities = getEntities = async (from_type, from_id, limit) => {
+// Retorna ENTIDADES (N=LIMIT) que se relacionam com a ENTIDADE from_id+from_type, pela relação type_id
+module.exports.getEntities = getEntities = async (from_type, from_id, type_id = 1, limit) => {
+    let perType = type_id === null ? '' : 'and r.type_id = :type_id';
+
     const response = await db.instance().query(`
         select 
             r.type_id,
@@ -64,22 +67,26 @@ module.exports.getEntities = getEntities = async (from_type, from_id, limit) => 
         inner join relations.entities eF on eF.id = r.from_id 
         inner join relations.entities eT on eT.id = r.to_id 
         where eF.entity_type = :from_type and eF.entity_id = :from_id
+        ${perType}
         ${limit ? `LIMIT ${limit}` : ''}
         `,
         {
-            replacements: { from_type, from_id },
+            replacements: { from_type, from_id, type_id },
             type: Sequelize.QueryTypes.SELECT,
         },
     );
 
     return response;
 }
-module.exports.getEntity = async (from_type, from_id) => {
-    const relations = await getEntities(from_type, from_id, 1);
+// Retorna 1 ENTIDADE que se relacionam com a ENTIDADE from_id+from_type, pela relação type_id
+module.exports.getEntity = async (from_type, from_id, type_id = 1) => {
+    const relations = await getEntities(from_type, from_id, type_id, 1);
 
     return relations.length ? relations[0] : null;
 }
-module.exports.getEntityBySpecificId = async (e_type, e_id) => {
+
+// Retorna o ID da ENTIDADE que representa a entidade (de perspectiva) em questão
+module.exports.getEntityBySpecificId = async (e_type, e_id) => { 
     const response = await db.instance().query(
         `
         select e.id
@@ -94,7 +101,9 @@ module.exports.getEntityBySpecificId = async (e_type, e_id) => {
 
     return response.length ? response[0].id : null;
 }
-module.exports.createRelation = async (from_id, to_id, type_id, exclusive /* somente um */) => {
+
+// cria uma relação entre from_id para to_id do tipo type_id
+module.exports.createRelation = createRelation = async (from_id, to_id, type_id, exclusive /* somente um deste tipo por relação from->to */) => {
 
     // se uma relação idêntica existe, não faz nada!
     const exists = await db.instance().query(
@@ -138,8 +147,10 @@ module.exports.createRelation = async (from_id, to_id, type_id, exclusive /* som
         },
     );
 }
-module.exports.removeRelation = async (from_id, to_id, type_id) => {
-    const specific = to_id ? 'and to_id = :to_id' : ''; // TODO de from_id + type_id OU from_id + type_id + to_id?
+
+// remove uma relacao de from_id + to_id (optional) + type_id
+module.exports.removeRelation = removeRelation = async (from_id, to_id, type_id) => {
+    const specific = to_id ? 'and to_id = :to_id' : '';
 
     // remove relação
     await db.instance().query(
@@ -153,4 +164,39 @@ module.exports.removeRelation = async (from_id, to_id, type_id) => {
             type: Sequelize.QueryTypes.DELETE,
         },
     );
+}
+
+// Atualizar todas as relacoes do tipo type_id de ENTIDADE e_id (insere ou remove)
+module.exports.updateRelations = async (from_id, to_ids /* array of ids */, type_id) => {
+    // existing_rels = verifica quais as relacoes existentes do tipo type_id da ENTIDADE e_id
+    const existing_rels = await db.instance().query(
+        `
+        select 
+            r.id,
+            r.to_id
+        from relations.relations r
+        where r.from_id = :from_id and r.type_id = :type_id
+        `,
+        {
+            replacements: { from_id, type_id },
+            type: Sequelize.QueryTypes.DELETE,
+        },
+    );
+
+    // 3 opcoes:
+    // - já existe: não faz nada
+    // - não existe: insere
+    // - existia (existe em existing_rels mas não existe em to_id): remove
+
+    const to_add = to_ids.filter(i => !existing_rels.some(e => e.to_id === i.id))
+    const to_remove = existing_rels.filter(e => !to_ids.some(i => i.id === e.to_id))
+
+    // console.log('>>>>>>>>>>>>', { to_add , to_remove });
+    for(let item of to_add) {
+        await createRelation(from_id, item.id, type_id);
+    }
+    for(let item of to_remove) {
+        await removeRelation(from_id, item.to_id, type_id)
+    }
+
 }

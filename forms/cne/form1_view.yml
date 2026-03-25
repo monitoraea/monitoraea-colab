@@ -56,11 +56,8 @@
     block: intitutions_it
     elements:
       - type: column
-        size: 3
-        key: nome_inst
-      - type: column
-        size: 3
-        key: segmento_inst
+        size: 8
+        key: organizacao
       - type: column
         size: 1
         elements:
@@ -74,7 +71,7 @@
             size: 12
             elements:
               - type: button
-                title: Adicionar instituição
+                title: Adicionar organização
 
 - type: row
   block: managers

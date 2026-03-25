@@ -110,17 +110,12 @@ fields:
       key: detalhamento_tipo
       value: file
 
-- key: nome_inst
+- key: organizacao
   block: intitutions_it
-  type: text
-  title: Nome %index%
-  size: 4
-
-- key: segmento_inst
-  block: intitutions_it
-  type: text
-  title: Segmento %index%
-  size: 4
+  type: real_async_autocomplete
+  remote: entity
+  title: Nome da Organização %index%
+  size: 6
 
 - key: nome_gestor
   block: managers_it
@@ -248,7 +243,7 @@ blocks: # opcional
       add: Adicionar gestor
 
   - key: institutions
-    title: Instituições proponentes
+    title: Organizações proponentes
     elements:
       - type: block
         key: intitutions_it
@@ -257,7 +252,7 @@ blocks: # opcional
     iterate:
       target: none
       index: default
-      add: Adicionar instituição
+      add: Adicionar organização
 
   - key: inst
     title: Institucional

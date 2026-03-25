@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 
 // const FormManager = require('../../FormsManager')
 
-const { createEntity, updateEntity } = require('../utils');
+const { createEntity, updateEntity, getEntities, getEntityBySpecificId, updateRelations } = require('../utils');
 const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId, parseBBOX } = require('../../utils');
 
 var fs = require('fs');
@@ -207,7 +207,6 @@ class Service {
             p.nome,
             p.logo_arquivo,
             p.tipologia,
-            p.intitutions_it,
             p.managers_it,
             p.data_criacao,
             p.data_inst,
@@ -271,6 +270,12 @@ class Service {
       }
     }
 
+    // busca relacao com entidade proponente
+    const proponentes = await getEntities('centro', id);
+    cne.intitutions_it = proponentes.map(p => ({ organizacao: { id: p.id } }))
+
+    // console.log('>>>>>>>>>>>>>>>>>>>>>>', { proponentes }, cne.intitutions_it)
+
     return cne;
   }
 
@@ -319,22 +324,46 @@ class Service {
     }
 
     /* atualiza o nome da instituicao vinculada */
-    if (entityModel.get('instituicao_id')) {
-      await db.instance().query(
-        `
-          update instituicoes
-          set nome = :name
-          where id = :id
-        `,
-        {
-          replacements: {
-            id: entityModel.get('instituicao_id'),
-            name: entity.nome,
-          },
-          type: Sequelize.QueryTypes.UPDATE,
-        },
-      );
+    // if (entityModel.get('instituicao_id')) {
+    //   await db.instance().query(
+    //     `
+    //       update instituicoes
+    //       set nome = :name
+    //       where id = :id
+    //     `,
+    //     {
+    //       replacements: {
+    //         id: entityModel.get('instituicao_id'),
+    //         name: entity.nome,
+    //       },
+    //       type: Sequelize.QueryTypes.UPDATE,
+    //     },
+    //   );
+    // }
+
+    /* entity.intitutions_it =
+    [
+      { organizacao: { id: '9e866e9c-0a00-4504-84ad-687f44f21f83' } },
+      { organizacao: { id: 'd357c04e-c17c-4563-af9f-74108974091c' } },
+      {
+        organizacao: {
+          id: '274a1801-13cd-4976-8995-4e763edf93ec',
+          name: 'Org para Centro'
+        }
+      }
+    ]
+    */
+
+    // -- RELACOES ---------------------------------------------------------------------
+    const e_id = await getEntityBySpecificId('centro', id);
+    for (let i of entity.intitutions_it) {
+
+      if (!!i.organizacao?.name) { // cria entidade, se nova organização
+        await createEntity('organizacao', null, i.organizacao.name, i.organizacao.id);
+      }
     }
+    await updateRelations(e_id, entity.intitutions_it.map(i => ({ id: i.organizacao.id })), 1 /* proponente */)
+    // ---------------------------------------------------------------------------------
 
     return entity;
   }
@@ -1154,7 +1183,7 @@ class Service {
       const { lists } = YAML.parse(lists_file);
       const tipo_resultados = lists.find(i => i.key === 'tipo_resultados').options.filter(o => o.value !== -1);
 
-      if(entity.outcomes_it && Array.isArray(entity.outcomes_it)) for (let r of entity.outcomes_it) {
+      if (entity.outcomes_it && Array.isArray(entity.outcomes_it)) for (let r of entity.outcomes_it) {
         r.resultado_tipo = tipo_resultados.find(tr => tr.value === r.resultado_tipo)?.label;
       }
     } catch (e) {

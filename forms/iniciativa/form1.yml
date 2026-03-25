@@ -126,7 +126,6 @@ fields:
   remote: entity
   title: Nome da Organização Executora
   size: 6
-  validation: not_empty
 
 - key: responsavel_nome
   block: responsavel_items
