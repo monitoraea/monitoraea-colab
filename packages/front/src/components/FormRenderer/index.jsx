@@ -492,7 +492,7 @@ function Element(props) {
 
           return <Fragment key={`block_${block.key}`}>{childrenBlocks}</Fragment>;
         } else {
-          /* TODO: target -> field (integer) */ /* TODO: target -> field (multiple options) */
+          /* TODO: target -> field (integer) */ /* TODO: target -> field (multiplcheckShowe options) */
           return (
             <Block block={block} data={data}>
               <Row {...props} />
@@ -529,7 +529,7 @@ function Element(props) {
       const field = form.fields.find(f => f.key === v.key);
       if (!field) return null;
 
-      if (!checkShow(field, data)) return null;
+      if (!checkShow(field, data, iterative)) return null;
 
       return (
         <div className={`col-xs-${v.size || 12}`}>
@@ -684,7 +684,7 @@ export function FieldRenderer({
 
   useEffect(() => {
 
-    let show = checkShow(f, data);
+    let show = checkShow(f, data, iterative);
 
     _doShow(show);
   }, [f, blocks, data]);
@@ -903,7 +903,7 @@ function Block({ block, data, basic = false, iterative, onRemoveIterative, child
     Aux functions
  *****************************************************************/
 
-function checkShow(e, data) {
+function checkShow(e, data, iterative) {
   let show = true;
 
   // field rules
@@ -915,12 +915,20 @@ function checkShow(e, data) {
     );
   } else if (!!e.show?.target) {
     // if (!Array.isArray(e.show.target.value)) show = data[e.show.target.key] === e.show.target.value;
-    // else show = data[e.show.target.key].map(v => v.value).includes(e.show.target.value);
+    // else show = data[e.show.target.key].map(v => v.value).includes(e.show.target.value);    
 
     // quais valores devem estar presentes
-    const valoresReferencia = Array.isArray(e.show.target.value) ? e.show.target.value.map(v => cleanValue(v)) : [cleanValue(e.show.target.value)];
+    let valoresReferencia = Array.isArray(e.show.target.value) ? e.show.target.value.map(v => cleanValue(v)) : [cleanValue(e.show.target.value)];
     // quais valores o usuário escolheu
-    const valoresEscolhidos = Array.isArray(data[e.show.target.key]) ? data[e.show.target.key].map(v => cleanValue(v)) : [cleanValue(data[e.show.target.key])];
+    let valoresEscolhidos = Array.isArray(data[e.show.target.key]) ? data[e.show.target.key].map(v => cleanValue(v)) : [cleanValue(data[e.show.target.key])];
+
+    if (e.show?.target?.context === 'local' && iterative) { // ITERATIVE, LOCAL
+      // console.log('>> ', e, data, { iterative })
+      valoresReferencia = [data[iterative.k][iterative.index][e.show.target.key]];
+      valoresEscolhidos = [e.show.target.value];
+
+      // console.log({valoresReferencia, valoresEscolhidos, filterLength: valoresReferencia.filter(x => valoresEscolhidos.includes(x)).length})
+    }
 
     // intersection
     show = valoresReferencia.filter(x => valoresEscolhidos.includes(x)).length;

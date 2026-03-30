@@ -1,0 +1,121 @@
+fields:
+
+  - key: relations_recebe_it_base
+    block: relations_recebe
+    type: options
+    title: Sua iniciativa RECEBE apoio?
+    size: 4
+    list: 
+      module: property
+      key: sim_nao
+
+  - key: organizacao
+    block: relations_recebe_it
+    type: real_async_autocomplete
+    remote: entity
+    title: Nome da Organização
+    size: 6  
+    # TODO: limpar iniciativa, quando alterada
+
+  - key: iniciativa
+    block: relations_recebe_it
+    type: real_async_autocomplete
+    remote: entity # TODO: iniciativas (filtradas por org - se preenchida)
+    title: Nome da Iniciativa
+    size: 6
+
+  - key: tipo_relacao
+    block: relations_recebe_it
+    type: async_autocomplete
+    remote_list: entity/relations_options
+    title: Tipo de relação
+    size: 3
+
+  - key: outra_relacao
+    block: relations_recebe_it
+    type: text
+    title: Outra relação
+    size: 4
+    show:
+      target:
+        context: local
+        key: tipo_relacao
+        value: -1
+
+  ####
+
+  - key: relations_oferece_it_base
+    block: relations_oferece
+    type: options
+    title: Sua iniciativa OFERECE apoio?
+    size: 4
+    list: 
+      module: property
+      key: sim_nao
+
+  - key: organizacao
+    block: relations_oferece_it
+    type: real_async_autocomplete
+    remote: entity
+    title: Nome da Organização
+    size: 6  
+    # TODO: limpar iniciativa, quando alterada
+
+  - key: iniciativa
+    block: relations_oferece_it
+    type: real_async_autocomplete
+    remote: entity # TODO: iniciativas (filtradas por org - se preenchida)
+    title: Nome da Iniciativa
+    size: 6
+
+  - key: tipo_relacao
+    block: relations_oferece_it
+    type: async_autocomplete
+    remote_list: entity/relations_options
+    title: Tipo de relação
+    size: 3
+
+  - key: outra_relacao
+    block: relations_recebe_it
+    type: text
+    title: Outra relação
+    size: 4
+    show:
+      target:
+        context: local
+        key: tipo_relacao
+        value: -1
+
+blocks:
+
+  - key: relations_recebe
+    title: Relações onde sua iniciativa RECEBE apoio
+    elements:
+      - type: block
+        key: relations_recebe_it
+
+  - key: relations_recebe_it
+    iterate:
+      target: none
+      index: default
+      add: Adicionar gestor
+    show:
+      target:
+        key: relations_recebe_it_base
+        value: true    
+  
+  - key: relations_oferece
+    title: Relações onde sua iniciativa OFERECE apoio
+    elements:
+      - type: block
+        key: relations_oferece_it
+
+  - key: relations_oferece_it
+    iterate:
+      target: none
+      index: default
+      add: Adicionar gestor
+    show:
+      target:
+        key: relations_oferece_it_base
+        value: true    
