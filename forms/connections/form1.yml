@@ -12,7 +12,10 @@ fields:
   - key: organizacao
     block: relations_recebe_it
     type: real_async_autocomplete
-    remote: entity
+    remote: entity 
+    filter:  # global
+      - my_entity_type
+      - my_entity_id 
     title: Nome da Organização
     size: 6  
     # TODO: limpar iniciativa, quando alterada - LOCAL?
@@ -22,8 +25,10 @@ fields:
     type: real_async_autocomplete
     remote: entity/initiatives    
     remote_single: entity 
-    filter_local:
-      - organizacao 
+    filter_local: 
+      - organizacao # local
+      - ^my_entity_type # global
+      - ^my_entity_id  # global
     title: Nome da Iniciativa
     size: 6
 
@@ -60,6 +65,9 @@ fields:
     block: relations_oferece_it
     type: real_async_autocomplete
     remote: entity
+    filter:  # global
+      - my_entity_type
+      - my_entity_id 
     title: Nome da Organização
     size: 6  
     # TODO: limpar iniciativa, quando alterada
@@ -70,7 +78,9 @@ fields:
     remote: entity/initiatives  
     remote_single: entity 
     filter_local:
-      - organizacao 
+      - organizacao
+      - ^my_entity_type
+      - ^my_entity_id  
     title: Nome da Iniciativa
     size: 6
 

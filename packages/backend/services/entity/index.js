@@ -48,12 +48,21 @@ class Service {
     let joins = [];
     let replacements = {};
 
-    // TODO: CONFIG -> { filter, my_entity_type, my_entity_id }
+    if (config.filter && !!config.filter.length) {
+      where.push('unaccent(e."name") ilike :filter');
+      replacements.filter = `%${removeAccents(config.filter)}%`;
+    }
 
     if (config.organizacao) {
       // onde filtro é proponente (type_id = 1) das iniciativas
       joins.push('inner join relations.relations r on r.type_id = 1 and r.from_id = e.id and r.to_id = :organizacao');
       replacements.organizacao = config.organizacao;
+    }
+
+    if (config.my_entity_type) {
+      where.push('(e.entity_type <> :e_type or e.entity_id <> :e_id)-- filter itself');
+      replacements.e_type = config.my_entity_type;
+      replacements.e_id = config.my_entity_id;
     }
 
     const entities = await db.instance().query(

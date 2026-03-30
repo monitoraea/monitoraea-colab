@@ -39,7 +39,8 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
     });
 
     useEffect(() => {
-        if (data) _originalEntity(data);
+        if (data) _originalEntity({...data, my_entity_type: entityName, my_entity_id: entityId });
+        else _originalEntity({ my_entity_type: entityName, my_entity_id: entityId });
     }, [data]);
 
     const handleDataChange = (entity) => {
@@ -47,6 +48,7 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
     };
 
     const handleSave = async () => {
+        console.log({ entity })
         /* save */
         // const data = getFormData(form, entity); // prepare information (Renderer)
 

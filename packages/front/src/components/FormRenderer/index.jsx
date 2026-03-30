@@ -1164,8 +1164,17 @@ function buildFilter(data, filters) {
 function buildLocalFilter(data, f, index) {
   let filterQuery = '';
   for (let fi of f.filter_local) {
-    const value = data[f.block][index][fi]?.id || data[f.block][index][fi];
-    if(value) filterQuery = `${filterQuery}&${fi}=${value}`;
+
+    let value; 
+    if(fi[0] !== '^') {
+      value = data[f.block][index][fi]?.id || data[f.block][index][fi];
+      if(value) filterQuery = `${filterQuery}&${fi}=${value}`;
+    } else {
+      const field = fi.replace('^','');
+      value = data[field];
+      if(value) filterQuery = `${filterQuery}&${field}=${value}`;
+    } 
+
   }
 
   return filterQuery;  
