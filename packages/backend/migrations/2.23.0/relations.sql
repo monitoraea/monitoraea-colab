@@ -37,31 +37,31 @@ CREATE TABLE relations.relation_options (
 
 INSERT INTO relations.relation_options
 (id, "name", description, "createdAt", "updatedAt")
-VALUES(1, 'elaborada por', 'B é proponente de A', '2026-02-09 12:01:31.404', '2026-02-09 12:01:31.404');
+VALUES(1, 'proponência', 'B é proponente de A', '2026-02-09 12:01:31.404', '2026-02-09 12:01:31.404');
 INSERT INTO relations.relation_options
 (id, "name", description, "createdAt", "updatedAt")
-VALUES(3, 'alinhamento de princípios e diretrizes com', NULL, '2026-02-09 13:34:12.789', '2026-02-09 13:34:12.795');
+VALUES(3, 'alinhamento de princípios e diretrizes', NULL, '2026-02-09 13:34:12.789', '2026-02-09 13:34:12.795');
 INSERT INTO relations.relation_options
 (id, "name", description, "createdAt", "updatedAt")
-VALUES(4, 'atuação em instrumentos específicos com', NULL, '2026-02-09 13:34:12.795', '2026-02-09 13:34:12.795');
+VALUES(4, 'atuação em instrumentos específicos', NULL, '2026-02-09 13:34:12.795', '2026-02-09 13:34:12.795');
 INSERT INTO relations.relation_options
 (id, "name", description, "createdAt", "updatedAt")
-VALUES(5, 'atuação em planos e programas conectados à', NULL, '2026-02-09 13:34:12.795', '2026-02-09 13:34:12.795');
+VALUES(5, 'atuação em planos e programas conectados', NULL, '2026-02-09 13:34:12.795', '2026-02-09 13:34:12.795');
 INSERT INTO relations.relation_options
 (id, "name", description, "createdAt", "updatedAt")
-VALUES(6, 'atuação em atividades vinculadas à ', NULL, '2026-02-09 13:34:12.796', '2026-02-09 13:34:12.796');
+VALUES(6, 'atuação em atividades vinculadas', NULL, '2026-02-09 13:34:12.796', '2026-02-09 13:34:12.796');
 INSERT INTO relations.relation_options
 (id, "name", description, "createdAt", "updatedAt")
-VALUES(7, 'fomenta financeiramente', NULL, '2026-02-09 13:34:12.796', '2026-02-09 13:34:12.796');
+VALUES(7, 'fomento financeiro', NULL, '2026-02-09 13:34:12.796', '2026-02-09 13:34:12.796');
 INSERT INTO relations.relation_options
 (id, "name", description, "createdAt", "updatedAt")
-VALUES(8, 'compartilhamento de infraestrutura com', NULL, '2026-02-09 13:34:12.796', '2026-02-09 13:34:12.796');
+VALUES(8, 'compartilhamento de infraestrutura', NULL, '2026-02-09 13:34:12.796', '2026-02-09 13:34:12.796');
 INSERT INTO relations.relation_options
 (id, "name", description, "createdAt", "updatedAt")
-VALUES(9, 'compartilhamento de recursos humanos com', NULL, '2026-02-09 13:34:12.796', '2026-02-09 13:34:12.796');
+VALUES(9, 'compartilhamento de recursos humanos', NULL, '2026-02-09 13:34:12.796', '2026-02-09 13:34:12.796');
 INSERT INTO relations.relation_options
 (id, "name", description, "createdAt", "updatedAt")
-VALUES(10, 'compartilhamento de informações com', NULL, '2026-02-09 13:34:12.796', '2026-02-09 13:34:12.796');
+VALUES(10, 'compartilhamento de informações', NULL, '2026-02-09 13:34:12.796', '2026-02-09 13:34:12.796');
 
 -------------------------------------------------------------
 -- RELATIONS AUX FUNCTIONS

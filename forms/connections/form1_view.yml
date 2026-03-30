@@ -1,0 +1,79 @@
+- type: row
+  block: relations_recebe
+  elements:
+  - type: row
+    elements:
+      - type: column
+        size: 2
+        key: relations_recebe_it_base
+  - type: row
+    block: relations_recebe_it
+    elements:
+      - type: column
+        size: 3
+        key: organizacao
+      - type: column
+        size: 3
+        key: iniciativa
+      - type: column
+        size: 3
+        key: tipo_relacao
+      - type: column
+        size: 2
+        key: outra_relacao
+      - type: column
+        size: 1
+        elements:
+          - type: remove
+  - type: add
+    block: relations_recebe_it
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar uma relação
+
+- type: separator
+
+###
+
+- type: row
+  block: relations_oferece
+  elements:
+  - type: row
+    elements:
+      - type: column
+        size: 2
+        key: relations_oferece_it_base
+  - type: row
+    block: relations_oferece_it
+    elements:
+      - type: column
+        size: 3
+        key: organizacao
+      - type: column
+        size: 3
+        key: iniciativa
+      - type: column
+        size: 3
+        key: tipo_relacao
+      - type: column
+        size: 2
+        key: outra_relacao
+      - type: column
+        size: 1
+        elements:
+          - type: remove
+  - type: add
+    block: relations_oferece_it
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar uma relação

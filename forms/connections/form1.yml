@@ -15,12 +15,15 @@ fields:
     remote: entity
     title: Nome da Organização
     size: 6  
-    # TODO: limpar iniciativa, quando alterada
+    # TODO: limpar iniciativa, quando alterada - LOCAL?
 
   - key: iniciativa
     block: relations_recebe_it
     type: real_async_autocomplete
-    remote: entity # TODO: iniciativas (filtradas por org - se preenchida)
+    remote: entity/initiatives    
+    remote_single: entity 
+    filter_local:
+      - organizacao 
     title: Nome da Iniciativa
     size: 6
 
@@ -64,7 +67,10 @@ fields:
   - key: iniciativa
     block: relations_oferece_it
     type: real_async_autocomplete
-    remote: entity # TODO: iniciativas (filtradas por org - se preenchida)
+    remote: entity/initiatives  
+    remote_single: entity 
+    filter_local:
+      - organizacao 
     title: Nome da Iniciativa
     size: 6
 

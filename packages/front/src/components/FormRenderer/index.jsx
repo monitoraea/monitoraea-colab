@@ -1160,6 +1160,17 @@ function buildFilter(data, filters) {
   for (let f of filters) filterQuery = `${filterQuery}&${f}=${data[f]}`;
   return filterQuery;
 }
+
+function buildLocalFilter(data, f, index) {
+  let filterQuery = '';
+  for (let fi of f.filter_local) {
+    const value = data[f.block][index][fi]?.id || data[f.block][index][fi];
+    if(value) filterQuery = `${filterQuery}&${fi}=${value}`;
+  }
+
+  return filterQuery;  
+}
+
 function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange, error, /* multiple, */ data: formData }) {
 
   const [open, _open] = useState(false);
@@ -1175,8 +1186,7 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
   });
 
   const { data, isLoading: isLoadingList } = useQuery(
-    `${f.remote}/?${f.query ? f.query : ''}${debouncedInputValue?.length ? `&filter=${debouncedInputValue}` : ''}${f.filter && Array.isArray(f.filter) ? buildFilter(formData, f.filter) : ''
-    }`,
+    `${f.remote}/?${f.query ? f.query : ''}${debouncedInputValue?.length ? `&filter=${debouncedInputValue}` : ''}${f.filter && Array.isArray(f.filter) ? buildFilter(formData, f.filter) : ''}${f.filter_local && Array.isArray(f.filter_local) ? buildLocalFilter(formData, f, index) : ''}`,
     { enabled: open },
   );
 

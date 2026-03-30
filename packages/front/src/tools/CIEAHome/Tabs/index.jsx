@@ -75,6 +75,11 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           />
           <Tab
             disableRipple
+            label="Conexões"
+            {...a11yProps('conexoes')}
+          />
+          <Tab
+            disableRipple
             label="Linha do tempo"
             {...a11yProps('linha_tempo')}
           />
