@@ -6,6 +6,9 @@
       - type: column
         size: 2
         key: relations_recebe_it_base
+      - type: column
+        size: 10
+        key: relations_recebe_it_base_aviso
   - type: row
     block: relations_recebe_it
     elements:
@@ -20,11 +23,13 @@
         key: tipo_relacao_r
       - type: column
         size: 2
-        key: outra_relacao_r
+        key: outra_relacao_r     
       - type: column
         size: 1
-        elements:
-          - type: remove
+        key: remove_r      
+      - type: column
+        size: 1
+        key: checkedByOther_r
   - type: add
     block: relations_recebe_it
     elements:
@@ -48,6 +53,9 @@
       - type: column
         size: 2
         key: relations_oferece_it_base
+      - type: column
+        size: 10
+        key: relations_oferece_it_base_aviso
   - type: row
     block: relations_oferece_it
     elements:
@@ -62,11 +70,13 @@
         key: tipo_relacao_o
       - type: column
         size: 2
-        key: outra_relacao_o
+        key: outra_relacao_o      
       - type: column
         size: 1
-        elements:
-          - type: remove
+        key: remove_o      
+      - type: column
+        size: 1
+        key: checkedByOther_o
   - type: add
     block: relations_oferece_it
     elements:

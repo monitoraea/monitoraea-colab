@@ -6,10 +6,3 @@ lists:
       label: 'Sim'
     - value: false
       label: 'Não'
-
-  - key: tipo_apoio
-    options:
-    - value: 1
-      label: Recebe apoio
-    - value: 2
-      label: Apoia

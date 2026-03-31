@@ -18,6 +18,9 @@ import Trash from '../icons/Trash';
 import DatePicker from '../DatePicker';
 import UploaderField from '../../components/UploaderField';
 
+import NotConfirmed from '../icons/circle.svg?react';
+import Confirmed from '../icons/check-circle.svg?react';
+
 import removeAccents from 'remove-accents';
 
 const filter = createFilterOptions();
@@ -260,6 +263,7 @@ function BasicRenderer({
                     handleDataChange={handleDataChange}
                     onContentData={onContentData}
                     onAlert={onAlert}
+                    onRemoveIterative={onRemoveIterative}
                   />
                 </div>
               </div>
@@ -335,6 +339,7 @@ function BasicRenderer({
                         handleDataChange={handleDataChange}
                         onContentData={onContentData}
                         onAlert={onAlert}
+                        onRemoveIterative={onRemoveIterative}
                       />
                     </div>
                   </div>
@@ -378,6 +383,7 @@ function BasicRenderer({
                       handleDataChange={handleDataChange}
                       onContentData={onContentData}
                       onAlert={onAlert}
+                      onRemoveIterative={onRemoveIterative}
                     />
                   </div>
                 </div>
@@ -553,6 +559,7 @@ function Element(props) {
             handleDataChange={handleDataChange}
             onContentData={onContentData}
             onAlert={onAlert}
+            onRemoveIterative={onRemoveIterative}
           />
         </div>
       );
@@ -686,6 +693,7 @@ export function FieldRenderer({
   problems,
   onContentData,
   onAlert,
+  onRemoveIterative,
 }) {
   const [doShow, _doShow] = useState(false);
 
@@ -709,6 +717,23 @@ export function FieldRenderer({
 
   if (f.type === 'label') Component = <Label f={f} />;
   else if (f.type === 'read_only') Component = <ReadOnly f={f} dataValue={dataValue} />;
+  else if (f.type === 'confirm')
+    Component = (
+      <Confirm
+        readonly={readonly}
+        f={f}
+        dataValue={dataValue}
+        onChange={onChange(keyRef, iterative)}
+      />
+    );
+  else if (f.type === 'remove_iterative')
+    Component = (
+      <RemoveIterative
+        f={f}
+        onRemoveIterative={onRemoveIterative}
+        iterative={iterative}
+      />
+    );
   else if (f.type === 'options')
     Component = (
       <OptionsField
@@ -931,14 +956,15 @@ function checkShow(e, data, iterative) {
 
     if (e.show?.target?.context === 'local' && iterative) { // ITERATIVE, LOCAL
       // console.log('>> ', e, data, { iterative })
-      valoresReferencia = [data[iterative.k][iterative.index][e.show.target.key]];
+      const ref = data[iterative.k][iterative.index][e.show.target.key];
+      valoresReferencia = [ref?.id || ref];
       valoresEscolhidos = [e.show.target.value];
-
-      // console.log({valoresReferencia, valoresEscolhidos, filterLength: valoresReferencia.filter(x => valoresEscolhidos.includes(x)).length})
     }
 
     // intersection
-    show = valoresReferencia.filter(x => valoresEscolhidos.includes(x)).length;
+    const verify = !!valoresReferencia.filter(x => valoresEscolhidos.includes(x)).length;
+    if (e.show.target.type !== 'hide') show = verify;
+    else show = !verify;
   }
 
   return show;
@@ -1052,7 +1078,9 @@ function dbFieldKey(form, key) {
  *****************************************************************/
 
 function Label({ f, index }) {
-  return <>{titleAndIndex(f.title, index)}</>;
+  return <div className={styles.label}>
+    {titleAndIndex(f.title, index)}
+  </div>;
 }
 
 function ReadOnly({ f, index, dataValue }) {
@@ -1100,6 +1128,36 @@ function StringField({ f, readonly, integer, multiline, rows, index, dataValue, 
       error={error}
     />
   );
+}
+
+function RemoveIterative({ onRemoveIterative, iterative }) {
+  return <div className={styles.remove}>
+    <div className={styles.iterative}>
+      <div className={styles['svg-icon-box']}>
+        <Tooltip title="Remover">
+          <IconButton onClick={() => onRemoveIterative(iterative)}>
+            <Trash />
+          </IconButton>
+        </Tooltip>
+      </div>
+    </div>
+  </div>
+}
+function Confirm({ f, readonly, index, dataValue, onChange }) {
+  return <div className={styles.confirm}>
+    <div className={styles['svg-icon-box']}>
+      {!!dataValue && <Tooltip title={f.title_confirmed || 'Confirm?'}>
+        <IconButton disabled={readonly} onClick={() => onChange(!dataValue)}>
+          <Confirmed />
+        </IconButton>
+      </Tooltip>}
+      {!dataValue && <Tooltip title={f.title_not_confirmed || 'Not confirm?'}>
+        <IconButton disabled={readonly} onClick={() => onChange(!dataValue)}>
+          <NotConfirmed />
+        </IconButton>
+      </Tooltip>}
+    </div>
+  </div>
 }
 
 function OptionsField({ f, readonly, index, dataValue, onChange, error }) {

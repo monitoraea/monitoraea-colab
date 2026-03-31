@@ -7,7 +7,16 @@ fields:
     size: 4
     list: 
       module: property
-      key: sim_nao
+      key: sim_nao  
+
+  - key: relations_recebe_it_base_aviso
+    block: relations_recebe
+    type: label
+    title: <<<< somente indicados por outras iniciativas
+    show:
+      target:
+        key: relations_recebe_it_base_outro
+        value: true
 
   - key: organizacao_r
     block: relations_recebe_it
@@ -52,6 +61,27 @@ fields:
         key: tipo_relacao_r
         value: -1
 
+  - key: remove_r
+    block: relations_recebe_it
+    type: remove_iterative
+    hide:
+      target:
+        type: hide
+        context: local
+        key: mine_r
+        value: false
+
+  - key: checkedByOther_r
+    block: relations_recebe_it
+    title_not_confirmed: Confirmar relação indicada por outra iniciativa?
+    title_confirmed: Desmarcar confirmação relação indicada por outra iniciativa?
+    type: confirm
+    show:
+      target:
+        context: local
+        key: mine_r
+        value: false
+
   ####
 
   - key: relations_oferece_it_base
@@ -62,6 +92,15 @@ fields:
     list: 
       module: property
       key: sim_nao
+
+  - key: relations_oferece_it_base_aviso
+    block: relations_oferece
+    type: label
+    title: <<<< somente indicados por outras iniciativas
+    show:
+      target:
+        key: relations_oferece_it_base_outro
+        value: true
 
   - key: organizacao_o
     block: relations_oferece_it
@@ -105,6 +144,27 @@ fields:
         context: local
         key: tipo_relacao_o
         value: -1
+
+  - key: remove_o
+    block: relations_oferece_it
+    type: remove_iterative
+    show:
+      target:
+        type: hide
+        context: local        
+        key: mine_o
+        value: false
+
+  - key: checkedByOther_o
+    block: relations_oferece_it
+    title_not_confirmed: Confirmar relação indicada por outra iniciativa?
+    title_confirmed: Desmarcar confirmação relação indicada por outra iniciativa?
+    type: confirm
+    show:
+      target:
+        context: local
+        key: mine_o
+        value: false
 
 blocks:
 

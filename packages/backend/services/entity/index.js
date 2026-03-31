@@ -133,7 +133,7 @@ class Service {
   }
 
   async getRelationOptions(id) {
-    if(id == '-1' ) return { id: -1, name: 'Outra' };
+    if (id == '-1') return { id: -1, name: 'Outra' };
 
     const entities = await db.instance().query(
       `
@@ -155,8 +155,6 @@ class Service {
   async save(id, entity) {
 
     console.log(JSON.stringify({ id, entity }))
-
-
 
     // Gravar (somente blocos respondidos sim - "não" deve, inclusive, remover relações previamente cadastradas)
     // utils tem ferramentas para tratar em entidades
@@ -199,10 +197,8 @@ class Service {
     const entity = entities[0];
 
     // RECEBE
-    let recebe = [];
-    if (entity.relations_recebe_it_base) {
-      recebe = await db.instance().query(
-        `
+    const recebe = await db.instance().query(
+      `
         SELECT 
           r.id,
           r.from_id,
@@ -216,19 +212,15 @@ class Service {
         where r.to_id = :id
         and r.type_id in (-1,7,8,9,10) 
         `,
-        {
-          type: Sequelize.QueryTypes.SELECT,
-          replacements: { id: entity.id }
-        },
-      );
-
-    }
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { id: entity.id }
+      },
+    );
 
     // OFERECE
-    let oferece = [];
-    if (entity.relations_oferece_it_base) {
-      oferece = await db.instance().query(
-        `
+    const oferece = await db.instance().query(
+      `
         SELECT 
           r.id,
         r.from_id,
@@ -242,13 +234,11 @@ class Service {
         where r.from_id = :id
         and r.type_id in (-1,7,8,9,10)
         `,
-        {
-          type: Sequelize.QueryTypes.SELECT,
-          replacements: { id: entity.id }
-        },
-      );
-
-    }
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { id: entity.id }
+      },
+    );
 
     let relations_recebe_it = recebe.map(r => ({
       organizacao_r: r.proponente_id ? { id: r.proponente_id } : null,
@@ -269,10 +259,12 @@ class Service {
       checkedByOther_o: r.checkedByOther,
     }));
 
-    return { 
-      relations_recebe_it_base: entity.relations_recebe_it_base,
+    return {
+      relations_recebe_it_base: entity.relations_recebe_it_base || !!recebe.length,
+      relations_recebe_it_base_outro: !entity.relations_recebe_it_base && !!recebe.length,
       relations_recebe_it,
-      relations_oferece_it_base: entity.relations_oferece_it_base,
+      relations_oferece_it_base: entity.relations_oferece_it_base || !!oferece.length,
+      relations_oferece_it_base_outro: !entity.relations_oferece_it_base && !!oferece.length,
       relations_oferece_it,
     }
   }
