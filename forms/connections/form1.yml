@@ -17,8 +17,10 @@ fields:
       - my_entity_type
       - my_entity_id 
     title: Nome da Organização
-    size: 6  
-    # TODO: limpar iniciativa, quando alterada - LOCAL?
+    size: 6 
+    onchange:
+      - key: iniciativa
+        value:
 
   - key: iniciativa
     block: relations_recebe_it
@@ -69,8 +71,10 @@ fields:
       - my_entity_type
       - my_entity_id 
     title: Nome da Organização
-    size: 6  
-    # TODO: limpar iniciativa, quando alterada
+    size: 6 
+    onchange:
+      - key: iniciativa
+        value:
 
   - key: iniciativa
     block: relations_oferece_it

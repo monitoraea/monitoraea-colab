@@ -145,9 +145,16 @@ export function Renderer(props) {
       /* campos em blocos iterativos */
 
       /* TODO: files */
-      /* TODO: onchange */
 
       let complexValue = entity[iterative.k];
+
+      const onchange = form.fields.find(f => f.key === field)?.onchange;
+      if (onchange) {
+        for (let c of onchange) {
+          complexValue[iterative.index][c.key] = c.value;
+        }
+      }
+
       if (!!complexValue && Array.isArray(complexValue)) {
         complexValue[iterative.index][field] = value;
 
@@ -1165,19 +1172,19 @@ function buildLocalFilter(data, f, index) {
   let filterQuery = '';
   for (let fi of f.filter_local) {
 
-    let value; 
-    if(fi[0] !== '^') {
+    let value;
+    if (fi[0] !== '^') {
       value = data[f.block][index][fi]?.id || data[f.block][index][fi];
-      if(value) filterQuery = `${filterQuery}&${fi}=${value}`;
+      if (value) filterQuery = `${filterQuery}&${fi}=${value}`;
     } else {
-      const field = fi.replace('^','');
+      const field = fi.replace('^', '');
       value = data[field];
-      if(value) filterQuery = `${filterQuery}&${field}=${value}`;
-    } 
+      if (value) filterQuery = `${filterQuery}&${field}=${value}`;
+    }
 
   }
 
-  return filterQuery;  
+  return filterQuery;
 }
 
 function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange, error, /* multiple, */ data: formData }) {
@@ -1237,7 +1244,7 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
     } else {
       onChange(value ? { id: value.id } : null);
     }
-    
+
     _localValue(value);
   };
 
