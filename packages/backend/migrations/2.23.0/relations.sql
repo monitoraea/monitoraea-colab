@@ -1,4 +1,5 @@
 CREATE TYPE type_of_entity AS ENUM ('zcm', 'ppea', 'centro', 'colegiado', 'iniciativa', 'educom', 'organizacao', 'indefinida');
+CREATE TYPE created_by AS ENUM ('from', 'to');
 
 CREATE TABLE relations.entities (
 	id uuid NOT NULL,
@@ -8,6 +9,8 @@ CREATE TABLE relations.entities (
 	metadata json DEFAULT '{}'::json NOT NULL,
 	"createdAt" timestamp NOT NULL,
 	"updatedAt" timestamp NOT NULL,
+	relations_recebe_it_base boolean NULL,
+    relations_oferece_it_base boolean NULL
 	CONSTRAINT entities_pk PRIMARY KEY (id)
 );
 CREATE INDEX entities_entity_type_idx ON relations.entities USING btree (entity_type, entity_id);
@@ -21,6 +24,8 @@ CREATE TABLE relations.relations (
 	"createdAt" timestamp NOT NULL,
 	"updatedAt" timestamp NOT NULL,
 	other_type varchar NULL,
+	"createdBy" public.created_by NOT NULL DEFAULT 'from',
+	"checkedByOther" boolean NOT NULL DEFAULT false
 	CONSTRAINT relations_pk PRIMARY KEY (id)
 );
 CREATE INDEX relations_from_id_idx ON relations.relations USING btree (from_id);

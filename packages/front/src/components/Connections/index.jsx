@@ -5,8 +5,6 @@ import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
 
-import { CMS_COMMUNITY } from '../../utils/configs.jsx';
-
 /* components */
 
 import Card from '../../components/Card';
@@ -16,7 +14,7 @@ import Card from '../../components/Card';
 
 import FilePlus from '../../components/icons/FilePlus';
 
-import { Renderer, mapData2Form, getFormData } from '../../components/FormRenderer';
+import { Renderer, mapData2Form, mapForm2Data } from '../../components/FormRenderer';
 
 import form from '../../../../../forms/connections/form1.yml';
 import form_view from '../../../../../forms/connections/form1_view.yml';
@@ -48,61 +46,60 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
     };
 
     const handleSave = async () => {
-        console.log({ entity })
         /* save */
-        // const data = getFormData(form, entity); // prepare information (Renderer)
+        const data = mapForm2Data(entity, form) // prepare information (Renderer)
 
-        // const snackKey = enqueueSnackbar('Gravando...', {
-        //     /* variant: 'info', */
-        //     /* hideIconVariant: true, */
-        //     persist: true,
-        //     anchorOrigin: {
-        //         vertical: 'top',
-        //         horizontal: 'center',
-        //     },
-        // });
+        const snackKey = enqueueSnackbar('Gravando...', {
+            /* variant: 'info', */
+            /* hideIconVariant: true, */
+            persist: true,
+            anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+            },
+        });
 
-        // try {
-        //     let method, url;
-        //     /* edit */
-        //     method = 'put';
-        //     url = `${server}commission/${entityId}/draft`;
+        try {
+            let method, url;
+            /* edit */
+            method = 'put';
+            url = `${server}entity/${entityId}`;
 
-        //   /* const { data: response } =  */ await axios({
-        //         method,
-        //         url,
-        //         data,
-        //         config: { headers: { 'Content-Type': 'multipart/form-data' } },
-        //     });
+          /* const { data: response } =  */ await axios({
+                method,
+                url,
+                data,
+                config: { headers: { 'Content-Type': 'multipart/form-data' } },
+            });
 
-        //     // console.log(response);
+            // console.log(response);
 
-        //     queryClient.invalidateQueries('commission_info');
+            queryClient.invalidateQueries('connections_info');
 
-        //     // onSave(!_.isEqual(originalEntity, entity));
+            // onSave(!_.isEqual(originalEntity, entity));
 
-        //     closeSnackbar(snackKey);
+            closeSnackbar(snackKey);
 
-        //     enqueueSnackbar('Registro gravado com sucesso!', {
-        //         variant: 'success',
-        //         anchorOrigin: {
-        //             vertical: 'top',
-        //             horizontal: 'center',
-        //         },
-        //     });
-        // } catch (error) {
-        //     closeSnackbar(snackKey);
+            enqueueSnackbar('Registro gravado com sucesso!', {
+                variant: 'success',
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                },
+            });
+        } catch (error) {
+            closeSnackbar(snackKey);
 
-        //     console.error(error);
+            console.error(error);
 
-        //     enqueueSnackbar('Erro ao gravar o registro!', {
-        //         variant: 'error',
-        //         anchorOrigin: {
-        //             vertical: 'top',
-        //             horizontal: 'center',
-        //         },
-        //     });
-        // }
+            enqueueSnackbar('Erro ao gravar o registro!', {
+                variant: 'error',
+                anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'center',
+                },
+            });
+        }
     };
 
     if (!data) return <></>;

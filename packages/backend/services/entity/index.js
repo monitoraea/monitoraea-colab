@@ -108,12 +108,6 @@ class Service {
     return !entities.length ? null : entities[0];
   }
 
-  async getRelations(entity_type, entity_id) {
-    console.log({ entity_type, entity_id })
-
-    return { relations_id: [] }
-  }
-
   async getRelationsOptions(/* TODO: context */) {
     const entities = await db.instance().query(
       `
@@ -136,6 +130,151 @@ class Service {
         { id: -1, name: 'Outra' }
       ]
     };
+  }
+
+  async getRelationOptions(id) {
+    if(id == '-1' ) return { id: -1, name: 'Outra' };
+
+    const entities = await db.instance().query(
+      `
+      select 
+        ro.id,
+        ro.name
+      from relations.relation_options ro
+      where ro.id = :id
+      `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { id }
+      },
+    );
+
+    return entities?.[0] || null;
+  }
+
+  async save(id, entity) {
+
+    console.log(JSON.stringify({ id, entity }))
+
+
+
+    // Gravar (somente blocos respondidos sim - "não" deve, inclusive, remover relações previamente cadastradas)
+    // utils tem ferramentas para tratar em entidades
+
+    // relations_recebe_it_base (createdBy: to, from: OTHER, to: THIS)
+    // relations_oferece_it_base (createdBy: from, from: THIS, to: OTHER)
+
+    // deve buscar todas as relações desta entidade (This entity is FROM (oferece) or TO (recebe))
+
+    // ignorar relações (enviadas) sem organização e iniciativa 
+    // deve criar (SEM DUPLICAR - mesmo texto) as entidades novas
+    // se há iniciativa, a relação é com ela. caso contrário, a relação é com a organização
+    // to_add, to_remove, to_update - se há um 'não' em uma resposta base, todos os registros deste bloco devem ser colocados para remoção (createdBy this??)
+
+    return true;
+  }
+
+  async getRelations(entity_type, entity_id) {
+    // This entity is FROM (oferece) or TO (recebe)
+    // se há relação de proponencia para uma iniciativa, trazer a organização
+
+    // ENTIDADE
+    const entities = await db.instance().query(`
+    select 
+      e.id, 
+      e.relations_recebe_it_base, 
+      e.relations_oferece_it_base
+    from relations.entities e 
+    where 
+      e.entity_id = :entity_id
+    and 
+      e.entity_type = :entity_type
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { entity_type, entity_id }
+      },
+    );
+
+    const entity = entities[0];
+
+    // RECEBE
+    let recebe = [];
+    if (entity.relations_recebe_it_base) {
+      recebe = await db.instance().query(
+        `
+        SELECT 
+          r.id,
+          r.from_id,
+          r.to_id,
+          r.type_id,
+          r.other_type,
+          r."createdBy" = 'to' as mine,
+          r."checkedByOther",
+          (select ee.id from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.from_id limit 1) as proponente_id
+        from relations.relations r 
+        where r.to_id = :id
+        and r.type_id in (-1,7,8,9,10) 
+        `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+          replacements: { id: entity.id }
+        },
+      );
+
+    }
+
+    // OFERECE
+    let oferece = [];
+    if (entity.relations_oferece_it_base) {
+      oferece = await db.instance().query(
+        `
+        SELECT 
+          r.id,
+        r.from_id,
+        r.to_id,
+        r.type_id,
+        r.other_type,
+        r."createdBy" = 'from' as mine,
+        r."checkedByOther",
+        (select ee.id from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.to_id limit 1) as proponente_id	
+        from relations.relations r 
+        where r.from_id = :id
+        and r.type_id in (-1,7,8,9,10)
+        `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+          replacements: { id: entity.id }
+        },
+      );
+
+    }
+
+    let relations_recebe_it = recebe.map(r => ({
+      organizacao_r: r.proponente_id ? { id: r.proponente_id } : null,
+      iniciativa_r: { id: r.from_id },
+      tipo_relacao_r: { id: r.type_id },
+      outra_relacao_r: r.other_type,
+      mine_r: r.mine,
+      checkedByOther_r: r.checkedByOther,
+    }));
+
+
+    let relations_oferece_it = oferece.map(r => ({
+      organizacao_o: r.proponente_id ? { id: r.proponente_id } : null,
+      iniciativa_o: { id: r.to_id },
+      tipo_relacao_o: { id: r.type_id },
+      outra_relacao_o: r.other_type,
+      mine_o: r.mine,
+      checkedByOther_o: r.checkedByOther,
+    }));
+
+    return { 
+      relations_recebe_it_base: entity.relations_recebe_it_base,
+      relations_recebe_it,
+      relations_oferece_it_base: entity.relations_oferece_it_base,
+      relations_oferece_it,
+    }
   }
 }
 

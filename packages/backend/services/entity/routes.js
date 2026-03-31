@@ -30,6 +30,19 @@ router.get('/relations_options', async (req, res) => {
   }
 });
 
+router.get('/relations_options/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {   
+
+    const result = await entity.getRelationOptions(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 router.get('/:entity_type/:entity_id', async (req, res) => {
   const { entity_type, entity_id } = req.params;
   
@@ -44,11 +57,11 @@ router.get('/:entity_type/:entity_id', async (req, res) => {
 });
 
 router.get('/initiatives', async (req, res) => {
-  const { filter, my_entity_type, my_entity_id, organizacao } = req.query;
+  const { filter, my_entity_type, my_entity_id, organizacao_r, organizacao_o } = req.query;
   
   try {   
 
-    const result = await entity.listEntities({ filter, my_entity_type, my_entity_id, organizacao });
+    const result = await entity.listEntities({ filter, my_entity_type, my_entity_id, organizacao: organizacao_r || organizacao_o });
 
     res.json(result);
   } catch (ex) {
@@ -81,5 +94,19 @@ router.get('/:id', async (req, res) => {
     sendError(res, ex);
   }
 });
+
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {   
+
+    const result = await entity.save(id, req.body);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex);
+  }
+
+})
 
 module.exports = router;

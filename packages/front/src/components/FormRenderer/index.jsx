@@ -1169,6 +1169,8 @@ function buildFilter(data, filters) {
 }
 
 function buildLocalFilter(data, f, index) {
+  if (!data[f.block]) return;
+
   let filterQuery = '';
   for (let fi of f.filter_local) {
 

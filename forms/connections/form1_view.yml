@@ -11,16 +11,16 @@
     elements:
       - type: column
         size: 3
-        key: organizacao
+        key: organizacao_r
       - type: column
         size: 3
-        key: iniciativa
+        key: iniciativa_r
       - type: column
         size: 3
-        key: tipo_relacao
+        key: tipo_relacao_r
       - type: column
         size: 2
-        key: outra_relacao
+        key: outra_relacao_r
       - type: column
         size: 1
         elements:
@@ -53,16 +53,16 @@
     elements:
       - type: column
         size: 3
-        key: organizacao
+        key: organizacao_o
       - type: column
         size: 3
-        key: iniciativa
+        key: iniciativa_o
       - type: column
         size: 3
-        key: tipo_relacao
+        key: tipo_relacao_o
       - type: column
         size: 2
-        key: outra_relacao
+        key: outra_relacao_o
       - type: column
         size: 1
         elements:

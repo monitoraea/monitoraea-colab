@@ -9,7 +9,7 @@ fields:
       module: property
       key: sim_nao
 
-  - key: organizacao
+  - key: organizacao_r
     block: relations_recebe_it
     type: real_async_autocomplete
     remote: entity 
@@ -22,26 +22,26 @@ fields:
       - key: iniciativa
         value:
 
-  - key: iniciativa
+  - key: iniciativa_r
     block: relations_recebe_it
     type: real_async_autocomplete
     remote: entity/initiatives    
     remote_single: entity 
     filter_local: 
-      - organizacao # local
+      - organizacao_r # local
       - ^my_entity_type # global
       - ^my_entity_id  # global
     title: Nome da Iniciativa
     size: 6
 
-  - key: tipo_relacao
+  - key: tipo_relacao_r
     block: relations_recebe_it
     type: async_autocomplete
     remote_list: entity/relations_options
     title: Tipo de relação
     size: 3
 
-  - key: outra_relacao
+  - key: outra_relacao_r
     block: relations_recebe_it
     type: text
     title: Outra relação
@@ -49,7 +49,7 @@ fields:
     show:
       target:
         context: local
-        key: tipo_relacao
+        key: tipo_relacao_r
         value: -1
 
   ####
@@ -63,7 +63,7 @@ fields:
       module: property
       key: sim_nao
 
-  - key: organizacao
+  - key: organizacao_o
     block: relations_oferece_it
     type: real_async_autocomplete
     remote: entity
@@ -76,34 +76,34 @@ fields:
       - key: iniciativa
         value:
 
-  - key: iniciativa
+  - key: iniciativa_o
     block: relations_oferece_it
     type: real_async_autocomplete
     remote: entity/initiatives  
     remote_single: entity 
     filter_local:
-      - organizacao
+      - organizacao_o
       - ^my_entity_type
       - ^my_entity_id  
     title: Nome da Iniciativa
     size: 6
 
-  - key: tipo_relacao
+  - key: tipo_relacao_o
     block: relations_oferece_it
     type: async_autocomplete
     remote_list: entity/relations_options
     title: Tipo de relação
     size: 3
 
-  - key: outra_relacao
-    block: relations_recebe_it
+  - key: outra_relacao_o
+    block: relations_oferece_it
     type: text
     title: Outra relação
     size: 4
     show:
       target:
         context: local
-        key: tipo_relacao
+        key: tipo_relacao_o
         value: -1
 
 blocks:
