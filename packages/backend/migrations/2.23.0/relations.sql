@@ -25,7 +25,8 @@ CREATE TABLE relations.relations (
 	"updatedAt" timestamp NOT NULL,
 	other_type varchar NULL,
 	"createdBy" public.created_by NOT NULL DEFAULT 'from',
-	"checkedByOther" boolean NOT NULL DEFAULT false
+	"confirmedByOther" boolean NULL,
+	justification varchar DEFAULT '' NOT NULL
 	CONSTRAINT relations_pk PRIMARY KEY (id)
 );
 CREATE INDEX relations_from_id_idx ON relations.relations USING btree (from_id);

@@ -1,35 +1,34 @@
 - type: row
   block: relations_recebe
+  style: alternate # TODO: css_module_classes
   elements:
   - type: row
     elements:
       - type: column
         size: 2
         key: relations_recebe_it_base
-      - type: column
-        size: 10
-        key: relations_recebe_it_base_aviso
   - type: row
     block: relations_recebe_it
     elements:
-      - type: column
-        size: 3
-        key: organizacao_r
-      - type: column
-        size: 3
-        key: iniciativa_r
-      - type: column
-        size: 3
-        key: tipo_relacao_r
-      - type: column
-        size: 2
-        key: outra_relacao_r     
-      - type: column
-        size: 1
-        key: remove_r      
-      - type: column
-        size: 1
-        key: checkedByOther_r
+      - type: row
+        elements:
+          - type: column
+            size: 5
+            key: organizacao_r
+          - type: column
+            size: 6
+            key: iniciativa_r    
+          - type: column
+            size: 1
+            key: remove_r  
+      - type: row
+        elements:
+          - type: column
+            size: 5
+            key: tipo_relacao_r
+          - type: column
+            size: 3
+            key: outra_relacao_r
   - type: add
     block: relations_recebe_it
     elements:
@@ -47,36 +46,35 @@
 
 - type: row
   block: relations_oferece
+  style: alternate # TODO: css_module_classes
   elements:
   - type: row
     elements:
       - type: column
         size: 2
         key: relations_oferece_it_base
-      - type: column
-        size: 10
-        key: relations_oferece_it_base_aviso
   - type: row
     block: relations_oferece_it
     elements:
-      - type: column
-        size: 3
-        key: organizacao_o
-      - type: column
-        size: 3
-        key: iniciativa_o
-      - type: column
-        size: 3
-        key: tipo_relacao_o
-      - type: column
-        size: 2
-        key: outra_relacao_o      
-      - type: column
-        size: 1
-        key: remove_o      
-      - type: column
-        size: 1
-        key: checkedByOther_o
+      - type: row
+        elements:
+          - type: column
+            size: 5
+            key: organizacao_o
+          - type: column
+            size: 6
+            key: iniciativa_o    
+          - type: column
+            size: 1
+            key: remove_o  
+      - type: row
+        elements:
+          - type: column
+            size: 5
+            key: tipo_relacao_o
+          - type: column
+            size: 3
+            key: outra_relacao_o 
   - type: add
     block: relations_oferece_it
     elements:
@@ -87,3 +85,5 @@
             elements:
               - type: button
                 title: Adicionar uma relação
+
+- type: separator

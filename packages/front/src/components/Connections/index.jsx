@@ -4,6 +4,12 @@ import { useDorothy, useUser } from 'dorothy-dna-react';
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
+import styles from './styles.module.scss';
+
+import {
+    TextField,
+    MenuItem,
+} from '@mui/material';
 
 /* components */
 
@@ -29,6 +35,9 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
     const [entity, _entity] = useState({});
     const [originalEntity, _originalEntity] = useState({});
 
+    const [indicacao_relations_recebe_it, _indicacao_relations_recebe_it] = useState([]);
+    const [indicacao_relations_oferece_it, _indicacao_relations_oferece_it] = useState([]);
+
     // // get connections data
     const { data } = useQuery(['connections_info', { entityName, entityId }], {
         queryFn: async () => (await axios.get(`${server}entity/${entityName}/${entityId}`)).data,
@@ -37,8 +46,13 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
     });
 
     useEffect(() => {
-        if (data) _originalEntity({...data, my_entity_type: entityName, my_entity_id: entityId });
-        else _originalEntity({ my_entity_type: entityName, my_entity_id: entityId });
+        if (data) {
+            _originalEntity({ ...data, my_entity_type: entityName, my_entity_id: entityId });
+
+            _indicacao_relations_recebe_it(data.indicacao_relations_recebe_it);
+            _indicacao_relations_oferece_it(data.indicacao_relations_oferece_it);
+
+        } else _originalEntity({ my_entity_type: entityName, my_entity_id: entityId });
     }, [data]);
 
     const handleDataChange = (entity) => {
@@ -46,6 +60,8 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
     };
 
     const handleSave = async () => {
+        // TODO: adicionar INDICACOES
+
         /* save */
         const data = mapForm2Data(entity, form) // prepare information (Renderer)
 
@@ -102,6 +118,19 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
         }
     };
 
+    const handleIndicacaoChange = (type, id, field, value) => {
+        const _func = type === 'recebe' ? _indicacao_relations_recebe_it : _indicacao_relations_oferece_it;
+
+        _func(currentValue => {
+            return currentValue.map(v => {
+                if (v.id === id) v[field] = value;
+                return v;
+            });
+        })
+
+        // console.log({ type, id, field, value })
+    }
+
     if (!data) return <></>;
 
 
@@ -119,8 +148,24 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
                                     lists={lists}
                                     data={mapData2Form(originalEntity, form)}
                                     onDataChange={handleDataChange}
-                                    // helpbox={}
+                                // helpbox={}
                                 />
+
+                                <div className="section-header">
+                                    <div className="section-title">Relações onde sua iniciativa foi INDICADA</div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-xs-12">
+
+                                        {indicacao_relations_recebe_it?.map(i => <Indicacao key={i.id} type="recebe" data={i} onChange={handleIndicacaoChange} />)}
+
+
+                                        {indicacao_relations_oferece_it?.map(i => <Indicacao key={i.id} type="oferece" data={i} onChange={handleIndicacaoChange} />)}
+
+                                    </div>
+                                </div>
+
+                                <hr className="hr-spacer my-4" />
 
                                 <div className="section-header">
                                     <div className="section-title"></div>
@@ -135,9 +180,60 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
                         </Card>
 
                         {/* <Helpbox content={contentText} onClose={() => _contentText(null)} /> */}
-                    </div>
-                </div>
-            )}
+                    </div >
+                </div >
+            )
+            }
         </>
     );
+}
+
+function Indicacao({ data, type, onChange }) {
+
+    return (<div className={styles.row_indicacao}>
+        {/* [{data.confirmed}] */}
+
+        <div className={styles.title}>{type === 'recebe' ? 'RECEBE' : 'OFERECE'}</div>
+        <div className={styles.info}>
+            {data.other_organizacao_name?.length && <div className={styles.line}>
+                <div className={styles.label}>Organização</div>
+                <div>{data.other_organizacao_name}</div>
+            </div>}
+            <div className={styles.line}>
+                <div className={styles.label}>Iniciativa</div>
+                <div>{data.other_iniciativa_name}</div>
+            </div>
+            <div className={styles.line}>
+                <div className={styles.label}>Relação</div>
+                <div>{data.relacao_name}</div>
+            </div>
+        </div>
+        <div className={styles.reconheco}>
+            <div className={styles.resposta}>
+                <TextField
+                    className="input-select"
+                    label="Reconhece esta relação?"
+                    value={data.confirmed || ''}
+                    select
+                    onChange={(e) => onChange(type, data.id, 'confirmed', e.target.value)}
+                >
+                    <MenuItem value={'yes'}>
+                        Sim
+                    </MenuItem>
+
+                    <MenuItem value={'no'}>
+                        Não
+                    </MenuItem>
+                </TextField>
+            </div>
+            {data.confirmed === 'no' && <div className={styles.justificativa}>
+                <TextField
+                    className="input-text"
+                    label="Justificativa"
+                    value={data.justification || ''}
+                    onChange={(e) => onChange(type, data.id, 'justification', e.target.value)}
+                />
+            </div>}
+        </div>
+    </div>)
 }

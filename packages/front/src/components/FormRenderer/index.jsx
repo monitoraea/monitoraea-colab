@@ -490,7 +490,7 @@ function Element(props) {
       if (!block.iterate) {
         return (
           <Block block={block} data={data}>
-            <Row {...props} />
+            <Row {...props}/>
           </Block>
         );
       } else {
@@ -650,10 +650,8 @@ function Row({
   onContentData,
   onAlert,
 }) {
-  // console.log(v.elements)
-
   return (
-    <div className="row">
+    <div className={`row ${v?.style==='alternate' ? 'alternate' : ''}`}>
       {v.elements.map((v, idx) => (
         <Element
           key={idx}

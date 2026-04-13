@@ -1263,3 +1263,27 @@
     display: none !important;
   }
 }
+
+.row.alternate > .row {
+  margin: 5px 0;
+  padding: 4px 8px;
+  border-radius: 5px;
+  border: dashed 1px #ccc;
+}
+
+.row.alternate > .row:nth-child(even) {
+  background-color: #f6f6f6;
+}
+.row.alternate > .row:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+
+.row.alternate .row:first-child, .row.alternate .row:last-child {
+  border: none;
+  margin-bottom: 0;
+}
+
+.row.alternate > .row {
+  border-left: solid 4px #999;
+}

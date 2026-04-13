@@ -206,9 +206,13 @@ class Service {
           r.type_id,
           r.other_type,
           r."createdBy" = 'to' as mine,
-          r."checkedByOther",
-          (select ee.id from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.from_id limit 1) as proponente_id
-        from relations.relations r 
+          r."confirmedByOther",
+          (select jsonb_build_object('id',ee.id,'name',ee.name) from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.from_id limit 1) as proponente,
+	        ef."name" from_name,
+	      ro."name" as relacao_name 
+        from relations.relations r
+        left join relations.entities ef on ef.id = r.from_id
+        left join relations.relation_options ro on ro.id = r.type_id 
         where r.to_id = :id
         and r.type_id in (-1,7,8,9,10) 
         `,
@@ -228,9 +232,14 @@ class Service {
         r.type_id,
         r.other_type,
         r."createdBy" = 'from' as mine,
-        r."checkedByOther",
-        (select ee.id from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.to_id limit 1) as proponente_id	
-        from relations.relations r 
+        r."confirmedByOther",
+        r.justification,
+        (select jsonb_build_object('id',ee.id,'name',ee.name) from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.to_id limit 1) as proponente,	
+	      et."name" to_name,
+	      ro."name" as relacao_name
+        from relations.relations r
+        left join relations.entities et on et.id = r.to_id 
+        left join relations.relation_options ro on ro.id = r.type_id  
         where r.from_id = :id
         and r.type_id in (-1,7,8,9,10)
         `,
@@ -240,33 +249,73 @@ class Service {
       },
     );
 
-    let relations_recebe_it = recebe.map(r => ({
-      organizacao_r: r.proponente_id ? { id: r.proponente_id } : null,
+    let relations_recebe_it = recebe.filter(r => r.mine).map(r => ({
+      organizacao_r: r.proponente ? { id: r.proponente.id } : null,
+      other_organizacao_name: r.proponente?.name,
       iniciativa_r: { id: r.from_id },
+      other_iniciativa_name: r.from_name,
       tipo_relacao_r: { id: r.type_id },
       outra_relacao_r: r.other_type,
       mine_r: r.mine,
-      checkedByOther_r: r.checkedByOther,
+      confirmedByOther_r: r.confirmedByOther,
     }));
 
 
-    let relations_oferece_it = oferece.map(r => ({
-      organizacao_o: r.proponente_id ? { id: r.proponente_id } : null,
+    let relations_oferece_it = oferece.filter(r => r.mine).map(r => ({
+      organizacao_o: r.proponente ? { id: r.proponente.id } : null,
+      other_organizacao_name: r.proponente ? { id: r.proponente.name } : null,
       iniciativa_o: { id: r.to_id },
+      other_iniciativa_name: r.to_name,
       tipo_relacao_o: { id: r.type_id },
       outra_relacao_o: r.other_type,
       mine_o: r.mine,
-      checkedByOther_o: r.checkedByOther,
+      confirmedByOther_o: r.confirmedByOther,
+    }));
+
+    let indicacao_relations_recebe_it = recebe.filter(r => !r.mine).map(r => ({
+      id: r.id,
+      organizacao: r.proponente ? { id: r.proponente.id } : null,
+      other_organizacao_name: r.proponente?.name,
+      iniciativa: { id: r.from_id },
+      other_iniciativa_name: r.from_name,
+      tipo_relacao: { id: r.type_id },
+      relacao_name: r.relacao_name,
+      outra_relacao: r.other_type,
+      mine: r.mine,
+      confirmed: this.cboValue(r.confirmedByOther),
+      justification: r.justification,
+    }));
+
+
+    let indicacao_relations_oferece_it = oferece.filter(r => !r.mine).map(r => ({
+      id: r.id,
+      organizacao: r.proponente ? { id: r.proponente.id } : null,
+      other_organizacao_name: r.proponente ? { id: r.proponente.name } : null,
+      iniciativa: { id: r.to_id },
+      other_iniciativa_name: r.to_name,
+      tipo_relacao: { id: r.type_id },
+      relacao_name: r.relacao_name,
+      outra_relacao: r.other_type,
+      mine: r.mine,
+      confirmed: this.cboValue(r.confirmedByOther),
+      justification: r.justification,
     }));
 
     return {
-      relations_recebe_it_base: entity.relations_recebe_it_base || !!recebe.length,
+      relations_recebe_it_base: entity.relations_recebe_it_base,
       relations_recebe_it_base_outro: !entity.relations_recebe_it_base && !!recebe.length,
       relations_recebe_it,
-      relations_oferece_it_base: entity.relations_oferece_it_base || !!oferece.length,
+      relations_oferece_it_base: entity.relations_oferece_it_base,
       relations_oferece_it_base_outro: !entity.relations_oferece_it_base && !!oferece.length,
       relations_oferece_it,
+      indicacao_relations_recebe_it,
+      indicacao_relations_oferece_it,
     }
+  }
+
+  cboValue(value) {
+    if(value === null) return '';
+    return !!value ? 'yes' : 'no';
   }
 }
 
