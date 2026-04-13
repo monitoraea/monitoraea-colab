@@ -200,3 +200,65 @@ module.exports.updateRelations = async (from_id, to_ids /* array of ids */, type
     }
 
 }
+
+// remove uma relacao por id
+module.exports.removeRelationById = removeRelationById = async (id) => {
+
+    // remove relação
+    await db.instance().query(
+        `
+        DELETE         
+        FROM relations.relations
+        WHERE id = :id
+        `,
+        {
+            replacements: { id },
+            type: Sequelize.QueryTypes.DELETE,
+        },
+    );
+}
+
+// atualizar uma indicacao por id
+module.exports.updateReferenceById = updateReferenceById = async (id, confirmedByOther, justification) => {
+    let confirmedByOtherBool;
+    switch(confirmedByOther) {
+        case 'yes':
+            confirmedByOtherBool = true;
+            break;
+        case 'no':
+            confirmedByOtherBool = false;
+            break;
+        default:
+            confirmedByOtherBool = null;
+    }
+
+
+    await db.instance().query(
+        `
+        UPDATE relations.relations
+        SET "confirmedByOther" = :confirmedByOther,
+            justification = :justification
+        WHERE id = :id
+        `,
+        {
+            replacements: { id, confirmedByOther: confirmedByOtherBool, justification },
+            type: Sequelize.QueryTypes.DELETE,
+        },
+    );
+}
+
+// atualiza perguntas base
+module.exports.updateBase = async (entity_type, entity_id, type, value) => {
+    await db.instance().query(
+        `
+        UPDATE relations.entities
+        SET relations_${type}_it_base = :value
+        WHERE entity_type = :entity_type
+        AND entity_id = :entity_id
+        `,
+        {
+            replacements: { entity_type, entity_id, value },
+            type: Sequelize.QueryTypes.DELETE,
+        },
+    );
+}

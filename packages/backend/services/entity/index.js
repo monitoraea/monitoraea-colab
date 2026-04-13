@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../database');
 
 const { applyJoins, applyWhere } = require('../../utils');
+const { removeRelationById, updateReferenceById, updateBase } = require('../utils');
 
 const removeAccents = require("remove-accents");
 
@@ -153,21 +154,47 @@ class Service {
   }
 
   async save(id, entity) {
+    if (id != entity.my_entity_id) {
+      console.log(id, entity.my_entity_id)
+      throw 'Wrong entity ID';
+    }
 
-    console.log(JSON.stringify({ id, entity }))
+    const original_relations = await this.getRelations(entity.my_entity_type, entity.my_entity_id);
 
-    // Gravar (somente blocos respondidos sim - "não" deve, inclusive, remover relações previamente cadastradas)
-    // utils tem ferramentas para tratar em entidades
+    // console.log(JSON.stringify(original_relations))
+    // console.log('\n\n');
 
-    // relations_recebe_it_base (createdBy: to, from: OTHER, to: THIS)
-    // relations_oferece_it_base (createdBy: from, from: THIS, to: OTHER)
+    // remove relações em blocos não de entity
+    if (!entity.relations_recebe_it_base) entity.relations_recebe_it = [];
+    if (!entity.relations_oferece_it_base) entity.relations_oferece_it = [];
+    // limpa relações sem organizacao E iniciativa
+    entity.relations_recebe_it = entity.relations_recebe_it.filter(r => r.organizacao_r || r.iniciativa_r);
+    entity.relations_oferece_it = entity.relations_oferece_it.filter(r => r.organizacao_o || r.iniciativa_o);
 
-    // deve buscar todas as relações desta entidade (This entity is FROM (oferece) or TO (recebe))
+    const plan = this.planAction(original_relations, entity);
 
-    // ignorar relações (enviadas) sem organização e iniciativa 
-    // deve criar (SEM DUPLICAR - mesmo texto) as entidades novas
-    // se há iniciativa, a relação é com ela. caso contrário, a relação é com a organização
-    // to_add, to_remove, to_update - se há um 'não' em uma resposta base, todos os registros deste bloco devem ser colocados para remoção (createdBy this??)
+    // Executar PLAN
+    console.log(JSON.stringify(plan))
+
+    for (let type of ['recebe', 'oferece']) {
+      // atualiza perguntas base (se mudou)
+      if(plan[type].base !== null) {
+         await updateBase(entity.my_entity_type, entity.my_entity_id, type, plan[type].base);
+      }
+
+      // remover
+      for(let rId of plan[type].to_remove) await removeRelationById(rId);
+
+      // atualizar indicacoes      
+      for(let { id, confirmedByOther, justification } of plan[`indicacao_relations_${type}_it`]) await updateReferenceById(id, confirmedByOther, justification);
+
+      // ADD e UPDATE: pode haver criação de nova entidade (SEM DUPLICAR - mesmo texto)
+      // se há iniciativa, a relação é com ela. caso contrário, a relação é com a organização
+
+      // TODO: adicionar
+
+      // TODO: atualizar
+    }
 
     return true;
   }
@@ -207,6 +234,7 @@ class Service {
           r.other_type,
           r."createdBy" = 'to' as mine,
           r."confirmedByOther",
+          r.justification,
           (select jsonb_build_object('id',ee.id,'name',ee.name) from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.from_id limit 1) as proponente,
 	        ef."name" from_name,
 	      ro."name" as relacao_name 
@@ -249,28 +277,30 @@ class Service {
       },
     );
 
-    let relations_recebe_it = recebe.filter(r => r.mine).map(r => ({
+    let relations_recebe_it = entity.relations_recebe_it_base ? recebe.filter(r => r.mine).map(r => ({
+      id: r.id,
       organizacao_r: r.proponente ? { id: r.proponente.id } : null,
-      other_organizacao_name: r.proponente?.name,
+      //other_organizacao_name: r.proponente?.name,
       iniciativa_r: { id: r.from_id },
-      other_iniciativa_name: r.from_name,
+      //other_iniciativa_name: r.from_name,
       tipo_relacao_r: { id: r.type_id },
       outra_relacao_r: r.other_type,
-      mine_r: r.mine,
-      confirmedByOther_r: r.confirmedByOther,
-    }));
+      confirmedByOther: this.cboValue(r.confirmedByOther),
+      justification: r.justification || '',
+    })) : [];
 
 
-    let relations_oferece_it = oferece.filter(r => r.mine).map(r => ({
+    let relations_oferece_it = entity.relations_oferece_it_base ? oferece.filter(r => r.mine).map(r => ({
+      id: r.id,
       organizacao_o: r.proponente ? { id: r.proponente.id } : null,
-      other_organizacao_name: r.proponente ? { id: r.proponente.name } : null,
+      //other_organizacao_name: r.proponente ? { id: r.proponente.name } : null,
       iniciativa_o: { id: r.to_id },
-      other_iniciativa_name: r.to_name,
+      //other_iniciativa_name: r.to_name,
       tipo_relacao_o: { id: r.type_id },
       outra_relacao_o: r.other_type,
-      mine_o: r.mine,
-      confirmedByOther_o: r.confirmedByOther,
-    }));
+      confirmedByOther: this.cboValue(r.confirmedByOther),
+      justification: r.justification || '',
+    })) : [];
 
     let indicacao_relations_recebe_it = recebe.filter(r => !r.mine).map(r => ({
       id: r.id,
@@ -282,8 +312,8 @@ class Service {
       relacao_name: r.relacao_name,
       outra_relacao: r.other_type,
       mine: r.mine,
-      confirmed: this.cboValue(r.confirmedByOther),
-      justification: r.justification,
+      confirmedByOther: this.cboValue(r.confirmedByOther),
+      justification: r.justification || '',
     }));
 
 
@@ -297,24 +327,83 @@ class Service {
       relacao_name: r.relacao_name,
       outra_relacao: r.other_type,
       mine: r.mine,
-      confirmed: this.cboValue(r.confirmedByOther),
-      justification: r.justification,
+      confirmedByOther: this.cboValue(r.confirmedByOther),
+      justification: r.justification || '',
     }));
 
     return {
       relations_recebe_it_base: entity.relations_recebe_it_base,
-      relations_recebe_it_base_outro: !entity.relations_recebe_it_base && !!recebe.length,
+      // relations_recebe_it_base_outro: !entity.relations_recebe_it_base && !!recebe.length,
       relations_recebe_it,
       relations_oferece_it_base: entity.relations_oferece_it_base,
-      relations_oferece_it_base_outro: !entity.relations_oferece_it_base && !!oferece.length,
+      // relations_oferece_it_base_outro: !entity.relations_oferece_it_base && !!oferece.length,
       relations_oferece_it,
       indicacao_relations_recebe_it,
       indicacao_relations_oferece_it,
     }
   }
 
+  planAction(original, updated) {
+    // recebe    
+    // oferece
+    // indicacao_relations_recebe_it (somente atualizacao)
+    // indicacao_relations_oferece_it (somente atualizacao)
+    return {
+      recebe: this.planActionType('recebe', original, updated),
+      oferece: this.planActionType('oferece', original, updated),
+      indicacao_relations_recebe_it: this.planActionIndicacaoType('recebe', original, updated),
+      indicacao_relations_oferece_it: this.planActionIndicacaoType('oferece', original, updated),
+    }
+  }
+  planActionType(type, original, updated) {
+    const typeKey = `relations_${type}_it`;
+
+    const to_add = updated[typeKey].filter(i => !original[typeKey].some(e => e.id === i.id))
+    const to_remove = original[typeKey].filter(e => !updated[typeKey].some(i => i.id === e.id)).map(e => e.id)
+    let to_update = [];
+
+    for (let o of original[typeKey]) for (let u of updated[typeKey]) {
+      if (u.id !== o.id) continue; // foi encontrado nos originais, segue abaixo
+
+      if (!this.isSameRelation(type, u, o)) to_update.push({
+        ...u,
+        confirmedByOther: null, // se uma INDICACAO é atualizada, sua resposta de "confirmedByOther" e "justification" devem ser resetadas
+        justification: '', // idem
+      }); // tem alteração, registra para atualização
+    }
+
+    return {
+      base: updated[`relations_${type}_it_base`] !== original[`relations_${type}_it_base`] ? updated[`relations_${type}_it_base`] : null,
+      to_add,
+      to_remove,
+      to_update,
+    }
+  }
+  planActionIndicacaoType(type, original, updated) {
+    const typeKey = `indicacao_relations_${type}_it`;
+    let to_update = [];
+
+    // somente confirmedByOther e justification
+    for (let o of original[typeKey]) {
+      const u = updated[typeKey].find(i => i.id === o.id);
+      if (u && (u.confirmedByOther !== o.confirmedByOther || u.justification !== o.justification)) to_update.push(u);
+    }
+
+    return to_update;
+  }
+  isSameRelation(type, u, o) {
+    const complement = `_${type === 'recebe' ? 'r' : 'o'}`;
+
+    if (u[`iniciativa${complement}`]?.id !== o[`iniciativa${complement}`]?.id) return false;
+    if (u[`organizacao${complement}`]?.id !== o[`organizacao${complement}`]?.id) return false;
+    if (u[`tipo_relacao${complement}`]?.id !== o[`tipo_relacao${complement}`]?.id) return false;
+    if (u[`outra_relacao${complement}`] !== o[`outra_relacao${complement}`]) return false;
+
+    return true;
+  }
+
   cboValue(value) {
-    if(value === null) return '';
+    if (value === null) return '';
     return !!value ? 'yes' : 'no';
   }
 }

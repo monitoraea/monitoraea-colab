@@ -60,10 +60,10 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
     };
 
     const handleSave = async () => {
-        // TODO: adicionar INDICACOES
-
         /* save */
         const data = mapForm2Data(entity, form) // prepare information (Renderer)
+        data.indicacao_relations_recebe_it = indicacao_relations_recebe_it;
+        data.indicacao_relations_oferece_it = indicacao_relations_oferece_it;
 
         const snackKey = enqueueSnackbar('Gravando...', {
             /* variant: 'info', */
@@ -191,7 +191,7 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
 function Indicacao({ data, type, onChange }) {
 
     return (<div className={styles.row_indicacao}>
-        {/* [{data.confirmed}] */}
+        {/* [{data.confirmedByOther}] */}
 
         <div className={styles.title}>{type === 'recebe' ? 'RECEBE' : 'OFERECE'}</div>
         <div className={styles.info}>
@@ -213,9 +213,9 @@ function Indicacao({ data, type, onChange }) {
                 <TextField
                     className="input-select"
                     label="Reconhece esta relação?"
-                    value={data.confirmed || ''}
+                    value={data.confirmedByOther || ''}
                     select
-                    onChange={(e) => onChange(type, data.id, 'confirmed', e.target.value)}
+                    onChange={(e) => onChange(type, data.id, 'confirmedByOther', e.target.value)}
                 >
                     <MenuItem value={'yes'}>
                         Sim
@@ -226,7 +226,7 @@ function Indicacao({ data, type, onChange }) {
                     </MenuItem>
                 </TextField>
             </div>
-            {data.confirmed === 'no' && <div className={styles.justificativa}>
+            {data.confirmedByOther === 'no' && <div className={styles.justificativa}>
                 <TextField
                     className="input-text"
                     label="Justificativa"
