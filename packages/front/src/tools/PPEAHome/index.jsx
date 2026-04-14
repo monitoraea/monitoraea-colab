@@ -6,7 +6,6 @@ import axios from 'axios';
 /* components */
 import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
-import ConexoesTab from './ConexoesTab';
 import TimelineTab from './TimelineTab';
 import IndicatorsTab from './Indicators2024Tab';
 import OldIndicatorsTab from './IndicatorsTab';
@@ -24,6 +23,8 @@ import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
 
 import Trash from '../../components/icons/Trash';
+
+import ConexoesTab from '../../components/Connections';
 
 /* styles */
 import styles from './styles.module.scss';
@@ -228,7 +229,8 @@ const Manager = () => {
               {tabindex === 'indicadores_novos' && (
                 <IndicatorsTab entityId={entityId} analysis={analysis} problems={analysis.analysis.question_problems} />
               )}
-              {tabindex === 'conexoes' && <ConexoesTab entityId={entityId} />}
+              
+              {tabindex === 'conexoes' && <ConexoesTab entityName="ppea" entityId={entityId} />}   
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
               {tabindex === 'timeline' && <TimelineTab entityId={entityId} />}
             </>
