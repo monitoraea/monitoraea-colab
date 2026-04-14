@@ -1288,9 +1288,14 @@
   border-left: solid 4px #999;
 }
 
-.nao_reconheco {
+.nao_reconheco, .nao_avaliado {
   & > div:first-child {
     font-weight: 500;
   }
-  background-color: rgb(240, 240, 187);
+  background-color: rgb(245, 225, 189);
+}
+.nao_avaliado {
+  & > div:first-child {
+    transform: translate(-0.2rem, -0.5rem) scale(0.75);
+  }
 }

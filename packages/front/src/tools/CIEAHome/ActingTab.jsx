@@ -144,7 +144,7 @@ export default function ActingTab() {
 
     await axios.put(`${server}commission/${id}/geo-draw/${checked ? (checked === 'none' ? 'none' : '1') : '0'}`);
 
-    queryClient.invalidateQueries(`iniciatives_analysis`);
+    queryClient.invalidateQueries('ciea_analysis');
 
     closeSnackbar(snackKey);
 
@@ -162,7 +162,7 @@ export default function ActingTab() {
 
     await axios.put(`${server}commission/${id}/draft/justification`, { value: justification });
 
-    queryClient.invalidateQueries(`iniciatives_analysis`);
+    queryClient.invalidateQueries('ciea_analysis');
 
     closeSnackbar(snackKey);
 

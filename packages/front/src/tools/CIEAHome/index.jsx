@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDorothy, useRouter, useUser } from 'dorothy-dna-react';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient  } from 'react-query';
 import axios from 'axios';
 /* components */
 import Tabs from './Tabs';
@@ -28,6 +28,7 @@ const Manager = () => {
   const { currentCommunity, changeRoute, params } = useRouter();
   const { server } = useDorothy();
   const { user, updateUser } = useUser();
+   const queryClient = useQueryClient();
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   /*  */
@@ -174,7 +175,7 @@ const Manager = () => {
               {tabindex === 'indicadores' && (
                 <IndicatorsTab entityId={entityId} analysis={analysis} problems={analysis.analysis.question_problems} />
               )}
-              {tabindex === 'conexoes' && <ConexoesTab entityName="colegiado" entityId={entityId} />}
+              {tabindex === 'conexoes' && <ConexoesTab entityName="colegiado" entityId={entityId} onSave={()=>queryClient.invalidateQueries('ciea_analysis')} />}
               {tabindex === 'linha_tempo' && <TimelineTab entityId={entityId} />}
             </>
           )}

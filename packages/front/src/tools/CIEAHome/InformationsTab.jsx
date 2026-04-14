@@ -90,6 +90,7 @@ export default function InformationsTab({ entityId }) {
       // console.log(response);
 
       queryClient.invalidateQueries('commission_info');
+      queryClient.invalidateQueries('ciea_analysis');
 
       // onSave(!_.isEqual(originalEntity, entity));
 

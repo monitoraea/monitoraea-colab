@@ -26,7 +26,7 @@ import form from '../../../../../forms/connections/form1.yml';
 import form_view from '../../../../../forms/connections/form1_view.yml';
 import lists from '../../../../../forms/connections/lists1.yml';
 
-export default function ConectionsTab({ entityName = 'zcm', entityId }) {
+export default function ConectionsTab({ entityName = 'zcm', entityId, onSave }) {
     /* hooks */
     const { server } = useDorothy();
     const queryClient = useQueryClient();
@@ -91,8 +91,8 @@ export default function ConectionsTab({ entityName = 'zcm', entityId }) {
             // console.log(response);
 
             queryClient.invalidateQueries('connections_info');
-
-            // onSave(!_.isEqual(originalEntity, entity));
+            
+            if(onSave && typeof onSave === 'function') onSave();
 
             closeSnackbar(snackKey);
 
@@ -213,7 +213,7 @@ function Indicacao({ data, type, onChange }) {
                 <TextField
                     className="input-select"
                     label="Reconhece esta relação?"
-                    value={data.confirmedByOther || ''}
+                    value={data.confirmedByOther || 'non'}
                     select
                     onChange={(e) => onChange(type, data.id, 'confirmedByOther', e.target.value)}
                 >

@@ -268,7 +268,7 @@ class Service {
 
     const entity = entities[0];
 
-    // RECEBEoriginal_relations.id
+    // RECEBE
     const recebe = await db.instance().query(
       `
         SELECT 
@@ -333,6 +333,7 @@ class Service {
         outra_relacao_r: r.other_type,
         confirmedByOther_r: this.cboValue(r.confirmedByOther),
         justification_r: r.justification || '',
+        non_response_r: 'Esta relação ainda não foi avaliada pela iniciativa indicada',
       }
     }) : [];
 
@@ -348,6 +349,7 @@ class Service {
         outra_relacao_o: r.other_type,
         confirmedByOther_o: this.cboValue(r.confirmedByOther),
         justification_o: r.justification || '',
+        non_response_o: 'Esta relação ainda não foi avaliada pela iniciativa indicada',
       }
     }) : [];
 
@@ -410,7 +412,7 @@ class Service {
       organizacao_id = r.other_id;
       organizacao_name = r.other_name;
     } else {
-      if(r.proponente) {
+      if (r.proponente) {
         organizacao_id = r.proponente.id;
         organizacao_name = r.proponente.name;
       }
@@ -525,8 +527,110 @@ class Service {
   }
 
   cboValue(value) {
-    if (value === null) return '';
+    if (value === null) return 'non';
     return !!value ? 'yes' : 'no';
+  }
+
+  async verify(entity_type, entity_id) {
+    // true - green
+    // false - red
+    // null - yellow
+
+    // ENTIDADE
+    const entities = await db.instance().query(`
+    select 
+      e.id, 
+      e.relations_recebe_it_base, 
+      e.relations_oferece_it_base
+    from relations.entities e 
+    where 
+      e.entity_id = :entity_id
+    and 
+      e.entity_type = :entity_type
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { entity_type, entity_id }
+      },
+    );
+
+    const entity = entities[0];
+
+    // PERGUNTAS BASE
+    const bases = await db.instance().query(`
+      select 
+        e.relations_recebe_it_base,
+        e.relations_oferece_it_base 
+      from relations.entities e 
+      where e.id = :id;
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { id: entity.id }
+      },
+    );
+
+    // bolinha vermelha se não respondeu qualquer base 
+
+    if (bases[0].relations_recebe_it_base === null || bases[0].relations_oferece_it_base === null) return false;
+
+    // ou se base sim, mas sem relações
+    if (bases[0].relations_recebe_it_base) {
+
+      // QTD RECEBE
+      const recebe = await db.instance().query(`
+        select 
+          count(*)::integer as total
+        from relations.relations r
+        where r.to_id = :id
+        and (r.type_id in (-1,7,8,9,10) or r.type_id is null)
+        and r."createdBy" = 'to'
+      `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+          replacements: { id: entity.id }
+        },
+      );
+
+      if (!recebe[0].total) return false;
+    }
+
+    if (bases[0].relations_oferece_it_base) {
+
+      // QTD OFERECE
+      const oferece = await db.instance().query(`
+        select 
+        count(*)::integer as total
+      from relations.relations r
+      where r.from_id = :id
+      and (r.type_id in (-1,7,8,9,10) or r.type_id is null)
+      and r."createdBy" = 'from' 
+      `,
+        {
+          type: Sequelize.QueryTypes.SELECT,
+          replacements: { id: entity.id }
+        },
+      );
+
+      if (!oferece[0].total) return false;
+    }
+
+    // bolinha amarela se indicação não respondida ou respondida como não reconheço (que este indicou ou foi indicado!!)
+    const indicacoes = await db.instance().query(`
+    select count(*)::integer as total  
+    from relations.relations r 
+    where (r.from_id = :from_id or r.to_id = :to_id)
+    and (r."confirmedByOther" = false or r."confirmedByOther" is null)
+    `,
+      {
+        type: Sequelize.QueryTypes.SELECT,
+        replacements: { from_id: entity.id, to_id: entity.id }
+      },
+    );
+
+    if(!!indicacoes[0].total) return null;
+
+    return true;
   }
 }
 

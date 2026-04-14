@@ -1024,6 +1024,7 @@ class Service {
       indics: {},
       geo: true,
       question_problems: [],
+      connections: await require('../entity').verify('colegiado',id),
       is_new: data.is_new,
     };
 

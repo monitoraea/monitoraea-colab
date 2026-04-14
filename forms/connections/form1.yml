@@ -64,6 +64,18 @@ fields:
         key: confirmedByOther_r
         value: no
 
+  - key: non_response_r
+    block: relations_recebe_it
+    type: read_only
+    css_class: nao_avaliado
+    title: Atenção
+    size: 4
+    show:
+      target:
+        context: local
+        key: confirmedByOther_r
+        value: non
+
   - key: remove_r
     block: relations_recebe_it
     type: remove_iterative
@@ -133,6 +145,18 @@ fields:
         context: local
         key: confirmedByOther_o
         value: no
+
+  - key: non_response_o
+    block: relations_oferece_it
+    type: read_only
+    css_class: nao_avaliado
+    title: Atenção
+    size: 4
+    show:
+      target:
+        context: local
+        key: confirmedByOther_o
+        value: non
 
   - key: remove_o
     block: relations_oferece_it
