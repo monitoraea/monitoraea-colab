@@ -331,8 +331,8 @@ class Service {
         iniciativa_r: { id: outro.iniciativa_id },
         tipo_relacao_r: { id: r.type_id },
         outra_relacao_r: r.other_type,
-        confirmedByOther: this.cboValue(r.confirmedByOther),
-        justification: r.justification || '',
+        confirmedByOther_r: this.cboValue(r.confirmedByOther),
+        justification_r: r.justification || '',
       }
     }) : [];
 
@@ -346,8 +346,8 @@ class Service {
         iniciativa_o: { id: outro.iniciativa_id },
         tipo_relacao_o: { id: r.type_id },
         outra_relacao_o: r.other_type,
-        confirmedByOther: this.cboValue(r.confirmedByOther),
-        justification: r.justification || '',
+        confirmedByOther_o: this.cboValue(r.confirmedByOther),
+        justification_o: r.justification || '',
       }
     }) : [];
 

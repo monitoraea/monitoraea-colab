@@ -1287,3 +1287,10 @@
 .row.alternate > .row {
   border-left: solid 4px #999;
 }
+
+.nao_reconheco {
+  & > div:first-child {
+    font-weight: 500;
+  }
+  background-color: rgb(240, 240, 187);
+}

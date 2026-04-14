@@ -28,7 +28,12 @@
             key: tipo_relacao_r
           - type: column
             size: 3
-            key: outra_relacao_r
+            key: outra_relacao_r  
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            key: justification_r
   - type: add
     block: relations_recebe_it
     elements:
@@ -74,7 +79,12 @@
             key: tipo_relacao_o
           - type: column
             size: 3
-            key: outra_relacao_o 
+            key: outra_relacao_o  
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            key: justification_o
   - type: add
     block: relations_oferece_it
     elements:

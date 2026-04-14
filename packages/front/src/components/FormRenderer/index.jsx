@@ -1083,7 +1083,7 @@ function Label({ f, index }) {
 
 function ReadOnly({ f, index, dataValue }) {
   return (
-    <div className={styles.readonly}>
+    <div className={`${styles.readonly} ${f.css_class ? f.css_class : ''}`}>
       <div className={styles.title}>{titleAndIndex(f.title, index)}</div>
       <div className={styles.value}>{dataValue}</div>
     </div>

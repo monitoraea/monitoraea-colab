@@ -52,6 +52,18 @@ fields:
         key: tipo_relacao_r
         value: -1
 
+  - key: justification_r
+    block: relations_recebe_it
+    type: read_only
+    css_class: nao_reconheco
+    title: Esta relação não foi reconhecida pela iniciativa indicada, com a seguinte justificativa
+    size: 4
+    show:
+      target:
+        context: local
+        key: confirmedByOther_r
+        value: no
+
   - key: remove_r
     block: relations_recebe_it
     type: remove_iterative
@@ -109,6 +121,18 @@ fields:
         context: local
         key: tipo_relacao_o
         value: -1
+        
+  - key: justification_o
+    block: relations_oferece_it
+    type: read_only
+    css_class: nao_reconheco
+    title: Esta relação não foi reconhecida pela iniciativa indicada, com a seguinte justificativa
+    size: 4
+    show:
+      target:
+        context: local
+        key: confirmedByOther_o
+        value: no
 
   - key: remove_o
     block: relations_oferece_it
