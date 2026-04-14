@@ -193,7 +193,7 @@ function Indicacao({ data, type, onChange }) {
     return (<div className={styles.row_indicacao}>
         {/* [{data.confirmedByOther}] */}
 
-        <div className={styles.title}>{type === 'recebe' ? 'RECEBE' : 'OFERECE'}</div>
+        <div className={`${styles.title} ${styles[type]}`}>{type === 'recebe' ? 'RECEBE' : 'OFERECE'}</div>
         <div className={styles.info}>
             {data.other_organizacao_name?.length && <div className={styles.line}>
                 <div className={styles.label}>Organização</div>
