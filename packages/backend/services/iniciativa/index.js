@@ -229,7 +229,7 @@ class Service {
     }
     const e_id = await getEntityBySpecificId('iniciativa', id);
     if (!!entity.organizacao?.id) { // cria relação, se proponente foi preenchido
-      if (e_id) await createRelation(e_id, entity.organizacao?.id, 1 /* proponente */, true /* somente um */);
+      if (e_id) await createRelation(e_id, entity.organizacao?.id, 1 /* proponente */, 'from', null, true /* somente um */);
     } else {
       // remove relacao
       await removeRelation(e_id, null /* todas */, 1 /* proponente */);

@@ -86,7 +86,7 @@ module.exports.getEntity = async (from_type, from_id, type_id = 1) => {
 }
 
 // Retorna o ID da ENTIDADE que representa a entidade (de perspectiva) em questão
-module.exports.getEntityBySpecificId = async (e_type, e_id) => { 
+module.exports.getEntityBySpecificId = async (e_type, e_id) => {
     const response = await db.instance().query(
         `
         select e.id
@@ -103,7 +103,7 @@ module.exports.getEntityBySpecificId = async (e_type, e_id) => {
 }
 
 // cria uma relação entre from_id para to_id do tipo type_id
-module.exports.createRelation = createRelation = async (from_id, to_id, type_id, exclusive /* somente um deste tipo por relação from->to */) => {
+module.exports.createRelation = createRelation = async (from_id, to_id, type_id = null, createdBy = 'from', other_type = null, exclusive /* somente um deste tipo por relação from->to */) => {
 
     // se uma relação idêntica existe, não faz nada!
     const exists = await db.instance().query(
@@ -117,7 +117,7 @@ module.exports.createRelation = createRelation = async (from_id, to_id, type_id,
             type: Sequelize.QueryTypes.DELETE,
         },
     );
-    if(exists.length) return;
+    if (exists.length) return;
 
     if (exclusive) {
         // se exclusive, remove a relação from_id + type_id existente
@@ -138,11 +138,11 @@ module.exports.createRelation = createRelation = async (from_id, to_id, type_id,
     await db.instance().query(
         `
         INSERT INTO relations.relations
-        (id, from_id, to_id, type_id, metadata, "createdAt", "updatedAt")
-        VALUES(:uuid, :from_id, :to_id, :type_id, '{}'::jsonb, NOW(), NOW());
+        (id, from_id, to_id, type_id, metadata, "createdBy", other_type, "createdAt", "updatedAt")
+        VALUES(:uuid, :from_id, :to_id, :type_id, '{}'::jsonb, :createdBy, :other_type, NOW(), NOW());
         `,
         {
-            replacements: { uuid: uuidv4(), from_id, to_id, type_id },
+            replacements: { uuid: uuidv4(), from_id, to_id, type_id, createdBy, other_type },
             type: Sequelize.QueryTypes.DELETE,
         },
     );
@@ -161,6 +161,26 @@ module.exports.removeRelation = removeRelation = async (from_id, to_id, type_id)
         `,
         {
             replacements: { from_id, to_id, type_id },
+            type: Sequelize.QueryTypes.DELETE,
+        },
+    );
+}
+
+// Atualizar uma relação por Id
+module.exports.updateRelationById = async (data) => {
+    await db.instance().query(
+        `
+        UPDATE relations.relations
+        SET from_id=:from_id, 
+            to_id=:to_id, 
+            type_id=:type_id, 
+            other_type=:other_type, 
+            "confirmedByOther"=:confirmedByOther, 
+            justification=:justification
+        WHERE id=:relation_id
+        `,
+        {
+            replacements: data,
             type: Sequelize.QueryTypes.DELETE,
         },
     );
@@ -192,10 +212,10 @@ module.exports.updateRelations = async (from_id, to_ids /* array of ids */, type
     const to_remove = existing_rels.filter(e => !to_ids.some(i => i.id === e.to_id))
 
     // console.log('>>>>>>>>>>>>', { to_add , to_remove });
-    for(let item of to_add) {
-        await createRelation(from_id, item.id, type_id);
+    for (let item of to_add) {
+        await createRelation(from_id, item.id, type_id, 'from', null);
     }
-    for(let item of to_remove) {
+    for (let item of to_remove) {
         await removeRelation(from_id, item.to_id, type_id)
     }
 
@@ -221,7 +241,7 @@ module.exports.removeRelationById = removeRelationById = async (id) => {
 // atualizar uma indicacao por id
 module.exports.updateReferenceById = updateReferenceById = async (id, confirmedByOther, justification) => {
     let confirmedByOtherBool;
-    switch(confirmedByOther) {
+    switch (confirmedByOther) {
         case 'yes':
             confirmedByOtherBool = true;
             break;
