@@ -19,7 +19,7 @@ fields:
     title: Nome da Organização
     size: 6 
     onchange:
-      - key: iniciativa
+      - key: iniciativa_r
         value:
 
   - key: iniciativa_r
@@ -77,7 +77,7 @@ fields:
     title: Nome da Organização
     size: 6 
     onchange:
-      - key: iniciativa
+      - key: iniciativa_o
         value:
 
   - key: iniciativa_o
