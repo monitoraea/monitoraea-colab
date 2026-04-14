@@ -71,9 +71,11 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
           />
           <Tab
             disableRipple
-            label="Conexões"
-            {...a11yProps('conexoes')}
-            className={`${styles.indicator} ${conectionsIsReady ? styles['ready'] : styles['not-ready']}`}
+            label="Abrangência"
+            className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${
+              styles['fixed-size']
+            }`}
+            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
           />
           <Tab
             disableRipple
@@ -85,11 +87,9 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
           />
           <Tab
             disableRipple
-            label="Abrangência"
-            className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${
-              styles['fixed-size']
-            }`}
-            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
+            label="Conexões"
+            {...a11yProps('conexoes')}
+            /* className={`${styles.indicator} ${conectionsIsReady ? styles['ready'] : styles['not-ready']}`} */
           />
           <Tab disableRipple label="Linha do tempo" {...a11yProps('timeline')} />
         </Tabs>
