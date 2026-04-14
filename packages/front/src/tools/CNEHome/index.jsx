@@ -5,7 +5,6 @@ import axios from 'axios';
 /* components */
 import Tabs from './Tabs';
 import InformationsTab from './InformationsTab';
-import ConexoesTab from '../ProjectManager/ConectionsTab';
 import TimelineTab from './TimelineTab';
 import AtuacaoTab from './ActingTab';
 
@@ -19,6 +18,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import { Box } from '@mui/material';
 import { useSnackbar } from 'notistack';
+
+import ConexoesTab from '../../components/Connections';
 
 /* styles */
 import styles from './styles.module.scss';
@@ -176,7 +177,7 @@ const Manager = () => {
                   )}
                 />
               )}
-              {tabindex === 'conexoes' && <ConexoesTab entityName="cne" entityId={entityId} />}
+              {tabindex === 'conexoes' && <ConexoesTab entityName="centro" entityId={entityId} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
               {tabindex === 'timeline' && <TimelineTab entityId={entityId} />}
             </>
