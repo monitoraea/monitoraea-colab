@@ -167,15 +167,18 @@ class Service {
 
     let conclusion = { ready: true };
 
+    const connections = await require('../entity').verify('ppea',id);
+
     let analysis = {
       information: {},
-      connections: await require('../entity').verify('ppea',id),
+      connections,
       dims: {},
       indics: {},
       geo: true,
       question_problems: [],
       is_new: data.is_new,
     };
+    if(connections === false) conclusion.ready = false;
 
     // ATUACAO
     if (data.atuacao_aplica === null) {

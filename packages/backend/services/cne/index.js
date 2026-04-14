@@ -376,15 +376,18 @@ class Service {
 
     let conclusion = { ready: true };
 
+    const connections = await require('../entity').verify('centro',id);
+
     let analysis = {
       information: {},
-      connections: await require('../entity').verify('centro',id),
+      connections,
       dims: {},
       indics: {},
       geo: true,
       question_problems: [],
       is_new: data.is_new,
     };
+    if(connections === false) conclusion.ready = false;
 
     // ATUACAO
     if (data.atuacao_aplica === null) {
@@ -401,7 +404,7 @@ class Service {
 
     // check INFORMACOES
     const { is_form_valid, fields } = check(form, data);
-    if (!is_form_valid) conclusion.ready = false;
+    // if (!is_form_valid) conclusion.ready = false;
     analysis.information = { ...fields };
 
     return {

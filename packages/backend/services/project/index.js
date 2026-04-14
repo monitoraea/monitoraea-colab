@@ -3029,15 +3029,18 @@ class Service {
 
     let conclusion = { ready: true };
 
+    const connections = await require('../entity').verify('zcm', id);
+
     let analysis = {
       information: {},
-      connections: await require('../entity').verify('zcm', id),
+      connections, 
       dims: {},
       indics: {},
       geo: true,
       question_problems: [],
       published: project.publicacao || false,
     };
+    if(connections === false) conclusion.ready = false;
 
     // ATUACAO
     if (project.atuacao_aplica === null) {

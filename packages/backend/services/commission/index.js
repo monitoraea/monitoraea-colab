@@ -1019,14 +1019,17 @@ class Service {
 
     let conclusion = { ready: true };
 
+    const connections = await require('../entity').verify('colegiado',id);
+
     let analysis = {
       dims: {},
       indics: {},
       geo: true,
       question_problems: [],
-      connections: await require('../entity').verify('colegiado',id),
+      connections,
       is_new: data.is_new,
     };
+    if(connections === false) conclusion.ready = false;
 
     // ATUACAO
     if (data.atuacao_aplica === null) {
