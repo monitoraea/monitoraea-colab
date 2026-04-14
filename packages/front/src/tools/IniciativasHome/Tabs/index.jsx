@@ -11,7 +11,7 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
   const { user } = useUser()
 
   const [infoIsReady, _infoIsReady] = useState(false);
-  const [conectionsIsReady, _conectionsIsReady] = useState(false);
+  const [connectionsIsReady, _connectionsIsReady] = useState(false);
   const [indicatorIsReady, _indicatorIsReady] = useState(false);
   const [atuacaoIsReady, _atuacaoIsReady] = useState(false);
   const [indicProblemCounter, _indicProblemCounter] = useState(0);
@@ -50,7 +50,7 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
     _indicatorIsReady(Object.values(analysis.analysis.indics).reduce((acc, i) => { if (!i.ready) { return false } else { return acc } }, true));
     _atuacaoIsReady(analysis.analysis.geo);
 
-    _conectionsIsReady(analysis.analysis.connections);
+    _connectionsIsReady(analysis.analysis.connections)
   }, [analysis]);
 
   return (
@@ -82,6 +82,7 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             disableRipple
             label="Conexões"
             {...a11yProps('conexoes')}
+            className={`${styles.indicator} ${connectionsIsReady === null ? styles['warning'] : connectionsIsReady ? styles['ready'] : styles['not-ready']}`}
           />
           <Tab
             disableRipple

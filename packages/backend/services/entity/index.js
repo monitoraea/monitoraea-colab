@@ -180,13 +180,13 @@ class Service {
     // console.log(JSON.stringify(entity))
 
     // Executar PLAN
-    console.log(JSON.stringify({
-      creator_id: original_relations.id,
-      organizations_to_create,
-      initiatives_to_create,
-      other_relations_to_create,
-      plan,
-    }))
+    // console.log(JSON.stringify({
+    //   creator_id: original_relations.id,
+    //   organizations_to_create,
+    //   initiatives_to_create,
+    //   other_relations_to_create,
+    //   plan,
+    // }))
 
     // organizations_to_create
     for (let i of organizations_to_create) await createEntity('organizacao', null, i.name, i.id);
@@ -571,7 +571,6 @@ class Service {
     );
 
     // bolinha vermelha se não respondeu qualquer base 
-
     if (bases[0].relations_recebe_it_base === null || bases[0].relations_oferece_it_base === null) return false;
 
     // ou se base sim, mas sem relações
@@ -621,6 +620,7 @@ class Service {
     from relations.relations r 
     where (r.from_id = :from_id or r.to_id = :to_id)
     and (r."confirmedByOther" = false or r."confirmedByOther" is null)
+    and r.type_id <> 1
     `,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -628,6 +628,7 @@ class Service {
       },
     );
 
+    
     if(!!indicacoes[0].total) return null;
 
     return true;

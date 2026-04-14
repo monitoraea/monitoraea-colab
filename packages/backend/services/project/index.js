@@ -3031,7 +3031,7 @@ class Service {
 
     let analysis = {
       information: {},
-      connections: true,
+      connections: await require('../entity').verify('zcm', id),
       dims: {},
       indics: {},
       geo: true,
@@ -3100,13 +3100,6 @@ class Service {
     analysis.information.mes_fim =
       !['em_desenvolvimento', 'finalizada', 'interrompida', 'nao_iniciada'].includes(project.status_desenvolvimento) ||
       this.check(!!project.mes_fim, conclusion);
-
-    // CONEXOES
-    analysis.connections = true;
-    if (!project.pr_id) {
-      analysis.connections = false;
-      // ATENÇÃO: em março de 2022, a verificação está ignorando conexões //  conclusion.ready = false;
-    }
 
     // INDICADORES
     for (let lae of indics.LAEs) {

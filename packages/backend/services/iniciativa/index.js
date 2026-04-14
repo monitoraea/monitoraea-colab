@@ -169,7 +169,7 @@ class Service {
 
     let analysis = {
       information: {},
-      connections: true,
+      connections: await require('../entity').verify('iniciativa',id),
       dims: {},
       indics: {},
       geo: true,

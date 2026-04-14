@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDorothy, useRouter, useUser } from 'dorothy-dna-react';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
 import axios from 'axios';
 /* components */
@@ -30,6 +30,7 @@ const ProjectManager = () => {
   const { currentCommunity, changeRoute, params } = useRouter();
   const { server } = useDorothy();
   const { user, updateUser } = useUser();
+  const queryClient = useQueryClient();
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [toRemove, _toRemove] = useState(null);
@@ -212,7 +213,7 @@ const ProjectManager = () => {
                   k => analysis.analysis.information[k] === false,
                 ) || []}
               />}
-              {tabindex === 'conexoes' && <ConexoesTab entityName="zcm" entityId={projectId} />}
+              {tabindex === 'conexoes' && <ConexoesTab entityName="zcm" entityId={projectId} onSave={() => queryClient.invalidateQueries('project_indics')} />}
               {tabindex === 'indicadores' && <IndicatorsTab analysis={analysis} />}
               {tabindex === 'abrangencia' && <ActingTab projectId={projectId} />}
               {tabindex === 'timeline' && <TimelineTab projectId={projectId} />}

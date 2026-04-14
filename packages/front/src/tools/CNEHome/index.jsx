@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDorothy, useRouter, useUser } from 'dorothy-dna-react';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient  } from 'react-query';
 import axios from 'axios';
 /* components */
 import Tabs from './Tabs';
@@ -28,6 +28,7 @@ const Manager = () => {
   const { currentCommunity, changeRoute, params } = useRouter();
   const { server } = useDorothy();
   const { user, updateUser } = useUser();
+  const queryClient = useQueryClient();
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   /*  */
@@ -38,13 +39,13 @@ const Manager = () => {
   /*  */
 
   //get entity_id
-  const { data: entity } = useQuery(['policy', { currentCommunity: currentCommunity.id }], {
+  const { data: entity } = useQuery(['cne', { currentCommunity: currentCommunity.id }], {
     queryFn: async () => (await axios.get(`${server}cne/id_from_community/${currentCommunity.id}`)).data,
     retry: false,
     refetchOnWindowFocus: false,
   });
 
-  const { data: analysis } = useQuery(['policy_analysis', { policy_id: entity?.id }], {
+  const { data: analysis } = useQuery(['cne_analysis', { policy_id: entity?.id }], {
     queryFn: async () => (await axios.get(`${server}cne/${entity?.id}/verify`)).data,
     enabled: !!entity?.id,
     retry: false,
@@ -177,7 +178,7 @@ const Manager = () => {
                   )}
                 />
               )}
-              {tabindex === 'conexoes' && <ConexoesTab entityName="centro" entityId={entityId} />}
+              {tabindex === 'conexoes' && <ConexoesTab entityName="centro" entityId={entityId} onSave={()=>queryClient.invalidateQueries('cne_analysis')} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
               {tabindex === 'timeline' && <TimelineTab entityId={entityId} />}
             </>

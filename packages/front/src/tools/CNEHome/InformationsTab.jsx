@@ -79,8 +79,8 @@ export default function InformationsTab({ entityId, problems }) {
 
       // console.log(response);
 
-      queryClient.invalidateQueries('policy_info')
-      queryClient.invalidateQueries('policy_analysis')
+      queryClient.invalidateQueries('cne_info')
+      queryClient.invalidateQueries('cne_analysis')
 
       // onSave(!_.isEqual(originalEntity, entity));
 

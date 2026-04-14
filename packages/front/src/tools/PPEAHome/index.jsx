@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDorothy, useRouter, useUser } from 'dorothy-dna-react';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import ConfirmationDialog from '../../components/ConfirmationDialogAdvanced';
 import axios from 'axios';
 /* components */
@@ -33,6 +33,7 @@ const Manager = () => {
   const { currentCommunity, changeRoute, params } = useRouter();
   const { server } = useDorothy();
   const { user, updateUser } = useUser();
+  const queryClient = useQueryClient();
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [toRemove, _toRemove] = useState(null);
@@ -229,8 +230,8 @@ const Manager = () => {
               {tabindex === 'indicadores_novos' && (
                 <IndicatorsTab entityId={entityId} analysis={analysis} problems={analysis.analysis.question_problems} />
               )}
-              
-              {tabindex === 'conexoes' && <ConexoesTab entityName="ppea" entityId={entityId} />}   
+
+              {tabindex === 'conexoes' && <ConexoesTab entityName="ppea" entityId={entityId} onSave={() => queryClient.invalidateQueries('policy_analysis')} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
               {tabindex === 'timeline' && <TimelineTab entityId={entityId} />}
             </>

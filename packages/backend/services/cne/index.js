@@ -378,7 +378,7 @@ class Service {
 
     let analysis = {
       information: {},
-      connections: true,
+      connections: await require('../entity').verify('centro',id),
       dims: {},
       indics: {},
       geo: true,

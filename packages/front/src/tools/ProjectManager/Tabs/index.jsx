@@ -5,7 +5,7 @@ import styles from './ProjectsTabs.module.scss';
 
 export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
   const [infoIsReady, _infoIsReady] = useState(false);
-  const [conectionsIsReady, _conectionsIsReady] = useState(false);
+  const [connectionsIsReady, _connectionsIsReady] = useState(false);
   const [indicatorIsReady, _indicatorIsReady] = useState(false);
   const [atuacaoIsReady, _atuacaoIsReady] = useState(false);
   const [indicProblemCounter, _indicProblemCounter] = useState(0);
@@ -53,7 +53,7 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
     );
     _atuacaoIsReady(analysis.analysis.geo);
 
-    _conectionsIsReady(analysis.analysis.connections);
+    _connectionsIsReady(analysis.analysis.connections)
   }, [analysis]);
 
   return (
@@ -65,31 +65,28 @@ export default function ProjectsTabs({ defaultTab, onTabChange, analysis }) {
             disableRipple
             label="Informações"
             {...a11yProps('informacao', infoProblemCounter > 0 ? infoProblemCounter : '')}
-            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['not-ready']} ${
-              infoProblemCounter < 10 && styles['fixed-size']
-            }`}
+            className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['not-ready']} ${infoProblemCounter < 10 && styles['fixed-size']
+              }`}
           />
           <Tab
             disableRipple
             label="Abrangência"
-            className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${
-              styles['fixed-size']
-            }`}
+            className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
+              }`}
             {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
           />
           <Tab
             disableRipple
             label="Indicadores"
-            className={`${styles.indicator} ${indicatorIsReady ? styles['ready'] : styles['not-ready']} ${
-              indicProblemCounter < 10 && styles['fixed-size']
-            }`}
+            className={`${styles.indicator} ${indicatorIsReady ? styles['ready'] : styles['not-ready']} ${indicProblemCounter < 10 && styles['fixed-size']
+              }`}
             {...a11yProps('indicadores', indicProblemCounter > 0 ? indicProblemCounter : '')}
           />
           <Tab
             disableRipple
             label="Conexões"
             {...a11yProps('conexoes')}
-            /* className={`${styles.indicator} ${conectionsIsReady ? styles['ready'] : styles['not-ready']}`} */
+            className={`${styles.indicator} ${connectionsIsReady === null ? styles['warning'] : connectionsIsReady ? styles['ready'] : styles['not-ready']}`}
           />
           <Tab disableRipple label="Linha do tempo" {...a11yProps('timeline')} />
         </Tabs>

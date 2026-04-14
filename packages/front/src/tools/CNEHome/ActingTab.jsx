@@ -112,7 +112,7 @@ export default function ActingTab() {
       geoms: geomsToSave,
     });
 
-    queryClient.invalidateQueries('policy_analysis')
+    queryClient.invalidateQueries('cne_analysis')
 
     closeSnackbar(snackKey);
 
@@ -139,7 +139,7 @@ export default function ActingTab() {
     await axios.put(`${server}cne/${id}/geo-draw/${checked ? (checked === 'none' ? 'none' : '1') : '0'}`);
     
 
-    queryClient.invalidateQueries('policy_analysis')
+    queryClient.invalidateQueries('cne_analysis')
 
 
     closeSnackbar(snackKey);
@@ -158,7 +158,7 @@ export default function ActingTab() {
 
     await axios.put(`${server}cne/${id}/draft/justification`, { value: justification });    
 
-    queryClient.invalidateQueries('policy_analysis')
+    queryClient.invalidateQueries('cne_analysis')
 
     closeSnackbar(snackKey);
 
