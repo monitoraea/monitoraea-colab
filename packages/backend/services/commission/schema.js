@@ -144,6 +144,12 @@ module.exports = (sequelize, DataTypes) => {
       obs: {
         type: DataTypes.TEXT,
       },
+      plano_acao_ini: {
+        type: DataTypes.STRING,
+      },
+      plano_acao_fim: {
+        type: DataTypes.STRING,
+      },
     },
     {
       tableName: 'comissoes',
@@ -176,6 +182,9 @@ module.exports = (sequelize, DataTypes) => {
     })
     Commission.belongsTo(models["File"], {
       foreignKey: "ppea_outra_arquivo",
+    })
+    Commission.belongsTo(models["File"], {
+      foreignKey: "plano_acao_arquivo",
     })
 
   }

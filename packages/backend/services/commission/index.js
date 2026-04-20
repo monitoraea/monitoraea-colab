@@ -239,7 +239,10 @@ class Service {
         c.nivel_atuacao,
         c.nivel_atuacao_outro,
         c.coordenacao_quem,
-        c.obs
+        c.obs,
+        c.plano_acao_arquivo,
+        c.plano_acao_ini,
+        c.plano_acao_fim
       FROM ciea.comissoes c
       left join ufs u on u.id = c.uf
       WHERE c.iniciativa_id = :id
@@ -293,6 +296,29 @@ class Service {
       }
     }
 
+    // somente arquivo
+    for (let document of [
+      'plano_acao',
+    ]) {
+      if (!!entity[0][`${document}_arquivo`]) {
+        const file_entity = await db
+          .instance()
+          .query(`select f.url, f.file_name, f.content_type from files f where f.id = :file_id`, {
+            replacements: { file_id: entity[0][`${document}_arquivo`] },
+            type: Sequelize.QueryTypes.SELECT,
+          });
+
+        if (file_entity.length) {
+          commission[`${document}_arquivo`] = {
+            url: `${process.env.S3_CONTENT_URL}/${this.getFileKey(id, `${document}_arquivo`, file_entity[0].url)}`,
+            file: { name: file_entity[0].file_name },
+          };
+
+          commission[`${document}_tipo`] = 'file';
+        }
+      }
+    }
+
     return commission;
   }
 
@@ -311,6 +337,7 @@ class Service {
         programa_estadual_arquivo: entity.programa_estadual_tipo === null ? null : undefined,
         plano_estadual_arquivo: entity.plano_estadual_tipo === null ? null : undefined,
         ppea_outra_arquivo: entity.ppea_outra_tipo === null ? null : undefined,
+        plano_acao_arquivo: undefined,
       },
       {
         where: { iniciativa_id: id, versao: 'draft' },
@@ -343,6 +370,7 @@ class Service {
       plano_estadual_arquivo:
         files.plano_estadual_arquivo && files.plano_estadual_arquivo.length ? files.plano_estadual_arquivo[0] : null,
       ppea_outra_arquivo: files.ppea_outra_arquivo && files.ppea_outra_arquivo.length ? files.ppea_outra_arquivo[0] : null,
+      plano_acao_arquivo: files.plano_acao_arquivo && files.plano_acao_arquivo.length ? files.plano_acao_arquivo[0] : null,
     };
 
     // !!!!! form.link_or_file_fields <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form
@@ -365,6 +393,15 @@ class Service {
         else if (files[`${wFile}_arquivo`])
           await this.updateFile(entityModel, files[`${wFile}_arquivo`], `${wFile}_arquivo`);
       }
+    }
+
+    // Só arquivo
+    for (let wFile of [
+      'plano_acao',
+    ]) {
+      if (entity[`${wFile}_arquivo`] === 'remove') await this.removeFile(entityModel, `${wFile}_arquivo`);
+      else if (files[`${wFile}_arquivo`])
+        await this.updateFile(entityModel, files[`${wFile}_arquivo`], `${wFile}_arquivo`);
     }
 
     return entity;
@@ -1019,7 +1056,7 @@ class Service {
 
     let conclusion = { ready: true };
 
-    const connections = await require('../entity').verify('colegiado',id);
+    const connections = await require('../entity').verify('colegiado', id);
 
     let analysis = {
       dims: {},
@@ -1029,7 +1066,7 @@ class Service {
       connections,
       is_new: data.is_new,
     };
-    if(connections === false) conclusion.ready = false;
+    if (connections === false) conclusion.ready = false;
 
     // ATUACAO
     if (data.atuacao_aplica === null) {

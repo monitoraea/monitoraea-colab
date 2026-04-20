@@ -642,6 +642,25 @@ fields:
   title: Lei
   size: 3
 
+- key: plano_acao_arquivo
+  block: plano_acao_block
+  type: file
+  accept: application/pdf
+  title: Arquivo de Plano de Ação
+  size: 6
+
+- key: plano_acao_ini
+  block: plano_acao_block
+  type: monthpicker
+  title: Inicio da vigência
+  size: 3
+
+- key: plano_acao_fim
+  block: plano_acao_block
+  type: monthpicker
+  title: Fim da vigência
+  size: 3
+
 ################################################################
 
 blocks:
@@ -761,6 +780,9 @@ blocks:
       target:
         key: ppea_outra_tem
         value: true
+
+  - key: plano_acao_block
+    title: Plano de Ação
 
 ################################################################
 # objetos livres não definida no protocolo, para fins de abastecer o servidor com mais informações

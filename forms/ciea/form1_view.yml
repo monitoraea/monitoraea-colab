@@ -216,6 +216,21 @@
 - type: separator
 
 - type: row
+  block: plano_acao_block
+  elements:
+    - type: column
+      size: 6
+      key: plano_acao_arquivo
+    - type: column
+      size: 3
+      key: plano_acao_ini      
+    - type: column
+      size: 3
+      key: plano_acao_fim
+
+- type: separator
+
+- type: row
   block: ppea_block
   elements:
     - type: column
