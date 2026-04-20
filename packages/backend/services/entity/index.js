@@ -536,9 +536,6 @@ class Service {
     // false - red
     // null - yellow
 
-    // TODO!!!!
-    return null;
-
     // ENTIDADE
     const entities = await db.instance().query(`
     select 
