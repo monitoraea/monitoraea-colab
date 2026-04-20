@@ -9,7 +9,7 @@ const { Organizations } = require('aws-sdk');
 
 class Service {
   async list(config) {
-    let where = ["e.entity_type in ('organizacao', 'educom', 'colegiado', 'centro') -- organizations"];
+    let where = ["e.entity_type in ('organizacao', 'colegiado', 'centro') -- organizations"];
     let replacements = {};
 
     if (config.filter && !!config.filter.length) {
@@ -17,7 +17,7 @@ class Service {
       replacements.filter = `%${removeAccents(config.filter)}%`;
     }
 
-    if (config.my_entity_type && ['organizacao', 'educom', 'colegiado', 'centro'].includes(config.my_entity_type)) {
+    if (config.my_entity_type && ['organizacao', 'colegiado', 'centro'].includes(config.my_entity_type)) {
       where.push('(e.entity_type <> :e_type or e.entity_id <> :e_id)-- filters for organizations itselves');
       replacements.e_type = config.my_entity_type;
       replacements.e_id = config.my_entity_id;
@@ -46,7 +46,7 @@ class Service {
   }
 
   async listEntities(config) {
-    let where = ["e.entity_type <> 'organizacao'"];
+    let where = ["e.entity_type not in ('organizacao', 'colegiado')'"];
     let joins = [];
     let replacements = {};
 
