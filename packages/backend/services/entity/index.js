@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../database');
 
 const { applyJoins, applyWhere } = require('../../utils');
-const { removeRelationById, updateReferenceById, updateBase, createEntity, updateRelationById } = require('../utils');
+const { removeRelationById, updateReferenceById, updateBase, createEntity, updateRelationById, createRelation } = require('../utils');
 
 const removeAccents = require("remove-accents");
 const { Organizations } = require('aws-sdk');
@@ -46,7 +46,7 @@ class Service {
   }
 
   async listEntities(config) {
-    let where = ["e.entity_type not in ('organizacao', 'colegiado')'"];
+    let where = ["e.entity_type not in ('organizacao', 'colegiado')"];
     let joins = [];
     let replacements = {};
 
@@ -195,7 +195,7 @@ class Service {
     for (let i of initiatives_to_create) await createEntity('iniciativa', null, i.initiative.name, i.initiative.id);
 
     // other_relations_to_create
-    for (let i of other_relations_to_create) await createRelation(/* FROM */ i.iniciativa.id, /* TO */ i.organizacao.id, /* PROPONENCIA */ 1);
+    for (let i of other_relations_to_create) await createRelation(/* FROM */ i.iniciativa.id, /* TO */ i.organizacao.id, /* PROPONENCIA */ 1, 'from', null, false, true);
 
     for (let type of ['recebe', 'oferece']) {
       const complement = `_${type === 'recebe' ? 'r' : 'o'}`;
@@ -221,7 +221,7 @@ class Service {
         const createdBy = type === 'recebe' ? 'to' : 'from';
         const other_type = e[`outra_relacao${complement}`];
 
-        await createRelation(from_id, to_id, type_id, createdBy, other_type);
+        await createRelation(from_id, to_id, type_id, createdBy, other_type, false, !e[`iniciativa${complement}`]?.id /* se nao tem iniciativa, então é org */);
       }
 
       // atualizar
@@ -237,6 +237,7 @@ class Service {
           other_type: e[`outra_relacao${complement}`],
           confirmedByOther: e.confirmedByOther,
           justification: e.justification,
+          as_org: !e[`iniciativa${complement}`]?.id /* se nao tem iniciativa, então é org */
         });
       }
     }
@@ -282,7 +283,8 @@ class Service {
           (select jsonb_build_object('id',ee.id,'name',ee.name) from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.from_id limit 1) as proponente,
 	        ef."name" other_name,
 	        ef.entity_type other_participant_type,
-	      ro."name" as relacao_name 
+	      ro."name" as relacao_name,
+        (r.metadata->>'as_org')::bool as as_org 
         from relations.relations r
         left join relations.entities ef on ef.id = r.from_id
         left join relations.relation_options ro on ro.id = r.type_id 
@@ -309,7 +311,8 @@ class Service {
           (select jsonb_build_object('id',ee.id,'name',ee.name) from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.to_id limit 1) as proponente,	
           et."name" other_name,
           et.entity_type other_participant_type,
-          ro."name" as relacao_name
+          ro."name" as relacao_name,
+          (r.metadata->>'as_org')::bool as as_org
         from relations.relations r
         left join relations.entities et on et.id = r.to_id 
         left join relations.relation_options ro on ro.id = r.type_id  
@@ -408,7 +411,7 @@ class Service {
     let iniciativa_id = null;
     let iniciativa_name = null;
 
-    if (r.other_participant_type === 'organizacao') {
+    if (r.other_participant_type === 'organizacao' || r.as_org) {
       organizacao_id = r.other_id;
       organizacao_name = r.other_name;
     } else {

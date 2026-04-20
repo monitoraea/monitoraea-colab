@@ -103,7 +103,8 @@ module.exports.getEntityBySpecificId = async (e_type, e_id) => {
 }
 
 // cria uma relação entre from_id para to_id do tipo type_id
-module.exports.createRelation = createRelation = async (from_id, to_id, type_id = null, createdBy = 'from', other_type = null, exclusive /* somente um deste tipo por relação from->to */) => {
+                                                        
+module.exports.createRelation = createRelation = async (from_id, to_id, type_id = null, createdBy = 'from', other_type = null, exclusive /* somente um deste tipo por relação from->to */, as_org = false) => {
 
     // se uma relação idêntica existe, não faz nada!
     const exists = await db.instance().query(
@@ -139,7 +140,7 @@ module.exports.createRelation = createRelation = async (from_id, to_id, type_id 
         `
         INSERT INTO relations.relations
         (id, from_id, to_id, type_id, metadata, "createdBy", other_type, "createdAt", "updatedAt")
-        VALUES(:uuid, :from_id, :to_id, :type_id, '{}'::jsonb, :createdBy, :other_type, NOW(), NOW());
+        VALUES(:uuid, :from_id, :to_id, :type_id, '{ "as_org": ${as_org ? 'true' : 'false'} }'::jsonb, :createdBy, :other_type, NOW(), NOW());
         `,
         {
             replacements: { uuid: uuidv4(), from_id, to_id, type_id, createdBy, other_type },
@@ -176,7 +177,8 @@ module.exports.updateRelationById = async (data) => {
             type_id=:type_id, 
             other_type=:other_type, 
             "confirmedByOther"=:confirmedByOther, 
-            justification=:justification
+            justification=:justification,
+            metadata = jsonb_set(metadata, '{as_org}', ':as_org'::jsonb)
         WHERE id=:relation_id
         `,
         {
