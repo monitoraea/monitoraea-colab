@@ -46,7 +46,7 @@
             size: 12
             elements:
               - type: button
-                title: Adicionar uma relação
+                title: Adicionar uma relação - RECEBE APOIO
 
 - type: separator
 
@@ -100,6 +100,6 @@
             size: 12
             elements:
               - type: button
-                title: Adicionar uma relação
+                title: Adicionar uma relação - OFERECE APOIO
 
 - type: separator
