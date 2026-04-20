@@ -150,6 +150,13 @@ fields:
       key: aborda_desinformacao
       value: 1
 
+- key: organizacao
+  block: inst
+  type: real_async_autocomplete
+  remote: entity
+  title: Nome da Organização Executora
+  size: 6
+
 blocks: # opcional
 
   - key: iniciativa
@@ -186,3 +193,6 @@ blocks: # opcional
       - noticia_falsa_exemplo
       - aborda_desinformacao
       - aborda_desinformacao_exemplo
+  
+  - key: inst
+    title: Sobre a Organização

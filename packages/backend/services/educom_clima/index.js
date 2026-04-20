@@ -1,7 +1,7 @@
 const db = require('../database');
 const Sequelize = require('sequelize');
 
-const { createEntity, updateEntity } = require('../utils');
+const { createEntity, updateEntity, getEntityBySpecificId, getEntity } = require('../utils');
 
 const { applyWhere, parseBBOX, protect } = require('../../utils');
 
@@ -152,6 +152,12 @@ class Service {
 
     let policy = entity[0];
 
+    // busca relacao com entidade proponente
+    const proponente = await getEntity('educom', iniciativa_id);
+    policy.organizacao = {
+      id: proponente?.id,
+    }
+
     return policy;
   }
 
@@ -248,6 +254,19 @@ class Service {
       // create entity
       await createEntity('educom', iniciativa_id, entity.nome);
     }
+
+    // -- RELACOES ---------------------------------------------------------------------
+    if (!!entity.organizacao?.name) { // cria entidade, se nova organização
+      await createEntity('organizacao', null, entity.organizacao.name, entity.organizacao.id);
+    }
+    const e_id = await getEntityBySpecificId('educom', id);
+    if (!!entity.organizacao?.id) { // cria relação, se proponente foi preenchido
+      if (e_id) await createRelation(e_id, entity.organizacao?.id, 1 /* proponente */, 'from', null, true /* somente um */);
+    } else {
+      // remove relacao
+      await removeRelation(e_id, null /* todas */, 1 /* proponente */);
+    }
+    // ---------------------------------------------------------------------------------
 
     return entity;
   }

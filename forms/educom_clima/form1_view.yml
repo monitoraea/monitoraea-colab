@@ -20,6 +20,13 @@
       key: uf
 
 - type: row
+  block: inst
+  elements:
+  - type: column
+    size: 12
+    key: organizacao
+
+- type: row
   block: apresentacao
   elements:
   - type: row
