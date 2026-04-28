@@ -711,7 +711,11 @@ export function FieldRenderer({
   let Component;
 
   let dataValue = data?.[keyRef];
-  if (!!iterative) dataValue = data?.[iterative.k]?.[iterative.index]?.[keyRef];
+  let localProblem = false;
+  if (!!iterative) {
+    dataValue = data?.[iterative.k]?.[iterative.index]?.[keyRef];
+    localProblem = (data?.[iterative.k]?.[iterative.index]?.problems && data[iterative.k][iterative.index].problems.includes(String(f.key)))
+  }
 
   if (f.type === 'label') Component = <Label f={f} />;
   else if (f.type === 'read_only') Component = <ReadOnly f={f} dataValue={dataValue} />;
@@ -736,7 +740,7 @@ export function FieldRenderer({
     Component = (
       <OptionsField
         readonly={readonly}
-        error={problems.includes(String(f.key))}
+        error={localProblem || problems.includes(String(f.key))}
         f={f}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
@@ -747,7 +751,7 @@ export function FieldRenderer({
       <DatePickerField
         type={f.type}
         readonly={readonly}
-        error={problems.includes(String(f.key))}
+        error={localProblem || problems.includes(String(f.key))}
         f={f}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
@@ -757,7 +761,7 @@ export function FieldRenderer({
     Component = (
       <RealAsyncAutocomplete
         readonly={readonly}
-        error={problems.includes(String(f.key))}
+        error={localProblem || problems.includes(String(f.key))}
         f={f}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
@@ -768,7 +772,7 @@ export function FieldRenderer({
     Component = (
       <AsyncAutocompleteField
         readonly={readonly}
-        error={problems.includes(String(f.key))}
+        error={localProblem || problems.includes(String(f.key))}
         f={f}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
@@ -779,7 +783,7 @@ export function FieldRenderer({
     Component = (
       <AutocompleteField
         readonly={readonly}
-        error={problems.includes(String(f.key))}
+        error={localProblem || problems.includes(String(f.key))}
         f={f}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
@@ -789,7 +793,7 @@ export function FieldRenderer({
     Component = (
       <AutocompleteField
         readonly={readonly}
-        error={problems.includes(String(f.key))}
+        error={localProblem || problems.includes(String(f.key))}
         f={f}
         tag={!!f.tag}
         dataValue={dataValue}
@@ -801,7 +805,7 @@ export function FieldRenderer({
     Component = (
       <FileField
         readonly={readonly}
-        error={problems.includes(String(f.key))}
+        error={localProblem || problems.includes(String(f.key))}
         f={f}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
@@ -813,7 +817,7 @@ export function FieldRenderer({
     Component = (
       <ThumbnailField
         readonly={readonly}
-        error={problems.includes(String(f.key))}
+        error={localProblem || problems.includes(String(f.key))}
         f={f}
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
@@ -824,7 +828,7 @@ export function FieldRenderer({
     Component = (
       <StringField
         readonly={readonly}
-        error={problems.includes(String(f.key))}
+        error={localProblem || problems.includes(String(f.key))}
         integer={f.type === 'integer'}
         multiline={f.type === 'textarea'}
         rows={f.rows}

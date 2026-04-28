@@ -121,15 +121,15 @@ module.exports.createRelation = createRelation = async (from_id, to_id, type_id 
     if (exists.length) return;
 
     if (exclusive) {
-        // se exclusive, remove a relação from_id + type_id existente
+        // se exclusive, remove a relação [createdBy]_id + type_id existente
         await db.instance().query(
             `
         delete
         from relations.relations
-        where from_id = :from_id and type_id = :type_id
+        where ${createdBy}_id = :${createdBy}_id and type_id = :type_id
         `,
             {
-                replacements: { from_id, type_id },
+                replacements: { from_id, to_id, type_id },
                 type: Sequelize.QueryTypes.DELETE,
             },
         );
@@ -280,6 +280,54 @@ module.exports.updateBase = async (entity_type, entity_id, type, value) => {
         `,
         {
             replacements: { entity_type, entity_id, value },
+            type: Sequelize.QueryTypes.DELETE,
+        },
+    );
+}
+
+// Retorna ENTIDADES (N=LIMIT) que se relacionam com a ENTIDADE to_id+to_type, pela relação de proponencia
+module.exports.getProponentes = getProponentes = async (to_type, to_id, limit) => {
+
+    const response = await db.instance().query(`
+        select 
+            eF.id,
+            eF.entity_id, 
+            eF."name",
+            eF.entity_type 
+        from relations.relations r 
+        inner join relations.entities eF on eF.id = r.from_id 
+        inner join relations.entities eT on eT.id = r.to_id 
+        where eT.entity_type = :to_type and eT.entity_id = :to_id
+        and r.type_id = 1
+        ${limit ? `LIMIT ${limit}` : ''}
+        `,
+        {
+            replacements: { to_type, to_id },
+            type: Sequelize.QueryTypes.SELECT,
+        },
+    );
+
+    return response;
+}
+// Retorna 1 ENTIDADE que se relacionam com a ENTIDADE from_id+from_type, pela relação de proponencia
+module.exports.getProponente = async (to_type, to_id) => {
+    const relations = await getProponentes(to_type, to_id, 1);
+
+    return relations.length ? relations[0] : null;
+}
+
+// remove um proponente
+module.exports.removeMyProponente = async (to_id) => {
+
+    // remove relação
+    await db.instance().query(
+        `
+        DELETE         
+        FROM relations.relations
+        WHERE to_id = :to_id and type_id = 1
+        `,
+        {
+            replacements: { to_id },
             type: Sequelize.QueryTypes.DELETE,
         },
     );

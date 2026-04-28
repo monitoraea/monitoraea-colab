@@ -233,7 +233,7 @@ class Service {
           relation_id: e.id,
           from_id: type === 'recebe' ? outroId : original_relations.id,
           to_id: type === 'recebe' ? original_relations.id : outroId,
-          type_id: e[`tipo_relacao${complement}`]?.id,
+          type_id: e[`tipo_relacao${complement}`]?.id || null,
           other_type: e[`outra_relacao${complement}`],
           confirmedByOther: e.confirmedByOther,
           justification: e.justification,
@@ -317,7 +317,6 @@ class Service {
         left join relations.entities et on et.id = r.to_id 
         left join relations.relation_options ro on ro.id = r.type_id  
         where r.from_id = :id
-        and (r.type_id in (-1,7,8,9,10) or r.type_id is null) 
         `,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -325,8 +324,18 @@ class Service {
       },
     );
 
+    let base_problems = [];
+    if(entity['relations_recebe_it_base'] === null || (entity['relations_recebe_it_base'] && !recebe.length)) 
+      base_problems.push('relations_recebe_it_base');
+    if(entity['relations_oferece_it_base'] === null || (entity['relations_oferece_it_base'] && !oferece.length)) 
+      base_problems.push('relations_oferece_it_base');
+
     let relations_recebe_it = entity.relations_recebe_it_base ? recebe.filter(r => r.mine).map(r => {
       const outro = this.analisaOutro(r);
+
+      let problems = [];
+      if(!r.type_id) problems.push('tipo_relacao_r');
+      else if(r.type_id == -1 && !r.other_type?.length) problems.push('outra_relacao_r');
 
       return {
         id: r.id,
@@ -337,6 +346,7 @@ class Service {
         confirmedByOther_r: this.cboValue(r.confirmedByOther),
         justification_r: r.justification || '',
         non_response_r: 'Esta relação ainda não foi avaliada pela iniciativa indicada',
+        problems,
       }
     }) : [];
 
@@ -344,6 +354,10 @@ class Service {
     let relations_oferece_it = entity.relations_oferece_it_base ? oferece.filter(r => r.mine).map(r => {
       const outro = this.analisaOutro(r);
 
+      let problems = [];
+      if(!r.type_id) problems.push('tipo_relacao_o');
+      else if(r.type_id == -1 && !r.other_type?.length) problems.push('outra_relacao_o');
+      
       return {
         id: r.id,
         organizacao_o: { id: outro.organizacao_id },
@@ -353,10 +367,11 @@ class Service {
         confirmedByOther_o: this.cboValue(r.confirmedByOther),
         justification_o: r.justification || '',
         non_response_o: 'Esta relação ainda não foi avaliada pela iniciativa indicada',
+        problems,
       }
     }) : [];
 
-    let indicacao_relations_recebe_it = recebe.filter(r => !r.mine).map(r => {
+    let indicacao_relations_recebe_it = recebe.filter(r => !r.mine && r.type_id && (r.type_id != -1 || r.other_type?.length)).map(r => {
       const outro = this.analisaOutro(r);
 
       return {
@@ -374,7 +389,7 @@ class Service {
     });
 
 
-    let indicacao_relations_oferece_it = oferece.filter(r => !r.mine).map(r => {
+    let indicacao_relations_oferece_it = oferece.filter(r => !r.mine && r.type_id && (r.type_id != -1 || r.other_type?.length)).map(r => {
       const outro = this.analisaOutro(r);
 
       return {
@@ -399,6 +414,7 @@ class Service {
       relations_oferece_it,
       indicacao_relations_recebe_it,
       indicacao_relations_oferece_it,
+      problems: base_problems,
     }
   }
 
@@ -582,7 +598,8 @@ class Service {
       // QTD RECEBE
       const recebe = await db.instance().query(`
         select 
-          count(*)::integer as total
+          type_id,
+          other_type
         from relations.relations r
         where r.to_id = :id
         and (r.type_id in (-1,7,8,9,10) or r.type_id is null)
@@ -594,7 +611,10 @@ class Service {
         },
       );
 
-      if (!recebe[0].total) return false;
+      if (!recebe.length) return false;
+
+      // verifica type_id e other_type
+      if(recebe.some(i => !i.type_id || (i.type_id == -1 && !i.other_type?.length))) return false;
     }
 
     if (bases[0].relations_oferece_it_base) {
@@ -602,11 +622,12 @@ class Service {
       // QTD OFERECE
       const oferece = await db.instance().query(`
         select 
-        count(*)::integer as total
-      from relations.relations r
-      where r.from_id = :id
-      and (r.type_id in (-1,7,8,9,10) or r.type_id is null)
-      and r."createdBy" = 'from' 
+          type_id,
+          other_type
+        from relations.relations r
+        where r.from_id = :id
+        and (r.type_id in (-1,7,8,9,10) or r.type_id is null)
+        and r."createdBy" = 'from' 
       `,
         {
           type: Sequelize.QueryTypes.SELECT,
@@ -614,16 +635,20 @@ class Service {
         },
       );
 
-      if (!oferece[0].total) return false;
+      if (!oferece.length) return false;
+      
+      // verifica type_id e other_type
+      if(oferece.some(i => !i.type_id || (i.type_id == -1 && !i.other_type?.length))) return false;
     }
 
     // bolinha amarela se indicação não respondida ou respondida como não reconheço (que este indicou ou foi indicado!!)
     const indicacoes = await db.instance().query(`
-    select count(*)::integer as total  
+    select 
+      r."confirmedByOther", r.justification 
     from relations.relations r 
     where (r.from_id = :from_id or r.to_id = :to_id)
     and (r."confirmedByOther" = false or r."confirmedByOther" is null)
-    and r.type_id <> 1
+    and r.type_id <> 1 -- mudar
     `,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -631,8 +656,9 @@ class Service {
       },
     );
 
+    if(indicacoes.some(i => i.confirmedByOther === false && !i.justification?.length)) return false;
     
-    if(!!indicacoes[0].total) return null;
+    if(!!indicacoes?.length) return null;
 
     return true;
   }

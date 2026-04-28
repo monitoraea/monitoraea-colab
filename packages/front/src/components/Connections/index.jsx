@@ -148,6 +148,7 @@ export default function ConectionsTab({ entityName = 'zcm', entityId, onSave }) 
                                     lists={lists}
                                     data={mapData2Form(originalEntity, form)}
                                     onDataChange={handleDataChange}
+                                    problems={entity.problems}
                                 // helpbox={}
                                 />
 
@@ -211,7 +212,7 @@ function Indicacao({ data, type, onChange }) {
         <div className={styles.reconheco}>
             <div className={styles.resposta}>
                 <TextField
-                    className="input-select"
+                    className={`input-select ${data.confirmedByOther !== 'yes' ? 'input-indic-problem' : ''}`}
                     label="Reconhece esta relação?"
                     value={data.confirmedByOther || 'non'}
                     select
@@ -232,6 +233,7 @@ function Indicacao({ data, type, onChange }) {
                     label="Justificativa"
                     value={data.justification || ''}
                     onChange={(e) => onChange(type, data.id, 'justification', e.target.value)}
+                    error={!data.justification?.length}
                 />
             </div>}
         </div>
