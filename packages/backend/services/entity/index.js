@@ -325,9 +325,10 @@ class Service {
     );
 
     let base_problems = [];
-    if(entity['relations_recebe_it_base'] === null || (entity['relations_recebe_it_base'] && !recebe.length)) 
+    if(entity['relations_recebe_it_base'] === null || (entity['relations_recebe_it_base'] && !recebe.filter(i => i.mine).length)) 
       base_problems.push('relations_recebe_it_base');
-    if(entity['relations_oferece_it_base'] === null || (entity['relations_oferece_it_base'] && !oferece.length)) 
+
+    if(entity['relations_oferece_it_base'] === null || (entity['relations_oferece_it_base'] && !oferece.filter(i => i.mine).length)) 
       base_problems.push('relations_oferece_it_base');
 
     let relations_recebe_it = entity.relations_recebe_it_base ? recebe.filter(r => r.mine).map(r => {
@@ -646,9 +647,8 @@ class Service {
     select 
       r."confirmedByOther", r.justification 
     from relations.relations r 
-    where (r.from_id = :from_id or r.to_id = :to_id)
+    where ((r.from_id = :from_id and r.type_id <> 1) or r.to_id = :to_id)
     and (r."confirmedByOther" = false or r."confirmedByOther" is null)
-    and r.type_id <> 1 -- mudar
     `,
       {
         type: Sequelize.QueryTypes.SELECT,
@@ -656,7 +656,9 @@ class Service {
       },
     );
 
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', 1)
     if(indicacoes.some(i => i.confirmedByOther === false && !i.justification?.length)) return false;
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', 2)
     
     if(!!indicacoes?.length) return null;
 
