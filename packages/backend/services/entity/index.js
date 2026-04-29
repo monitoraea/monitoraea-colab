@@ -656,9 +656,7 @@ class Service {
       },
     );
 
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', 1)
     if(indicacoes.some(i => i.confirmedByOther === false && !i.justification?.length)) return false;
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', 2)
     
     if(!!indicacoes?.length) return null;
 
