@@ -57,7 +57,7 @@ class Service {
 
     if (config.organizacao) {
       // onde filtro é proponente (type_id = 1) das iniciativas
-      joins.push('inner join relations.relations r on r.type_id = 1 and r.from_id = e.id and r.to_id = :organizacao');
+      joins.push('inner join relations.relations r on r.type_id = 1 and r.to_id = e.id and r.from_id = :organizacao');
       replacements.organizacao = config.organizacao;
     }
 
@@ -280,7 +280,7 @@ class Service {
           r."createdBy" = 'to' as mine,
           r."confirmedByOther",
           r.justification,
-          (select jsonb_build_object('id',ee.id,'name',ee.name) from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.from_id limit 1) as proponente,
+          (select jsonb_build_object('id',ee.id,'name',ee.name) from relations.entities ee inner join relations.relations rr on rr.from_id = ee.id and rr.type_id = 1 and rr.to_id = r.from_id limit 1) as proponente,
 	        ef."name" other_name,
 	        ef.entity_type other_participant_type,
 	      ro."name" as relacao_name,
@@ -308,7 +308,7 @@ class Service {
           r."createdBy" = 'from' as mine,
           r."confirmedByOther",
           r.justification,
-          (select jsonb_build_object('id',ee.id,'name',ee.name) from relations.entities ee inner join relations.relations rr on rr.to_id = ee.id and rr.type_id = 1 and rr.from_id = r.to_id limit 1) as proponente,	
+          (select jsonb_build_object('id',ee.id,'name',ee.name) from relations.entities ee inner join relations.relations rr on rr.from_id = ee.id and rr.type_id = 1 and rr.to_id = r.to_id limit 1) as proponente,
           et."name" other_name,
           et.entity_type other_participant_type,
           ro."name" as relacao_name,
