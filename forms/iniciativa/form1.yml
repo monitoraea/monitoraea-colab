@@ -102,7 +102,7 @@ fields:
 
 - key: data_fim
   type: monthpicker
-  title: Data de conclusção da Iniciativa (real ou estimada)
+  title: Data de conclusão da Iniciativa (real ou estimada)
   size: 6
 
 - key: publicos
