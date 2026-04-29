@@ -28,7 +28,7 @@ const s3 = new AWS.S3({
 
 const { Messagery } = require('dorothy-dna-services');
  
-const { createEntity, updateEntity, getEntity, getEntityBySpecificId, createRelation, removeRelation } = require('../utils');
+const { createEntity, updateEntity, getProponente, getEntityBySpecificId, createRelation, removeMyProponente } = require('../utils');
 const { applyWhere, parseBBOX, getSegmentedId } = require('../../utils');
 
 const defaultLimit = 5;
@@ -2360,7 +2360,7 @@ class Service {
     }
 
     // busca relacao com entidade proponente
-    const proponente = await getEntity('zcm', id);
+    const proponente = await getProponente('zcm', id);
     entity[0].instituicao_id = proponente?.id;
 
     return entity[0];
@@ -2482,10 +2482,10 @@ class Service {
     }
     const e_id = await getEntityBySpecificId('zcm', id);
     if (!!data.instituicao_id) { // cria relação, se proponente foi preenchido
-      if(e_id) await createRelation(e_id, data.instituicao_id, 1 /* proponente */, 'from', null, true /* somente um */);
+      if(e_id) await createRelation(data.instituicao_id, e_id, 1 /* proponente */, 'to', null, true /* somente um */);
     } else {
       // remove relacao
-      await removeRelation(e_id, null /* todas */, 1 /* proponente */);
+      await removeMyProponente(e_id);
     }
     // ---------------------------------------------------------------------------------
 
@@ -3025,7 +3025,7 @@ class Service {
 
     const project = result[0];
 
-    project.instituicao_id = await getEntity('zcm', id);
+    project.instituicao_id = await getProponente('zcm', id);
 
     let conclusion = { ready: true };
 

@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 
 // const FormManager = require('../../FormsManager')
 
-const { createEntity, updateEntity, getEntities, getEntityBySpecificId, updateRelations } = require('../utils');
+const { createEntity, updateEntity, getProponentes, getEntityBySpecificId, updateMyProponentes } = require('../utils');
 const { /* applyJoins ,*/ applyWhere, /* getIds ,*/ protect, getSegmentedId, parseBBOX } = require('../../utils');
 
 var fs = require('fs');
@@ -271,7 +271,7 @@ class Service {
     }
 
     // busca relacao com entidade proponente
-    const proponentes = await getEntities('centro', id);
+    const proponentes = await getProponentes('centro', id);
     cne.intitutions_it = proponentes.map(p => ({ organizacao: { id: p.id } }))
 
     // console.log('>>>>>>>>>>>>>>>>>>>>>>', { proponentes }, cne.intitutions_it)
@@ -362,7 +362,7 @@ class Service {
         await createEntity('organizacao', null, i.organizacao.name, i.organizacao.id);
       }
     }
-    await updateRelations(e_id, entity.intitutions_it.map(i => ({ id: i.organizacao.id })), 1 /* proponente */)
+    await updateMyProponentes(e_id, entity.intitutions_it.filter(i => i.organizacao).map(i => ({ id: i.organizacao.id })))
     // ---------------------------------------------------------------------------------
 
     return entity;

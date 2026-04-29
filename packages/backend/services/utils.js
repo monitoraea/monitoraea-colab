@@ -332,3 +332,38 @@ module.exports.removeMyProponente = async (to_id) => {
         },
     );
 }
+
+// Atualizar todas as relacoes de proponencia da ENTIDADE e_id (insere ou remove)
+module.exports.updateMyProponentes = async (to_id, from_ids /* array of ids */) => {
+    // existing_rels = verifica quais as relacoes existentes do tipo type_id da ENTIDADE e_id
+    const existing_rels = await db.instance().query(
+        `
+        select 
+            r.id,
+            r.from_id
+        from relations.relations r
+        where r.to_id = :to_id and r.type_id = 1
+        `,
+        {
+            replacements: { to_id },
+            type: Sequelize.QueryTypes.DELETE,
+        },
+    );
+
+    // 3 opcoes:
+    // - já existe: não faz nada
+    // - não existe: insere
+    // - existia (existe em existing_rels mas não existe em to_id): remove
+
+    const to_add = from_ids.filter(i => !existing_rels.some(e => e.from_id === i.id))
+    const to_remove = existing_rels.filter(e => !from_ids.some(i => i.id === e.from_id))
+
+    // console.log('>>>>>>>>>>>>', { to_add , to_remove });
+    for (let item of to_add) {
+        await createRelation(item.id, to_id, 1 /* proponencia */, 'to', null);
+    }
+    for (let item of to_remove) {
+        await removeRelation(item.from_id, to_id, 1)
+    }
+
+}
