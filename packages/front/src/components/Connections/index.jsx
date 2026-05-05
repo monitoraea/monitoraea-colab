@@ -62,6 +62,10 @@ export default function ConectionsTab({ entityName = 'zcm', entityId, onSave }) 
     const handleSave = async () => {
         /* save */
         const data = mapForm2Data(entity, form) // prepare information (Renderer)
+
+        console.log('>save>', data);
+        return;
+
         data.indicacao_relations_recebe_it = indicacao_relations_recebe_it;
         data.indicacao_relations_oferece_it = indicacao_relations_oferece_it;
 

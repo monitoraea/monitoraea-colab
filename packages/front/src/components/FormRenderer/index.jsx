@@ -1,4 +1,4 @@
-import { useEffect, useState, cloneElement, Fragment } from 'react';
+import { useEffect, useState, cloneElement, Fragment, useReducer, useRef } from 'react';
 import {
   TextField,
   MenuItem,
@@ -44,6 +44,69 @@ import HelpCircle from '../icons/HelpCircle.jsx';
 
 const MAX_FILE_SIZE = 20;
 
+function checkOld(state, key, value) {
+  if (!value?.id) return state;
+
+  const items = state[key] || [];
+
+  const newItems = items
+    .map(item => {
+      if (item.id !== value.id) return item;
+
+      const newCount = item.count - 1;
+      return newCount > 0 ? { ...item, count: newCount } : null;
+    })
+    .filter(Boolean);
+
+  return {
+    ...state,
+    [key]: newItems
+  };
+}
+function memoryReducer(state, action) {
+  let nState = structuredClone(state);
+
+  // console.log('>>>> ', action.type);
+
+  switch (action.type) {
+    case 'new': {
+      if (!nState[action.data.key]) nState[action.data.key] = [];
+
+      nState[action.data.key].push({ ...action.data.value.new, count: 1 });
+      nState = checkOld(nState, action.data.key, action.data.value.old);
+
+      return nState;
+    }
+    case 'update': {
+      // console.log(1, action.data.key, nState)
+
+      if (nState[action.data.key]) {
+
+        const newItems = nState[action.data.key]
+          .map(item => {
+            if (item.id !== action.data.value.new?.id) return item;
+            return ({ ...item, count: item.count + 1 });
+          })
+
+        nState[action.data.key] = newItems;
+
+        nState = checkOld(nState, action.data.key, action.data.value.old);
+      }
+
+      return nState;
+    }
+    case 'removed': {
+
+      if (nState[action.data.key] && action.data.value?.old) {
+        nState = checkOld(nState, action.data.key, action.data.value.old);
+      }
+
+      return nState;
+    }
+  }
+  throw Error('Unknown action: ' + action.type);
+}
+
 export function Renderer(props) {
   const { form, view, data, lists } = props;
   const [imported, _imported] = useState(false);
@@ -54,6 +117,8 @@ export function Renderer(props) {
 
   const [entity, _entity] = useState({});
   const [files, _files] = useState({});
+
+  const [memory, dispatch] = useReducer(memoryReducer, {});
 
   useEffect(() => {
     _files(
@@ -104,6 +169,13 @@ export function Renderer(props) {
   useEffect(() => {
     props.onDataChange(entity, files);
   }, [entity]);
+
+  const handleMemory = (action, data) => {
+    dispatch({
+      type: action,
+      data,
+    });
+  }
 
   const handleDataChange = (field, value, iterative /* k = block key, index */) => {
     if (iterative === undefined) {
@@ -177,7 +249,8 @@ export function Renderer(props) {
 
   const handleRemoveIterative = iterative => {
     let complexValue = entity[iterative.k];
-    complexValue.splice(iterative.index, 1);
+    // complexValue.splice(iterative.index, 1);
+    complexValue[iterative.index].markedAsRemoved = true;
 
     _entity(entity => ({
       ...entity,
@@ -209,6 +282,8 @@ export function Renderer(props) {
     handleDataChange,
     onRemoveIterative: handleRemoveIterative,
     onAddIterative: handleAddIterative,
+    onMemory: handleMemory,
+    memory,
   };
 
   return (
@@ -235,6 +310,8 @@ function BasicRenderer({
   problems,
   onContentData,
   onAlert,
+  onMemory,
+  memory,
 }) {
   const [blocks, _blocks] = useState([]);
   const [otherFields, _otherFields] = useState([]);
@@ -264,6 +341,8 @@ function BasicRenderer({
                     onContentData={onContentData}
                     onAlert={onAlert}
                     onRemoveIterative={onRemoveIterative}
+                    onMemory={onMemory}
+                    memory={memory}
                   />
                 </div>
               </div>
@@ -340,6 +419,8 @@ function BasicRenderer({
                         onContentData={onContentData}
                         onAlert={onAlert}
                         onRemoveIterative={onRemoveIterative}
+                        onMemory={onMemory}
+                        memory={memory}
                       />
                     </div>
                   </div>
@@ -384,6 +465,8 @@ function BasicRenderer({
                       onContentData={onContentData}
                       onAlert={onAlert}
                       onRemoveIterative={onRemoveIterative}
+                      onMemory={onMemory}
+                      memory={memory}
                     />
                   </div>
                 </div>
@@ -423,6 +506,8 @@ function ViewRenderer({
   problems,
   onContentData,
   onAlert,
+  onMemory,
+  memory,
 }) {
   return (
     <Element
@@ -438,6 +523,8 @@ function ViewRenderer({
       onAddIterative={onAddIterative}
       onContentData={onContentData}
       onAlert={onAlert}
+      onMemory={onMemory}
+      memory={memory}
     />
   );
 }
@@ -456,6 +543,8 @@ function Element(props) {
     problems,
     onContentData,
     onAlert,
+    onMemory,
+    memory,
   } = props;
 
   if (v.type === 'start')
@@ -476,6 +565,8 @@ function Element(props) {
             onAddIterative={onAddIterative}
             onContentData={onContentData}
             onAlert={onAlert}
+            onMemory={onMemory}
+            memory={memory}
           />
         ))}
       </>
@@ -490,7 +581,7 @@ function Element(props) {
       if (!block.iterate) {
         return (
           <Block block={block} data={data}>
-            <Row {...props}/>
+            <Row {...props} />
           </Block>
         );
       } else {
@@ -498,8 +589,8 @@ function Element(props) {
           const childrenBlocks = !data?.[block.key]
             ? []
             : data[block.key].map((v, index) => (
-              <Block key={`row_${block.key}_${index}`} block={block} data={data}>
-                <Row {...props} iterative={{ k: block.key, index }} />
+              <Block key={`row_${block.key}_${index}`} block={block} data={data}>                
+                {!data[block.key]?.[index]?.markedAsRemoved && <Row {...props} iterative={{ k: block.key, index }} />}
               </Block>
             ));
 
@@ -560,6 +651,8 @@ function Element(props) {
             onContentData={onContentData}
             onAlert={onAlert}
             onRemoveIterative={onRemoveIterative}
+            onMemory={onMemory}
+            memory={memory}
           />
         </div>
       );
@@ -584,6 +677,8 @@ function Element(props) {
               onAddIterative={onAddIterative}
               onContentData={onContentData}
               onAlert={onAlert}
+              onMemory={onMemory}
+              memory={memory}
             />
           ))}
         </div>
@@ -617,6 +712,8 @@ function Element(props) {
               onAddIterative={onAddIterative}
               onContentData={onContentData}
               onAlert={onAlert}
+              onMemory={onMemory}
+              memory={memory}
             />
           ))}
         </Block>
@@ -649,12 +746,15 @@ function Row({
   problems,
   onContentData,
   onAlert,
+  onMemory,
+  memory,
 }) {
   return (
-    <div className={`row ${v?.style==='alternate' ? 'alternate' : ''}`}>
+    <div className={`row ${v?.style === 'alternate' ? 'alternate' : ''}`}>
       {v.elements.map((v, idx) => (
         <Element
           key={idx}
+          
           readonly={readonly}
           helpbox={helpbox}
           problems={problems}
@@ -668,6 +768,8 @@ function Row({
           onAddIterative={onAddIterative}
           onContentData={onContentData}
           onAlert={onAlert}
+          onMemory={onMemory}
+          memory={memory}
         />
       ))}
     </div>
@@ -692,6 +794,8 @@ export function FieldRenderer({
   onContentData,
   onAlert,
   onRemoveIterative,
+  onMemory,
+  memory,
 }) {
   const [doShow, _doShow] = useState(false);
 
@@ -766,6 +870,8 @@ export function FieldRenderer({
         dataValue={dataValue}
         onChange={onChange(keyRef, iterative)}
         data={data}
+        memory={memory}
+        onMemory={onMemory}
       />
     );
   else if (f.type === 'async_autocomplete')
@@ -1042,6 +1148,10 @@ export function mapForm2Data(data, form) {
   /* TODO: vai para o getFormData, abaixo?? */
   let mappedData = { ...data };
 
+  for (let b of form.blocks.filter(b => b.iterate && b.iterate.target === 'none')) {
+    mappedData[b.key] = mappedData[b.key].filter(d => !d.markedAsRemoved)
+  }
+
   // multi_autocomplete
   for (let f of form.fields.filter(f => f.type === 'multi_autocomplete')) {
     mappedData[f.key] = data[f.key] ? data[f.key].map(d => d.value) : [];
@@ -1249,8 +1359,9 @@ function buildLocalFilter(data, f, index) {
   return filterQuery;
 }
 
-function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange, error, /* multiple, */ data: formData }) {
+function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange, error, /* multiple, */ data: formData, memory, onMemory }) {
 
+  const valueRef = useRef(null);
   const [open, _open] = useState(false);
   const [options, _options] = useState([]);
   const [localValue, _localValue] = useState(null);
@@ -1270,9 +1381,40 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
 
 
   useEffect(() => {
+    valueRef.current = localValue;
+  }, [localValue]);
+
+  useEffect(() => {
+    return () => {
+      if (f.memory) {
+
+        onMemory('removed', {
+          key: f.memory,
+          value: {
+            old: valueRef.current,
+          },
+        })
+
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (!data) _options([]);
-    else _options(data.list);
-  }, [data]);
+    else {
+
+      // console.log(f.memory, memory, memory[f.memory])
+
+      let allOptions = data.list;
+      if (f.memory && memory[f.memory]?.length) {
+        allOptions = [...memory[f.memory]/* sort by name, group? */, ...allOptions];
+      }
+
+      // console.log({ allOptions })
+
+      _options(allOptions);
+    }
+  }, [data, memory]);
 
   useEffect(() => {
     if (!value) _localValue(null);
@@ -1292,7 +1434,12 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
     }, 500)
   }, [inputValue])
 
+  // useEffect(() => {
+  //   console.log(f.key, f.memory, { memory });
+  // }, [memory]);
+
   const handleChange = async (_, value) => {
+
     if (value && value.inputValue) {
       _creating(true);
       // só acontece quando cria
@@ -1302,9 +1449,26 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
       }
 
       onChange(value ? value : null);
+
+      if (f.memory) onMemory('new', {
+        key: f.memory,
+        value: {
+          old: localValue,
+          new: value,
+        },
+      })
+
       _creating(false);
     } else {
       onChange(value ? { id: value.id } : null);
+
+      if (f.memory && localValue?.id !== value?.id) onMemory('update', {
+        key: f.memory,
+        value: {
+          old: localValue,
+          new: value ? { id: value.id } : null,
+        },
+      })
     }
 
     _localValue(value);
@@ -1313,6 +1477,8 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
   const handleInputChange = (event, newInputValue) => {
     _inputValue(newInputValue);
   }
+
+  /* f.memory */
 
   return (
     <>
@@ -1333,7 +1499,7 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
         autoHighlight
         isOptionEqualToValue={(option, value) => option.id === value.id}
         getOptionLabel={option => (f.title_field ? option[f.title_field] : option.name || '')}
-        options={options}
+        options={options} /* merge w/ key memory */
         noOptionsText="Nenhuma opção"
         filterOptions={(options, params) => {
           const filtered = filter(options, params);

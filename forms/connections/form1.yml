@@ -12,6 +12,7 @@ fields:
   - key: organizacao_r
     block: relations_recebe_it
     type: real_async_autocomplete
+    memory: organizations
     remote: entity 
     filter:  # global
       - my_entity_type
@@ -25,6 +26,7 @@ fields:
   - key: iniciativa_r
     block: relations_recebe_it
     type: real_async_autocomplete
+    memory: initiatives
     remote: entity/initiatives    
     remote_single: entity 
     filter_local: 
@@ -94,6 +96,7 @@ fields:
   - key: organizacao_o
     block: relations_oferece_it
     type: real_async_autocomplete
+    memory: organizations
     remote: entity
     filter:  # global
       - my_entity_type
@@ -107,6 +110,7 @@ fields:
   - key: iniciativa_o
     block: relations_oferece_it
     type: real_async_autocomplete
+    memory: initiatives
     remote: entity/initiatives  
     remote_single: entity 
     filter_local:
