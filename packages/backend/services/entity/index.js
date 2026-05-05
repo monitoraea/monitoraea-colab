@@ -195,7 +195,7 @@ class Service {
     for (let i of initiatives_to_create) await createEntity('iniciativa', null, i.initiative.name, i.initiative.id);
 
     // other_relations_to_create
-    for (let i of other_relations_to_create) await createRelation(/* FROM */ i.iniciativa.id, /* TO */ i.organizacao.id, /* PROPONENCIA */ 1, 'from', null, false, true);
+    for (let i of other_relations_to_create) await createRelation(/* FROM */ i.organizacao.id, /* TO */ i.iniciativa.id, /* PROPONENCIA */ 1, 'to', null, false, true);
 
     for (let type of ['recebe', 'oferece']) {
       const complement = `_${type === 'recebe' ? 'r' : 'o'}`;
