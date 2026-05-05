@@ -589,7 +589,7 @@ function Element(props) {
           const childrenBlocks = !data?.[block.key]
             ? []
             : data[block.key].map((v, index) => (
-              <Block key={`row_${block.key}_${index}`} block={block} data={data}>                
+              <Block key={`row_${block.key}_${index}`} block={block} data={data}>
                 {!data[block.key]?.[index]?.markedAsRemoved && <Row {...props} iterative={{ k: block.key, index }} />}
               </Block>
             ));
@@ -754,7 +754,7 @@ function Row({
       {v.elements.map((v, idx) => (
         <Element
           key={idx}
-          
+
           readonly={readonly}
           helpbox={helpbox}
           problems={problems}
@@ -1405,9 +1405,10 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
 
       // console.log(f.memory, memory, memory[f.memory])
 
-      let allOptions = data.list;
+      let allOptions = data.list.map(o => ({ ...o, memory: false })).filter(o => o.name.length);
       if (f.memory && memory[f.memory]?.length) {
-        allOptions = [...memory[f.memory]/* sort by name, group? */, ...allOptions];
+        const memories = memory[f.memory].map(o => ({ ...o, memory: true })).sort((a,b) => a.name > b.name ? 1 : -1)
+        allOptions = [...memories, ...allOptions];
       }
 
       // console.log({ allOptions })
@@ -1500,6 +1501,7 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
         isOptionEqualToValue={(option, value) => option.id === value.id}
         getOptionLabel={option => (f.title_field ? option[f.title_field] : option.name || '')}
         options={options} /* merge w/ key memory */
+        groupBy={(option) => option.memory}
         noOptionsText="Nenhuma opção"
         filterOptions={(options, params) => {
           const filtered = filter(options, params);
@@ -1512,7 +1514,7 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
           if (inputValue !== '' && !isExisting) {
             filtered.push({
               inputValue,
-              name: `Adicionar "${inputValue}"`,
+              name: `+ Adicionar "${inputValue}"`,
             });
           }
 
@@ -1549,6 +1551,12 @@ function RealAsyncAutocomplete({ f, readonly, index, dataValue: value, onChange,
             />
           );
         }}
+        renderGroup={(params) => (
+          <li key={params.key}>
+            <div className={`${styles['options-sep']} ${params.group ? styles.memory : styles.regular}`} ></div>
+            <div>{params.children}</div>
+          </li>
+        )}
       />
     </>
   );
