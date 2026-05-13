@@ -179,6 +179,10 @@ const WorkingGroups = () => {
             {currentCommunity.id === 1 && <button className="button-outline" onClick={() =>  window.open(`${server}project/spreadsheet/draft`, '_blank')}>
               Baixar planilha (rascunhos)
             </button>}
+
+            {currentCommunity.id === 601 && <button className="button-outline" onClick={() =>  window.open(`${server}commission/all/download`, '_blank')}>
+              Baixar planilha
+            </button>}
           </div>
         </div>
         <div className="page-content">

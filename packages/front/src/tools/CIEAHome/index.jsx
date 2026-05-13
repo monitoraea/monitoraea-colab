@@ -152,10 +152,10 @@ const Manager = () => {
       <div className="page-header">
         <PageTitle title="Colegiado" />
         <div className="page-header-buttons">
-          {/* <button className="button-outline" onClick={handleDownload}>
+          <button className="button-outline" onClick={handleDownload}>
             <Download></Download>
             Baixar CSV
-          </button>*/}
+          </button>
 
           {isAdmOrMod && isAdmOrMod === true && (
             <button className="button-primary" onClick={handlePublish}>

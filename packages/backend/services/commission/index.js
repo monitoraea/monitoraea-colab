@@ -12,6 +12,8 @@ const dayjs = require('dayjs');
 const aws = require('aws-sdk');
 const s3BucketName = process.env.S3_BUCKET_NAME;
 
+const AdmZip = require('adm-zip');
+
 const s3 = new aws.S3({
   apiVersion: '2006-03-01',
 
@@ -1710,6 +1712,122 @@ class Service {
     };
 
     return { geojson: simplify(feature, 0.001) };
+  }
+
+  async downloadProject(id) {
+
+    let complementSQL = 'ORDER BY c.nome';
+    if(id) complementSQL = 'and c.iniciativa_id = :id';
+
+    let rows = await db.instance().query(
+      `
+      SELECT 
+        id, 
+        iniciativa_id, 
+        nome, 
+        link, 
+        (select url from files f where f.id = logo_arquivo) as logo,
+        data_criacao, 
+        documento_criacao,
+        (select url from files f where f.id = documento_criacao_arquivo) as documento_criacao_arquivo,
+        ativo, 
+        composicao_cadeiras_set_pub, 
+        composicao_cadeiras_soc_civ, 
+        composicao_cadeiras_outros, 
+        coordenacao, 
+        coordenacao_especifique, 
+        membros, 
+        regimento_interno, 
+        (select url from files f where f.id = regimento_interno_arquivo) as regimento_interno_arquivo,
+        org_interna_periodicidade, 
+        organizacao_interna_periodicidade_especifique, 
+        organizacao_interna_estrutura_especifique, 
+        ppea_decreto, 
+        ppea_lei, 
+        (select url from files f where f.id = ppea_arquivo) as ppea_arquivo,
+        "createdAt", 
+        "updatedAt", 
+        organizacao_interna_estrutura_tem, 
+        ppea_tem, 
+        regimento_interno_tem, 
+        ppea2_tem, 
+        ppea2_decreto, 
+        ppea2_lei, 
+        (select url from files f where f.id = ppea2_arquivo) as ppea2_arquivo,
+        programa_estadual_tem, 
+        programa_estadual_decreto, 
+        programa_estadual_lei, 
+        (select url from files f where f.id = programa_estadual_arquivo) as programa_estadual_arquivo,
+        plano_estadual_tem, 
+        plano_estadual_decreto, 
+        plano_estadual_lei, 
+        (select url from files f where f.id = plano_estadual_arquivo) as plano_estadual_arquivo,
+        indicadores, 
+        tipo_colegiado, 
+        tipo_colegiado_outro, 
+        nivel_atuacao, 
+        nivel_atuacao_outro, 
+        coordenacao_quem,
+        ppea_outra_tem, 
+        ppea_outra_decreto, 
+        ppea_outra_lei, 
+        (select url from files f where f.id = ppea_outra_arquivo) as ppea_outra_arquivo,
+        atuacao_aplica, 
+        atuacao_naplica_just, 
+        obs, 
+        (select url from files f where f.id = plano_acao_arquivo) as plano_acao_arquivo,
+        plano_acao_ini, 
+        plano_acao_fim,
+        (select string_agg(u.nm_estado, '|' order by u.nm_estado) from ufs u where u.id = any(c.ufs)) as ufs
+      FROM ciea.comissoes c
+      where c.versao='draft' 
+      ${complementSQL}
+      `,
+      {
+        replacements: { id },
+        type: Sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    if (!rows.length) return null;
+
+    const tRows = rows.map(r => {
+      const tR = structuredClone(r);
+
+      if(tR.composicao_cadeiras_outros) tR.composicao_cadeiras_outros = tR.composicao_cadeiras_outros.map(cco => `${cco.setor}: ${cco.cadeiras}`).join(', ');
+      tR.indicadores = JSON.stringify(tR.indicadores);
+      if(tR.coordenacao_quem) tR.coordenacao_quem = tR.coordenacao_quem.map((cq) => JSON.stringify(cq));
+
+      return tR;
+    })
+
+    // fileName
+    const fileName = id ? `colegiado_${id}` : 'colegiados';
+
+    const csvFileName = `${fileName}.csv`;
+    const zipFileName = `${fileName}.zip`;
+
+    // 1. transformar em csv
+    const columns = Object.keys(tRows[0]).filter(k => !['coordinates', 'bbox'].includes(k));
+    let initialContent = columns.join(';') + '\n';
+
+    const content = tRows.reduce((accum, r) => {
+      const row = columns.reduce((accum, key) => {
+        if (typeof r[key] === 'string') r[key] = r[key].replace(/\n/g, ' ').replace(/;/g, ',').trim();
+
+        return [...accum, r[key]];
+      }, []);
+      return `${accum} ${row.join(`;`)}\n`;
+    }, initialContent);
+
+    // 2. zipar e colocar na memoria
+    const zip = new AdmZip();
+    zip.addFile(csvFileName, Buffer.from(content, 'latin1'));
+
+    return {
+      zipFileName,
+      content: zip.toBuffer(), // get in-memory zip
+    };
   }
 }
 

@@ -3,6 +3,8 @@ const router = express.Router();
 const { sendError } = require('dorothy-dna-services').util;
 const entity = require('./index');
 
+const stream = require('stream');
+
 const multer = require('multer');
 const upload = multer({
   storage: multer.diskStorage({
@@ -32,6 +34,44 @@ router.delete('/:id/draft/timeline/:tlId', async (req, res) => {
     res.json(result);
   } catch (ex) {
     sendError(res, ex, 500);
+  }
+});
+
+
+router.get('/all/download', async (req, res) => {
+
+  try {
+    const { zipFileName, content } = await entity.downloadProject();
+
+    // download
+    const readStream = new stream.PassThrough();
+    readStream.end(content);
+
+    res.set('Content-disposition', 'attachment;filename=' + zipFileName);
+    res.set('Content-Type', 'application/octet-stream');
+
+    readStream.pipe(res);
+  } catch ({ message }) {
+    res.status(401).send({ error: message });
+  }
+});
+
+router.get('/:id/download', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { zipFileName, content } = await entity.downloadProject(id);
+
+    // download
+    const readStream = new stream.PassThrough();
+    readStream.end(content);
+
+    res.set('Content-disposition', 'attachment;filename=' + zipFileName);
+    res.set('Content-Type', 'application/octet-stream');
+
+    readStream.pipe(res);
+  } catch ({ message }) {
+    res.status(401).send({ error: message });
   }
 });
 
