@@ -38,7 +38,7 @@ fields:
     block: dependent
     type: file
     title: Inserir elemento comprobatório
-    validation: not_empty
+    # validation: not_empty
 
   - key: 4
     block: dependent
@@ -106,7 +106,7 @@ fields:
       target: # o texto só aparece se a resposta key 6 for Sim = 1
         key: 6
         value: 1
-    validation: not_empty
+    # validation: not_empty
 
   - key: 10
     block: dependent
@@ -148,7 +148,7 @@ fields:
       target: # o texto só aparece se a resposta key 11 for Sim = 1
         key: 11
         value: 1
-    validation: not_empty
+    # validation: not_empty
 
   - key: 14
     block: dependent
@@ -178,7 +178,7 @@ fields:
       target: # o texto só aparece se a resposta key 11 for Sim = 1
         key: 11
         value: 1
-    validation: not_empty
+    # validation: not_empty
 
   - key: 17
     block: dependent
@@ -210,7 +210,7 @@ fields:
       target: # o texto só aparece se a resposta key 17 for Sim = 1
         key: 17
         value: 1
-    validation: not_empty
+    # validation: not_empty
 
   - key: 20
     block: dependent
@@ -256,7 +256,7 @@ fields:
       target: # o texto só aparece se a resposta key 20 for Sim = 1
         key: 20
         value: 1
-    validation: not_empty
+    # validation: not_empty
 
   - key: 24
     block: dependent

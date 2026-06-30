@@ -30,7 +30,7 @@ fields:
     block: dependent
     type: file
     title: Apresente evidências.
-    validation: not_empty
+    # validation: not_empty
 
   - key: 5
     block: dependent
@@ -72,7 +72,7 @@ fields:
     block: dependent
     type: file
     title: Apresente evidências (arquivo zip).
-    validation: not_empty
+    # validation: not_empty
 
   - key: 9
     block: dependent
@@ -113,7 +113,7 @@ fields:
       target: # o texto só aparece se a pergunta da key 9 for Sim = 1
         key: 9
         value: 1
-    validation: not_empty
+    # validation: not_empty
 
 blocks:
   - key: main

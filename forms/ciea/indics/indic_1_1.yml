@@ -37,7 +37,7 @@ fields:
     block: dependent
     type: file
     title: Inserir elemento comprobatório
-    validation: not_empty
+    # validation: not_empty
 
   - key: 4
     block: dependent
@@ -68,7 +68,7 @@ fields:
     block: dependent
     type: file
     title: Inserir elemento comprobatório
-    validation: not_empty
+    # validation: not_empty
 
 blocks:
   - key: main

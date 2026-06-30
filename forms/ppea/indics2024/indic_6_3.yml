@@ -42,7 +42,7 @@ fields:
     block: dependent
     type: file
     title: Apresente evidências (arquivo zip).
-    validation: not_empty
+    # validation: not_empty
 
 blocks:
   - key: main

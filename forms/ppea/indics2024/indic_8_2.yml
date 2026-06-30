@@ -79,7 +79,7 @@ fields:
     block: dependent
     type: file
     title: Apresente evidências (aquivo zip).
-    validation: not_empty
+    # validation: not_empty
     show:
       target:
         key: 5

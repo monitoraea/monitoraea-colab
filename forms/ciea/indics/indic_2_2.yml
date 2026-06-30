@@ -49,7 +49,7 @@ fields:
     block: dependent
     type: file
     title: Inserir elemento comprobatório
-    validation: not_empty
+    # validation: not_empty
 
 blocks:
   - key: main

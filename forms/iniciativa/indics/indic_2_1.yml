@@ -51,7 +51,7 @@ fields:
     block: dependent
     type: file
     title: Insira elementos comprobatórios (aquivo zip) referente a pergunta acima.
-    validation: not_empty
+    # validation: not_empty
 
   - key: 6
     block: dependent

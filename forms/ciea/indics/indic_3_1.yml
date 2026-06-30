@@ -79,7 +79,7 @@ fields:
       target: # o texto só aparece se a resposta key 2 for Sim = 1
         key: 2
         value: 1
-    validation: not_empty
+    # validation: not_empty
 
   - key: 8
     block: dependent
@@ -125,7 +125,7 @@ fields:
       target: # o texto só aparece se a resposta key 8 for Sim = 1
         key: 8
         value: 1
-    validation: not_empty
+    # validation: not_empty
 
   - key: 12
     block: dependent
