@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('../database');
+const fs = require("fs");
 
 const { applyJoins, applyWhere, protect } = require('../../utils');
 
