@@ -1,0 +1,79 @@
+entity: colegiado
+form_key: form-indic-1-1
+title: "1.1 Diagnóstico Participativo do Colegiado"
+
+sections:
+  - title: "Diagnóstico Participativo"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: diagnostico_realizado
+            label: "É realizado Diagnóstico Participativo no âmbito do Colegiado?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: periodicidade_diagnostico
+            label: "Qual a periodicidade da realização deste diagnóstico participativo?"
+            span: 6
+            widget: select
+            required_for_publish: true
+            options:
+              - value: bianual
+                label: Bianual
+              - value: quadrianual
+                label: Quadrianual
+              - value: decenal
+                label: A cada 10 anos
+            placeholder: "-- Selecione --"
+
+          - key: evidencia_diagnostico
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+
+      - fields:
+          - key: estrategias_diagnostico
+            label: "Quais as estratégias utilizadas para a realização do diagnóstico?"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: entrevistas
+                label: Entrevistas
+              - value: oficinas
+                label: Oficinas
+              - value: multiplas_tecnicas
+                label: Múltiplas técnicas
+              - value: outros
+                label: Outros
+
+          # Always visible instead of conditional on estrategias_diagnostico
+          # including "outros" — the rules engine has no array-membership
+          # operator (see Part B plan).
+          - key: estrategias_diagnostico_especifique
+            label: "Especifique (caso tenha selecionado 'Outros')"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: evidencia_estrategias
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+
+rules:
+  - when:
+      field: diagnostico_realizado
+      equals: true
+    show: [periodicidade_diagnostico, evidencia_diagnostico, estrategias_diagnostico, estrategias_diagnostico_especifique, evidencia_estrategias]

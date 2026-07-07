@@ -1,0 +1,115 @@
+entity: colegiado
+form_key: form-indic-3-1
+title: "3.1 Ações de Enraizamento e Capilaridade da EA nos territórios"
+
+sections:
+  - title: "Enraizamento e Capilaridade"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: tem_estrategias_enraizamento
+            label: "O colegiado tem estratégias para enraizar e ampliar a capilaridade da EA nos territórios de sua abrangência?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: coordena_formacao_formadores
+            label: "O Colegiado dedica-se a planejar, coordenar e pautar processos de formação de formadores, articuladores, enraizadores ou lideranças territoriais com objetivo de enraizar princípios da EA nos territórios de sua abrangência?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: coordena_formacao_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: coordena_formacao_especifique
+            label: "Especifique"
+            span: 12
+            widget: textarea
+          - key: pessoas_formadas
+            label: "Quantas pessoas foram formadas nos últimos 2 anos a partir do planejamento e coordenação do colegiado (inserir dado numérico)?"
+            span: 6
+            widget: textarea
+          - key: pessoas_formadas_comente
+            label: "Comente"
+            span: 6
+            widget: textarea
+          - key: evidencia_formacao
+            label: "Inserir elemento comprobatório"
+            span: 12
+            widget: file
+            recommended: true
+
+      - fields:
+          - key: articula_redes_ea
+            label: "O Colegiado articula com Redes de EA, Coletivos e Movimentos Socioambientais para atuarem de forma sinérgica e cooperativa com objetivo de ampliar e potencializar as ações nos territórios?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: articula_redes_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: articula_redes_especifique
+            label: "Especifique"
+            span: 12
+            widget: textarea
+          - key: evidencia_articula_redes
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+          - key: quantidade_redes_articuladas
+            label: "Quantas redes de EA foram articuladas pelo Colegiado em seu território de abrangência (inserir dado numérico)?"
+            span: 6
+            widget: textarea
+          - key: quais_redes_articuladas
+            label: "Quais (abrir exatamente o número de linhas indicado no dado numérico)?"
+            span: 12
+            widget: textarea
+
+rules:
+  - when:
+      field: tem_estrategias_enraizamento
+      equals: true
+    show: [coordena_formacao_formadores, articula_redes_ea]
+
+  - when:
+      field: coordena_formacao_formadores
+      equals: false
+    show: coordena_formacao_comente
+
+  - when:
+      field: coordena_formacao_formadores
+      equals: true
+    show: [coordena_formacao_especifique, pessoas_formadas, pessoas_formadas_comente, evidencia_formacao]
+
+  - when:
+      field: articula_redes_ea
+      equals: false
+    show: articula_redes_comente
+
+  - when:
+      field: articula_redes_ea
+      equals: true
+    show: [articula_redes_especifique, evidencia_articula_redes, quantidade_redes_articuladas, quais_redes_articuladas]

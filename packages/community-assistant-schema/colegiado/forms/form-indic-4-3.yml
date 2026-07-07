@@ -1,0 +1,92 @@
+entity: colegiado
+form_key: form-indic-4-3
+title: "4.3 Comprometimento dos Membros"
+
+sections:
+  - title: "Comprometimento dos Membros"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: avalia_comprometimento
+            label: "O Colegiado avalia o comprometimento de seus membros em seu âmbito de atuação?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: comprometimento_comente
+            label: "Como o colegiado avalia o comprometimento de seus membros no âmbito de sua atuação? Comente."
+            span: 12
+            widget: textarea
+            required_for_publish: true
+
+      - fields:
+          - key: nivel_comprometimento
+            label: "Qual o nível de comprometimento de seus membros para com o colegiado?"
+            span: 12
+            widget: select
+            required_for_publish: true
+            options:
+              - value: excelente
+                label: Excelente
+              - value: bom_regular
+                label: "Bom/Regular"
+              - value: ruim
+                label: Ruim
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: frequencia_avaliacao_comprometimento
+            label: "Qual a frequência da realização desta avaliação?"
+            span: 12
+            widget: select
+            required_for_publish: true
+            options:
+              - value: anual
+                label: Anual
+              - value: bianual
+                label: Bianual
+              - value: quadrianual
+                label: Quadrianual
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: aspectos_comprometimento
+            label: "Quais aspectos de comprometimento são demonstrados pelos membros do colegiado?"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: proativos
+                label: "São proativos, apresentam propostas e buscam soluções para os problemas do Colegiado"
+              - value: cumprem_prazos
+                label: "Cumprem prazos definidos, entregam produtos e resultados"
+              - value: participam_ativamente
+                label: "Participam ativamente das atividades internas e externas do Colegiado"
+              - value: trabalham_equipe
+                label: "Trabalham em equipe"
+              - value: compartilham_aprendizados
+                label: "Compartilham aprendizados, experiências e informações"
+              - value: cooperam
+                label: "Cooperam uns com os outros"
+              - value: outros
+                label: Outros
+
+          # Always visible (see Part B plan)
+          - key: aspectos_comprometimento_especifique
+            label: "Especifique (caso tenha selecionado 'Outros')"
+            span: 12
+            widget: textarea
+
+rules:
+  - when:
+      field: avalia_comprometimento
+      equals: true
+    show: [comprometimento_comente, nivel_comprometimento, frequencia_avaliacao_comprometimento, aspectos_comprometimento, aspectos_comprometimento_especifique]

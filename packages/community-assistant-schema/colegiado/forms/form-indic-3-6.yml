@@ -1,0 +1,34 @@
+entity: colegiado
+form_key: form-indic-3-6
+title: "3.6 Alterações e incrementos em políticas públicas"
+
+sections:
+  - title: "Alterações em Políticas Públicas"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: proposta_inserida
+            label: "O Colegiado obteve alguma proposta sua inserida em normativas (leis, decretos, resoluções, portarias), regimentos, planos ou programas governamentais?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: qual_intervencao_comente
+            label: "Qual (comente — insira um novo campo por intervenção gerada)?"
+            span: 12
+            widget: textarea
+            required_for_publish: true
+
+rules:
+  - when:
+      field: proposta_inserida
+      equals: true
+    show: qual_intervencao_comente

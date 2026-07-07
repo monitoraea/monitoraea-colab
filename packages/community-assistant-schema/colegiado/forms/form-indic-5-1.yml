@@ -1,0 +1,290 @@
+entity: colegiado
+form_key: form-indic-5-1
+title: "5.1 Mecanismos contra racismo ambiental e injustiças socioambientais"
+
+sections:
+  - title: "Mecanismos e Medidas"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: promove_mecanismos_racismo
+            label: "O colegiado promove mecanismos e medidas para combater o racismo ambiental e injustiças socioambientais e climáticas?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: mecanismos_denuncia
+            label: "A partir de quais mecanismos?"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: email_telefone
+                label: "Denúncias podem ser feitas por E-mail e/ou Telefone divulgado no âmbito do Colegiado"
+              - value: formulario_anonimo
+                label: "Denúncias podem ser feitas de forma anônima via Formulário online divulgado no âmbito do Colegiado"
+              - value: ouvidoria
+                label: "Foi criada um tipo de Ouvidoria, formada por um grupo de membros do Colegiado, que faz a escuta acolhedora das denúncias e dá encaminhamentos"
+              - value: grupo_trabalho_monitoramento
+                label: "Existe um Grupo de Trabalho do Colegiado dedicado ao monitoramento do racismo ambiental e injustiças socioambientais internas ao Colegiado e nos espaços das políticas públicas de EA de sua competência"
+              - value: relatorios_periodicos
+                label: "São divulgados relatórios periódicos sobre as denúncias recebidas e encaminhamentos dados pelo Colegiado"
+              - value: outros
+                label: Outros
+
+      - fields:
+          - key: mecanismos_evidencia
+            label: "Inserir elemento comprobatório"
+            span: 12
+            widget: file
+            recommended: true
+
+      - fields:
+          - key: garantia_retaliacao
+            label: "Existe alguma garantia de que a denúncia não sofrerá retaliação?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          # Unconditional within the dependent block (legacy has no `show` on this field)
+          - key: garantia_retaliacao_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+            required_for_publish: true
+
+      - fields:
+          - key: capacitacoes_realizadas
+            label: "O colegiado promove ou coordena capacitações, formações ou autoformações sobre equidade racial, racismo ambiental, justiça socioambiental, climática e direitos humanos para seus membros?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: capacitacoes_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+            required_for_publish: true
+
+      - fields:
+          - key: capacitacoes_ultima_cite
+            label: "Cite a última capacitação/formação realizada sobre este assunto"
+            span: 12
+            widget: textarea
+            required_for_publish: true
+
+      - fields:
+          - key: capacitacoes_evidencia
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+          - key: capacitacoes_quantas
+            label: "Quantas capacitações internas foram promovidas (dado numérico)?"
+            span: 6
+            widget: textarea
+            required_for_publish: true
+
+      - fields:
+          - key: producao_materiais
+            label: "O colegiado apoia ou coordena a produção de materiais pedagógicos que valorizam e incluem diferentes identidades culturais e étnicas?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          # Unconditional within the dependent block (legacy has no `show` on this field)
+          - key: producao_materiais_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+            required_for_publish: true
+
+      - fields:
+          - key: producao_materiais_evidencia
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+          - key: producao_materiais_quantos
+            label: "Quantos materiais foram produzidos nos últimos 2 anos sob a coordenação e/ou apoio do Colegiado (dado numérico)?"
+            span: 6
+            widget: textarea
+            required_for_publish: true
+
+      - fields:
+          - key: producao_materiais_comente_sim
+            label: "Comente"
+            span: 6
+            widget: textarea
+            required_for_publish: true
+          - key: producao_materiais_evidencia2
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+
+      - fields:
+          - key: pautas_antirracistas
+            label: "As pautas do Colegiado consideram princípios antirracistas e de justiça socioambiental?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          # Unconditional within the dependent block (legacy has no `show` on this field)
+          - key: pautas_antirracistas_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+            required_for_publish: true
+
+      - fields:
+          - key: pautas_antirracistas_evidencia
+            label: "Inserir elemento comprobatório"
+            span: 12
+            widget: file
+            recommended: true
+
+      - fields:
+          - key: espacos_escuta
+            label: "Há espaços formais para escuta e participação de comunidades afetadas pelas desigualdades socioambientais?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: espacos_escuta_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+            required_for_publish: true
+
+      - fields:
+          - key: espacos_escuta_descreva
+            label: "Descreva os espaços"
+            span: 6
+            widget: textarea
+            required_for_publish: true
+          - key: espacos_escuta_evidencia
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+
+      - fields:
+          - key: parcerias
+            label: "O colegiado realizou parcerias para fortalecer a sua atuação em pautas antirracistas e de justiças socioambientais e climáticas?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: parcerias_grupos
+            label: "Com quais grupos foram realizadas parcerias?"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: povos_comunidades_tradicionais
+                label: "Povos e Comunidades Tradicionais"
+              - value: movimentos_populares_urbanos
+                label: "Movimentos Populares e Urbanos"
+              - value: grupos_vulnerabilizados
+                label: "Grupos Vulnerabilizados e Minorizados"
+              - value: juventudes_criancas
+                label: "Juventudes e Crianças"
+              - value: pessoas_idosas
+                label: "Pessoas Idosas"
+              - value: trabalhadores_sindicatos
+                label: "Trabalhadores e sindicatos"
+              - value: mulheres_movimentos_feministas
+                label: "Mulheres e Movimentos Feministas"
+              - value: populacao_negra_combate_racismo
+                label: "População negra e Grupos de combate ao racismo"
+              - value: grupos_ambientalistas
+                label: "Grupos ambientalistas e de justiça socioambiental e climática"
+              - value: migrantes_refugiados
+                label: "Migrantes e Refugiados"
+              - value: outros
+                label: Outros
+
+          # Always visible (see Part B plan) — legacy conditions this on parcerias_grupos including "Outros"
+          - key: parcerias_grupos_especifique
+            label: "Especifique (caso tenha selecionado 'Outros')"
+            span: 12
+            widget: textarea
+
+rules:
+  - when:
+      field: promove_mecanismos_racismo
+      equals: true
+    show:
+      - mecanismos_denuncia
+      - mecanismos_evidencia
+      - garantia_retaliacao
+      - garantia_retaliacao_comente
+      - capacitacoes_realizadas
+      - producao_materiais
+      - producao_materiais_comente
+      - pautas_antirracistas
+      - pautas_antirracistas_comente
+      - espacos_escuta
+      - parcerias
+
+  - when:
+      field: capacitacoes_realizadas
+      equals: false
+    show: capacitacoes_comente
+
+  - when:
+      field: capacitacoes_realizadas
+      equals: true
+    show: [capacitacoes_ultima_cite, capacitacoes_evidencia, capacitacoes_quantas]
+
+  - when:
+      field: producao_materiais
+      equals: true
+    show: [producao_materiais_evidencia, producao_materiais_quantos, producao_materiais_comente_sim, producao_materiais_evidencia2]
+
+  - when:
+      field: pautas_antirracistas
+      equals: true
+    show: pautas_antirracistas_evidencia
+
+  - when:
+      field: espacos_escuta
+      equals: false
+    show: espacos_escuta_comente
+
+  - when:
+      field: espacos_escuta
+      equals: true
+    show: [espacos_escuta_descreva, espacos_escuta_evidencia]
+
+  - when:
+      field: parcerias
+      equals: true
+    show: [parcerias_grupos, parcerias_grupos_especifique]

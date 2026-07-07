@@ -1,0 +1,43 @@
+entity: colegiado
+form_key: form-indic-3-5
+title: "3.5 Comprometimento do poder público com as pautas do Colegiado"
+
+sections:
+  - title: "Comprometimento do Poder Público"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: poder_publico_comprometido
+            label: "O poder público / governo demonstrou compromisso com as pautas propostas pelo colegiado?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: compromissos_governo
+            label: "Quais foram os compromissos assumidos pelo governo/poder público a partir das pautas/reivindicações do colegiado?"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: respondeu_formalmente
+                label: "Respondeu formalmente às pautas"
+              - value: reunioes_com_colegiado
+                label: "Realizou reuniões com o colegiado"
+              - value: revisou_normativas
+                label: "Atuou positivamente para criar ou revisar normativas (leis, decretos, portarias, etc.), programas"
+              - value: fortaleceu_colegiado
+                label: "Realizou ações para contribuir no fortalecimento do colegiado e políticas públicas de EA acompanhadas pelo mesmo"
+
+rules:
+  - when:
+      field: poder_publico_comprometido
+      equals: true
+    show: compromissos_governo

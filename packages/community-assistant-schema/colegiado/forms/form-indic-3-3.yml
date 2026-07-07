@@ -1,0 +1,110 @@
+entity: colegiado
+form_key: form-indic-3-3
+title: "3.3 Articulação e Intersetorialidade"
+
+sections:
+  - title: "Articulação e Intersetorialidade"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: promove_articulacao
+            label: "O Colegiado promove processos de articulação entre setores para influenciar em políticas públicas socioambientais, assim como nas próprias políticas de educação ambiental?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: quantidade_setores_envolvidos
+            label: "Sem contar as instituições membros do próprio Colegiado, quantos setores ou instituições foram envolvidos na agenda do colegiado nos últimos 2 anos?"
+            span: 6
+            widget: select
+            required_for_publish: true
+            options:
+              - value: "1"
+                label: "1 setor"
+              - value: "2"
+                label: "2 setores"
+              - value: "3"
+                label: "3 setores"
+              - value: "4"
+                label: "4 setores"
+              - value: "5"
+                label: "5 setores"
+              - value: "6"
+                label: "6 setores"
+              - value: "7"
+                label: "7 setores"
+              - value: "8+"
+                label: "Mais de 8 setores"
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: articulacao_envolveu
+            label: "O colegiado envolveu em sua articulação, nos últimos 2 anos"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: atores
+                label: Atores
+              - value: temas
+                label: Temas
+              - value: politicas
+                label: Políticas
+              - value: territorios
+                label: Territórios
+
+      - fields:
+          - key: articulacao_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: criou_grupos_intersetoriais
+            label: "Houve a criação de grupos de trabalho intersetoriais para fortalecer a articulação e intersetorialidade?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: criou_grupos_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: criou_grupos_especifique
+            label: "Especifique"
+            span: 6
+            widget: textarea
+          - key: evidencia_grupos_intersetoriais
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+
+rules:
+  - when:
+      field: promove_articulacao
+      equals: true
+    show: [quantidade_setores_envolvidos, articulacao_envolveu, articulacao_comente, criou_grupos_intersetoriais]
+
+  - when:
+      field: criou_grupos_intersetoriais
+      equals: false
+    show: criou_grupos_comente
+
+  - when:
+      field: criou_grupos_intersetoriais
+      equals: true
+    show: [criou_grupos_especifique, evidencia_grupos_intersetoriais]

@@ -1,0 +1,483 @@
+model: zcm
+title: "ZCM - Informações"
+collab: true
+
+sections:
+  - key: basic
+    title: "Sobre o Colegiado"
+    tab_group: tabs
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: logo
+            label: "Logotipo"
+            thumb_width: "10rem"
+            thumb_height: "10rem"
+            widget: file_thumb
+            upload_label: "Selecione um arquivo..."
+
+      - type: divider
+        label: "Informações"
+
+      - fields:
+          - key: name
+            label: "Nome do Colegiado"
+            span: 8
+            required: true
+            error_message: "O Nome do Colegiado é um campo obrigatório"
+
+      - fields:
+          - key: type
+            label: "Tipo de Colegiado"
+            span: 6
+            widget: select
+            options: types
+            placeholder: "-- Selecione --"
+
+          - key: type_detail
+            label: "Especifique o tipo de colegiado"
+            span: 6
+
+      - fields:
+          - key: level
+            label: "Nível de atuação"
+            span: 6
+            widget: select
+            options: levels
+            placeholder: "-- Selecione --"
+
+          - key: level_detail
+            label: "Especifique o nível de atuação"
+            span: 6
+
+      - type: divider
+        label: "Mais detalhes"
+
+      - fields:
+          - key: uf_id
+            label: "Estados"
+            span: 6
+            widget: async_autocomplete_multiselect
+            autocomplete_entity: uf
+            autocomplete_field: name
+
+          - key: creation_data
+            label: "Ano de Criação"
+            placeholder: "20xx"
+            span: 3
+            widget: year
+
+          - key: status
+            label: "Ativo"
+            span: 3
+            widget: select
+            options: status
+            placeholder: "-- Selecione --"
+
+          - key: site_link
+            label: "Link para o site"
+            span: 12
+            widget: text
+
+          - key: obs
+            label: "Observações"
+            span: 12
+            widget: textarea
+
+          - key: owner_organization
+            label: "Organização responsável"
+            span: 12
+            widget: async_autocomplete
+            autocomplete_entity: organization
+            autocomplete_field: name
+
+  - key: composition
+    title: "Composição"
+    tab_group: tabs
+    rows:
+      - fields:
+          - key: cadeiras_pub
+            label: "Núm. cadeiras - setor público"
+            span: 4
+            widget: integer
+          - key: cadeiras_civil
+            label: "Núm. cadeiras - sociedade civil"
+            span: 4
+            widget: integer
+      - type: divider
+        label: "Outras Cadeiras"
+    # `from` required: section key ("composition") no longer matches the MD
+    # field (composicao_cadeiras_outros) now that this section covers both
+    # the plain cadeiras_pub/cadeiras_civil rows and the repeatable list.
+    from: composicao_cadeiras_outros
+    repeatable:
+      type: free
+      add_label: "Adicionar setor"
+      remove_label: "Remover"
+      item_label: "Setor {n}"
+    fields:
+      - key: setor
+        label: "Setor"
+        span: 6
+      - key: cadeiras
+        label: "Cadeiras"
+        span: 6
+        widget: integer
+
+  - key: documentos
+    title: "Documentos"
+    tab_group: tabs
+    rows:
+      - type: divider
+        label: "Documento de Criação"
+      - fields:
+          - key: documento_criacao
+            label: "Título do documento de criação"
+            span: 12
+          - key: documento_criacao_tipo
+            label: "Tipo de documento"
+            span: 4
+            widget: select
+            options: tipo_arquivo
+            placeholder: "-- Selecione --"
+          - key: documento_criacao_arquivo
+            label: "Link ou arquivo de criação"
+            span: 8
+            widget: file_or_link
+            driven_by: documento_criacao_tipo
+
+      - type: divider
+        label: "Regimento Interno"
+      - fields:
+          - key: regimento_interno_tem
+            label: "Tem regimento interno?"
+            span: 4
+            widget: select
+            options: sim_nao
+            placeholder: "-- Selecione --"
+      - fields:
+          - key: regimento_interno
+            label: "Título do regimento interno"
+            span: 12
+          - key: regimento_interno_tipo
+            label: "Tipo de documento"
+            span: 4
+            widget: select
+            options: tipo_arquivo
+            placeholder: "-- Selecione --"
+          - key: regimento_interno_arquivo
+            label: "Link ou arquivo de regimento"
+            span: 8
+            widget: file_or_link
+            driven_by: regimento_interno_tipo
+
+  - key: coordenacao_tab
+    title: "Coordenação"
+    tab_group: tabs
+    rows:
+      - fields:
+          - key: coordenacao
+            label: "Tipo de órgão gestor"
+            span: 6
+            widget: select
+            options: tipo_coordenacao
+            placeholder: "-- Selecione --"
+          - key: coordenacao_especifique
+            label: "Especifique"
+            span: 6
+
+  - key: quem_coordena
+    title: "Quem Coordena"
+    tab_group: tabs
+    # `from` required: section key doesn't match the real MD field
+    # (coordenacao_quem) — without it this silently wrote to a phantom
+    # `quem_coordena` field instead of persisting to the actual column.
+    from: coordenacao_quem
+    repeatable:
+      type: free
+      add_label: "Adicionar coordenador"
+      remove_label: "Remover"
+      item_label: "Coordenador {n}"
+    fields:
+      - key: nome
+        label: "Nome"
+        span: 6
+      - key: email
+        label: "E-mail"
+        span: 3
+      - key: telefone
+        label: "Telefone"
+        span: 3
+      - key: mandato_ini
+        label: "Início do mandato"
+        span: 6
+        widget: month_year
+      - key: mandato_fim
+        label: "Fim do mandato"
+        span: 6
+        widget: month_year
+
+  - key: organizacao_interna
+    title: "Organização Interna"
+    tab_group: tabs
+    rows:
+      - fields:
+          - key: org_interna_periodicidade
+            label: "Periodicidade"
+            span: 6
+            widget: select
+            options: periodicidade
+            placeholder: "-- Selecione --"
+          - key: organizacao_interna_periodicidade_especifique
+            label: "Especifique"
+            span: 6
+      - fields:
+          - key: organizacao_interna_estrutura_tem
+            label: "Possui câmaras técnicas ou grupos de trabalho?"
+            span: 6
+            widget: select
+            options: sim_nao
+            placeholder: "-- Selecione --"
+          - key: organizacao_interna_estrutura_especifique
+            label: "Especifique"
+            span: 6
+
+  - key: politicas_publicas
+    title: "Políticas Públicas"
+    tab_group: tabs
+    rows:
+      - type: divider
+        label: "Política Pública de EA"
+      - fields:
+          - key: ppea_tem
+            label: "Há Política Pública de EA?"
+            span: 4
+            widget: select
+            options: sim_nao
+            placeholder: "-- Selecione --"
+      - fields:
+          - key: ppea_tipo
+            label: "Tipo de documento"
+            span: 4
+            widget: select
+            options: tipo_arquivo
+            placeholder: "-- Selecione --"
+          - key: ppea_arquivo
+            label: "Link ou arquivo da política pública"
+            span: 8
+            widget: file_or_link
+            driven_by: ppea_tipo
+      - fields:
+          - key: ppea_decreto
+            label: "Decreto"
+            span: 6
+          - key: ppea_lei
+            label: "Lei"
+            span: 6
+
+      - type: divider
+        label: "Política Pública de Mudanças do Clima"
+      - fields:
+          - key: ppea2_tem
+            label: "Existe Política Pública de Mudanças do Clima?"
+            span: 4
+            widget: select
+            options: sim_nao
+            placeholder: "-- Selecione --"
+      - fields:
+          - key: ppea2_tipo
+            label: "Tipo de documento"
+            span: 4
+            widget: select
+            options: tipo_arquivo
+            placeholder: "-- Selecione --"
+          - key: ppea2_arquivo
+            label: "Link ou arquivo da política pública"
+            span: 8
+            widget: file_or_link
+            driven_by: ppea2_tipo
+      - fields:
+          - key: ppea2_decreto
+            label: "Decreto"
+            span: 6
+          - key: ppea2_lei
+            label: "Lei"
+            span: 6
+
+      - type: divider
+        label: "Programa Estadual de EA"
+      - fields:
+          - key: programa_estadual_tem
+            label: "A política de EA se desdobrou em um Programa de EA?"
+            span: 4
+            widget: select
+            options: sim_nao
+            placeholder: "-- Selecione --"
+      - fields:
+          - key: programa_estadual_tipo
+            label: "Tipo de documento"
+            span: 4
+            widget: select
+            options: tipo_arquivo
+            placeholder: "-- Selecione --"
+          - key: programa_estadual_arquivo
+            label: "Link ou arquivo do programa"
+            span: 8
+            widget: file_or_link
+            driven_by: programa_estadual_tipo
+      - fields:
+          - key: programa_estadual_decreto
+            label: "Decreto"
+            span: 6
+          - key: programa_estadual_lei
+            label: "Lei"
+            span: 6
+
+      - type: divider
+        label: "Plano Estadual de EA"
+      - fields:
+          - key: plano_estadual_tem
+            label: "A política de EA se desdobrou em um Plano de EA?"
+            span: 4
+            widget: select
+            options: sim_nao
+            placeholder: "-- Selecione --"
+      - fields:
+          - key: plano_estadual_tipo
+            label: "Tipo de documento"
+            span: 4
+            widget: select
+            options: tipo_arquivo
+            placeholder: "-- Selecione --"
+          - key: plano_estadual_arquivo
+            label: "Link ou arquivo do plano"
+            span: 8
+            widget: file_or_link
+            driven_by: plano_estadual_tipo
+      - fields:
+          - key: plano_estadual_decreto
+            label: "Decreto"
+            span: 6
+          - key: plano_estadual_lei
+            label: "Lei"
+            span: 6
+
+      - type: divider
+        label: "Outra Política Pública"
+      - fields:
+          - key: ppea_outra_tem
+            label: "O colegiado acompanha alguma outra política pública?"
+            span: 4
+            widget: select
+            options: sim_nao
+            placeholder: "-- Selecione --"
+      - fields:
+          - key: ppea_outra_tipo
+            label: "Tipo de documento"
+            span: 4
+            widget: select
+            options: tipo_arquivo
+            placeholder: "-- Selecione --"
+          - key: ppea_outra_arquivo
+            label: "Link ou arquivo da política pública"
+            span: 8
+            widget: file_or_link
+            driven_by: ppea_outra_tipo
+      - fields:
+          - key: ppea_outra_decreto
+            label: "Decreto"
+            span: 6
+          - key: ppea_outra_lei
+            label: "Lei"
+            span: 6
+
+  - key: plano_acao
+    title: "Plano de Ação"
+    tab_group: tabs
+    rows:
+      - fields:
+          - key: plano_acao_arquivo
+            label: "Arquivo de Plano de Ação"
+            span: 6
+            widget: file
+          - key: plano_acao_ini
+            label: "Início da vigência"
+            span: 3
+            widget: month_year
+          - key: plano_acao_fim
+            label: "Fim da vigência"
+            span: 3
+            widget: month_year
+
+triggers:
+  on_save:
+    - type: webhook
+      url: http://localhost:5678/webhook/test-notification # http://localhost:5678/webhook-test/test-notification # https://webhook.site/b9cbfb4d-334f-4b8f-a076-607bd005c61f
+      queue: default
+      payload:
+        event: colegiado.informacao.saved
+        entity_id: $id
+        name: $data.name
+        wg_type: $wg.type
+        wg_id: $wg.id
+        form_key: $formKey
+
+rules:
+  - when:
+      field: type
+      equals: "other"
+    show: type_detail
+
+  - when:
+      field: level
+      equals: "other"
+    show: level_detail
+
+  - when:
+      field: regimento_interno_tem
+      equals: true
+    show: [regimento_interno, regimento_interno_tipo, regimento_interno_arquivo]
+
+  - when:
+      field: org_interna_periodicidade
+      equals: "outro"
+    show: organizacao_interna_periodicidade_especifique
+
+  - when:
+      field: organizacao_interna_estrutura_tem
+      equals: true
+    show: organizacao_interna_estrutura_especifique
+
+  - when:
+      field: ppea_tem
+      equals: true
+    show: [ppea_tipo, ppea_arquivo, ppea_decreto, ppea_lei]
+
+  - when:
+      field: ppea2_tem
+      equals: true
+    show: [ppea2_tipo, ppea2_arquivo, ppea2_decreto, ppea2_lei]
+
+  - when:
+      field: programa_estadual_tem
+      equals: true
+    show: [programa_estadual_tipo, programa_estadual_arquivo, programa_estadual_decreto, programa_estadual_lei]
+
+  - when:
+      field: plano_estadual_tem
+      equals: true
+    show: [plano_estadual_tipo, plano_estadual_arquivo, plano_estadual_decreto, plano_estadual_lei]
+
+  - when:
+      field: ppea_outra_tem
+      equals: true
+    show: [ppea_outra_tipo, ppea_outra_arquivo, ppea_outra_decreto, ppea_outra_lei]
+
+# Note: coordenacao_especifique is deliberately always-visible (not
+# conditional) — see B.3's note on the rules engine's lack of an "array
+# includes" operator (legacy shows it for 3 of 7 coordenacao values).

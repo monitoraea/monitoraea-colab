@@ -1,0 +1,89 @@
+entity: colegiado
+form_key: form-indic-3-4
+title: "3.4 Compromissos firmados para implementar ações conjuntas"
+
+sections:
+  - title: "Compromissos Firmados"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: houve_compromissos
+            label: "Houve compromissos firmados entre o colegiado e setores e/ou instituições diversas para o desenvolvimento de ações conjuntas nos últimos 2 anos?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: quantidade_compromissos
+            label: "Quantos compromissos firmados com outros setores foram estabelecidos a partir das ações de articulação deste Colegiado nos últimos 2 anos?"
+            span: 8
+            widget: select
+            required_for_publish: true
+            options:
+              - value: ate_5
+                label: "Até 05 compromissos firmados"
+              - value: entre_6_10
+                label: "Entre 6 a 10 compromissos firmados"
+              - value: acima_10
+                label: "Acima de 10 compromissos firmados"
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: compromissos_documentados
+            label: "Os compromissos firmados foram documentados nos últimos 2 anos?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: compromissos_documentados_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: como_registrados
+            label: "Como os compromissos foram registrados?"
+            span: 8
+            widget: select
+            options:
+              - value: acordos_termos
+                label: "Em acordos, termos de cooperação, protocolos formais"
+              - value: contratos_parceria
+                label: "Contratos de parceria"
+              - value: correspondencia_eletronica
+                label: "Registrados por correspondência eletrônica como e-mail e troca de ofício"
+              - value: outros
+                label: Outros
+            placeholder: "-- Selecione --"
+
+          # Always visible (see Part B plan)
+          - key: como_registrados_especifique
+            label: "Especifique (caso tenha selecionado 'Outros')"
+            span: 12
+            widget: textarea
+
+rules:
+  - when:
+      field: houve_compromissos
+      equals: true
+    show: [quantidade_compromissos, compromissos_documentados]
+
+  - when:
+      field: compromissos_documentados
+      equals: false
+    show: compromissos_documentados_comente
+
+  - when:
+      field: compromissos_documentados
+      equals: true
+    show: [como_registrados, como_registrados_especifique]

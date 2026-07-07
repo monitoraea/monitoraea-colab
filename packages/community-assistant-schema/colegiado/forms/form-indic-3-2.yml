@@ -1,0 +1,34 @@
+entity: colegiado
+form_key: form-indic-3-2
+title: "3.2 Produção de documentos e recomendações do Colegiado"
+
+sections:
+  - title: "Documentos e Recomendações"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: elaborou_documentos
+            label: "O Colegiado elaborou documentos, recomendações ou pareceres para influenciar a formulação, implementação e/ou tomada de decisão sobre alguma política pública nos últimos 2 anos?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: qual_documento_comente
+            label: "Qual (comente — insira um novo campo por publicação gerada)?"
+            span: 12
+            widget: textarea
+            required_for_publish: true
+
+rules:
+  - when:
+      field: elaborou_documentos
+      equals: true
+    show: qual_documento_comente

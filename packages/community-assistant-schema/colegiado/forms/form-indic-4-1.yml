@@ -1,0 +1,83 @@
+entity: colegiado
+form_key: form-indic-4-1
+title: "4.1 Acordo de convivência dialógica"
+
+sections:
+  - title: "Acordo de Convivência"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: tem_acordo_convivencia
+            label: "O colegiado possui um acordo de convivência construído de forma participativa e dialógica que reconhece a importância de uma metodologia de organização interna?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: acordo_preve_acolhimento
+            label: "O acordo de convivência prevê alguma atividade específica de acolhimento e cuidado para quem chega e/ou para quem sai do colegiado?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: acordo_acolhimento_explique
+            label: "Quais? Explique"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: acordo_preve_reflexao
+            label: "O acordo de convivência prevê tempo e espaço em suas reuniões e atividades para que sejam feitas reflexões, compartilhamentos e construção coletiva de sentidos do colegiado?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: acordo_reflexao_explique
+            label: "Como? Explique"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: como_constroi_sentidos
+            label: "Como são construídos coletivamente os sentidos do colegiado?"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: reflexao_grupo
+                label: "Reflexão do grupo sobre a própria dinâmica de suas reuniões"
+              - value: compartilhar_duvidas
+                label: "Compartilhar dúvidas sobre o funcionamento do Colegiado"
+              - value: compartilhar_conceitos
+                label: "Compartilhar conceitos, questões e problemáticas"
+              - value: construcao_coletiva
+                label: "Construção coletiva de sentidos sobre os seus propósitos, sonhos e desafios"
+
+rules:
+  - when:
+      field: tem_acordo_convivencia
+      equals: true
+    show: [acordo_preve_acolhimento, acordo_preve_reflexao]
+
+  - when:
+      field: acordo_preve_acolhimento
+      equals: true
+    show: acordo_acolhimento_explique
+
+  - when:
+      field: acordo_preve_reflexao
+      equals: true
+    show: [acordo_reflexao_explique, como_constroi_sentidos]

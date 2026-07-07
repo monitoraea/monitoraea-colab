@@ -1,0 +1,91 @@
+entity: colegiado
+form_key: form-indic-2-7
+title: "2.7 Ampliação da participação da sociedade"
+
+sections:
+  - title: "Ampliação da Participação Social"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: ampliou_participacao
+            label: "O colegiado atuou para ampliar a participação da sociedade nos processos de políticas públicas de EA nos últimos 2 anos?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: acoes_ampliacao
+            label: "Quais ações o Colegiado realizou/coordenou para possibilitar a participação social nos processos das políticas públicas de EA?"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: audiencias_publicas
+                label: "Audiências públicas"
+              - value: consultas_publicas
+                label: "Consultas públicas em plataformas digitais"
+              - value: oficinas_gt
+                label: "Oficinas, reuniões, grupos de trabalho"
+              - value: outras
+                label: Outras
+
+          # Always visible (see Part B plan)
+          - key: acoes_ampliacao_especifique
+            label: "Especifique (caso tenha selecionado 'Outras')"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: evidencia_ampliacao
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+
+      - fields:
+          - key: grupos_contemplados
+            label: "As ações de ampliação da participação da sociedade contemplaram algum destes grupos sociais?"
+            span: 12
+            widget: multi_select
+            options:
+              - value: povos_tradicionais
+                label: "Povos e Comunidades Tradicionais"
+              - value: movimentos_populares
+                label: "Movimentos Populares e Urbanos"
+              - value: grupos_vulnerabilizados
+                label: "Grupos Vulnerabilizados e Minorizados"
+              - value: juventudes_criancas
+                label: "Juventudes e Crianças"
+              - value: pessoas_idosas
+                label: "Pessoas Idosas"
+              - value: trabalhadores_sindicatos
+                label: "Trabalhadores e sindicatos"
+              - value: mulheres_feministas
+                label: "Mulheres e Movimentos Feministas"
+              - value: populacao_negra
+                label: "População negra e Grupos de combate ao racismo"
+              - value: ambientalistas
+                label: "Grupos ambientalistas e de justiça socioambiental e climática"
+              - value: migrantes_refugiados
+                label: "Migrantes e Refugiados"
+              - value: outro
+                label: Outro
+
+          # Always visible (see Part B plan)
+          - key: grupos_contemplados_especifique
+            label: "Especifique (caso tenha selecionado 'Outro')"
+            span: 12
+            widget: textarea
+
+rules:
+  - when:
+      field: ampliou_participacao
+      equals: true
+    show: [acoes_ampliacao, acoes_ampliacao_especifique, evidencia_ampliacao, grupos_contemplados, grupos_contemplados_especifique]

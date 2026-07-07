@@ -1,0 +1,64 @@
+entity: colegiado
+form_key: form-indic-2-2
+title: "2.2 Apoio financeiro e logístico à participação dos membros"
+
+sections:
+  - title: "Apoio Financeiro e Logístico"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: apoio_existe
+            label: "Existem mecanismos ou instrumentos de apoio financeiro e logístico para deslocamento, hospedagem e alimentação que garanta a participação dos membros nas atividades do colegiado?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: apoio_destinado_a
+            label: "A quem é destinado o apoio financeiro e logístico?"
+            span: 12
+            widget: multi_select
+            options:
+              - value: totalidade_membros
+                label: "Totalidade dos membros"
+              - value: sociedade_civil
+                label: "Apenas para membros da sociedade civil"
+              - value: grupos_vulneraveis
+                label: "Apenas para membros de grupos vulneráveis"
+              - value: quem_solicita
+                label: "Apenas para quem solicita apoio"
+
+      - fields:
+          - key: mecanismos_custeio
+            label: "Quais são os mecanismos existentes para o custeio destas atividades?"
+            span: 12
+            widget: multi_select
+            options:
+              - value: mecanismo_1
+                label: "Recursos previstos no PPA/LOA da instituição coordenadora"
+              - value: mecanismo_2
+                label: "Recursos previstos no PPA/LOA de instituições parceiras"
+              - value: mecanismo_3
+                label: "Recursos de projetos/convênios específicos"
+              - value: mecanismo_4
+                label: "Outros mecanismos"
+
+      - fields:
+          - key: evidencia_apoio
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+
+rules:
+  - when:
+      field: apoio_existe
+      equals: true
+    show: [apoio_destinado_a, mecanismos_custeio, evidencia_apoio]

@@ -9,6 +9,8 @@ import IndicatorsTab from './IndicatorsTab';
 import ConexoesTab from '../../components/Connections';
 import AtuacaoTab from './ActingTab';
 import TimelineTab from './TimelineTab';
+import CasInformacoesTab from './CasInformacoesTab';
+import CasIndicadoresTab from './CasIndicadoresTab';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
 import CheckCircle from '../../components/icons/CheckCircle';
@@ -177,6 +179,8 @@ const Manager = () => {
               )}
               {tabindex === 'conexoes' && <ConexoesTab entityName="colegiado" entityId={entityId} onSave={()=>queryClient.invalidateQueries('ciea_analysis')} />}
               {tabindex === 'linha_tempo' && <TimelineTab entityId={entityId} />}
+              {tabindex === 'cas_informacoes' && <CasInformacoesTab entityId={entityId} />}
+              {tabindex === 'cas_indicadores' && <CasIndicadoresTab entityId={entityId} />}
             </>
           )}
         </>

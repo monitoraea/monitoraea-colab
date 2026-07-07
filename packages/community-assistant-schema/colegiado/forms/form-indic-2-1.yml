@@ -1,0 +1,73 @@
+entity: colegiado
+form_key: form-indic-2-1
+title: "2.1 Normativas de institucionalização e inclusão do Colegiado"
+
+sections:
+  - title: "Institucionalização"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: institucionalizado
+            label: "O Colegiado está institucionalizado por meio de alguma normativa (lei, decreto, resolução, portaria, etc.)?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: normativa_define_papel
+            label: "Na normativa que institucionaliza o Colegiado, ou em alguma outra normativa complementar, está definido o papel do colegiado em realizar recomendações e diretrizes gerais para políticas públicas de EA correspondente a sua esfera de atuação?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: normativa_define_papel_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: relacoes_definidas_como
+            label: "Como estão definidas estas relações do colegiado com as políticas públicas de EA correspondente a sua esfera de atuação?"
+            span: 8
+            widget: select
+            required_for_publish: true
+            options:
+              - value: participacao_obrigatoria
+                label: "Participação obrigatória"
+              - value: participacao_ocasional
+                label: "Participação ocasional"
+              - value: informalmente_envolvido
+                label: "Informalmente envolvido"
+            placeholder: "-- Selecione --"
+
+          - key: evidencia_relacoes
+            label: "Inserir elemento comprobatório"
+            span: 4
+            widget: file
+            recommended: true
+
+rules:
+  - when:
+      field: institucionalizado
+      equals: true
+    show: normativa_define_papel
+
+  - when:
+      field: normativa_define_papel
+      equals: false
+    show: normativa_define_papel_comente
+
+  - when:
+      field: normativa_define_papel
+      equals: true
+    show: [relacoes_definidas_como, evidencia_relacoes]

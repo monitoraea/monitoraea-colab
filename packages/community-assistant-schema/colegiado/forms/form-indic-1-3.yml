@@ -1,0 +1,137 @@
+entity: colegiado
+form_key: form-indic-1-3
+title: "1.3 Processo Formativo do Colegiado"
+
+sections:
+  - title: "Processo Formativo"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: processo_formativo_realizado
+            label: "O Colegiado passou por algum processo formativo/autoformativo específico para ele nos últimos 2 anos?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: articulou_teoria_pratica
+            label: "O processo formativo contemplou a articulação entre teoria e prática?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: articulou_teoria_pratica_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: tecnicas_formacao
+            label: "Quais foram as principais técnicas utilizadas no processo de formação?"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: expositivas
+                label: "Técnicas expositivas"
+              - value: estudo_caso
+                label: "Estudo de caso"
+              - value: leitura_compartilhada
+                label: "Leitura compartilhada"
+              - value: oficinas
+                label: Oficinas
+              - value: grupos_estudo
+                label: "Grupos de Estudo"
+              - value: estudo_meio
+                label: "Estudo do meio"
+              - value: mostras
+                label: Mostras
+              - value: jogos_pedagogicos
+                label: "Jogos pedagógicos"
+              - value: resolucao_exercicios
+                label: "Resolução de exercícios"
+              - value: trabalhos_individuais
+                label: "Trabalhos individuais"
+              - value: multilinguagens
+                label: Multilinguagens
+              - value: representacao_papeis
+                label: "Representação de papéis"
+              - value: outros
+                label: Outros
+
+          # Always visible (see Part B plan — no array-membership rule support)
+          - key: tecnicas_formacao_especifique
+            label: "Especifique (caso tenha selecionado 'Outros')"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: avaliacao_formacao
+            label: "Houve processo de avaliação sobre a Formação/autoformação?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: avaliacao_formacao_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: instrumentos_avaliacao
+            label: "Quais instrumentos de avaliação foram utilizados no processo de formação?"
+            span: 12
+            widget: multi_select
+            options:
+              - value: provas
+                label: Provas
+              - value: questionario
+                label: Questionário
+              - value: entrevistas
+                label: Entrevistas
+              - value: dinamicas
+                label: Dinâmicas
+              - value: reuniao
+                label: Reunião
+              - value: outros
+                label: Outros
+
+          # Always visible (see Part B plan)
+          - key: instrumentos_avaliacao_especifique
+            label: "Especifique (caso tenha selecionado 'Outros')"
+            span: 12
+            widget: textarea
+
+rules:
+  - when:
+      field: processo_formativo_realizado
+      equals: true
+    show: [articulou_teoria_pratica, tecnicas_formacao, tecnicas_formacao_especifique, avaliacao_formacao]
+
+  - when:
+      field: articulou_teoria_pratica
+      equals: false
+    show: articulou_teoria_pratica_comente
+
+  - when:
+      field: avaliacao_formacao
+      equals: false
+    show: avaliacao_formacao_comente
+
+  - when:
+      field: avaliacao_formacao
+      equals: true
+    show: [instrumentos_avaliacao, instrumentos_avaliacao_especifique]

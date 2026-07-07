@@ -1,0 +1,112 @@
+entity: colegiado
+form_key: form-indic-1-2
+title: "1.2 Planejamento Participativo do Colegiado"
+
+sections:
+  - title: "Planejamento Participativo"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: planejamento_realizado
+            label: "O Colegiado realiza planejamento interno para desenvolver suas ações?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: plano_acao_inserido
+            label: "Inserir plano de ação"
+            span: 12
+            widget: textarea
+            required_for_publish: true
+
+      - fields:
+          - key: periodicidade_planejamento
+            label: "Qual a periodicidade da realização deste planejamento?"
+            span: 6
+            widget: select
+            required_for_publish: true
+            options:
+              - value: anual
+                label: Anual
+              - value: bianual
+                label: Bianual
+              - value: quadrianual
+                label: Quadrianual
+            placeholder: "-- Selecione --"
+
+          - key: envolvimento_atores
+            label: "Qual a porcentagem de envolvimento dos atores membros do colegiado?"
+            span: 6
+            widget: select
+            required_for_publish: true
+            options:
+              - value: mesa_diretora
+                label: "Apenas a mesa diretora"
+              - value: menos_50
+                label: "Menos de 50%"
+              - value: entre_50_75
+                label: "Entre 50% e 75%"
+              - value: mais_75
+                label: "Mais de 75%"
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: monitora_execucao
+            label: "O colegiado monitora a execução de seu planejamento?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: monitora_execucao_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: taxa_execucao
+            label: "Qual a taxa de execução das atividades planejadas pelo Colegiado nos últimos 2 anos?"
+            span: 6
+            widget: select
+            options:
+              - value: menos_25
+                label: "< 25%"
+              - value: entre_25_50
+                label: "25-50%"
+              - value: entre_50_75
+                label: "50-75%"
+              - value: mais_75
+                label: "> 75%"
+            placeholder: "-- Selecione --"
+
+          - key: evidencia_execucao
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+
+rules:
+  - when:
+      field: planejamento_realizado
+      equals: true
+    show: [plano_acao_inserido, periodicidade_planejamento, envolvimento_atores, monitora_execucao]
+
+  - when:
+      field: monitora_execucao
+      equals: false
+    show: monitora_execucao_comente
+
+  - when:
+      field: monitora_execucao
+      equals: true
+    show: [taxa_execucao, evidencia_execucao]

@@ -1,0 +1,114 @@
+entity: colegiado
+form_key: form-indic-2-6
+title: "2.6 Deliberações/Tomada de Decisão do Colegiado"
+
+sections:
+  - title: "Deliberações e Tomada de Decisão"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: toma_decisoes
+            label: "O colegiado, enquanto uma instância de acompanhamento e controle social, toma decisões no âmbito das políticas públicas de educação ambiental de sua competência?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: temas_decisoes
+            label: "Quais foram os temas/assuntos das decisões tomadas pelo colegiado nos últimos 2 anos (comente)?"
+            span: 12
+            widget: textarea
+            required_for_publish: true
+          - key: temas_decisoes_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: decisoes_qualificadas
+            label: "As decisões do colegiado são qualificadas?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: decisoes_qualificadas_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: decisoes_baseadas_em
+            label: "Baseadas em quais processos?"
+            span: 12
+            widget: multi_select
+            options:
+              - value: estudos_evidencias
+                label: "Baseada em estudos e evidências"
+              - value: escuta_ativa
+                label: "Por escuta ativa e diálogo social"
+              - value: participacao_representativa
+                label: "Com participação representativa e diversa"
+              - value: mediacao_consensos
+                label: "Com mediação e construção de consensos"
+              - value: monitoramento_participativo
+                label: "Com monitoramento e avaliação participativa"
+
+      - fields:
+          - key: decisoes_concretizadas
+            label: "As tomadas de decisão/deliberações do colegiado foram concretizadas?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: decisoes_concretizadas_comente
+            label: "Comente"
+            span: 6
+            widget: textarea
+          - key: decisoes_concretizadas_especifique
+            label: "Especifique"
+            span: 6
+            widget: textarea
+          - key: evidencia_decisoes_concretizadas
+            label: "Inserir elemento comprobatório"
+            span: 6
+            widget: file
+            recommended: true
+
+rules:
+  - when:
+      field: toma_decisoes
+      equals: true
+    show: [temas_decisoes, decisoes_qualificadas, decisoes_concretizadas]
+
+  - when:
+      field: decisoes_qualificadas
+      equals: false
+    show: decisoes_qualificadas_comente
+
+  - when:
+      field: decisoes_qualificadas
+      equals: true
+    show: decisoes_baseadas_em
+
+  - when:
+      field: decisoes_concretizadas
+      equals: false
+    show: decisoes_concretizadas_comente
+
+  - when:
+      field: decisoes_concretizadas
+      equals: true
+    show: [decisoes_concretizadas_especifique, evidencia_decisoes_concretizadas]

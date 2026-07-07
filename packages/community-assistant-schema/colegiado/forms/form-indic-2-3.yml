@@ -1,0 +1,165 @@
+entity: colegiado
+form_key: form-indic-2-3
+title: "2.3 Transparência"
+
+sections:
+  - title: "Transparência"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: promove_transparencia
+            label: "O colegiado promove a transparência sobre sua atuação?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: tem_canais_comunicacao
+            label: "O Colegiado tem canais de comunicação e informação específicos?"
+            span: 6
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: tem_canais_comunicacao_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: canais_comunicacao
+            label: "Quais são os seus canais de comunicação?"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: site
+                label: Site
+              - value: rede_social
+                label: "Rede Social"
+              - value: whatsapp
+                label: "Grupo de whatsapp (ou similar)"
+              - value: email
+                label: "Email institucional"
+              - value: outro
+                label: Outro
+
+      - fields:
+          - key: canal_site_endereco
+            label: "Indique o endereço (Site)"
+            span: 6
+            widget: textarea
+          - key: canal_rede_social_endereco
+            label: "Indique o endereço (Rede Social)"
+            span: 6
+            widget: textarea
+          - key: canal_outro_especifique
+            label: "Especifique (Outro)"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: publica_informacoes_site
+            label: "São disponibilizadas / publicadas informações sobre o funcionamento (atas, relatórios, etc.) e resultados do Colegiado em site próprio ou do órgão público correspondente?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: publica_informacoes_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+          - key: publica_informacoes_especifique
+            label: "Especifique"
+            span: 6
+            widget: textarea
+          - key: publica_informacoes_endereco
+            label: "Indique o endereço"
+            span: 6
+            widget: textarea
+
+      - fields:
+          - key: preserva_historia
+            label: "Existem estratégias para a preservação da história dos processos de criação e desenvolvimento das ações do colegiado, incluindo as atas, relatórios e outros documentos?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: preserva_historia_comente
+            label: "Comente"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: preserva_historia_forma
+            label: "De que forma a história do colegiado é preservada?"
+            span: 12
+            widget: multi_select
+            options:
+              - value: drives_compartilhados
+                label: "Arquivada em drives compartilhados"
+              - value: documentos_publicacoes
+                label: "Documentos e publicações"
+              - value: site_publico
+                label: "Disponível em site público governamental ou do próprio colegiado"
+
+rules:
+  - when:
+      field: promove_transparencia
+      equals: true
+    show: [tem_canais_comunicacao, publica_informacoes_site, preserva_historia]
+
+  - when:
+      field: tem_canais_comunicacao
+      equals: false
+    show: tem_canais_comunicacao_comente
+
+  - when:
+      field: tem_canais_comunicacao
+      equals: true
+    show: canais_comunicacao
+
+  # canal_site_endereco / canal_rede_social_endereco / canal_outro_especifique
+  # are gated on canais_comunicacao *including* site/rede_social/outro — an
+  # array-membership condition the rules engine can't express, so all three
+  # are shown together whenever the canais_comunicacao field is shown
+  # (already scoped to "has channels"), per the Part B simplification.
+  - when:
+      field: tem_canais_comunicacao
+      equals: true
+    show: [canal_site_endereco, canal_rede_social_endereco, canal_outro_especifique]
+
+  - when:
+      field: publica_informacoes_site
+      equals: false
+    show: publica_informacoes_comente
+
+  - when:
+      field: publica_informacoes_site
+      equals: true
+    show: [publica_informacoes_especifique, publica_informacoes_endereco]
+
+  - when:
+      field: preserva_historia
+      equals: false
+    show: preserva_historia_comente
+
+  - when:
+      field: preserva_historia
+      equals: true
+    show: preserva_historia_forma

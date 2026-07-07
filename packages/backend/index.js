@@ -11,7 +11,21 @@ const port = process.env.PORT || 4006;
 
 const app = express();
 
-app.use(cors());
+// ByEntityDataProvider/EntityRecordsDataProvider (@community-assistant/client)
+// send `credentials: 'include'` on every fetch, which requires a specific
+// (non-wildcard) Access-Control-Allow-Origin + Access-Control-Allow-Credentials
+// on every response, preflight or not. Registered before the app-wide
+// `cors()` below and paired with a path guard on that global middleware:
+// for OPTIONS preflights, the global `cors()` never calls next(), so this
+// scoped one must run first to win outright. For regular GET/POST/etc, both
+// middlewares would otherwise run in sequence and the global one would
+// overwrite Access-Control-Allow-Origin back to '*' (while leaving this
+// middleware's Access-Control-Allow-Credentials: true in place) — an
+// invalid, browser-rejected combination — hence skipping /cas_api entirely
+// in the global middleware below.
+app.use('/cas_api', cors({ origin: true, credentials: true }));
+
+app.use((req, res, next) => (req.path.startsWith('/cas_api') ? next() : cors()(req, res, next)));
 
 app.use(express.json({ limit: '10MB' }));
 

@@ -1,0 +1,83 @@
+entity: colegiado
+form_key: form-indic-4-2
+title: "4.2 Percepções de pertencimento e identidade coletiva"
+
+sections:
+  - title: "Percepções de Pertencimento"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: tem_estrategias_percepcao
+            label: "O colegiado tem estratégias para identificar as percepções de seus membros quanto aos sentimentos de pertencimento, satisfação e respeito na expressão de suas ideias sem preconceitos e discriminação?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: estrategias_percepcao
+            label: "Quais são as estratégias para averiguar as percepções indicadas nos membros do colegiado?"
+            span: 12
+            widget: multi_select
+            required_for_publish: true
+            options:
+              - value: questionario
+                label: "Aplicação de questionário"
+              - value: entrevista
+                label: "Realização de entrevista"
+              - value: oficinas_rodas_conversa
+                label: "Oficinas e Rodas de Conversa"
+              - value: outra
+                label: Outra
+
+          # Always visible (see Part B plan)
+          - key: estrategias_percepcao_especifique
+            label: "Especifique (caso tenha selecionado 'Outra')"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: resultados_percepcao
+            label: "Quais os resultados obtidos?"
+            span: 12
+            widget: select
+            required_for_publish: true
+            options:
+              - value: acima_90
+                label: "Mais de 90% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação"
+              - value: entre_75_90
+                label: "Entre 90% a 75% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação"
+              - value: entre_50_75
+                label: "Entre 75% a 50% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação"
+              - value: entre_25_50
+                label: "Entre 50% a 25% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação"
+              - value: abaixo_25
+                label: "Menos de 25% dos participantes se consideram com sentimentos de pertencimento ao Colegiado, além de satisfeitos, confortáveis, respeitados, acolhidos e incluídos sem discriminação"
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: frequencia_percepcao
+            label: "Qual a frequência da realização deste diagnóstico sobre as percepções?"
+            span: 12
+            widget: select
+            required_for_publish: true
+            options:
+              - value: anual
+                label: Anual
+              - value: bianual
+                label: Bianual
+              - value: quadrianual
+                label: Quadrianual
+            placeholder: "-- Selecione --"
+
+rules:
+  - when:
+      field: tem_estrategias_percepcao
+      equals: true
+    show: [estrategias_percepcao, estrategias_percepcao_especifique, resultados_percepcao, frequencia_percepcao]

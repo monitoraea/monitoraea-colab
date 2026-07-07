@@ -1,0 +1,53 @@
+entity: colegiado
+form_key: form-indic-2-5
+title: "2.5 Monitoramento e Avaliação da PPEA"
+
+sections:
+  - title: "Monitoramento e Avaliação"
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+
+      - fields:
+          - key: realiza_monitoramento_ppea
+            label: "O colegiado realiza monitoramento e avaliação da PPEA que estão no âmbito do seu controle social?"
+            span: 12
+            widget: select
+            options: sim_nao
+            required_for_publish: true
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: ppea_cadastrada_monitoraea
+            label: "A PPEA está cadastrada e avaliada na perspectiva de PPEA do Sistema MonitoraEA?"
+            span: 12
+            widget: select
+            required_for_publish: true
+            options:
+              - value: nao
+                label: Não
+              - value: sim_sem_participacao
+                label: "Sim, mas nenhum membro do colegiado participa do GT correspondente"
+              - value: sim_com_participacao
+                label: "Sim, e membro(s) do colegiado participa(m) do GT correspondente"
+            placeholder: "-- Selecione --"
+
+      - fields:
+          - key: quantidade_membros_gt
+            label: "Quantos membros participam (inserir dado numérico)?"
+            span: 6
+            widget: textarea
+
+rules:
+  - when:
+      field: realiza_monitoramento_ppea
+      equals: true
+    show: ppea_cadastrada_monitoraea
+
+  - when:
+      field: ppea_cadastrada_monitoraea
+      equals: "sim_com_participacao"
+    show: quantidade_membros_gt
