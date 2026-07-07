@@ -56,25 +56,38 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
       <div className={styles['backdrop']}></div>
       <div className={styles['ptabs-content']}>
         <Tabs className={styles['ptabs-tabs']} onChange={handleChange} value={defaultTab}>
+
           <Tab
             disableRipple
-            label="Cadastro"
+            label="Informações"
+            {...a11yProps('cas_informacoes')}
+          />
+          <Tab
+            disableRipple
+            label="Indicadores"
+            {...a11yProps('cas_indicadores')}
+          />
+
+          <Tab
+            disableRipple
+            label="Cadastro OLD"
             {...a11yProps('informacao', infoProblemCounter > 0 ? infoProblemCounter : '')}
             className={`${styles.indicator} ${infoIsReady ? styles['ready'] : styles['not-ready']} ${infoProblemCounter < 10 && styles['fixed-size']
               }`}
           />
           <Tab
             disableRipple
-            label="Abrangência" className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
-              }`}
-            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
-          />
-          <Tab
-            disableRipple
-            label="Indicadores"
+            label="Indicadores OLD"
             {...a11yProps('indicadores', indicProblemCounter > 0 ? indicProblemCounter : '')}
             className={`${styles.indicator} ${indicatorIsReady ? styles['ready'] : styles['not-ready']} ${indicProblemCounter < 10 && styles['fixed-size']
               }`}
+          />
+
+          <Tab
+            disableRipple
+            label="Abrangência" className={`${styles.indicator} ${atuacaoIsReady ? styles['ready'] : styles['not-ready']} ${styles['fixed-size']
+              }`}
+            {...a11yProps('abrangencia', !atuacaoIsReady ? '1' : '')}
           />
           <Tab
             disableRipple
@@ -86,16 +99,6 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
             disableRipple
             label="Linha do tempo"
             {...a11yProps('linha_tempo')}
-          />
-          <Tab
-            disableRipple
-            label="Informações"
-            {...a11yProps('cas_informacoes')}
-          />
-          <Tab
-            disableRipple
-            label="Indicadores (CAS)"
-            {...a11yProps('cas_indicadores')}
           />
         </Tabs>
       </div>

@@ -172,6 +172,8 @@ const Manager = () => {
           <Tabs defaultTab={tabindex} onTabChange={idx => changeRoute({ params: [idx] })} analysis={analysis} />
           {entityId && (
             <>
+              {tabindex === 'cas_informacoes' && <CasInformacoesTab entityId={entityId} />}
+              {tabindex === 'cas_indicadores' && <CasIndicadoresTab entityId={entityId} />}
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
               {tabindex === 'indicadores' && (
@@ -179,8 +181,6 @@ const Manager = () => {
               )}
               {tabindex === 'conexoes' && <ConexoesTab entityName="colegiado" entityId={entityId} onSave={()=>queryClient.invalidateQueries('ciea_analysis')} />}
               {tabindex === 'linha_tempo' && <TimelineTab entityId={entityId} />}
-              {tabindex === 'cas_informacoes' && <CasInformacoesTab entityId={entityId} />}
-              {tabindex === 'cas_indicadores' && <CasIndicadoresTab entityId={entityId} />}
             </>
           )}
         </>

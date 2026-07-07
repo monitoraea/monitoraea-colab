@@ -14,3 +14,11 @@ docker_postgres_backup.sql
 *.venv*
 **/data/
 **/dist
+
+# Vendored @community-assistant/* packages, rebuilt+copied from the CAS repo
+# by scripts/sync-cas.sh — not source of truth here, do not commit.
+# packages/community-assistant-schema is NOT listed: it's MEA's own
+# independently-owned schema, never touched by the sync script.
+/packages/community-assistant-server/
+/packages/community-assistant-client/
+/packages/community-assistant-schema-gen/

@@ -1,0 +1,29 @@
+entity: file
+table: files
+backend: custom
+
+# Column names below match MEA's real, pre-existing `files` table (used by
+# the legacy app long before CAS existed) — not the generic names a fresh
+# CAS deployment would default to. Field keys (filename/mime_type/size_bytes)
+# stay as the engine expects (crud.ts reads fileRow.filename/.url/etc as JS
+# properties); only `column:` is remapped to the actual DB column.
+fields:
+  - key: filename
+    column: file_name
+    type: text
+    nullable: false
+
+  - key: url
+    column: url
+    type: text
+    nullable: false
+
+  - key: mime_type
+    column: content_type
+    type: text
+    nullable: true
+
+  - key: size_bytes
+    column: file_size
+    type: integer
+    nullable: true
