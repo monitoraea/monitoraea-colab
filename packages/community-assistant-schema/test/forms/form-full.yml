@@ -1,0 +1,169 @@
+model: test
+title: "Widget Test Form"
+
+sections:
+  - key: scalars
+    title: "Scalar Widgets"
+    tab_group: widget_tabs
+    rows:
+      - fields:
+          - key: text_field
+            label: "Text"
+            span: 6
+            widget: text
+          - key: integer_field
+            label: "Integer"
+            span: 3
+            widget: integer
+          - key: boolean_field
+            label: "Boolean (checkbox)"
+            span: 3
+            widget: boolean
+          - key: boolean_switch_field
+            label: "Boolean (switch)"
+            span: 3
+            widget: boolean
+            layout: switch
+
+      - fields:
+          - key: textarea_field
+            label: "Textarea"
+            span: 12
+            widget: textarea
+
+      - type: divider
+        label: "Real (number format)"
+
+      - fields:
+          - key: real_field
+            label: "Real — US (1,234.56)"
+            span: 6
+            widget: real
+            format: us
+          - key: real_field_eu
+            label: "Real — EU (1.234,56)"
+            span: 6
+            widget: real
+            format: eu
+
+      - type: divider
+        label: "Date widgets"
+
+      - fields:
+          - key: date_field
+            label: "Date — US (MM/DD/YYYY)"
+            span: 3
+            widget: date
+            format: us
+          - key: date_field_eu
+            label: "Date — EU (DD/MM/YYYY)"
+            span: 3
+            widget: date
+            format: eu
+          - key: month_year_field
+            label: "Month + Year (MM/YYYY)"
+            span: 3
+            widget: month_year
+          - key: year_field
+            label: "Year only (YYYY)"
+            span: 3
+            widget: year
+
+  - key: selects
+    title: "Select Widgets"
+    tab_group: widget_tabs
+    rows:
+      - fields:
+          - key: select_field
+            label: "Select"
+            span: 6
+            widget: select
+            options: test_options
+          - key: multiselect_field
+            label: "Multi Select (buttons)"
+            span: 6
+            widget: multi_select
+            options: multiselect_options
+
+      - fields:
+          - key: multiselect_list_field
+            label: "Multi Select (list)"
+            span: 6
+            widget: multi_select
+            options: multiselect_options
+            layout: list
+
+      - type: divider
+        label: "Autocomplete"
+
+      - fields:
+          - key: autocomplete_field
+            label: "Async Autocomplete (single)"
+            span: 6
+            widget: async_autocomplete
+            autocomplete_entity: users
+            autocomplete_field: name
+            max_options: 5
+            creatable: true
+          - key: autocomplete_multiselect_field
+            label: "Async Autocomplete (multi)"
+            span: 6
+            widget: async_autocomplete_multiselect
+            autocomplete_entity: users
+            autocomplete_field: name
+            max_options: 5
+
+  - key: files
+    title: "File Widgets"
+    tab_group: widget_tabs
+    rows:
+      - fields:
+          - key: file_field
+            label: "File"
+            span: 6
+            widget: file
+            upload_label: "Selecione um arquivo..."
+          - key: thumb_field
+            label: "Thumbnail"
+            span: 4
+            thumb_width: "10rem"   # default: 6rem
+            thumb_height: "10rem"   # default: 6rem
+            widget: file_thumb
+
+      - type: divider
+        label: "File or Link"
+
+      - fields:
+          - key: file_or_link_tipo
+            label: "Type"
+            span: 3
+            widget: select
+            options: file_or_link_options
+          - key: file_or_link_field
+            label: "File or Link"
+            span: 9
+            widget: file_or_link
+            driven_by: file_or_link_tipo
+
+  # - key: arrays
+  #   title: "Array Widgets"
+  #   rows:
+  #     - fields:
+  #         - key: jsonb_array
+  #           label: "JSONB Array (raw)"
+  #           span: 12
+  #           widget: textarea
+
+  - key: relation_section
+    title: "Relation Array"
+    from: relation_array
+    repeatable:
+      type: free
+      add_label: "Add item"
+    fields:
+      - key: name
+        label: "Name"
+        span: 6
+      - key: value
+        label: "Value"
+        span: 6

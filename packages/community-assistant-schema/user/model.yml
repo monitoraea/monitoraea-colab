@@ -1,0 +1,18 @@
+entity: user
+table: users
+
+fields:
+  - key: name
+    column: name
+    type: text
+    nullable: false
+
+  - key: email
+    column: email
+    type: text
+    nullable: true
+
+  - key: password_hash
+    column: password_hash
+    type: text
+    nullable: false

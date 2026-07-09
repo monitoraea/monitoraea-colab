@@ -1,0 +1,27 @@
+entity: entity_records
+table: entity_records
+backend: custom
+
+fields:
+  - key: entity_id
+    column: entity_id
+    type: integer
+    nullable: false
+  - key: entity_type
+    column: entity_type
+    type: text
+    nullable: false
+  - key: record_key
+    column: record_key
+    type: text
+    nullable: false
+  - key: version
+    column: version
+    type: integer
+  - key: published_at
+    column: published_at
+    type: date
+  - key: data
+    column: data
+    type: jsonb
+    nullable: false

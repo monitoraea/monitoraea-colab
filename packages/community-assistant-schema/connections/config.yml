@@ -1,0 +1,80 @@
+connectable_entities:
+  - colegiado
+  - organization
+  - project
+
+relation_types:
+  - id: 1
+    label: "Apoio técnico"
+    allowed_pairs:
+      - from: organization
+        to: colegiado
+      - from: organization
+        to: project
+      - from: organization
+        to: organization
+      - from: colegiado
+        to: colegiado
+      - from: colegiado
+        to: project
+      - from: colegiado
+        to: organization
+      - from: project
+        to: colegiado
+      - from: project
+        to: organization
+      - from: project
+        to: project
+
+  - id: 2
+    label: "Parceria institucional"
+    allowed_pairs:
+      - from: organization
+        to: colegiado
+      - from: organization
+        to: project
+      - from: organization
+        to: organization
+      - from: colegiado
+        to: colegiado
+      # - from: colegiado
+      #   to: project
+      - from: colegiado
+        to: organization
+      - from: project
+        to: colegiado
+      - from: project
+        to: organization
+      - from: project
+        to: project
+
+  - id: 3
+    label: "Titularidade"
+    ownership: true
+    allowed_pairs:
+      - from: organization
+        to: colegiado
+      - from: organization
+        to: project
+      - from: organization
+        to: organization
+      - from: colegiado
+        to: project
+      - from: colegiado
+        to: colegiado
+      - from: colegiado
+        to: organization
+
+entity_b_filters:
+  - type: owned_by
+    label: "Filtrar por organização responsável"
+
+ui:
+  section_i_receive:
+    label: "Relações onde recebo apoio"
+    toggle_label: "Recebo apoio?"
+  section_i_give:
+    label: "Relações onde ofereço apoio"
+    toggle_label: "Ofereço apoio?"
+  section_inbox:
+    label: "Relações onde fui mencionado"

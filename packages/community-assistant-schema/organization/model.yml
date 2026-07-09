@@ -1,0 +1,32 @@
+entity: organization
+table: organizations
+schema: public
+
+upload: separate
+pwa: false
+versioned: false
+backend: generic
+
+fields:
+  - key: name
+    column: name
+    type: text
+    nullable: false
+
+  - key: owned_by
+    type: connection
+    connection_type: ownership
+    direction: to
+    target_entity: organization
+    cardinality: one
+    nullable: true
+
+triggers:
+  on_save:
+    - type: sync_column
+      target_table: working_groups
+      match:
+        entity_type: organization
+        entity_id: $id
+      set:
+        name: $data.name

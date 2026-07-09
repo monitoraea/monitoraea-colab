@@ -1,0 +1,144 @@
+entity: sample
+table: samples
+schema: public
+
+upload: separate
+pwa: false
+versioned: false
+backend: generic
+
+fields:
+  # Required text
+  - key: name
+    column: name
+    type: text
+    nullable: false
+
+  # Optional text
+  - key: description
+    column: description
+    type: text
+    nullable: true
+
+  # Integer — also drives fixed repeatable slot count
+  - key: slot_count
+    column: slot_count
+    type: integer
+    nullable: true
+
+  # Real
+  - key: score
+    column: score
+    type: real
+    nullable: true
+
+  # Boolean
+  - key: active
+    column: active
+    type: boolean
+    nullable: true
+
+  # Date
+  - key: deadline
+    column: deadline
+    type: date
+    nullable: true
+
+  # Status select — drives conditional rules
+  - key: status
+    column: status
+    type: text
+    nullable: true
+
+  # Status detail — shown conditionally
+  - key: status_detail
+    column: status_detail
+    type: text
+    nullable: true
+
+  # Has deadline flag — drives another condition
+  - key: has_deadline
+    column: has_deadline
+    type: boolean
+    nullable: true
+
+  # Owner autocomplete (foreign key to "users" entity)
+  - key: owner_id
+    column: owner_id
+    type: integer
+    nullable: true
+
+  # Multi-select phases — drives selection repeatable
+  - key: phases
+    column: phases
+    type: jsonb
+    nullable: true
+
+  # File field
+  - key: logo
+    column: logo_file_id
+    type: file
+    nullable: true
+
+  # File thumb (image)
+  - key: thumbnail
+    column: thumbnail_file_id
+    type: file
+    nullable: true
+
+  # Companion tipo select for file_or_link
+  - key: attachment_tipo
+    column: attachment_tipo
+    type: text
+    nullable: true
+
+  # File or link (mode driven by attachment_tipo)
+  - key: attachment
+    column: attachment
+    type: text
+    nullable: true
+
+  # Array/jsonb — tags
+  - key: tags
+    column: tags
+    type: array
+    storage: jsonb
+    nullable: true
+    fields:
+      - key: label
+        type: text
+
+  # Array/relation — members child table
+  - key: members
+    type: array
+    storage: relation
+    table: sample_members
+    foreign_key: sample_id
+    nullable: true
+    fields:
+      - key: name
+        type: text
+      - key: role
+        type: text
+
+  # Array/jsonb — slots (count driven by slot_count)
+  - key: slots
+    column: slots
+    type: array
+    storage: jsonb
+    nullable: true
+    fields:
+      - key: label
+        type: text
+
+  # Array/jsonb — phase details (driven by phases multi_select)
+  - key: phase_details
+    column: phase_details
+    type: array
+    storage: jsonb
+    nullable: true
+    fields:
+      - key: phase_key
+        type: text
+      - key: description
+        type: text

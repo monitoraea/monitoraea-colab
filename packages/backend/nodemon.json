@@ -1,7 +1,8 @@
 {
   "watch": [
     ".",
-    "/home/ricardo/projects/dorothy/DEV/dorothy-dna/packages/dorothy-dna-services/"
+    "/home/ricardo-zylbergeld/projects/CAS/DEV/packages/backend/",
+    "/home/ricardo-zylbergeld/projects/CAS/DEV/packages/shell-backend/"
   ],
   "execMap": {
     "js": "node --inspect"

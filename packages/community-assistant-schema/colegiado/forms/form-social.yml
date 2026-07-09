@@ -1,0 +1,37 @@
+entity: colegiado
+form_key: form-social
+title: Indicador Social
+
+sections:
+  - title: Dados Sociais
+    rows:
+      - fields:
+          - key: municipios_atendidos
+            label: Municípios Atendidos
+            widget: integer
+            required_for_publish: true
+          - key: populacao_beneficiada
+            label: População Beneficiada
+            widget: integer
+            required_for_publish: true
+      - fields:
+          - key: grupos_vulneraveis
+            label: Grupos Vulneráveis Atendidos
+            widget: multi_select
+            options:
+              - value: criancas
+                label: Crianças e Adolescentes
+              - value: idosos
+                label: Idosos
+              - value: mulheres
+                label: Mulheres em Situação de Vulnerabilidade
+              - value: quilombolas
+                label: Comunidades Quilombolas
+              - value: indigenas
+                label: Povos Indígenas
+            recommended: true
+      - fields:
+          - key: descricao_impacto
+            label: Descrição do Impacto Social
+            widget: textarea
+            recommended: true

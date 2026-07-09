@@ -1,0 +1,38 @@
+model: sample
+title: "Sample Project — Summary Form"
+
+sections:
+  - key: summary
+    title: "Project Summary"
+    rows:
+      - fields:
+          - key: name
+            label: "Project Name"
+            span: 8
+            required: true
+            error_message: "Project name is required"
+          - key: status
+            label: "Status"
+            span: 4
+            widget: select
+            options: status_options
+
+      - fields:
+          - key: active
+            label: "Active"
+            span: 3
+            widget: boolean
+          - key: score
+            label: "Score"
+            span: 3
+            widget: real
+          - key: deadline
+            label: "Deadline"
+            span: 6
+            widget: date
+
+      - fields:
+          - key: description
+            label: "Description"
+            span: 12
+            widget: textarea

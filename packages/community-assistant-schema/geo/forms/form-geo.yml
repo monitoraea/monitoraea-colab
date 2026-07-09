@@ -1,0 +1,27 @@
+entity: geo
+form_key: form-geo
+title: Presença Territorial
+
+sections:
+  - title: Abrangência Geográfica
+    rows:
+      - fields:
+          - key: entity_id
+            widget: hidden
+          - key: entity_type
+            widget: hidden
+      - fields:
+          - key: descricao_territorio
+            label: Descrição do Território
+            widget: textarea
+            required_for_publish: true
+      - fields:
+          - key: estados_atuacao
+            label: Estados de Atuação
+            widget: multi_select
+            options: ufs
+            recommended: true
+      - fields:
+          - key: geojson
+            label: Mapa (GeoJSON)
+            widget: textarea

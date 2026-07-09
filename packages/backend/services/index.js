@@ -46,4 +46,5 @@ module.exports = [
   'educom_clima_timeline',
   'area_interesse',
   'entity',
+  'cas_api',
 ];

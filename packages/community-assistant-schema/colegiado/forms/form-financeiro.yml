@@ -1,0 +1,33 @@
+entity: colegiado
+form_key: form-financeiro
+title: Indicador Financeiro
+
+sections:
+  - title: Dados Financeiros
+    rows:
+      - fields:
+          - key: orcamento_anual
+            label: Orçamento Anual (R$)
+            widget: real
+            required: true
+          - key: fonte_recursos
+            label: Fonte de Recursos
+            widget: select
+            options:
+              - value: proprio
+                label: Recursos Próprios
+              - value: federal
+                label: Transferência Federal
+              - value: estadual
+                label: Transferência Estadual
+              - value: misto
+                label: Misto
+            required_for_publish: true
+      - fields:
+          - key: percentual_proprio
+            label: Percentual de Recursos Próprios (%)
+            widget: real
+            recommended: true
+          - key: observacoes
+            label: Observações
+            widget: textarea

@@ -1,0 +1,18 @@
+entity: uf
+table: ufs
+
+fields:
+  - key: name
+    column: name
+    type: text
+    nullable: true
+
+  - key: regiao
+    column: regiao
+    type: text
+    nullable: true
+
+  - key: sigla
+    column: sigla
+    type: text
+    nullable: true

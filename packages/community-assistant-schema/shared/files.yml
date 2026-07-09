@@ -1,0 +1,29 @@
+entity: files
+table: files
+schema: public
+
+upload: multipart
+pwa: false
+versioned: false
+backend: custom
+
+fields:
+  - key: filename
+    column: filename
+    type: text
+    nullable: false
+
+  - key: url
+    column: url
+    type: text
+    nullable: false
+
+  - key: mime_type
+    column: mime_type
+    type: text
+    nullable: true
+
+  - key: size_bytes
+    column: size_bytes
+    type: integer
+    nullable: true

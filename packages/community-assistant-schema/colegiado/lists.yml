@@ -1,0 +1,75 @@
+types:
+  - value: pnea
+    label: Comitê acessor da PNEA
+  - value: ciea
+    label: CIEA
+  - value: cimea
+    label: CIMEA
+  - value: ct_cpp
+    label: Câmara Técnica de EA em Conselho de Política Pública
+  - value: ct_cguc
+    label: Câmara Técnica de EA em Conselho Gestor de UC
+  - value: ct_bh
+    label: Câmara Técnica de EA em Conselho de Bacia Hidrográfica
+  - value: other
+    label: Outro
+
+levels:
+  - value: federal
+    label: Federal
+  - value: regional
+    label: Regional
+  - value: estadual
+    label: Estadual
+  - value: municipal
+    label: Municipal
+  - value: other
+    label: Outro
+
+status:
+  - value: sim
+    label: Sim
+  - value: restruturacao
+    label: Em reestruturação
+  - value: nao
+    label: Não
+
+sim_nao:
+  - value: true
+    label: Sim
+  - value: false
+    label: Não
+
+tipo_arquivo:
+  - value: link
+    label: Link
+  - value: file
+    label: Arquivo
+
+tipo_coordenacao:
+  - value: secretarias_ma_educacao
+    label: Secretarias Estaduais de Meio Ambiente (ou correlatas) e de Educação
+  - value: secretaria_ma
+    label: Apenas Secretaria de Estado de Meio Ambiente (ou correlatas)
+  - value: secretaria_educacao
+    label: Apenas Secretaria de Estado de Educação
+  - value: outra_pasta
+    label: Outra Pasta do Estado
+  - value: sociedade_civil
+    label: Instituição da Sociedade Civil
+  - value: outro_segmento
+    label: Instituição de outro segmento
+  - value: outro
+    label: Outro
+
+periodicidade:
+  - value: mensal
+    label: Mensal
+  - value: bimestral
+    label: Bimestral
+  - value: semestral
+    label: Semestral
+  - value: anual
+    label: Anual
+  - value: outro
+    label: Outro

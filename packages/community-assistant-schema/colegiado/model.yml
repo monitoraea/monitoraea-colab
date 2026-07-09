@@ -1,0 +1,339 @@
+entity: colegiado
+table: colegiado
+schema: public
+
+upload: separate
+pwa: false
+versioned: false
+backend: generic
+
+fields:
+  # Required text
+  - key: name
+    column: name
+    type: text
+    nullable: false
+
+  - key: type
+    column: type
+    type: text
+    nullable: true
+
+  - key: type_detail
+    column: type_detail
+    type: text
+    nullable: true
+
+  - key: level
+    column: level
+    type: text
+    nullable: true
+
+  - key: level_detail
+    column: level_detail
+    type: text
+    nullable: true
+
+  # File thumb (image)
+  - key: logo
+    column: logo_file_id
+    type: file
+    nullable: true
+
+  # autocomplete (foreign key to "ufs" entity)
+  - key: uf_id
+    column: uf_id
+    type: jsonb
+    nullable: true
+
+  - key: creation_data
+    type: date
+    nullable: true
+
+  - key: status
+    column: status
+    type: text
+    nullable: true  
+
+  - key: site_link
+    column: site_link
+    type: text
+    nullable: true 
+
+  - key: obs
+    column: obs
+    type: text
+    nullable: true 
+
+  - key: cadeiras_pub
+    column: cadeiras_pub
+    type: integer
+    nullable: true
+
+  - key: cadeiras_civil
+    column: cadeiras_civil
+    type: integer
+    nullable: true
+
+  - key: membros
+    column: membros
+    type: jsonb
+    nullable: true
+
+  - key: owner_organization
+    type: connection
+    connection_type: ownership
+    direction: to
+    target_entity: organization
+    cardinality: one
+    nullable: true
+
+  # Identity linking (Part B.1) — polymorphic reference to the legacy
+  # MEA colegiado this row belongs to, same convention already used by
+  # schema/geo/model.yml. entity_type is a fixed constant
+  # ("legacy_colegiado"); entity_id is the legacy iniciativa_id. Lets
+  # ByEntityDataProvider find-or-create the one true row per legacy
+  # colegiado, and EntityRecordsDataProvider scope indicator records the
+  # same way, without ever needing this row's own internal id.
+  - key: entity_id
+    column: entity_id
+    type: integer
+    nullable: true
+
+  - key: entity_type
+    column: entity_type
+    type: text
+    nullable: true
+
+  # Documento de criação (link-or-file pair)
+  - key: documento_criacao
+    column: documento_criacao
+    type: text
+    nullable: true
+
+  - key: documento_criacao_tipo
+    column: documento_criacao_tipo
+    type: text
+    nullable: true
+
+  # type: text, not file — matches the established file_or_link precedent
+  # (schema/test/model.yml's file_or_link_field): in link mode the widget
+  # stores a plain string, so the underlying MD field must be a plain
+  # column, not routed through crud.ts's file-table resolution logic.
+  - key: documento_criacao_arquivo
+    column: documento_criacao_arquivo
+    type: text
+    nullable: true
+
+  # Composição — outras cadeiras (repeatable: setor, cadeiras)
+  - key: composicao_cadeiras_outros
+    column: composicao_cadeiras_outros
+    type: jsonb
+    nullable: true
+
+  # Coordenação (órgão gestor)
+  - key: coordenacao
+    column: coordenacao
+    type: text
+    nullable: true
+
+  - key: coordenacao_especifique
+    column: coordenacao_especifique
+    type: text
+    nullable: true
+
+  # Coordenação — quem (repeatable: nome, email, telefone, mandato_ini, mandato_fim)
+  - key: coordenacao_quem
+    column: coordenacao_quem
+    type: jsonb
+    nullable: true
+
+  # Regimento interno (link-or-file pair, gated by regimento_interno_tem)
+  - key: regimento_interno_tem
+    column: regimento_interno_tem
+    type: boolean
+    nullable: true
+
+  - key: regimento_interno
+    column: regimento_interno
+    type: text
+    nullable: true
+
+  - key: regimento_interno_tipo
+    column: regimento_interno_tipo
+    type: text
+    nullable: true
+
+  - key: regimento_interno_arquivo
+    column: regimento_interno_arquivo
+    type: text
+    nullable: true
+
+  # Organização interna
+  - key: org_interna_periodicidade
+    column: org_interna_periodicidade
+    type: text
+    nullable: true
+
+  - key: organizacao_interna_periodicidade_especifique
+    column: organizacao_interna_periodicidade_especifique
+    type: text
+    nullable: true
+
+  - key: organizacao_interna_estrutura_tem
+    column: organizacao_interna_estrutura_tem
+    type: boolean
+    nullable: true
+
+  - key: organizacao_interna_estrutura_especifique
+    column: organizacao_interna_estrutura_especifique
+    type: text
+    nullable: true
+
+  # Política Pública de EA (link-or-file pair, gated by ppea_tem)
+  - key: ppea_tem
+    column: ppea_tem
+    type: boolean
+    nullable: true
+  - key: ppea_tipo
+    column: ppea_tipo
+    type: text
+    nullable: true
+  - key: ppea_arquivo
+    column: ppea_arquivo
+    type: text
+    nullable: true
+  - key: ppea_decreto
+    column: ppea_decreto
+    type: text
+    nullable: true
+  - key: ppea_lei
+    column: ppea_lei
+    type: text
+    nullable: true
+
+  # Política Pública de Mudanças do Clima (link-or-file pair, gated by ppea2_tem)
+  - key: ppea2_tem
+    column: ppea2_tem
+    type: boolean
+    nullable: true
+  - key: ppea2_tipo
+    column: ppea2_tipo
+    type: text
+    nullable: true
+  - key: ppea2_arquivo
+    column: ppea2_arquivo
+    type: text
+    nullable: true
+  - key: ppea2_decreto
+    column: ppea2_decreto
+    type: text
+    nullable: true
+  - key: ppea2_lei
+    column: ppea2_lei
+    type: text
+    nullable: true
+
+  # Programa Estadual de EA (link-or-file pair, gated by programa_estadual_tem)
+  - key: programa_estadual_tem
+    column: programa_estadual_tem
+    type: boolean
+    nullable: true
+  - key: programa_estadual_tipo
+    column: programa_estadual_tipo
+    type: text
+    nullable: true
+  - key: programa_estadual_arquivo
+    column: programa_estadual_arquivo
+    type: text
+    nullable: true
+  - key: programa_estadual_decreto
+    column: programa_estadual_decreto
+    type: text
+    nullable: true
+  - key: programa_estadual_lei
+    column: programa_estadual_lei
+    type: text
+    nullable: true
+
+  # Plano Estadual de EA (link-or-file pair, gated by plano_estadual_tem)
+  - key: plano_estadual_tem
+    column: plano_estadual_tem
+    type: boolean
+    nullable: true
+  - key: plano_estadual_tipo
+    column: plano_estadual_tipo
+    type: text
+    nullable: true
+  - key: plano_estadual_arquivo
+    column: plano_estadual_arquivo
+    type: text
+    nullable: true
+  - key: plano_estadual_decreto
+    column: plano_estadual_decreto
+    type: text
+    nullable: true
+  - key: plano_estadual_lei
+    column: plano_estadual_lei
+    type: text
+    nullable: true
+
+  # Outra política pública (link-or-file pair, gated by ppea_outra_tem)
+  - key: ppea_outra_tem
+    column: ppea_outra_tem
+    type: boolean
+    nullable: true
+  - key: ppea_outra_tipo
+    column: ppea_outra_tipo
+    type: text
+    nullable: true
+  - key: ppea_outra_arquivo
+    column: ppea_outra_arquivo
+    type: text
+    nullable: true
+  - key: ppea_outra_decreto
+    column: ppea_outra_decreto
+    type: text
+    nullable: true
+  - key: ppea_outra_lei
+    column: ppea_outra_lei
+    type: text
+    nullable: true
+
+  # Plano de Ação (file-only, no link mode; two month fields)
+  - key: plano_acao_arquivo
+    column: plano_acao_arquivo
+    type: file
+    nullable: true
+  - key: plano_acao_ini
+    column: plano_acao_ini
+    type: date
+    nullable: true
+  - key: plano_acao_fim
+    column: plano_acao_fim
+    type: date
+    nullable: true
+
+triggers:
+  on_save:
+    - type: sync_column
+      target_table: working_groups
+      match:
+        entity_type: colegiado
+        entity_id: $id
+      set:
+        name: $data.name
+    # - type: webhook
+    #   url: http://localhost:5678/webhook-test/test-notification
+    #   queue: default
+    #   payload:
+    #     id: $id
+    #     name: $data.name
+  # on_delete:
+  #   - type: sync_column
+  #     target_table: working_groups
+  #     match:
+  #       entity_type: colegiado
+  #       entity_id: $id
+  #     set:
+  #       name: null

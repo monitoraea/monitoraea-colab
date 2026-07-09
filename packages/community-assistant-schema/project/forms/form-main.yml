@@ -1,0 +1,60 @@
+entity: project
+form_key: form-main
+title: Projeto
+
+sections:
+  - title: Dados do Projeto
+    rows:
+      - fields:
+          - key: name
+            label: Nome
+            span: 8
+            required: true
+            error_message: "O nome do projeto é obrigatório"
+          - key: status
+            label: Status
+            span: 4
+            widget: select
+            options:
+              - value: planejamento
+                label: Planejamento
+              - value: em andamento
+                label: Em andamento
+              - value: concluido
+                label: Concluído
+              - value: suspenso
+                label: Suspenso
+
+      - fields:
+          - key: description
+            label: Descrição
+            span: 12
+            widget: textarea
+
+  - title: Período
+    rows:
+      - fields:
+          - key: start_date
+            label: Data de início
+            span: 6
+            widget: date
+          - key: end_date
+            label: Data de término
+            span: 6
+            widget: date
+
+  - title: Vínculo
+    rows:
+      - fields:
+          - key: owner_organization
+            label: Organização responsável
+            span: 6
+            widget: async_autocomplete
+            autocomplete_entity: organization
+            autocomplete_field: name
+          - key: owner_colegiado
+            label: Colegiado responsável
+            span: 6
+            widget: async_autocomplete
+            autocomplete_entity: colegiado
+            autocomplete_field: name

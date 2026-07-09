@@ -1,0 +1,21 @@
+entity: organization
+form_key: form-main
+title: Organização
+
+sections:
+  - title: Dados da Organização
+    rows:
+      - fields:
+          - key: name
+            label: Nome
+            span: 12
+            required: true
+            error_message: "O nome da organização é obrigatório"
+
+      - fields:
+          - key: owned_by
+            label: Organização responsável
+            span: 12
+            widget: async_autocomplete
+            autocomplete_entity: organization
+            autocomplete_field: name

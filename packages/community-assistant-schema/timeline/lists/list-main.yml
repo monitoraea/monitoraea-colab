@@ -1,0 +1,21 @@
+list: list-main
+entity: timeline
+label: Timeline Entries
+page_size: 20
+
+context_filter:
+  type: polymorphic
+  key: entity
+
+columns:
+  - key: date
+    label: Date
+    width: 2
+  # - key: entity
+  #   label: Related To
+  #   width: 4
+  - key: description
+    label: Description
+    width: 6
+
+fd: form-main

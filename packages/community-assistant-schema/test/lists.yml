@@ -1,0 +1,21 @@
+test_options:
+  - value: option_a
+    label: Option A
+  - value: option_b
+    label: Option B
+  - value: option_c
+    label: Option C
+
+multiselect_options:
+  - value: alpha
+    label: Alpha
+  - value: beta
+    label: Beta
+  - value: gamma
+    label: Gamma
+
+file_or_link_options:
+  - value: file
+    label: File upload
+  - value: link
+    label: External link

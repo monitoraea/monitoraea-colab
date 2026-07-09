@@ -1,0 +1,28 @@
+entity: geo
+table: geo
+backend: generic
+
+fields:
+  - key: entity_id
+    column: entity_id
+    type: integer
+    nullable: false
+  - key: entity_type
+    column: entity_type
+    type: text
+    nullable: false
+  - key: version
+    column: version
+    type: integer
+  - key: published_at
+    column: published_at
+    type: date
+  - key: geojson
+    column: geojson
+    type: jsonb
+  - key: descricao_territorio
+    column: descricao_territorio
+    type: text
+  - key: estados_atuacao
+    column: estados_atuacao
+    type: jsonb

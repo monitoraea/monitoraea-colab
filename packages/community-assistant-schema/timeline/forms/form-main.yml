@@ -1,0 +1,16 @@
+model: timeline
+title: Timeline Entry
+sections:
+  - title: Details
+    rows:
+      - fields:
+          - key: entity
+            widget: hidden
+            span: 12
+      - fields:
+          - key: date
+            label: Date
+            span: 4
+          - key: description
+            label: Description
+            span: 8

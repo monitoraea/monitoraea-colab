@@ -1,0 +1,175 @@
+model: sample
+title: "Sample Project — Full Form"
+
+sections:
+  - key: basic
+    title: "Basic Information"
+    rows:
+      - fields:
+          - key: name
+            label: "Project Name"
+            span: 8
+            required: true
+            error_message: "Project name is required"
+          - key: status
+            label: "Status"
+            span: 4
+            widget: select
+            options: status_options
+
+      - fields:
+          - key: description
+            label: "Description"
+            span: 12
+            widget: textarea
+
+      - type: divider
+        label: "Details"
+
+      - fields:
+          - key: active
+            label: "Active"
+            span: 3
+            widget: boolean
+          - key: score
+            label: "Score"
+            span: 3
+            widget: real
+          - key: slot_count
+            label: "Slot Count"
+            span: 3
+            widget: integer
+          - key: deadline
+            label: "Deadline"
+            span: 3
+            widget: date
+
+      - fields:
+          - key: has_deadline
+            label: "Has Deadline?"
+            span: 3
+            widget: boolean
+
+      - type: group
+        title: "Conditional Fields"
+        fields:
+          - key: status_detail
+            label: "Status Detail"
+            span: 12
+            widget: textarea
+
+      - fields:
+          - key: phases
+            label: "Phases"
+            span: 8
+            widget: multi_select
+            options: phases_options
+            required: true
+            error_message: "Select at least one phase"
+          - key: owner_id
+            label: "Owner"
+            span: 4
+            widget: async_autocomplete
+            autocomplete_entity: users
+            autocomplete_field: name
+
+  - key: media
+    title: "Media & Attachments"
+    rows:
+      - fields:
+          - key: logo
+            label: "Logo"
+            span: 6
+            widget: file
+          - key: thumbnail
+            label: "Thumbnail"
+            span: 6
+            widget: file_thumb
+
+      - type: divider
+
+      - fields:
+          - key: attachment_tipo
+            label: "Attachment Type"
+            span: 4
+            widget: select
+            options: attachment_tipo_options
+          - key: attachment
+            label: "Attachment"
+            span: 8
+            widget: file_or_link
+            driven_by: attachment_tipo
+
+      - type: spacer
+        span: 12
+
+      - fields:
+          - key: _helpbox_media
+            label: "Media Help"
+            span: 12
+            widget: helpbox
+            helpbox_key: "media_guidelines"
+
+  - key: tags_section
+    title: "Tags"
+    rows:
+      - fields:
+          - key: tags
+            label: "Tags (JSONB array)"
+            span: 12
+            widget: textarea
+            required: false
+
+  - key: members
+    title: "Team Members"
+    from: members
+    repeatable:
+      type: free
+      add_label: "Add Member"
+    fields:
+      - key: name
+        label: "Member Name"
+        span: 6
+        required: true
+        error_message: "Member name is required"
+      - key: role
+        label: "Role"
+        span: 6
+        widget: select
+        options: role_options
+
+  - key: slots_section
+    title: "Slots"
+    from: slots
+    repeatable:
+      type: fixed
+      count_from: slot_count
+    fields:
+      - key: label
+        label: "Slot Label"
+        span: 12
+        required: true
+        error_message: "Slot label is required"
+
+  - key: phase_details_section
+    title: "Phase Details"
+    from: phase_details
+    repeatable:
+      type: selection
+      driven_by: phases
+    fields:
+      - key: description
+        label: "Phase Description"
+        span: 12
+        widget: textarea
+
+rules:
+  - when:
+      field: status
+      equals: "other"
+    show: status_detail
+
+  - when:
+      field: has_deadline
+      equals: true
+    show: deadline

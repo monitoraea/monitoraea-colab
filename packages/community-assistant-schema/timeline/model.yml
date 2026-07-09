@@ -1,0 +1,15 @@
+entity: timeline
+table: timelines
+fields:
+  - key: entity
+    type: polymorphic
+    nullable: false
+    expand:
+      - id
+      - name
+  - key: date
+    type: date
+    nullable: false
+  - key: description
+    type: text
+    nullable: false

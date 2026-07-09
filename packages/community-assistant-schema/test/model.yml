@@ -1,0 +1,118 @@
+entity: test
+table: tests
+schema: public
+
+upload: separate
+pwa: false
+versioned: false
+backend: custom
+
+fields:
+  # Scalars
+  - key: text_field
+    type: text
+    nullable: true
+
+  - key: textarea_field
+    type: text
+    nullable: true
+
+  - key: integer_field
+    type: integer
+    nullable: true
+
+  - key: real_field
+    type: real
+    nullable: true
+
+  - key: boolean_field
+    type: boolean
+    nullable: true
+
+  - key: boolean_switch_field
+    type: boolean
+    nullable: true
+
+  - key: date_field
+    type: date
+    nullable: true
+
+  # Select / multi_select
+  - key: select_field
+    type: text
+    nullable: true
+
+  - key: multiselect_field
+    type: jsonb
+    nullable: true
+
+  - key: multiselect_list_field
+    type: jsonb
+    nullable: true
+
+  # Date variants
+  - key: date_field_eu
+    type: date
+    nullable: true
+
+  - key: month_year_field
+    type: date
+    nullable: true
+
+  - key: year_field
+    type: date
+    nullable: true
+
+  # Real format variant
+  - key: real_field_eu
+    type: real
+    nullable: true
+
+  # Autocomplete
+  - key: autocomplete_field
+    type: integer
+    nullable: true
+
+  - key: autocomplete_multiselect_field
+    type: jsonb
+    nullable: true
+
+  # Files
+  - key: file_field
+    column: file_field_id
+    type: file
+    nullable: true
+
+  - key: thumb_field
+    column: thumb_field_id
+    type: file
+    nullable: true
+
+  - key: file_or_link_tipo
+    type: text
+    nullable: true
+
+  - key: file_or_link_field
+    type: text
+    nullable: true
+
+  # Arrays
+  - key: jsonb_array
+    type: array
+    storage: jsonb
+    nullable: true
+    fields:
+      - key: label
+        type: text
+
+  - key: relation_array
+    type: array
+    storage: relation
+    table: test_items
+    foreign_key: test_id
+    nullable: true
+    fields:
+      - key: name
+        type: text
+      - key: value
+        type: text

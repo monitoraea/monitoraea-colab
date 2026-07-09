@@ -1,0 +1,24 @@
+model: colegiado
+title: "Colegiado"
+
+sections:
+  - key: basic
+    title: "Basic Information"
+    rows:
+      - fields:
+          - key: name
+            label: "Name"
+            span: 8
+            required: true
+            error_message: "Name is required"
+          - key: status
+            label: "Status"
+            span: 4
+            widget: select
+            options: status_options
+
+      - fields:
+          - key: score
+            label: "Score"
+            span: 4
+            widget: star_rating

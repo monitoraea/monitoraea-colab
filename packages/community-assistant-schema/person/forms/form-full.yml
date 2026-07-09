@@ -1,0 +1,36 @@
+model: person
+title: "Person — Full Form"
+
+sections:
+  - key: basic
+    title: "Basic Information"
+    rows:
+      - fields:
+          - key: name
+            label: "Person Name"
+            span: 8
+            required: true
+            error_message: "Person name is required"
+          - key: children_count
+            label: "Quantidade de Filhos"
+            span: 3
+            widget: integer
+
+      - fields:
+          - key: description
+            label: "Description"
+            span: 12
+            widget: textarea
+  
+  - key: children_section
+    title: "Filhos"
+    from: children
+    repeatable:
+      type: fixed
+      count_from: children_count
+    fields:
+      - key: label
+        label: "Nome do Filho"
+        span: 12
+        required: true
+        error_message: "Nome do Filho is required"
