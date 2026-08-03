@@ -1,0 +1,54 @@
+ALTER TABLE cne.cnes ADD tipologia_outro text NULL;
+ALTER TABLE cne.cnes ADD possui_instrumento_juridico bool NULL;
+
+ALTER TABLE cne.cnes ADD possui_ppp bool NULL;
+ALTER TABLE cne.cnes ADD ppp_arquivo int4 NULL;
+ALTER TABLE cne.cnes ADD ppp_data text NULL;
+ALTER TABLE cne.cnes ADD possui_espaco_fisico bool NULL;
+ALTER TABLE cne.cnes ADD possui_equipe_dedicada bool NULL;
+ALTER TABLE cne.cnes ADD sustentacao_financeira int2 NULL;
+
+ALTER TABLE cne.cnes ADD escala_atuacao int2 NULL;
+ALTER TABLE cne.cnes ADD faixa_beneficiarios int2 NULL;
+
+ALTER TABLE cne.cnes ADD objetivo_articulacao int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_apoio_centros int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_incidencia_politicas int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_producao_conteudo int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_disponibiliza_dados int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_mapeamento int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_monitoramento int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_formacao int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_reflexao_critica int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_atividades_interpretativas int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_espaco_demonstrativo int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_capacitacao_renda int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_apoio_projetos_ea int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_apoio_programas_mma int2 NULL;
+ALTER TABLE cne.cnes ADD objetivo_pesquisa_intercambio int2 NULL;
+
+ALTER TABLE cne.cnes ADD tema_mudancas_climaticas int2 NULL;
+ALTER TABLE cne.cnes ADD tema_mudancas_climaticas_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_biodiversidade int2 NULL;
+ALTER TABLE cne.cnes ADD tema_biodiversidade_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_recursos_hidricos int2 NULL;
+ALTER TABLE cne.cnes ADD tema_recursos_hidricos_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_residuos_solidos int2 NULL;
+ALTER TABLE cne.cnes ADD tema_residuos_solidos_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_energia int2 NULL;
+ALTER TABLE cne.cnes ADD tema_energia_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_agroecologia int2 NULL;
+ALTER TABLE cne.cnes ADD tema_agroecologia_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_saude_ambiental int2 NULL;
+ALTER TABLE cne.cnes ADD tema_saude_ambiental_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_justica_ambiental int2 NULL;
+ALTER TABLE cne.cnes ADD tema_justica_ambiental_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_povos_tradicionais int2 NULL;
+ALTER TABLE cne.cnes ADD tema_povos_tradicionais_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_gestao_riscos int2 NULL;
+ALTER TABLE cne.cnes ADD tema_gestao_riscos_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_economia_solidaria int2 NULL;
+ALTER TABLE cne.cnes ADD tema_economia_solidaria_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_cidades_sustentaveis int2 NULL;
+ALTER TABLE cne.cnes ADD tema_cidades_sustentaveis_descreva text NULL;
+ALTER TABLE cne.cnes ADD tema_outros_especificar text NULL;

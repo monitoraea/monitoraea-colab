@@ -17,11 +17,14 @@
     - type: column
       size: 3
       key: tipologia
+    - type: column
+      size: 3
+      key: tipologia_outro
   - type: row
     elements:
     - type: column
       size: 2
-      key: uf    
+      key: uf
     - type: column
       size: 4
       key: municipio
@@ -105,15 +108,22 @@
 - type: row
   block: inst
   elements:
-    - type: column
-      size: 3
-      key: data_criacao
-    - type: column
-      size: 3
-      key: data_inst    
-    - type: column
-      size: 3
-      key: cnpj
+    - type: row
+      elements:
+        - type: column
+          size: 3
+          key: data_criacao
+    - type: row
+      elements:
+        - type: column
+          size: 4
+          key: possui_instrumento_juridico
+        - type: column
+          size: 3
+          key: data_inst
+        - type: column
+          size: 3
+          key: cnpj
 
 - type: row
   block: strategy
@@ -168,3 +178,231 @@
             elements:
               - type: button
                 title: Adicionar resultado ou produto
+
+- type: row
+  block: dados_estrutura
+  elements:
+    - type: row
+      elements:
+        - type: column
+          size: 3
+          key: possui_ppp
+    - type: row
+      elements:
+        - type: column
+          size: 3
+          key: ppp_tipo
+        - type: column
+          size: 3
+          key: ppp_arquivo
+        - type: column
+          size: 4
+          key: ppp_arquivo2
+        - type: column
+          size: 2
+          key: ppp_data
+    - type: row
+      elements:
+        - type: column
+          size: 3
+          key: possui_espaco_fisico
+        - type: column
+          size: 3
+          key: possui_equipe_dedicada
+        - type: column
+          size: 6
+          key: sustentacao_financeira
+
+- type: row
+  block: atuacao_estrategia
+  elements:
+    - type: column
+      size: 6
+      key: escala_atuacao
+    - type: column
+      size: 6
+      key: faixa_beneficiarios
+
+- type: row
+  block: objetivos_estrategicos
+  elements:
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_articulacao
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_apoio_centros
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_incidencia_politicas
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_producao_conteudo
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_disponibiliza_dados
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_mapeamento
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_monitoramento
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_formacao
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_reflexao_critica
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_atividades_interpretativas
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_espaco_demonstrativo
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_capacitacao_renda
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_apoio_projetos_ea
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_apoio_programas_mma
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: objetivo_pesquisa_intercambio
+
+- type: row
+  block: temas_atuacao
+  elements:
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_mudancas_climaticas
+        - type: column
+          size: 12
+          key: tema_mudancas_climaticas_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_biodiversidade
+        - type: column
+          size: 12
+          key: tema_biodiversidade_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_recursos_hidricos
+        - type: column
+          size: 12
+          key: tema_recursos_hidricos_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_residuos_solidos
+        - type: column
+          size: 12
+          key: tema_residuos_solidos_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_energia
+        - type: column
+          size: 12
+          key: tema_energia_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_agroecologia
+        - type: column
+          size: 12
+          key: tema_agroecologia_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_saude_ambiental
+        - type: column
+          size: 12
+          key: tema_saude_ambiental_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_justica_ambiental
+        - type: column
+          size: 12
+          key: tema_justica_ambiental_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_povos_tradicionais
+        - type: column
+          size: 12
+          key: tema_povos_tradicionais_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_gestao_riscos
+        - type: column
+          size: 12
+          key: tema_gestao_riscos_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_economia_solidaria
+        - type: column
+          size: 12
+          key: tema_economia_solidaria_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 8
+          key: tema_cidades_sustentaveis
+        - type: column
+          size: 12
+          key: tema_cidades_sustentaveis_descreva
+    - type: row
+      elements:
+        - type: column
+          size: 12
+          key: tema_outros_especificar

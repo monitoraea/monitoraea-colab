@@ -24,3 +24,29 @@ lists:
       label: 'Educomunicação'
     - value: 2
       label: 'Articulação'
+
+  - key: escala_objetivo
+    options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Não realiza'
+    - value: 1
+      label: 'Realiza eventualmente'
+    - value: 2
+      label: 'Realiza regularmente'
+    - value: 3
+      label: 'É função central da estrutura'
+
+  - key: escala_tema
+    options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Não atua neste tema'
+    - value: 1
+      label: 'Atua eventualmente'
+    - value: 2
+      label: 'Atua regularmente'
+    - value: 3
+      label: 'É um dos eixos centrais da atuação'

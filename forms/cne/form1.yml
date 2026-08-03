@@ -10,7 +10,7 @@ fields:
 - key: nome
   block: main
   type: text
-  title: Nome
+  title: Nome da estrutura
   size: 12
   client_validation: not_empty # not implemented yet
   validation:
@@ -19,7 +19,7 @@ fields:
 - key: tipologia
   block: main
   type: options
-  title: Tipologia
+  title: Como a estrutura se reconhece / identifica?
   size: 4
   # helpbox: no
   # helpbox:
@@ -28,11 +28,11 @@ fields:
     - value: -1
       label: Não respondido
     - value: 0
-      label: 'Centro'
+      label: 'Centro de Educação Ambiental'
     - value: 1
-      label: 'Núcleo'
+      label: 'Núcleo de Educação Ambiental'
     - value: 2
-      label: 'Equipamento'
+      label: 'Equipamento de Educação Ambiental'
     - value: 3
       label: 'Outro'
   validation:
@@ -40,10 +40,20 @@ fields:
       value: -1
     - type: not_empty
 
+- key: tipologia_outro
+  block: main
+  type: text
+  title: Especificar
+  size: 4
+  show:
+    target:
+      key: tipologia
+      value: 3
+
 - key: uf
   block: main
   type: options
-  title: Estado
+  title: Estado (Sede da estrutura)
   size: 4
   remote: uf/all
   query: empty=1
@@ -54,7 +64,7 @@ fields:
 - key: municipio
   block: main
   type: async_autocomplete
-  title: Município
+  title: Município (Sede da estrutura)
   size: 4
   remote_list: municipio/related
   remote_single: municipio/single
@@ -138,22 +148,37 @@ fields:
 - key: data_criacao
   block: inst
   type: monthpicker
-  title: Data da criação
+  title: Data da criação da estrutura
   size: 3
-  validation:
-    - type: not_empty
+
+- key: possui_instrumento_juridico
+  block: inst
+  type: options
+  title: Possui instrumento jurídico de institucionalização?
+  size: 3
+  list:
+    module: property
+    key: sim_nao
 
 - key: data_inst
   block: inst
   type: monthpicker
   title: Data da institucionalização
   size: 3
+  show:
+    target:
+      key: possui_instrumento_juridico
+      value: true
 
 - key: cnpj
   block: inst
   type: text
   title: CNPJ do CECSA
   size: 4
+  show:
+    target:
+      key: possui_instrumento_juridico
+      value: true
 
 - key: estrategia_desc
   block: strategy
@@ -225,6 +250,571 @@ fields:
   title: Data da versão mais atual
   size: 4
 
+- key: possui_ppp
+  block: dados_estrutura
+  type: options
+  title: Possui PPP (Projeto Político-Pedagógico)?
+  size: 3
+  list:
+    module: property
+    key: sim_nao
+
+- key: ppp_tipo
+  block: dados_estrutura
+  type: options
+  title: Tipo de documento de PPP
+  size: 3
+  show:
+    target:
+      key: possui_ppp
+      value: true
+  onchange:
+    - key: ppp_arquivo
+      value:
+    - key: ppp_arquivo2
+      value:
+  list:
+    module: property
+    key: tipo_arquivo
+
+- key: ppp_arquivo
+  block: dados_estrutura
+  type: text
+  title: Link para o documento de PPP
+  size: 6
+  show:
+    target:
+      key: ppp_tipo
+      value: link
+
+- key: ppp_arquivo2
+  block: dados_estrutura
+  type: file
+  accept: application/pdf
+  title: Arquivo de PPP
+  db_field: ppp_arquivo
+  size: 6
+  show:
+    target:
+      key: ppp_tipo
+      value: file
+
+- key: ppp_data
+  block: dados_estrutura
+  type: monthpicker
+  title: Data da última revisão
+  size: 3
+  show:
+    target:
+      key: possui_ppp
+      value: true
+
+- key: possui_espaco_fisico
+  block: dados_estrutura
+  type: options
+  title: Possui espaço físico?
+  size: 3
+  list:
+    module: property
+    key: sim_nao
+
+- key: possui_equipe_dedicada
+  block: dados_estrutura
+  type: options
+  title: Possui equipe dedicada?
+  size: 3
+  list:
+    module: property
+    key: sim_nao
+
+- key: sustentacao_financeira
+  block: dados_estrutura
+  type: options
+  title: Qual o grau de previsibilidade da sustentação financeira da estrutura?
+  size: 6
+  default: -1
+  options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Não possui fonte financeira definida'
+    - value: 1
+      label: 'Recursos ocasionais ou esporádicos'
+    - value: 2
+      label: 'Recursos provenientes de projetos ou ciclos recorrentes de financiamento'
+    - value: 3
+      label: 'Fonte institucional contínua ou orçamento permanente'
+
+- key: escala_atuacao
+  block: atuacao_estrategia
+  type: options
+  title: Qual a escala declarada para a realização das atividades da estrutura?
+  size: 6
+  default: -1
+  options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Restrita à própria unidade/equipamento'
+    - value: 1
+      label: 'Comunitária, distrital ou de bairro'
+    - value: 2
+      label: 'Municipal'
+    - value: 3
+      label: 'Multimunicipal ou recorte territorial específico (bacia, TI, UC, assentamento)'
+    - value: 4
+      label: 'Estadual ou regional'
+    - value: 5
+      label: 'Nacional'
+    - value: 6
+      label: 'Internacional'
+
+- key: faixa_beneficiarios
+  block: atuacao_estrategia
+  type: options
+  title: Qual a faixa de beneficiários/ano atendidos pela estrutura?
+  size: 6
+  default: -1
+  options:
+    - value: -1
+      label: Não respondido
+    - value: 0
+      label: 'Até 50 pessoas'
+    - value: 1
+      label: '51–200'
+    - value: 2
+      label: '201–500'
+    - value: 3
+      label: '501–1.000'
+    - value: 4
+      label: '1.001–5.000'
+    - value: 5
+      label: '5.001–20.000'
+    - value: 6
+      label: 'Mais de 20.000'
+    - value: 7
+      label: 'Não sei estimar'
+
+- key: objetivo_articulacao
+  block: objetivos_estrategicos
+  type: options
+  title: Articula sociedade civil, governo e demais atores para ações educadoras socioambientais
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_apoio_centros
+  block: objetivos_estrategicos
+  type: options
+  title: Apoia o desenvolvimento de outros centros, núcleos e equipamentos
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_incidencia_politicas
+  block: objetivos_estrategicos
+  type: options
+  title: Promove incidência em políticas públicas socioambientais, inclusive junto às CIEAs
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_producao_conteudo
+  block: objetivos_estrategicos
+  type: options
+  title: Produz conteúdo, comunicação e educomunicação socioambiental
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_disponibiliza_dados
+  block: objetivos_estrategicos
+  type: options
+  title: Disponibiliza informações e dados de caráter socioambiental
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_mapeamento
+  block: objetivos_estrategicos
+  type: options
+  title: Realiza mapeamentos e diagnósticos territoriais e de governança
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_monitoramento
+  block: objetivos_estrategicos
+  type: options
+  title: Monitora a gestão da estratégia de educação e cooperação socioambiental
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_formacao
+  block: objetivos_estrategicos
+  type: options
+  title: Promove processos formativos (gestores, conselheiros, agentes socioambientais)
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_reflexao_critica
+  block: objetivos_estrategicos
+  type: options
+  title: Incentiva processos de reflexão crítica sobre a problemática socioambiental
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_atividades_interpretativas
+  block: objetivos_estrategicos
+  type: options
+  title: Desenvolve atividades interpretativas e de contato com natureza/cultura local
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_espaco_demonstrativo
+  block: objetivos_estrategicos
+  type: options
+  title: Atua como espaço demonstrativo e experimental de tecnologias sustentáveis
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_capacitacao_renda
+  block: objetivos_estrategicos
+  type: options
+  title: Promove capacitação para geração de trabalho e renda com sustentabilidade
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_apoio_projetos_ea
+  block: objetivos_estrategicos
+  type: options
+  title: Apoia elaboração e implementação de projetos, ações e eventos de EA
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_apoio_programas_mma
+  block: objetivos_estrategicos
+  type: options
+  title: Apoia programas territoriais e políticas do MMA e instituições parceiras
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: objetivo_pesquisa_intercambio
+  block: objetivos_estrategicos
+  type: options
+  title: Promove pesquisa, socialização de conhecimento e intercâmbio técnico-científico, inclusive saberes tradicionais e cooperação internacional
+  size: 12
+  default: -1
+  list:
+    module: property
+    key: escala_objetivo
+
+- key: tema_mudancas_climaticas
+  block: temas_atuacao
+  type: options
+  title: Mudanças climáticas, adaptação e enfrentamento aos riscos e impactos climáticos
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_mudancas_climaticas_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_mudancas_climaticas
+      value: [-1, 0]
+      type: hide
+
+- key: tema_biodiversidade
+  block: temas_atuacao
+  type: options
+  title: Biodiversidade e ecossistemas
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_biodiversidade_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_biodiversidade
+      value: [-1, 0]
+      type: hide
+
+- key: tema_recursos_hidricos
+  block: temas_atuacao
+  type: options
+  title: Recursos hídricos
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_recursos_hidricos_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_recursos_hidricos
+      value: [-1, 0]
+      type: hide
+
+- key: tema_residuos_solidos
+  block: temas_atuacao
+  type: options
+  title: Resíduos sólidos
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_residuos_solidos_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_residuos_solidos
+      value: [-1, 0]
+      type: hide
+
+- key: tema_energia
+  block: temas_atuacao
+  type: options
+  title: Energia e transição energética
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_energia_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_energia
+      value: [-1, 0]
+      type: hide
+
+- key: tema_agroecologia
+  block: temas_atuacao
+  type: options
+  title: Agroecologia e soberania alimentar
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_agroecologia_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_agroecologia
+      value: [-1, 0]
+      type: hide
+
+- key: tema_saude_ambiental
+  block: temas_atuacao
+  type: options
+  title: Saúde ambiental
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_saude_ambiental_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_saude_ambiental
+      value: [-1, 0]
+      type: hide
+
+- key: tema_justica_ambiental
+  block: temas_atuacao
+  type: options
+  title: Justiça ambiental e territorial
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_justica_ambiental_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_justica_ambiental
+      value: [-1, 0]
+      type: hide
+
+- key: tema_povos_tradicionais
+  block: temas_atuacao
+  type: options
+  title: Povos e comunidades tradicionais
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_povos_tradicionais_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_povos_tradicionais
+      value: [-1, 0]
+      type: hide
+
+- key: tema_gestao_riscos
+  block: temas_atuacao
+  type: options
+  title: Gestão de riscos e desastres
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_gestao_riscos_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_gestao_riscos
+      value: [-1, 0]
+      type: hide
+
+- key: tema_economia_solidaria
+  block: temas_atuacao
+  type: options
+  title: Economia solidária e socioambiental
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_economia_solidaria_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_economia_solidaria
+      value: [-1, 0]
+      type: hide
+
+- key: tema_cidades_sustentaveis
+  block: temas_atuacao
+  type: options
+  title: Cidades e territórios sustentáveis
+  size: 8
+  default: -1
+  list:
+    module: property
+    key: escala_tema
+
+- key: tema_cidades_sustentaveis_descreva
+  block: temas_atuacao
+  type: textarea
+  rows: 2
+  title: Descreva
+  size: 12
+  show:
+    target:
+      key: tema_cidades_sustentaveis
+      value: [-1, 0]
+      type: hide
+
+- key: tema_outros_especificar
+  block: temas_atuacao
+  type: text
+  title: Especificar outros temas
+  size: 12
+
 blocks: # opcional
 
   - key: main
@@ -274,3 +864,15 @@ blocks: # opcional
       target: none
       index: default
       add: Adicionar resultado ou produto
+
+  - key: dados_estrutura
+    title: Dados da estrutura
+
+  - key: atuacao_estrategia
+    title: Estratégia de atuação da estrutura
+
+  - key: objetivos_estrategicos
+    title: Objetivos estratégicos da estrutura
+
+  - key: temas_atuacao
+    title: Temas de atuação

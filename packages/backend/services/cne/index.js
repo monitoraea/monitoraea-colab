@@ -207,8 +207,10 @@ class Service {
             p.nome,
             p.logo_arquivo,
             p.tipologia,
+            p.tipologia_outro,
             p.managers_it,
             p.data_criacao,
+            p.possui_instrumento_juridico,
             p.data_inst,
             p.cnpj,
             p.estrategia_desc,
@@ -220,6 +222,54 @@ class Service {
             p.outcomes_it,
             (select CONCAT(u.id,'_',u.cd_geocuf) from ufs u where u.id = p.uf) as uf,
             p.municipio,
+            p.possui_ppp,
+            p.ppp_arquivo,
+            p.ppp_data,
+            p.possui_espaco_fisico,
+            p.possui_equipe_dedicada,
+            p.sustentacao_financeira,
+            p.escala_atuacao,
+            p.faixa_beneficiarios,
+            p.objetivo_articulacao,
+            p.objetivo_apoio_centros,
+            p.objetivo_incidencia_politicas,
+            p.objetivo_producao_conteudo,
+            p.objetivo_disponibiliza_dados,
+            p.objetivo_mapeamento,
+            p.objetivo_monitoramento,
+            p.objetivo_formacao,
+            p.objetivo_reflexao_critica,
+            p.objetivo_atividades_interpretativas,
+            p.objetivo_espaco_demonstrativo,
+            p.objetivo_capacitacao_renda,
+            p.objetivo_apoio_projetos_ea,
+            p.objetivo_apoio_programas_mma,
+            p.objetivo_pesquisa_intercambio,
+            p.tema_mudancas_climaticas,
+            p.tema_mudancas_climaticas_descreva,
+            p.tema_biodiversidade,
+            p.tema_biodiversidade_descreva,
+            p.tema_recursos_hidricos,
+            p.tema_recursos_hidricos_descreva,
+            p.tema_residuos_solidos,
+            p.tema_residuos_solidos_descreva,
+            p.tema_energia,
+            p.tema_energia_descreva,
+            p.tema_agroecologia,
+            p.tema_agroecologia_descreva,
+            p.tema_saude_ambiental,
+            p.tema_saude_ambiental_descreva,
+            p.tema_justica_ambiental,
+            p.tema_justica_ambiental_descreva,
+            p.tema_povos_tradicionais,
+            p.tema_povos_tradicionais_descreva,
+            p.tema_gestao_riscos,
+            p.tema_gestao_riscos_descreva,
+            p.tema_economia_solidaria,
+            p.tema_economia_solidaria_descreva,
+            p.tema_cidades_sustentaveis,
+            p.tema_cidades_sustentaveis_descreva,
+            p.tema_outros_especificar,
             ("createdAt" = "updatedAt") as is_new
           FROM cne.cnes p
           WHERE p.cne_id = :id
@@ -234,6 +284,8 @@ class Service {
     let cne = entity[0];
 
     if (!cne.uf) cne.uf = '0_0';
+    if (!cne.managers_it) cne.managers_it = [];
+    if (!cne.outcomes_it) cne.outcomes_it = [];
     if (cne.municipio) {
       // cria objeto para o municipio
       cne.municipio = {
@@ -243,7 +295,7 @@ class Service {
     }
 
     /* TODO: dá para simplificar com FormManager */
-    for (let document of ['logo', 'estrategia', 'detalhamento']) {
+    for (let document of ['logo', 'estrategia', 'detalhamento', 'ppp']) {
       if (document !== 'logo') cne[`${document}_tipo`] = null;
 
       if (!!entity[0][`${document}_arquivo`]) {
@@ -289,6 +341,7 @@ class Service {
         logo_arquivo: undefined /* TODO: files/thumbnail except those in link_or_file */,
         estrategia_arquivo: entity.estrategia_tipo === null ? null : undefined,
         detalhamento_arquivo: entity.detalhamento_tipo === null ? null : undefined,
+        ppp_arquivo: entity.ppp_tipo === null ? null : undefined,
       },
       {
         where: { cne_id: id, versao: 'draft' },
@@ -309,11 +362,12 @@ class Service {
         files.estrategia_arquivo && files.estrategia_arquivo.length ? files.estrategia_arquivo[0] : null,
       detalhamento_arquivo:
         files.detalhamento_arquivo && files.detalhamento_arquivo.length ? files.detalhamento_arquivo[0] : null,
+      ppp_arquivo: files.ppp_arquivo && files.ppp_arquivo.length ? files.ppp_arquivo[0] : null,
     };
 
     // !!!!! form.link_or_file_fields <<-- faz sentido, pois é algo que diz respeito somente a esta aplicação e não ao Form
     /* TODO: GENERALIZAR: recuperar em form.yml - updateFile deveria ser único (util?) */
-    for (let wFile of ['estrategia', 'detalhamento']) {
+    for (let wFile of ['estrategia', 'detalhamento', 'ppp']) {
       if (entity[`${wFile}_tipo`] === 'link')
         await this.updateFileModel(entityModel, `${wFile}_arquivo`, entity[`${wFile}_arquivo`], 'text/uri-list');
       else if (entity[`${wFile}_tipo`] === 'file') {
