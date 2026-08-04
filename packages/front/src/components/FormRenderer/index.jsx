@@ -160,7 +160,7 @@ export function Renderer(props) {
 
     let pData = { ...data };
     for (let f of form.fields.filter(f => f.default !== undefined)) {
-      if (!pData[f.key]) pData[f.key] = f.default;
+      if (pData[f.key] === undefined || pData[f.key] === null) pData[f.key] = f.default;
     }
 
     _entity(pData);
