@@ -190,6 +190,11 @@ export default function ConectionsTab({ entityName = 'zcm', entityId, onSave }) 
     );
 }
 
+function perfilParceriaLabel(type, value) {
+    const field = form.fields.find(f => f.key === `perfil_parceria_${type === 'recebe' ? 'r' : 'o'}`);
+    return field?.options.find(o => o.value === value)?.label || '';
+}
+
 function Indicacao({ data, type, onChange }) {
 
     return (<div className={styles.row_indicacao}>
@@ -208,6 +213,10 @@ function Indicacao({ data, type, onChange }) {
             <div className={styles.line}>
                 <div className={styles.label}>Relação</div>
                 <div>{data.relacao_name}</div>
+            </div>
+            <div className={styles.line}>
+                <div className={styles.label}>Perfil</div>
+                <div>{perfilParceriaLabel(type, data.perfil_parceria)}</div>
             </div>
         </div>
         <div className={styles.reconheco}>

@@ -54,6 +54,19 @@ fields:
         key: tipo_relacao_r
         value: -1
 
+  - key: perfil_parceria_r
+    block: relations_recebe_it
+    type: options
+    title: Perfil de institucionalização das parcerias
+    size: 3
+    options:
+      - value: 1
+        label: 'Formalizado'
+      - value: 2
+        label: 'Em construção'
+      - value: 3
+        label: 'Informal'
+
   - key: justification_r
     block: relations_recebe_it
     type: read_only
@@ -137,7 +150,20 @@ fields:
         context: local
         key: tipo_relacao_o
         value: -1
-        
+
+  - key: perfil_parceria_o
+    block: relations_oferece_it
+    type: options
+    title: Perfil de institucionalização das parcerias
+    size: 3
+    options:
+      - value: 1
+        label: 'Formalizado'
+      - value: 2
+        label: 'Em construção'
+      - value: 3
+        label: 'Informal'
+
   - key: justification_o
     block: relations_oferece_it
     type: read_only

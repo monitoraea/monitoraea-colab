@@ -220,8 +220,9 @@ class Service {
         const type_id = e[`tipo_relacao${complement}`]?.id;
         const createdBy = type === 'recebe' ? 'to' : 'from';
         const other_type = e[`outra_relacao${complement}`];
+        const perfil_parceria = e[`perfil_parceria${complement}`];
 
-        await createRelation(from_id, to_id, type_id, createdBy, other_type, false, !e[`iniciativa${complement}`]?.id /* se nao tem iniciativa, então é org */);
+        await createRelation(from_id, to_id, type_id, createdBy, other_type, false, !e[`iniciativa${complement}`]?.id /* se nao tem iniciativa, então é org */, perfil_parceria);
       }
 
       // atualizar
@@ -235,6 +236,7 @@ class Service {
           to_id: type === 'recebe' ? original_relations.id : outroId,
           type_id: e[`tipo_relacao${complement}`]?.id || null,
           other_type: e[`outra_relacao${complement}`],
+          perfil_parceria: e[`perfil_parceria${complement}`],
           confirmedByOther: e.confirmedByOther,
           justification: e.justification,
           as_org: !e[`iniciativa${complement}`]?.id /* se nao tem iniciativa, então é org */
@@ -277,6 +279,7 @@ class Service {
           r.from_id as other_id,
           r.type_id,
           r.other_type,
+          r.perfil_parceria,
           r."createdBy" = 'to' as mine,
           r."confirmedByOther",
           r.justification,
@@ -305,6 +308,7 @@ class Service {
           r.to_id as other_id,
           r.type_id,
           r.other_type,
+          r.perfil_parceria,
           r."createdBy" = 'from' as mine,
           r."confirmedByOther",
           r.justification,
@@ -344,6 +348,7 @@ class Service {
         iniciativa_r: { id: outro.iniciativa_id },
         tipo_relacao_r: { id: r.type_id },
         outra_relacao_r: r.other_type,
+        perfil_parceria_r: r.perfil_parceria,
         confirmedByOther_r: this.cboValue(r.confirmedByOther),
         justification_r: r.justification || '',
         non_response_r: 'Esta relação ainda não foi avaliada pela iniciativa indicada',
@@ -365,6 +370,7 @@ class Service {
         iniciativa_o: { id: outro.iniciativa_id },
         tipo_relacao_o: { id: r.type_id },
         outra_relacao_o: r.other_type,
+        perfil_parceria_o: r.perfil_parceria,
         confirmedByOther_o: this.cboValue(r.confirmedByOther),
         justification_o: r.justification || '',
         non_response_o: 'Esta relação ainda não foi avaliada pela iniciativa indicada',
@@ -383,6 +389,7 @@ class Service {
         other_iniciativa_name: outro.iniciativa_name,
         tipo_relacao: { id: r.type_id },
         relacao_name: r.relacao_name || r.other_type,
+        perfil_parceria: r.perfil_parceria,
         mine: r.mine,
         confirmedByOther: this.cboValue(r.confirmedByOther),
         justification: r.justification || '',
@@ -401,6 +408,7 @@ class Service {
         other_iniciativa_name: outro.iniciativa_name,
         tipo_relacao: { id: r.type_id },
         relacao_name: r.relacao_name || r.other_type,
+        perfil_parceria: r.perfil_parceria,
         mine: r.mine,
         confirmedByOther: this.cboValue(r.confirmedByOther),
         justification: r.justification || '',
@@ -542,6 +550,7 @@ class Service {
     if (u[`organizacao${complement}`]?.id !== o[`organizacao${complement}`]?.id) return false;
     if (u[`tipo_relacao${complement}`]?.id !== o[`tipo_relacao${complement}`]?.id) return false;
     if (u[`outra_relacao${complement}`] !== o[`outra_relacao${complement}`]) return false;
+    if (u[`perfil_parceria${complement}`] !== o[`perfil_parceria${complement}`]) return false;
 
     return true;
   }

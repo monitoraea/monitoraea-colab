@@ -28,7 +28,10 @@
             key: tipo_relacao_r
           - type: column
             size: 3
-            key: outra_relacao_r  
+            key: outra_relacao_r
+          - type: column
+            size: 3
+            key: perfil_parceria_r
       - type: row
         elements:
           - type: column
@@ -82,7 +85,10 @@
             key: tipo_relacao_o
           - type: column
             size: 3
-            key: outra_relacao_o  
+            key: outra_relacao_o
+          - type: column
+            size: 3
+            key: perfil_parceria_o
       - type: row
         elements:
           - type: column
