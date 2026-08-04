@@ -834,6 +834,7 @@ blocks: # opcional
 
   - key: institutions
     title: Organizações proponentes
+    counter: true
     elements:
       - type: block
         key: intitutions_it

@@ -1007,6 +1007,12 @@ function Block({ block, data, basic = false, iterative, onRemoveIterative, child
 
   if (!doShow) return null;
 
+  let counterValue = null;
+  if (block.counter) {
+    const iterativeKey = block.elements?.find(e => e.type === 'block')?.key;
+    if (iterativeKey) counterValue = (data?.[iterativeKey] || []).filter(d => !d?.markedAsRemoved).length;
+  }
+
   if (!block.title) {
     if (!basic) return <>{children}</>;
     else {
@@ -1032,7 +1038,7 @@ function Block({ block, data, basic = false, iterative, onRemoveIterative, child
   return (
     <section id={block.key}>
       <div className="section-header">
-        <div className="section-title">{block.title}</div>
+        <div className="section-title">{block.title}{counterValue !== null ? ` (${counterValue})` : ''}</div>
       </div>
       <>{children}</>
     </section>
