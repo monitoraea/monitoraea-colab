@@ -14,3 +14,6 @@ docker_postgres_backup.sql
 *.venv*
 **/data/
 **/dist
+# lore (github.com/... personal knowledge assets, not part of this project)
+.claude/skills/
+lore.manifest
