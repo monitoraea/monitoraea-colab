@@ -8,6 +8,7 @@ import {
   FormLabel,
   FormControlLabel,
   Checkbox,
+  Radio,
   Tooltip,
   IconButton,
 } from '@mui/material';
@@ -161,6 +162,11 @@ export function Renderer(props) {
     let pData = { ...data };
     for (let f of form.fields.filter(f => f.default !== undefined)) {
       if (pData[f.key] === undefined || pData[f.key] === null) pData[f.key] = f.default;
+    }
+    for (let b of (form.blocks || []).filter(b => b.type === 'matrix')) {
+      for (let row of b.rows || []) {
+        if (pData[row.key] === undefined || pData[row.key] === null) pData[row.key] = -1;
+      }
     }
 
     _entity(pData);
@@ -364,6 +370,15 @@ function BasicRenderer({
               iterative={index === undefined ? undefined : { k, index, free: b.iterate.target === 'none' }}
               onRemoveIterative={onRemoveIterative}
             >
+              {b.type === 'matrix' && (
+                <MatrixBlock
+                  block={b}
+                  data={data}
+                  readonly={readonly}
+                  problems={problems}
+                  handleDataChange={handleDataChange}
+                />
+              )}
               {b.elements.map(e => {
                 if (e.type === 'block') {
                   const innerBlock = form.blocks.find(bl => bl.key === e.key);
@@ -605,6 +620,21 @@ function Element(props) {
         }
       }
     }
+  }
+
+  if (v.type === 'matrix') {
+    const block = form.blocks.find(b => b.key === v.block);
+    if (!block) return null;
+
+    return (
+      <MatrixBlock
+        block={block}
+        data={data}
+        readonly={readonly}
+        problems={problems}
+        handleDataChange={handleDataChange}
+      />
+    );
   }
 
   if (v.type === 'separator') {
@@ -1042,6 +1072,109 @@ function Block({ block, data, basic = false, iterative, onRemoveIterative, child
       </div>
       <>{children}</>
     </section>
+  );
+}
+
+/***
+    MatrixBlock
+    - special block whose only content is a fixed list of "rows", rendered as a table:
+      header row = the shared options (radio columns), one body row per item.
+      Bypasses the generic block/field merge mechanism: rows are declared inline on the
+      block (block.rows), not as entries in form.fields.
+ ***/
+function MatrixBlock({ block, data, readonly, problems, handleDataChange }) {
+  const [options, _options] = useState([]);
+
+  useEffect(() => {
+    if (block.list) {
+      _options(context_lists[block.list.module]?.find(l => l.key === block.list.key)?.options || []);
+    }
+  }, [block]);
+
+  const extension = block.description_extension || 'description';
+  const hideValues = block.descriptionHideValues || [];
+
+  return (
+    <table className={styles.matrix}>
+      <thead>
+        <tr>
+          <th></th>
+          {options.map(o => <th key={o.value}>{o.label}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {(block.rows || []).map(row => {
+          const descKey = `${row.key}_${extension}`;
+
+          return (
+            <MatrixRow
+              key={row.key}
+              row={row}
+              options={options}
+              readonly={readonly}
+              value={data?.[row.key]}
+              descValue={data?.[descKey]}
+              showDescription={!!block.description}
+              hideValues={hideValues}
+              error={problems.includes(String(row.key))}
+              descError={problems.includes(String(descKey))}
+              onChange={v => handleDataChange(row.key, v)}
+              onDescChange={v => handleDataChange(descKey, v)}
+            />
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
+function MatrixRow({ row, options, readonly, value, descValue, showDescription, hideValues, error, descError, onChange, onDescChange }) {
+  const disabled = showDescription && hideValues.includes(value ?? -1);
+  const mounted = useRef(false);
+
+  // StringField debounces onChange (500ms); a pending debounce can still fire after this row
+  // becomes disabled and its StringField unmounts. Guard with a live ref (not a render-captured
+  // value) so a stale write arriving after the fact is dropped instead of reintroducing text
+  // into a field the user just hid.
+  const disabledRef = useRef(disabled);
+  disabledRef.current = disabled;
+
+  useEffect(() => {
+    // só limpa a descrição em reação a uma mudança do usuário, nunca ao montar (não sobrescrever dados existentes ao abrir o form)
+    if (mounted.current && disabled && descValue !== null && descValue !== undefined) onDescChange(null);
+    mounted.current = true;
+  }, [disabled]);
+
+  return (
+    <>
+      <tr className={`${error ? styles['matrix-error'] : ''} ${showDescription && !disabled ? styles['matrix-row-no-border'] : ''}`}>
+        <th scope="row">{row.title}</th>
+        {options.map(o => (
+          <td key={o.value}>
+            <Radio
+              checked={(value ?? -1) === o.value}
+              onChange={() => onChange(o.value)}
+              disabled={readonly}
+              name={row.key}
+              inputProps={{ 'aria-label': `${row.title} - ${o.label}` }}
+            />
+          </td>
+        ))}
+      </tr>
+      {showDescription && !disabled && (
+        <tr>
+          <td colSpan={options.length + 1} className={styles['matrix-description']}>
+            <StringField
+              f={{ title: 'Descreva' }}
+              readonly={readonly}
+              dataValue={descValue}
+              onChange={v => { if (!disabledRef.current) onDescChange(v); }}
+              error={descError}
+            />
+          </td>
+        </tr>
+      )}
+    </>
   );
 }
 

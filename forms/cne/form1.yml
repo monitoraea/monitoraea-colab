@@ -395,420 +395,6 @@ fields:
     - value: 7
       label: 'Não sei estimar'
 
-- key: objetivo_articulacao
-  block: objetivos_estrategicos
-  type: options
-  title: Articula sociedade civil, governo e demais atores para ações educadoras socioambientais
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_apoio_centros
-  block: objetivos_estrategicos
-  type: options
-  title: Apoia o desenvolvimento de outros centros, núcleos e equipamentos
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_incidencia_politicas
-  block: objetivos_estrategicos
-  type: options
-  title: Promove incidência em políticas públicas socioambientais, inclusive junto às CIEAs
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_producao_conteudo
-  block: objetivos_estrategicos
-  type: options
-  title: Produz conteúdo, comunicação e educomunicação socioambiental
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_disponibiliza_dados
-  block: objetivos_estrategicos
-  type: options
-  title: Disponibiliza informações e dados de caráter socioambiental
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_mapeamento
-  block: objetivos_estrategicos
-  type: options
-  title: Realiza mapeamentos e diagnósticos territoriais e de governança
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_monitoramento
-  block: objetivos_estrategicos
-  type: options
-  title: Monitora a gestão da estratégia de educação e cooperação socioambiental
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_formacao
-  block: objetivos_estrategicos
-  type: options
-  title: Promove processos formativos (gestores, conselheiros, agentes socioambientais)
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_reflexao_critica
-  block: objetivos_estrategicos
-  type: options
-  title: Incentiva processos de reflexão crítica sobre a problemática socioambiental
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_atividades_interpretativas
-  block: objetivos_estrategicos
-  type: options
-  title: Desenvolve atividades interpretativas e de contato com natureza/cultura local
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_espaco_demonstrativo
-  block: objetivos_estrategicos
-  type: options
-  title: Atua como espaço demonstrativo e experimental de tecnologias sustentáveis
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_capacitacao_renda
-  block: objetivos_estrategicos
-  type: options
-  title: Promove capacitação para geração de trabalho e renda com sustentabilidade
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_apoio_projetos_ea
-  block: objetivos_estrategicos
-  type: options
-  title: Apoia elaboração e implementação de projetos, ações e eventos de EA
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_apoio_programas_mma
-  block: objetivos_estrategicos
-  type: options
-  title: Apoia programas territoriais e políticas do MMA e instituições parceiras
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: objetivo_pesquisa_intercambio
-  block: objetivos_estrategicos
-  type: options
-  title: Promove pesquisa, socialização de conhecimento e intercâmbio técnico-científico, inclusive saberes tradicionais e cooperação internacional
-  size: 12
-  default: -1
-  list:
-    module: property
-    key: escala_objetivo
-
-- key: tema_mudancas_climaticas
-  block: temas_atuacao
-  type: options
-  title: Mudanças climáticas, adaptação e enfrentamento aos riscos e impactos climáticos
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_mudancas_climaticas_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_mudancas_climaticas
-      value: [-1, 0]
-      type: hide
-
-- key: tema_biodiversidade
-  block: temas_atuacao
-  type: options
-  title: Biodiversidade e ecossistemas
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_biodiversidade_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_biodiversidade
-      value: [-1, 0]
-      type: hide
-
-- key: tema_recursos_hidricos
-  block: temas_atuacao
-  type: options
-  title: Recursos hídricos
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_recursos_hidricos_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_recursos_hidricos
-      value: [-1, 0]
-      type: hide
-
-- key: tema_residuos_solidos
-  block: temas_atuacao
-  type: options
-  title: Resíduos sólidos
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_residuos_solidos_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_residuos_solidos
-      value: [-1, 0]
-      type: hide
-
-- key: tema_energia
-  block: temas_atuacao
-  type: options
-  title: Energia e transição energética
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_energia_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_energia
-      value: [-1, 0]
-      type: hide
-
-- key: tema_agroecologia
-  block: temas_atuacao
-  type: options
-  title: Agroecologia e soberania alimentar
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_agroecologia_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_agroecologia
-      value: [-1, 0]
-      type: hide
-
-- key: tema_saude_ambiental
-  block: temas_atuacao
-  type: options
-  title: Saúde ambiental
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_saude_ambiental_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_saude_ambiental
-      value: [-1, 0]
-      type: hide
-
-- key: tema_justica_ambiental
-  block: temas_atuacao
-  type: options
-  title: Justiça ambiental e territorial
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_justica_ambiental_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_justica_ambiental
-      value: [-1, 0]
-      type: hide
-
-- key: tema_povos_tradicionais
-  block: temas_atuacao
-  type: options
-  title: Povos e comunidades tradicionais
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_povos_tradicionais_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_povos_tradicionais
-      value: [-1, 0]
-      type: hide
-
-- key: tema_gestao_riscos
-  block: temas_atuacao
-  type: options
-  title: Gestão de riscos e desastres
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_gestao_riscos_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_gestao_riscos
-      value: [-1, 0]
-      type: hide
-
-- key: tema_economia_solidaria
-  block: temas_atuacao
-  type: options
-  title: Economia solidária e socioambiental
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_economia_solidaria_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_economia_solidaria
-      value: [-1, 0]
-      type: hide
-
-- key: tema_cidades_sustentaveis
-  block: temas_atuacao
-  type: options
-  title: Cidades e territórios sustentáveis
-  size: 8
-  default: -1
-  list:
-    module: property
-    key: escala_tema
-
-- key: tema_cidades_sustentaveis_descreva
-  block: temas_atuacao
-  type: textarea
-  rows: 2
-  title: Descreva
-  size: 12
-  show:
-    target:
-      key: tema_cidades_sustentaveis
-      value: [-1, 0]
-      type: hide
-
 - key: tema_outros_especificar
   block: temas_atuacao
   type: text
@@ -874,6 +460,73 @@ blocks: # opcional
 
   - key: objetivos_estrategicos
     title: Objetivos estratégicos da estrutura
+    type: matrix
+    list:
+      module: property
+      key: escala_objetivo
+    rows:
+      - key: objetivo_articulacao
+        title: Articula sociedade civil, governo e demais atores para ações educadoras socioambientais
+      - key: objetivo_apoio_centros
+        title: Apoia o desenvolvimento de outros centros, núcleos e equipamentos
+      - key: objetivo_incidencia_politicas
+        title: Promove incidência em políticas públicas socioambientais, inclusive junto às CIEAs
+      - key: objetivo_producao_conteudo
+        title: Produz conteúdo, comunicação e educomunicação socioambiental
+      - key: objetivo_disponibiliza_dados
+        title: Disponibiliza informações e dados de caráter socioambiental
+      - key: objetivo_mapeamento
+        title: Realiza mapeamentos e diagnósticos territoriais e de governança
+      - key: objetivo_monitoramento
+        title: Monitora a gestão da estratégia de educação e cooperação socioambiental
+      - key: objetivo_formacao
+        title: Promove processos formativos (gestores, conselheiros, agentes socioambientais)
+      - key: objetivo_reflexao_critica
+        title: Incentiva processos de reflexão crítica sobre a problemática socioambiental
+      - key: objetivo_atividades_interpretativas
+        title: Desenvolve atividades interpretativas e de contato com natureza/cultura local
+      - key: objetivo_espaco_demonstrativo
+        title: Atua como espaço demonstrativo e experimental de tecnologias sustentáveis
+      - key: objetivo_capacitacao_renda
+        title: Promove capacitação para geração de trabalho e renda com sustentabilidade
+      - key: objetivo_apoio_projetos_ea
+        title: Apoia elaboração e implementação de projetos, ações e eventos de EA
+      - key: objetivo_apoio_programas_mma
+        title: Apoia programas territoriais e políticas do MMA e instituições parceiras
+      - key: objetivo_pesquisa_intercambio
+        title: Promove pesquisa, socialização de conhecimento e intercâmbio técnico-científico, inclusive saberes tradicionais e cooperação internacional
 
   - key: temas_atuacao
     title: Temas de atuação
+    type: matrix
+    list:
+      module: property
+      key: escala_tema
+    description: true
+    description_extension: descreva
+    descriptionHideValues: [-1, 0]
+    rows:
+      - key: tema_mudancas_climaticas
+        title: Mudanças climáticas, adaptação e enfrentamento aos riscos e impactos climáticos
+      - key: tema_biodiversidade
+        title: Biodiversidade e ecossistemas
+      - key: tema_recursos_hidricos
+        title: Recursos hídricos
+      - key: tema_residuos_solidos
+        title: Resíduos sólidos
+      - key: tema_energia
+        title: Energia e transição energética
+      - key: tema_agroecologia
+        title: Agroecologia e soberania alimentar
+      - key: tema_saude_ambiental
+        title: Saúde ambiental
+      - key: tema_justica_ambiental
+        title: Justiça ambiental e territorial
+      - key: tema_povos_tradicionais
+        title: Povos e comunidades tradicionais
+      - key: tema_gestao_riscos
+        title: Gestão de riscos e desastres
+      - key: tema_economia_solidaria
+        title: Economia solidária e socioambiental
+      - key: tema_cidades_sustentaveis
+        title: Cidades e territórios sustentáveis

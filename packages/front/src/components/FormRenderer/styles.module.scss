@@ -1,5 +1,51 @@
 @use '../../sass/theme/app_variables' as *;
 
+.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+
+    th, td {
+        padding: 6px 10px;
+        border-bottom: 1px solid #e0e0e0;
+        vertical-align: top;
+    }
+
+    thead th {
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    tbody th {
+        text-align: left;
+        font-weight: 400;
+        white-space: normal;
+    }
+
+    tbody td {
+        text-align: center;
+        white-space: nowrap;
+    }
+}
+
+.matrix-error {
+    >th {
+        color: #d32f2f;
+    }
+}
+
+.matrix-row-no-border {
+    >th, >td {
+        border-bottom: none;
+    }
+}
+
+.matrix-description {
+    padding-top: 0 !important;
+    padding-bottom: 12px !important;
+}
+
 .checklist {
     border: solid 1px rgb(115 191 72 / 28%);
     border-radius: 5px;
