@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@sendgrid/mail": "^7.6.2",
+    "@sentry/node": "^10.70.0",
     "adm-zip": "^0.5.9",
     "aws-sdk": "^2.1073.0",
     "axe": "^12.2.2",

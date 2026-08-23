@@ -6,6 +6,7 @@ docker_postgres_backup.sql
 .env.local
 .env.development
 .env.production
+.env.staging
 *.log
 *-lock.*
 .gitmodules

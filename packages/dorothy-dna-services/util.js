@@ -1,11 +1,13 @@
 const db = require("./database");
 const Sequelize = require("sequelize");
+const Sentry = require("@sentry/node");
 
 let cachedCommunities = {};
 let cachedTools = {};
 
 module.exports.sendError = function(res, error, status = 500) {
     if(process.env.NODE_ENV !== 'production') console.log(error);
+    if (process.env.GLITCHTIP_DSN) Sentry.captureException(error);
     res.status(status).send({ error });
 }
 

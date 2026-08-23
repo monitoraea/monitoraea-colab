@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --base=/colabora/",
+    "build:staging": "vite build --mode staging --base=/colabora/",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -20,6 +21,7 @@
     "@mui/material": "^5.2.2",
     "@mui/x-date-pickers": "^5.0.17",
     "@mui/x-tree-view": "^6.17.0",
+    "@sentry/react": "^10.70.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

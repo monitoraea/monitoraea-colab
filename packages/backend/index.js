@@ -1,5 +1,15 @@
 require('dotenv').config({ path: '.env.local' }); // for development only
 
+const Sentry = require('@sentry/node');
+if (process.env.GLITCHTIP_DSN) {
+  Sentry.init({
+    dsn: process.env.GLITCHTIP_DSN,
+    environment: process.env.APP_ENV || 'development',
+    tracesSampleRate: 0.01,
+    autoSessionTracking: false, // GlitchTip does not support sessions
+  });
+}
+
 const express = require('express');
 // const swaggerUi = require('swagger-ui-express');
 // const swaggerJsdoc = require('swagger-jsdoc');
@@ -10,10 +20,12 @@ const path = require('path');
 const port = process.env.PORT || 4006;
 
 process.on('unhandledRejection', (reason) => {
+  if (process.env.GLITCHTIP_DSN) Sentry.captureException(reason);
   console.error('Unhandled Rejection:', reason);
 });
 
 process.on('uncaughtException', (err) => {
+  if (process.env.GLITCHTIP_DSN) Sentry.captureException(err);
   console.error('Uncaught Exception:', err);
 });
 
@@ -116,6 +128,7 @@ if (monitoringLevel === 2) {
 }
 
 app.use(require('./services/routes'));
+if (process.env.GLITCHTIP_DSN) Sentry.setupExpressErrorHandler(app);
 app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, '..', 'portal', 'dist', 'index.html'));
 });

@@ -3,6 +3,7 @@
   "version": "0.7.0",
   "dependencies": {
     "@sendgrid/mail": "^7.6.0",
+    "@sentry/node": "^10.70.0",
     "bree": "^7.1.0",
     "cabin": "^9.0.4",
     "dayjs": "^1.11.10",
