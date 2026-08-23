@@ -239,9 +239,9 @@ class Service {
     }
     // ---------------------------------------------------------------------------------
 
-    // await db.models['Iniciativa'].update(entity, {
-    //   where: { politica_id: id, versao: 'draft' },
-    // });
+    await db.models['Iniciativa'].update(entity, {
+      where: { politica_id: id, versao: 'draft' },
+    });
 
     return entity;
   }
