@@ -1288,7 +1288,7 @@ export function mapForm2Data(data, form) {
   let mappedData = { ...data };
 
   for (let b of form.blocks.filter(b => b.iterate && b.iterate.target === 'none')) {
-    mappedData[b.key] = mappedData[b.key].filter(d => !d.markedAsRemoved)
+    mappedData[b.key] = (mappedData[b.key] || []).filter(d => !d.markedAsRemoved)
   }
 
   // multi_autocomplete
@@ -1846,7 +1846,6 @@ function AutocompleteField({ f, readonly, index, tag = false, dataValue, onChang
         onChange={(_, value) => onChange(value)}
         disabled={readonly}
         options={options}
-        error={error}
         // getOptionLabel={(option) => option.label}
         renderOption={(props, option) => {
           return (
@@ -1869,6 +1868,7 @@ function AutocompleteField({ f, readonly, index, tag = false, dataValue, onChang
               }}
               {...params}
               label={titleAndIndex(f.title, index)}
+              error={error}
             />
           </form>
         )}
