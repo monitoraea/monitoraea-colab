@@ -5,39 +5,56 @@ const { sendError } = require('dorothy-dna-services').util;
 const entity = require('./index');
 
 router.get('/perspectives', async (req, res) => {
+  try {
+    const result = await entity.getPerspectives();
 
-  const result = await entity.getPerspectives();
-
-  res.json(result);
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
 });
 
 router.get('/perspectives/user', async (req, res) => {
+  try {
+    const result = await entity.getPerspectivesUser(res.locals.user);
 
-  const result = await entity.getPerspectivesUser(res.locals.user);
-
-  res.json(result);
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
 });
 
 router.get('/perspectives/:perspective_id/members', async (req, res) => {
-
   const { perspective_id } = req.params;
 
-  const result = await entity.getTotalMembersInPerspective(perspective_id);
+  try {
+    const result = await entity.getTotalMembersInPerspective(perspective_id);
 
-  res.json(result);
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
 });
-  
+
 
 router.get('/:communityId', async (req, res) => {
   const { communityId } = req.params;
   const { alias, order, direction } = req.query;
 
-  const result = await entity.list(communityId, alias, {
-    order: order || 'name',
-    direction: direction || 'asc',
-  });
+  if (!/^\d+$/.test(communityId)) {
+    return sendError(res, new Error('Invalid community id'), 400);
+  }
 
-  res.json(result);
+  try {
+    const result = await entity.list(communityId, alias, {
+      order: order || 'name',
+      direction: direction || 'asc',
+    });
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
 });
 
 /* TODO */

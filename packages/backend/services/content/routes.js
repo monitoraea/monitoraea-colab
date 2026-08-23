@@ -77,18 +77,22 @@ router.get('/by_type/:type', async (req, res) => {
   const { type='news' } = req.params;
   const { page, order, direction, portal, limit, offset } = req.query;
 
-  const result = await entity.getByType({
-    page: page ? parseInt(page) : 1,
-    order: order ? order : 'publishedAt',
-    direction: direction ? direction : 'DESC',
-    limit: limit && limit !== 'none' ? parseInt(limit) : 10,
-    all: limit === 'none',
-    offset: offset,
-    type,
-    portal,
-  });
+  try {
+    const result = await entity.getByType({
+      page: page ? parseInt(page) : 1,
+      order: order ? order : 'publishedAt',
+      direction: direction ? direction : 'DESC',
+      limit: limit && limit !== 'none' ? parseInt(limit) : 10,
+      all: limit === 'none',
+      offset: offset ? parseInt(offset) : undefined,
+      type,
+      portal,
+    });
 
-  res.json(result);
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
 });
 
 /* TODO */

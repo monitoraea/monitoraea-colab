@@ -7,18 +7,34 @@ const entity = require('./index');
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
 
-  const result = await entity.get(id);
+  if (!/^\d+$/.test(id)) {
+    return sendError(res, new Error('Invalid help request id'), 400);
+  }
 
-  res.json(result);
+  try {
+    const result = await entity.get(id);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
 });
 
 router.put('/:id/close', async (req, res) => {
   const { id } = req.params;
   const { communityId } = req.body;
 
-  const result = await entity.close(id, communityId);
+  if (!/^\d+$/.test(id)) {
+    return sendError(res, new Error('Invalid help request id'), 400);
+  }
 
-  res.json(result);
+  try {
+    const result = await entity.close(id, communityId);
+
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
 });
 
 router.post('/request', async (req, res) => {
@@ -28,9 +44,13 @@ router.post('/request', async (req, res) => {
     text,
   } = req.body;
 
-  const result = await entity.request(res.locals.user.id, communityId, tab, text);
+  try {
+    const result = await entity.request(res.locals.user.id, communityId, tab, text);
 
-  res.json(result);
+    res.json(result);
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
 });
 
 module.exports = router;
