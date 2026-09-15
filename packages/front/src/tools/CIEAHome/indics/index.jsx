@@ -81,13 +81,13 @@ export default [
       },
       {
         "id": "2_6",
-        "title": "Ampliação da participação da sociedade na formulação e implementação das políticas públicas de EA",
+        "title": "Deliberações/Tomada de Decisão do Colegiado",
         "ready": false,
         "form": indic_2_6
       },
       {
         "id": "2_7",
-        "title": "Deliberações/Tomada de Decisão do Colegiado",
+        "title": "Ampliação da participação da sociedade na formulação e implementação das políticas públicas de EA",
         "ready": false,
         "form": indic_2_7
       },
