@@ -9,6 +9,8 @@ import IndicatorsTab from './IndicatorsTab';
 import ConexoesTab from '../../components/Connections';
 import AtuacaoTab from './ActingTab';
 import TimelineTab from './TimelineTab';
+import PlanoAcaoTab from './PlanoAcaoTab';
+import PlanoMonitoramentoTab from './PlanoMonitoramentoTab';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
 import CheckCircle from '../../components/icons/CheckCircle';
@@ -172,6 +174,8 @@ const Manager = () => {
             <>
               {tabindex === 'informacao' && <InformationsTab entityId={entityId} />}
               {tabindex === 'abrangencia' && <AtuacaoTab entityId={entityId} />}
+              {tabindex === 'plano_acao' && <PlanoAcaoTab entityId={entityId} />}
+              {tabindex === 'plano_monitoramento' && <PlanoMonitoramentoTab entityId={entityId} />}
               {tabindex === 'indicadores' && (
                 <IndicatorsTab entityId={entityId} analysis={analysis} problems={analysis.analysis.question_problems} />
               )}

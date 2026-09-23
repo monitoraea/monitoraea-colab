@@ -150,6 +150,12 @@ module.exports = (sequelize, DataTypes) => {
       plano_acao_fim: {
         type: DataTypes.STRING,
       },
+      plano_acao_itens: {
+        type: DataTypes.JSONB,
+      },
+      plano_monitoramento_itens: {
+        type: DataTypes.JSONB,
+      },
     },
     {
       tableName: 'comissoes',

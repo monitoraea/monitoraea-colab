@@ -71,6 +71,16 @@ export default function CommissionTabs({ defaultTab, onTabChange, analysis }) {
           />
           <Tab
             disableRipple
+            label="Plano de Ação"
+            {...a11yProps('plano_acao')}
+          />
+          <Tab
+            disableRipple
+            label="Plano de Monitoramento"
+            {...a11yProps('plano_monitoramento')}
+          />
+          <Tab
+            disableRipple
             label="Indicadores"
             {...a11yProps('indicadores', indicProblemCounter > 0 ? indicProblemCounter : '')}
             className={`${styles.indicator} ${indicatorIsReady ? styles['ready'] : styles['not-ready']} ${indicProblemCounter < 10 && styles['fixed-size']

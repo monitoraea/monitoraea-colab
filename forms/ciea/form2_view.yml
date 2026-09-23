@@ -1,0 +1,62 @@
+- type: row
+  block: plano_acao
+  elements:
+  - type: row
+    block: plano_acao_itens # iterative!
+    elements:
+      - type: column
+        size: 11
+        elements:
+          - type: row
+            elements:
+              - type: column
+                size: 12
+                key: atividade
+          - type: row
+            elements:
+              - type: column
+                size: 6
+                key: fragilidade
+              - type: column
+                size: 6
+                key: resultado_esperado
+          - type: row
+            elements:
+              - type: column
+                size: 5
+                key: indicador_relacionado
+              - type: column
+                size: 3
+                key: prioridade
+              - type: column
+                size: 2
+                key: data_ini
+              - type: column
+                size: 2
+                key: data_fim
+          - type: row
+            elements:
+              - type: column
+                size: 6
+                key: responsaveis
+              - type: column
+                size: 6
+                key: parceiros
+      - type: column
+        size: 1
+        elements:
+          - type: remove
+      - type: column
+        size: 12
+        elements:
+          - type: separator
+  - type: add
+    block: plano_acao_itens # iterative - show if block shows!
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar atividade

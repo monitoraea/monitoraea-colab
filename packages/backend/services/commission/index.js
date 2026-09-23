@@ -244,7 +244,9 @@ class Service {
         c.obs,
         c.plano_acao_arquivo,
         c.plano_acao_ini,
-        c.plano_acao_fim
+        c.plano_acao_fim,
+        c.plano_acao_itens,
+        c.plano_monitoramento_itens
       FROM ciea.comissoes c
       left join ufs u on u.id = c.uf
       WHERE c.iniciativa_id = :id

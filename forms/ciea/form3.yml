@@ -1,0 +1,86 @@
+fields:
+
+- key: atividade
+  block: plano_monitoramento_itens
+  type: textarea
+  title: Atividade
+  size: 12
+
+- key: status
+  block: plano_monitoramento_itens
+  type: options
+  title: Status
+  size: 3
+  options:
+    - value: nao_iniciado
+      label: Não iniciado
+    - value: em_preparacao
+      label: Em preparação
+    - value: em_execucao
+      label: Em execução
+    - value: atrasado
+      label: Atrasado
+    - value: concluido
+      label: Concluído
+    - value: suspenso
+      label: Suspenso
+    - value: cancelado
+      label: Cancelado
+
+- key: data_ini_efetivo
+  block: plano_monitoramento_itens
+  type: monthpicker
+  title: Data de início efetivo
+  size: 2
+
+- key: data_fim_efetivo
+  block: plano_monitoramento_itens
+  type: monthpicker
+  title: Data de conclusão efetiva
+  size: 2
+
+- key: evidencia_link
+  block: plano_monitoramento_itens
+  type: text
+  title: Link para documento de evidência
+  size: 5
+
+- key: organizacoes_contribuintes
+  block: plano_monitoramento_itens
+  type: textarea
+  title: Organizações e iniciativas que efetivamente contribuíram com a atividade
+  size: 6
+
+- key: resultados_alcancados
+  block: plano_monitoramento_itens
+  type: textarea
+  title: Resultados alcançados
+  size: 6
+
+- key: dificuldade
+  block: plano_monitoramento_itens
+  type: textarea
+  title: Dificuldade encontrada
+  size: 6
+
+- key: desdobramentos
+  block: plano_monitoramento_itens
+  type: textarea
+  title: Desdobramentos da atividade (novas atividades, recomendações, etc)
+  size: 6
+
+################################################################
+
+blocks:
+
+  - key: plano_monitoramento
+    title: Plano de Monitoramento
+    elements:
+      - type: block
+        key: plano_monitoramento_itens
+
+  - key: plano_monitoramento_itens
+    iterate:
+      target: none
+      index: default
+      add: Adicionar atividade

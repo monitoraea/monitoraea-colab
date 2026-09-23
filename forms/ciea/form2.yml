@@ -1,0 +1,81 @@
+fields:
+
+- key: atividade
+  block: plano_acao_itens
+  type: textarea
+  title: Atividade
+  size: 12
+
+- key: fragilidade
+  block: plano_acao_itens
+  type: textarea
+  title: Fragilidade enfrentada
+  size: 6
+
+- key: resultado_esperado
+  block: plano_acao_itens
+  type: textarea
+  title: Resultado esperado
+  size: 6
+
+- key: indicador_relacionado
+  block: plano_acao_itens
+  type: options
+  title: Indicador relacionado
+  size: 5
+  list:
+    module: property
+    key: indicador_relacionado
+
+- key: prioridade
+  block: plano_acao_itens
+  type: options
+  title: Prioridade
+  size: 3
+  options:
+    - value: alta
+      label: Alta
+    - value: media
+      label: Média
+    - value: baixa
+      label: Baixa
+
+- key: data_ini
+  block: plano_acao_itens
+  type: monthpicker
+  title: Data estimada de início
+  size: 2
+
+- key: data_fim
+  block: plano_acao_itens
+  type: monthpicker
+  title: Data estimada de conclusão
+  size: 2
+
+- key: responsaveis
+  block: plano_acao_itens
+  type: text
+  title: Nome do(s) responsável(is) pela atividade
+  size: 6
+
+- key: parceiros
+  block: plano_acao_itens
+  type: textarea
+  title: Parceiros que deverão ser envolvidos
+  size: 6
+
+################################################################
+
+blocks:
+
+  - key: plano_acao
+    title: Plano de Ação
+    elements:
+      - type: block
+        key: plano_acao_itens
+
+  - key: plano_acao_itens
+    iterate:
+      target: none
+      index: default
+      add: Adicionar atividade

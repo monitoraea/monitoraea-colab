@@ -1,0 +1,62 @@
+- type: row
+  block: plano_monitoramento
+  elements:
+  - type: row
+    block: plano_monitoramento_itens # iterative!
+    elements:
+      - type: column
+        size: 11
+        elements:
+          - type: row
+            elements:
+              - type: column
+                size: 12
+                key: atividade
+          - type: row
+            elements:
+              - type: column
+                size: 3
+                key: status
+              - type: column
+                size: 2
+                key: data_ini_efetivo
+              - type: column
+                size: 2
+                key: data_fim_efetivo
+              - type: column
+                size: 5
+                key: evidencia_link
+          - type: row
+            elements:
+              - type: column
+                size: 6
+                key: organizacoes_contribuintes
+              - type: column
+                size: 6
+                key: resultados_alcancados
+          - type: row
+            elements:
+              - type: column
+                size: 6
+                key: dificuldade
+              - type: column
+                size: 6
+                key: desdobramentos
+      - type: column
+        size: 1
+        elements:
+          - type: remove
+      - type: column
+        size: 12
+        elements:
+          - type: separator
+  - type: add
+    block: plano_monitoramento_itens # iterative - show if block shows!
+    elements:
+      - type: row
+        elements:
+          - type: column
+            size: 12
+            elements:
+              - type: button
+                title: Adicionar atividade
