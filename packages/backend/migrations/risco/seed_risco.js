@@ -79,6 +79,7 @@ async function main() {
 
     await client.query('COMMIT');
     console.log(`OK: ${m.length} municípios, ${cols.length} indicadores, ${vm.length} valores, ${nm.length} vizinhanças, ${temas.length} temas.`);
+    console.log('O backend guarda estes dados em cache por até 10 min; para ver a carga agora: POST /risco/cache/clear (token de administrador) ou reinicie o serviço.');
   } catch (e) {
     await client.query('ROLLBACK');
     throw e;

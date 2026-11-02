@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { sendError } = require('dorothy-dna-services').util;
+const { SecurityManager } = require('dorothy-dna-services');
 
 const entity = require('./index');
 
@@ -25,5 +26,15 @@ const serve = (name) => async (req, res) => {
 router.get('/dados', serve('dados'));
 router.get('/malha', serve('malha'));
 router.get('/meta', serve('meta'));
+
+/* Descarta os documentos em cache; o próximo acesso lê o banco de novo. Restrito a administradores (security.js). */
+router.post('/cache/clear', SecurityManager.check(async (req, res) => {
+  try {
+    entity.clear();
+    res.json({ cleared: true });
+  } catch (ex) {
+    sendError(res, ex, 500);
+  }
+}));
 
 module.exports = router;
