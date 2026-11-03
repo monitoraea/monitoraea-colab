@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import L from 'leaflet';
 import { Map, TileLayer, WMSTileLayer, GeoJSON, Popup } from 'react-leaflet';
+import Control from 'react-leaflet-control';
 import { useDorothy } from 'dorothy-dna-react';
 
 import 'leaflet/dist/leaflet.css';
@@ -166,6 +167,33 @@ export default function MapBlock({ territorialId, panel, reloadKey, selected, on
         zoomSnap={0.25}
         onClick={e => clickRef.current(e)}
       >
+        {/* botão logo abaixo do +/−: volta o zoom para o enquadramento do território */}
+        <Control position="topleft">
+          <div className="leaflet-bar">
+            <a
+              href="#recorte-inteiro"
+              role="button"
+              title="Recorte inteiro"
+              aria-label="Recorte inteiro"
+              className={styles.fitBtn}
+              onClick={e => {
+                e.preventDefault();
+                fitAll();
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M1 5V1h4M11 1h4v4M15 11v4h-4M5 15H1v-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="square"
+                />
+              </svg>
+            </a>
+          </div>
+        </Control>
+
         <TileLayer
           attribution='<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
