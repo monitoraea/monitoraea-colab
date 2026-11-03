@@ -273,24 +273,56 @@
     color: #555;
   }
 
+  /* a quantidade de linhas por página é calculada para caber aqui; overflow visível deixa o nome expandido sobrepor */
   .listBody {
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
-
-    @media (max-width: 1000px) {
-      max-height: 480px;
-    }
+    overflow: visible;
   }
 
   .listRow {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 7px 6px;
+    box-sizing: border-box;
+    height: var(--row-h, 46px);
+    padding: 0 6px;
     border-bottom: 1px solid #eef0f4;
     cursor: pointer;
 
+    /* linhas da caixa "Selecionadas": mostram o nome inteiro, com altura livre */
+    &.free {
+      height: auto;
+      padding: 7px 6px;
+
+      .name {
+        display: block;
+        overflow: visible;
+      }
+    }
+
+    &.open {
+      z-index: 5;
+
+      .name {
+        position: absolute;
+        top: 0;
+        left: 26px;
+        right: 0;
+        display: block;
+        padding: 6px 8px;
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+        overflow: visible;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid #2f7fd1;
+      outline-offset: -2px;
+    }
     &:hover {
       background: #f4f6fa;
     }
@@ -309,6 +341,12 @@
   .name {
     flex: 1;
     min-width: 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
   }
 
   .selectedBox {

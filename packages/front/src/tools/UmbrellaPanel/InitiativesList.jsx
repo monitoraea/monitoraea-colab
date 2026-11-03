@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { CATEGORIA_BY_KEY } from './categorias';
 import styles from './styles.module.scss';
 
-const PAGE_SIZE = 10;
+const ROW_H = 46; // altura fixa de cada linha (2 linhas de texto): a quantidade por página é calculada em cima dela
+const FALLBACK_PAGE_SIZE = 10; // antes da 1ª medição e no layout de coluna única (altura da lista livre)
+const MIN_PAGE_SIZE = 5;
+const STACKED = '(max-width: 1000px)';
 
 const norm = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
@@ -17,7 +20,10 @@ const byName = (a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR');
  */
 export default function InitiativesList({ panel, selected, onSelect, onZoom }) {
   const [search, _search] = useState('');
-  const [page, _page] = useState(0);
+  const [start, _start] = useState(0); // índice do 1º item visível (mantém o "lugar" quando a página muda de tamanho)
+  const [pageSize, _pageSize] = useState(FALLBACK_PAGE_SIZE);
+  const [expanded, _expanded] = useState(null); // chave da linha com o nome completo aberto
+  const bodyRef = useRef();
 
   const items = useMemo(() => panel?.items || [], [panel]);
 
@@ -28,12 +34,34 @@ export default function InitiativesList({ panel, selected, onSelect, onZoom }) {
     return items.filter(i => !selected.includes(keyOf(i)) && (!q || norm(i.nome).includes(q))).sort(byName);
   }, [items, selected, search]);
 
-  const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-  const current = Math.min(page, pages - 1);
-  const pageRows = rows.slice(current * PAGE_SIZE, (current + 1) * PAGE_SIZE);
+  const first = Math.min(start, Math.max(0, rows.length - 1));
+  const pageRows = rows.slice(first, first + pageSize);
 
-  // busca ou novos dados voltam para a primeira página
-  useEffect(() => _page(0), [search, panel]);
+  // busca ou novos dados voltam ao começo
+  useEffect(() => _start(0), [search, panel]);
+
+  // quantas linhas cabem: mede a altura da lista (ela preenche o card) e recalcula quando muda de tamanho
+  useLayoutEffect(() => {
+    const el = bodyRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const stacked = window.matchMedia(STACKED);
+
+    const measure = () => {
+      const n = stacked.matches
+        ? FALLBACK_PAGE_SIZE // coluna única: a altura da lista depende do conteúdo, não dá para medir
+        : Math.max(MIN_PAGE_SIZE, Math.floor(el.clientHeight / ROW_H));
+      _pageSize(prev => (prev === n ? prev : n));
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    stacked.addEventListener('change', measure);
+    return () => {
+      ro.disconnect();
+      stacked.removeEventListener('change', measure);
+    };
+  }, []);
 
   const add = key => {
     onSelect([...selected, key]);
@@ -41,12 +69,35 @@ export default function InitiativesList({ panel, selected, onSelect, onZoom }) {
   };
   const remove = key => onSelect(selected.filter(k => k !== key));
 
+  // abre o nome completo só se ele estiver cortado (2 linhas)
+  const maybeExpand = (key, e) => {
+    const name = e.currentTarget.querySelector(`.${styles.name}`);
+    _expanded(name && name.scrollHeight > name.clientHeight + 1 ? key : null);
+  };
+  const rowProps = (key, onActivate) => ({
+    role: 'button',
+    tabIndex: 0,
+    onClick: onActivate,
+    onKeyDown: e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onActivate();
+      }
+    },
+    onMouseEnter: e => maybeExpand(key, e),
+    onFocus: e => maybeExpand(key, e),
+    onMouseLeave: () => _expanded(null),
+    onBlur: () => _expanded(null),
+  });
+
   const renderName = i => {
     const cat = CATEGORIA_BY_KEY[i.categoria];
     return (
       <>
         <span className={styles.swatch} style={{ background: cat.color }} title={cat.label} />
-        <span className={styles.name}>{i.nome || `#${i.id}`}</span>
+        <span className={styles.name} title={i.nome}>
+          {i.nome || `#${i.id}`}
+        </span>
       </>
     );
   };
@@ -70,7 +121,11 @@ export default function InitiativesList({ panel, selected, onSelect, onZoom }) {
             </div>
             <div className={styles.selectedBody}>
               {selectedItems.map(i => (
-                <div key={keyOf(i)} className={`${styles.listRow} ${styles.selected}`} onClick={() => onZoom(keyOf(i))}>
+                <div
+                  key={keyOf(i)}
+                  className={`${styles.listRow} ${styles.selected} ${styles.free}`}
+                  onClick={() => onZoom(keyOf(i))}
+                >
                   {renderName(i)}
                   <button
                     className={styles.removeBtn}
@@ -101,25 +156,29 @@ export default function InitiativesList({ panel, selected, onSelect, onZoom }) {
         </div>
 
         <div className={styles.listHead}>INICIATIVA</div>
-        <div className={styles.listBody}>
+        <div className={styles.listBody} ref={bodyRef} style={{ '--row-h': `${ROW_H}px` }}>
           {!panel && <div className={styles.empty}>Carregando...</div>}
           {panel && !pageRows.length && <div className={styles.empty}>Nenhum cadastro encontrado.</div>}
           {pageRows.map(i => (
-            <div key={keyOf(i)} className={styles.listRow} onClick={() => add(keyOf(i))}>
+            <div
+              key={keyOf(i)}
+              className={`${styles.listRow} ${expanded === keyOf(i) ? styles.open : ''}`}
+              {...rowProps(keyOf(i), () => add(keyOf(i)))}
+            >
               {renderName(i)}
             </div>
           ))}
         </div>
 
-        {rows.length > PAGE_SIZE && (
+        {rows.length > pageSize && (
           <div className={styles.pager}>
-            <button disabled={current === 0} onClick={() => _page(current - 1)}>
+            <button disabled={first === 0} onClick={() => _start(Math.max(0, first - pageSize))}>
               ‹ Anterior
             </button>
             <span>
-              {current * PAGE_SIZE + 1}–{Math.min((current + 1) * PAGE_SIZE, rows.length)} de {rows.length}
+              {first + 1}–{Math.min(first + pageSize, rows.length)} de {rows.length}
             </span>
-            <button disabled={current >= pages - 1} onClick={() => _page(current + 1)}>
+            <button disabled={first + pageSize >= rows.length} onClick={() => _start(first + pageSize)}>
               Próxima ›
             </button>
           </div>
