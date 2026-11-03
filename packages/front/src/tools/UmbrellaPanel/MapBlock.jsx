@@ -105,6 +105,9 @@ export default function MapBlock({ territorialId, panel, reloadKey, selected, on
     return `cd_mun IN (${list.map(m => m.cd_mun).join(',')})`;
   }, [panel]);
 
+  // react-leaflet 2 liga o onClick só uma vez (na montagem): sem a ref o handler enxergaria dados/estado antigos
+  const clickRef = useRef();
+
   const handleClick = e => {
     const { lat, lng } = e.latlng;
     const items = CATEGORIAS.filter(c => visible[c.key])
@@ -116,6 +119,8 @@ export default function MapBlock({ territorialId, panel, reloadKey, selected, on
     // seleciona TODAS as iniciativas sob o clique (clique fora de qualquer uma limpa a seleção)
     onSelect(items.map(i => `${i.categoria}:${i.id}`));
   };
+
+  clickRef.current = handleClick;
 
   // pedido de zoom vindo da lista: enquadra a geometria da iniciativa escolhida
   useEffect(() => {
@@ -149,7 +154,7 @@ export default function MapBlock({ territorialId, panel, reloadKey, selected, on
         maxZoom={18}
         scrollWheelZoom={false}
         zoomSnap={0.25}
-        onClick={handleClick}
+        onClick={e => clickRef.current(e)}
       >
         <TileLayer
           attribution='<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
