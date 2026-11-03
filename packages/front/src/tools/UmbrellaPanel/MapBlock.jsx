@@ -40,19 +40,27 @@ function inPolygon(x, y, rings) {
   return inRing(x, y, rings[0]) && !rings.slice(1).some(h => inRing(x, y, h));
 }
 
-function containsPoint(geom, x, y) {
+// `near(lng, lat)`: o ponto GeoJSON está perto do clique (tolerância em pixels, calculada pelo mapa)
+function containsPoint(geom, x, y, near) {
   if (!geom) return false;
   switch (geom.type) {
     case 'Polygon':
       return inPolygon(x, y, geom.coordinates);
     case 'MultiPolygon':
       return geom.coordinates.some(p => inPolygon(x, y, p));
+    case 'Point':
+      return near(geom.coordinates[0], geom.coordinates[1]);
+    case 'MultiPoint':
+      return geom.coordinates.some(c => near(c[0], c[1]));
     case 'GeometryCollection':
-      return geom.geometries.some(g => containsPoint(g, x, y));
+      return geom.geometries.some(g => containsPoint(g, x, y, near));
     default:
       return false;
   }
 }
+
+const POINT_RADIUS = 5; // pontos (ex.: projetos com localização exata) são desenhados como círculos
+const POINT_CLICK_TOLERANCE = 9; // px
 
 /*
  * "Recorte no mapa": contorno do território (tracejado), municípios do recorte (WMS), iniciativas recortadas pelo
@@ -121,9 +129,11 @@ export default function MapBlock({ territorialId, panel, reloadKey, selected, on
 
   const handleClick = e => {
     const { lat, lng } = e.latlng;
+    const map = mapRef.current.leafletElement;
+    const near = (px, py) => map.latLngToContainerPoint([py, px]).distanceTo(e.containerPoint) <= POINT_CLICK_TOLERANCE;
     const items = CATEGORIAS.filter(c => visible[c.key])
       .flatMap(c => featuresByCategoria[c.key] || [])
-      .filter(f => containsPoint(f.geometry, lng, lat))
+      .filter(f => containsPoint(f.geometry, lng, lat, near))
       .map(f => names[`${f.properties.categoria}:${f.properties.id}`] || f.properties);
 
     _popup(items.length ? { latlng: e.latlng, items } : null);
@@ -224,11 +234,13 @@ export default function MapBlock({ territorialId, panel, reloadKey, selected, on
           <GeoJSON
             key={`${c.key}-${reloadKey}-${featuresByCategoria[c.key].length}`}
             data={featuresByCategoria[c.key]}
+            pointToLayer={(f, latlng) => L.circleMarker(latlng, { radius: POINT_RADIUS })}
             style={f => {
               const isSel = selected.includes(`${f.properties.categoria}:${f.properties.id}`);
               return {
                 color: isSel ? '#111' : c.color,
                 weight: isSel ? 3 : 1.5,
+                radius: isSel ? POINT_RADIUS + 2 : POINT_RADIUS,
                 fillColor: c.color,
                 fillOpacity: isSel ? 0.7 : selected.length ? 0.15 : 0.35,
               };

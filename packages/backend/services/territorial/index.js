@@ -7,15 +7,33 @@ const MUN_MIN_FRACTION = 0.05; // fração mínima do município dentro do terri
 const TTL_MS = 60 * 60 * 1000; // rede de segurança; a invalidação normal é ao gravar a atuação ou em "Recarregar"
 
 /*
- * Fontes das iniciativas que entram no painel. Só versão 'current'; `stable` é o id estável (não o id da versão).
- * `geoTable.fk` aponta para a linha de versão da tabela principal.
+ * Fontes das iniciativas que entram no painel. `stable` é o id estável (não o id da versão); `fk` aponta, na tabela de
+ * atuação, para a linha da tabela principal. Por padrão só entram versões 'current' não excluídas, com geometria sem SRID
+ * (assumida 4326). Cada fonte pode trocar o filtro (`where`) e a conversão da geometria (`geom`, expressão sobre `a.geom`).
  */
+const DEFAULT_WHERE = `p.versao = 'current' and p."deletedAt" is null`;
+const DEFAULT_GEOM = 'ST_SetSRID(a.geom, 4326)';
+
 const SOURCES = [
   { categoria: 'politicas', main: 'ppea.politicas', stable: 'politica_id', geo: 'ppea.politicas_atuacao', fk: 'politica_versao_id' },
   { categoria: 'colegiados', main: 'ciea.comissoes', stable: 'iniciativa_id', geo: 'ciea.comissao_atuacao', fk: 'iniciativa_versao_id' },
   { categoria: 'cecsas', main: 'cne.cnes', stable: 'cne_id', geo: 'cne.cnes_atuacao', fk: 'cne_versao_id' },
   { categoria: 'projetos', main: 'iniciativas.iniciativas', stable: 'politica_id', geo: 'iniciativas.iniciativas_atuacao', fk: 'politica_versao_id' },
+  {
+    // Vinculadas ao PPPZCM: public.projetos não tem versionamento (rascunhos ficam em *_rascunho); publicado = publicacao.
+    // A geometria vem com SRID próprio (4326 ou 4674), então é convertida, não rotulada. Linhas só com nm_regiao (sem geom) ficam de fora.
+    categoria: 'zcm',
+    main: 'public.projetos',
+    stable: 'id',
+    geo: 'public.projetos_atuacao',
+    fk: 'projeto_id',
+    where: 'p.publicacao is not null',
+    geom: 'ST_Transform(a.geom, 4326)',
+  },
 ];
+
+const whereOf = src => src.where || DEFAULT_WHERE;
+const geomOf = src => src.geom || DEFAULT_GEOM;
 
 /*
  * Território de atuação das iniciativas "guarda-chuva" (schema `territorial`, ver migrations/2.29.1/guarda-chuva.sql).
@@ -28,7 +46,7 @@ class Service {
 
   /*
    * Iniciativas (current) cuja atuação intersecta a atuação do GT territorial. Resultado em cache, um por GT:
-   * { items: [{ categoria, id, nome, community_id }], total, porCategoria: { politicas, colegiados, cecsas, projetos },
+   * { items: [{ categoria, id, nome, community_id, cd_muns? }], total, porCategoria: { politicas, colegiados, cecsas, projetos, zcm },
    *   municipios: [{ cd_mun, nome, uf }] }
    */
   getPanel(id) {
@@ -66,7 +84,7 @@ class Service {
         where iniciativa_id = :id
       )`;
 
-    const porCategoria = { politicas: 0, colegiados: 0, cecsas: 0, projetos: 0 };
+    const porCategoria = { politicas: 0, colegiados: 0, cecsas: 0, projetos: 0, zcm: 0 };
     const items = [];
 
     for (const src of SOURCES) {
@@ -74,17 +92,33 @@ class Service {
         `${territorio}
         select distinct p.${src.stable} as id, p.nome, p.community_id
         from ${src.geo} a
-        inner join ${src.main} p on p.id = a.${src.fk} and p.versao = 'current' and p."deletedAt" is null
+        inner join ${src.main} p on p.id = a.${src.fk} and ${whereOf(src)}
         cross join t
         where t.geom is not null
           and a.geom is not null
-          and ST_Intersects(ST_SetSRID(a.geom, 4326), t.geom)
+          and ST_Intersects(${geomOf(src)}, t.geom)
         order by 1`,
         { replacements: { id }, type: Sequelize.QueryTypes.SELECT },
       );
 
       porCategoria[src.categoria] = rows.length;
       rows.forEach(r => items.push({ categoria: src.categoria, id: r.id, nome: r.nome, community_id: r.community_id }));
+    }
+
+    // Vinculadas ao PPPZCM: as linhas com cd_mun já dizem exatamente quais municípios o projeto atende
+    const zcmIds = items.filter(i => i.categoria === 'zcm').map(i => i.id);
+    if (zcmIds.length) {
+      const links = await sequelize.query(
+        `select a.projeto_id as id, array_agg(distinct a.cd_mun order by a.cd_mun) as cd_muns
+         from public.projetos_atuacao a
+         where a.projeto_id in (:ids) and a.cd_mun is not null
+         group by a.projeto_id`,
+        { replacements: { ids: zcmIds }, type: Sequelize.QueryTypes.SELECT },
+      );
+      const byId = new Map(links.map(l => [l.id, l.cd_muns.map(String)]));
+      items.forEach(i => {
+        if (i.categoria === 'zcm') i.cd_muns = byId.get(i.id) || [];
+      });
     }
 
     // municípios cobertos pelo território: ao menos MUN_MIN_FRACTION da área do município dentro do território
@@ -174,17 +208,21 @@ class Service {
     for (const src of SOURCES) {
       const rows = await sequelize.query(
         `${territorio}
-        select p.${src.stable} as id,
-               ST_AsGeoJSON(ST_Simplify(ST_Collect(d.geom), 0.001))::jsonb as geojson
+        select s.id,
+               -- polígonos muito pequenos somem na simplificação (viram NULL): nesse caso mantém o original
+               ST_AsGeoJSON(COALESCE(ST_Simplify(s.g, 0.001), s.g))::jsonb as geojson
+        from (
+        select p.${src.stable} as id, ST_Collect(d.geom) as g
         from ${src.geo} a
-        inner join ${src.main} p on p.id = a.${src.fk} and p.versao = 'current' and p."deletedAt" is null
+        inner join ${src.main} p on p.id = a.${src.fk} and ${whereOf(src)}
         cross join t
-        cross join lateral ST_Dump(ST_Intersection(ST_MakeValid(ST_SetSRID(a.geom, 4326)), t.geom)) d
+        cross join lateral ST_Dump(ST_Intersection(ST_MakeValid(${geomOf(src)}), t.geom)) d
         where t.geom is not null
           and a.geom is not null
-          and ST_Intersects(ST_SetSRID(a.geom, 4326), t.geom)
+          and ST_Intersects(${geomOf(src)}, t.geom)
           and ST_Dimension(d.geom) <> 1 -- descarta linhas (encostos de divisa); o ST_Dump achata coleções
-        group by p.${src.stable}`,
+        group by p.${src.stable}
+        ) s`,
         { replacements: { id }, type: Sequelize.QueryTypes.SELECT },
       );
 
