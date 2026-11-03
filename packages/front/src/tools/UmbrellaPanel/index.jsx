@@ -8,6 +8,8 @@ import { PageTitle } from '../../components/PageTitle/PageTitle';
 
 import MapBlock from './MapBlock';
 import InitiativesList from './InitiativesList';
+import PerspectiveBlock from './PerspectiveBlock';
+import NetworkBlock from './NetworkBlock';
 import styles from './styles.module.scss';
 
 /* Painel guarda-chuva: cruza a atuação territorial do GT com as iniciativas cadastradas. */
@@ -100,6 +102,10 @@ const Tool = () => {
               onSelect={_selected}
               onZoom={key => _zoomRequest({ key, n: Date.now() })}
             />
+          </div>
+          <div className={styles.columns}>
+            <PerspectiveBlock panel={panel} />
+            <NetworkBlock />
           </div>
         </div>
       </div>
