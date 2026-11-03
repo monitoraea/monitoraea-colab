@@ -3,6 +3,7 @@ const db = require('../database');
 const shapefile = require('shapefile');
 const simplify = require('simplify-geojson');
 
+const MUN_MIN_FRACTION = 0.05; // fração mínima do município dentro do território para contar
 const TTL_MS = 60 * 60 * 1000; // rede de segurança; a invalidação normal é ao gravar a atuação ou em "Recarregar"
 
 /*
@@ -27,7 +28,8 @@ class Service {
 
   /*
    * Iniciativas (current) cuja atuação intersecta a atuação do GT territorial. Resultado em cache, um por GT:
-   * { items: [{ categoria, id }], total, porCategoria: { politicas, colegiados, cecsas, projetos } }
+   * { items: [{ categoria, id }], total, porCategoria: { politicas, colegiados, cecsas, projetos },
+   *   municipios: [{ cd_mun, nome, uf }] }
    */
   getPanel(id) {
     const key = String(id);
@@ -75,7 +77,26 @@ class Service {
       rows.forEach(r => items.push({ categoria: src.categoria, id: r.id }));
     }
 
-    return { items, total: items.length, porCategoria };
+    // municípios cobertos pelo território: ao menos MUN_MIN_FRACTION da área do município dentro do território
+    // (descarta municípios vizinhos que só encostam ou sobrepõem em fatias nas divisas)
+    const municipios = await sequelize.query(
+      `${territorio},
+      m as (
+        select m.cd_mun, m.nm_mun, m.nm_uf, ST_MakeValid(ST_Transform(m.geom, 4326)) as geom
+        from municipios m
+        cross join t
+        where t.geom is not null and m.geom is not null
+          and ST_Intersects(ST_Transform(m.geom, 4326), t.geom)
+      )
+      select m.cd_mun, m.nm_mun as nome, m.nm_uf as uf
+      from m
+      cross join t
+      where ST_Area(ST_Intersection(m.geom, t.geom)) >= :fraction * ST_Area(m.geom)
+      order by m.nm_mun`,
+      { replacements: { id, fraction: MUN_MIN_FRACTION }, type: Sequelize.QueryTypes.SELECT },
+    );
+
+    return { items, total: items.length, porCategoria, municipios };
   }
 
   /* Retorna o id da iniciativa relacionada a uma comunidade */

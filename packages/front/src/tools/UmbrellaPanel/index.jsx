@@ -72,6 +72,10 @@ const Tool = () => {
             <div className={styles.label}>Iniciativas</div>
             <div className={styles.value}>{panel ? panel.total : '–'}</div>
           </div>
+          <div className={styles.kpi}>
+            <div className={styles.label}>Municípios</div>
+            <div className={styles.value}>{panel ? panel.municipios.length : '–'}</div>
+          </div>
         </div>
       </div>
     </div>
