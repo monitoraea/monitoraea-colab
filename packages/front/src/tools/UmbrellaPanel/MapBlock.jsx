@@ -166,6 +166,8 @@ export default function MapBlock({ territorialId, panel, reloadKey, selected, on
             key={munFilter || 'all'}
             url={import.meta.env.VITE_GEOSERVER_URL}
             layers="pppzcm:municipios"
+            styles="line" // só o contorno dos municípios (o estilo padrão da camada preenche de rosa)
+            opacity={0.4}
             format="image/png"
             transparent
             {...(munFilter ? { cql_filter: munFilter } : {})}

@@ -30,44 +30,46 @@ export default function InitiativesList({ panel, selected, onSelect, onZoom }) {
   };
 
   return (
-    <div className={styles.listBlock}>
-      <div className={styles.listTitle}>Iniciativas do recorte</div>
+    <div className={styles.listCol}>
+      <div className={styles.listBlock}>
+        <div className={styles.listTitle}>Iniciativas do recorte</div>
 
-      <div className={styles.tab}>
-        Cadastros <span className={styles.badge}>{panel ? panel.total : '–'}</span>
-      </div>
+        <div className={styles.tab}>
+          Cadastros <span className={styles.badge}>{panel ? panel.total : '–'}</span>
+        </div>
 
-      <input
-        className={styles.search}
-        type="search"
-        placeholder="Buscar cadastro"
-        value={search}
-        onChange={e => _search(e.target.value)}
-      />
+        <input
+          className={styles.search}
+          type="search"
+          placeholder="Buscar cadastro"
+          value={search}
+          onChange={e => _search(e.target.value)}
+        />
 
-      <div className={styles.listCount}>
-        {rows.length} {rows.length === 1 ? 'cadastro' : 'cadastros'}
-      </div>
+        <div className={styles.listCount}>
+          {rows.length} {rows.length === 1 ? 'cadastro' : 'cadastros'}
+        </div>
 
-      <div className={styles.listHead}>INICIATIVA</div>
-      <div className={styles.listBody}>
-        {!panel && <div className={styles.empty}>Carregando...</div>}
-        {panel && !rows.length && <div className={styles.empty}>Nenhum cadastro encontrado.</div>}
-        {rows.map(i => {
-          const cat = CATEGORIA_BY_KEY[i.categoria];
-          const key = `${i.categoria}:${i.id}`;
-          return (
-            <div
-              key={key}
-              ref={el => (rowRefs.current[key] = el)}
-              className={`${styles.listRow} ${selected.includes(key) ? styles.selected : ''}`}
-              onClick={() => clickRow(key)}
-            >
-              <span className={styles.swatch} style={{ background: cat.color }} title={cat.label} />
-              {i.nome || `#${i.id}`}
-            </div>
-          );
-        })}
+        <div className={styles.listHead}>INICIATIVA</div>
+        <div className={styles.listBody}>
+          {!panel && <div className={styles.empty}>Carregando...</div>}
+          {panel && !rows.length && <div className={styles.empty}>Nenhum cadastro encontrado.</div>}
+          {rows.map(i => {
+            const cat = CATEGORIA_BY_KEY[i.categoria];
+            const key = `${i.categoria}:${i.id}`;
+            return (
+              <div
+                key={key}
+                ref={el => (rowRefs.current[key] = el)}
+                className={`${styles.listRow} ${selected.includes(key) ? styles.selected : ''}`}
+                onClick={() => clickRow(key)}
+              >
+                <span className={styles.swatch} style={{ background: cat.color }} title={cat.label} />
+                {i.nome || `#${i.id}`}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
