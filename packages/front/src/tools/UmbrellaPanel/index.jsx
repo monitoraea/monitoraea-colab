@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack';
 
 import { PageTitle } from '../../components/PageTitle/PageTitle';
 
+import MapBlock from './MapBlock';
 import styles from './styles.module.scss';
 
 /* Painel guarda-chuva: cruza a atuação territorial do GT com as iniciativas cadastradas. */
@@ -18,6 +19,7 @@ const Tool = () => {
   const [id, _id] = useState(null);
   const [panel, _panel] = useState(null);
   const [loading, _loading] = useState(false);
+  const [reloadKey, _reloadKey] = useState(0); // muda a cada "Recarregar": os blocos refazem suas buscas
 
   // administradores da plataforma (comunidade 1) podem recarregar o cache
   const isAdmin = !!user?.membership?.some(m => m.id === 1);
@@ -38,6 +40,7 @@ const Tool = () => {
         const url = `${server}territorial/${id}/painel`;
         const { data } = reload ? await axios.post(`${url}/reload`) : await axios.get(url);
         _panel(data);
+        if (reload) _reloadKey(k => k + 1);
       } catch (e) {
         enqueueSnackbar('Erro ao carregar o painel territorial.', {
           variant: 'error',
@@ -67,7 +70,7 @@ const Tool = () => {
         )}
       </div>
       <div className="page-content">
-        <div className="page-body">
+        <div className={`page-body ${styles.body}`}>
           <div className={styles.kpi}>
             <div className={styles.label}>Iniciativas</div>
             <div className={styles.value}>{panel ? panel.total : '–'}</div>
@@ -76,6 +79,7 @@ const Tool = () => {
             <div className={styles.label}>Municípios</div>
             <div className={styles.value}>{panel ? panel.municipios.length : '–'}</div>
           </div>
+          <MapBlock territorialId={id} panel={panel} reloadKey={reloadKey} />
         </div>
       </div>
     </div>

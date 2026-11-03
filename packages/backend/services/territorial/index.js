@@ -28,23 +28,33 @@ class Service {
 
   /*
    * Iniciativas (current) cuja atuação intersecta a atuação do GT territorial. Resultado em cache, um por GT:
-   * { items: [{ categoria, id }], total, porCategoria: { politicas, colegiados, cecsas, projetos },
+   * { items: [{ categoria, id, nome, community_id }], total, porCategoria: { politicas, colegiados, cecsas, projetos },
    *   municipios: [{ cd_mun, nome, uf }] }
    */
   getPanel(id) {
-    const key = String(id);
+    return this.cached(id, 'painel', () => this.buildPanel(id));
+  }
+
+  /* Geometrias do mapa (território + iniciativas recortadas), também em cache por GT */
+  getMap(id) {
+    return this.cached(id, 'mapa', () => this.buildMap(id));
+  }
+
+  cached(id, kind, build) {
+    const key = `${id}:${kind}`;
     const hit = this.cache.get(key);
     if (hit && Date.now() - hit.at < TTL_MS) return hit.promise;
 
-    const promise = this.buildPanel(id);
+    const promise = build();
     this.cache.set(key, { at: Date.now(), promise });
     promise.catch(() => this.cache.delete(key)); // não guarda falha
     return promise;
   }
 
+  /* Descarta todos os dados em cache do GT (painel + mapa) */
   invalidate(id) {
-    if (id === undefined) this.cache.clear();
-    else this.cache.delete(String(id));
+    if (id === undefined) return this.cache.clear();
+    ['painel', 'mapa'].forEach(kind => this.cache.delete(`${id}:${kind}`));
   }
 
   async buildPanel(id) {
@@ -62,7 +72,7 @@ class Service {
     for (const src of SOURCES) {
       const rows = await sequelize.query(
         `${territorio}
-        select distinct p.${src.stable} as id
+        select distinct p.${src.stable} as id, p.nome, p.community_id
         from ${src.geo} a
         inner join ${src.main} p on p.id = a.${src.fk} and p.versao = 'current' and p."deletedAt" is null
         cross join t
@@ -74,7 +84,7 @@ class Service {
       );
 
       porCategoria[src.categoria] = rows.length;
-      rows.forEach(r => items.push({ categoria: src.categoria, id: r.id }));
+      rows.forEach(r => items.push({ categoria: src.categoria, id: r.id, nome: r.nome, community_id: r.community_id }));
     }
 
     // municípios cobertos pelo território: ao menos MUN_MIN_FRACTION da área do município dentro do território
@@ -134,6 +144,56 @@ class Service {
         [bbox[0].bbymax, bbox[0].bbxmax],
       ],
     };
+  }
+
+  /*
+   * Dados do mapa do painel: contorno do território, bbox e, por iniciativa, a(s) geometria(s) recortada(s) pelo
+   * território (somente a parte dentro do recorte), simplificadas. { territorio, bbox, features: [GeoJSON Feature] }
+   */
+  async buildMap(id) {
+    const sequelize = db.instance();
+    const territorio = `
+      with t as (
+        select ST_MakeValid(ST_Union(ST_MakeValid(ST_SetSRID(geom, 4326)))) as geom
+        from territorial.atuacao
+        where iniciativa_id = :id
+      )`;
+
+    const [t] = await sequelize.query(
+      `${territorio}
+      select ST_AsGeoJSON(ST_Simplify(geom, 0.001))::jsonb as geojson,
+             ST_XMin(geom) as x1, ST_YMin(geom) as y1, ST_XMax(geom) as x2, ST_YMax(geom) as y2
+      from t where geom is not null`,
+      { replacements: { id }, type: Sequelize.QueryTypes.SELECT },
+    );
+
+    if (!t) return { territorio: null, bbox: null, features: [] };
+
+    const features = [];
+
+    for (const src of SOURCES) {
+      const rows = await sequelize.query(
+        `${territorio}
+        select p.${src.stable} as id,
+               ST_AsGeoJSON(ST_Simplify(ST_Collect(d.geom), 0.001))::jsonb as geojson
+        from ${src.geo} a
+        inner join ${src.main} p on p.id = a.${src.fk} and p.versao = 'current' and p."deletedAt" is null
+        cross join t
+        cross join lateral ST_Dump(ST_Intersection(ST_MakeValid(ST_SetSRID(a.geom, 4326)), t.geom)) d
+        where t.geom is not null
+          and a.geom is not null
+          and ST_Intersects(ST_SetSRID(a.geom, 4326), t.geom)
+          and ST_Dimension(d.geom) <> 1 -- descarta linhas (encostos de divisa); o ST_Dump achata coleções
+        group by p.${src.stable}`,
+        { replacements: { id }, type: Sequelize.QueryTypes.SELECT },
+      );
+
+      rows.forEach(r =>
+        features.push({ type: 'Feature', properties: { categoria: src.categoria, id: r.id }, geometry: r.geojson }),
+      );
+    }
+
+    return { territorio: t.geojson, bbox: [[t.y1, t.x1], [t.y2, t.x2]], features };
   }
 
   async getGeoDrawSave(id, geoms) {

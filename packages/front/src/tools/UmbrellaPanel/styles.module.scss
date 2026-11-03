@@ -1,3 +1,8 @@
+/* respiro no fim da página: o último bloco não encosta na borda da janela */
+.body {
+  padding-bottom: 64px;
+}
+
 .kpi {
   display: inline-block;
   margin-right: 16px;
@@ -16,5 +21,69 @@
     font-size: 40px;
     font-weight: 700;
     line-height: 1.1;
+  }
+}
+
+.mapBlock {
+  margin-top: 16px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+
+  .mapHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .map {
+    height: 520px;
+    width: 100%;
+    border-radius: 6px;
+  }
+
+  .hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #777;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    margin-top: 12px;
+    font-size: 13px;
+
+    .legendTitle {
+      width: 100%;
+      font-weight: 600;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    b {
+      margin-left: 4px;
+    }
+  }
+
+  .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+    border-radius: 2px;
+    flex: none;
+  }
+
+  .popup > div {
+    margin: 2px 0;
   }
 }

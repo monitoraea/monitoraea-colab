@@ -47,6 +47,15 @@ router.get('/:id/painel', async (req, res) => {
   }
 });
 
+/* Mapa do painel: contorno + geometrias das iniciativas recortadas (cache por GT) */
+router.get('/:id/painel/mapa', async (req, res) => {
+  try {
+    res.json(await entity.getMap(req.params.id));
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
 /* Descarta o cache do GT e recalcula. Restrito a administradores (security.js). */
 router.post('/:id/painel/reload', SecurityManager.check(async (req, res) => {
   try {
