@@ -14,6 +14,16 @@ import styles from './styles.module.scss';
 // acima disso a lista de códigos estoura o tamanho da URL do WMS (GET): mostra todos os municípios, sem filtro
 const MAX_MUN_FILTER = 700;
 
+// Contorno dos municípios: só linha (o estilo padrão da camada preenche de rosa). Cor e espessura aqui.
+// (o nome do NamedLayer precisa ser o da camada SEM o prefixo do workspace, senão o GeoServer ignora o SLD)
+const MUN_STROKE = '#4b5563';
+const MUN_STROKE_WIDTH = 0.5;
+const MUN_SLD =
+  '<StyledLayerDescriptor version="1.0.0"><NamedLayer><Name>municipios</Name><UserStyle><FeatureTypeStyle><Rule>' +
+  `<LineSymbolizer><Stroke><CssParameter name="stroke">${MUN_STROKE}</CssParameter>` +
+  `<CssParameter name="stroke-width">${MUN_STROKE_WIDTH}</CssParameter></Stroke></LineSymbolizer>` +
+  '</Rule></FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>';
+
 /* ---- ponto dentro de geometria GeoJSON (ray casting, com buracos) ---- */
 function inRing(x, y, ring) {
   let inside = false;
@@ -166,8 +176,7 @@ export default function MapBlock({ territorialId, panel, reloadKey, selected, on
             key={munFilter || 'all'}
             url={import.meta.env.VITE_GEOSERVER_URL}
             layers="pppzcm:municipios"
-            styles="line" // só o contorno dos municípios (o estilo padrão da camada preenche de rosa)
-            opacity={0.4}
+            sld_body={MUN_SLD}
             format="image/png"
             transparent
             {...(munFilter ? { cql_filter: munFilter } : {})}
