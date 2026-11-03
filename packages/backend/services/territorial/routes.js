@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 
 const { sendError } = require('dorothy-dna-services').util;
+const { SecurityManager } = require('dorothy-dna-services');
 const entity = require('./index');
 
 const fileUpload = multer({
@@ -36,6 +37,25 @@ router.post('/:id/geo-draw', async (req, res) => {
     sendError(res, ex);
   }
 });
+
+/* Painel: iniciativas dentro do recorte (cache por GT) */
+router.get('/:id/painel', async (req, res) => {
+  try {
+    res.json(await entity.getPanel(req.params.id));
+  } catch (ex) {
+    sendError(res, ex);
+  }
+});
+
+/* Descarta o cache do GT e recalcula. Restrito a administradores (security.js). */
+router.post('/:id/painel/reload', SecurityManager.check(async (req, res) => {
+  try {
+    entity.invalidate(req.params.id);
+    res.json(await entity.getPanel(req.params.id));
+  } catch (ex) {
+    sendError(res, ex);
+  }
+}));
 
 router.post('/upload-shp', fileUpload, async (req, res) => {
   try {
