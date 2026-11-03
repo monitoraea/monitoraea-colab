@@ -11,6 +11,9 @@ const TTL_MS = 60 * 60 * 1000; // rede de segurança; a invalidação normal é 
  * atuação, para a linha da tabela principal. Por padrão só entram versões 'current' não excluídas, com geometria sem SRID
  * (assumida 4326). Cada fonte pode trocar o filtro (`where`) e a conversão da geometria (`geom`, expressão sobre `a.geom`).
  */
+// Atenção: as geometrias de origem podem ser inválidas (auto-interseção, anéis com poucos pontos), principalmente em bases
+// com dados importados. O GEOS lança TopologyException em ST_Intersects/ST_Intersection com geometria inválida, por isso
+// toda consulta valida a geometria (ST_MakeValid) uma única vez antes de usá-la.
 const DEFAULT_WHERE = `p.versao = 'current' and p."deletedAt" is null`;
 const DEFAULT_GEOM = 'ST_SetSRID(a.geom, 4326)';
 
@@ -94,9 +97,10 @@ class Service {
         from ${src.geo} a
         inner join ${src.main} p on p.id = a.${src.fk} and ${whereOf(src)}
         cross join t
+        cross join lateral (select ST_MakeValid(${geomOf(src)}) as g) v
         where t.geom is not null
           and a.geom is not null
-          and ST_Intersects(${geomOf(src)}, t.geom)
+          and ST_Intersects(v.g, t.geom)
         order by 1`,
         { replacements: { id }, type: Sequelize.QueryTypes.SELECT },
       );
@@ -216,10 +220,11 @@ class Service {
         from ${src.geo} a
         inner join ${src.main} p on p.id = a.${src.fk} and ${whereOf(src)}
         cross join t
-        cross join lateral ST_Dump(ST_Intersection(ST_MakeValid(${geomOf(src)}), t.geom)) d
+        cross join lateral (select ST_MakeValid(${geomOf(src)}) as g) v
+        cross join lateral ST_Dump(ST_Intersection(v.g, t.geom)) d
         where t.geom is not null
           and a.geom is not null
-          and ST_Intersects(${geomOf(src)}, t.geom)
+          and ST_Intersects(v.g, t.geom)
           and ST_Dimension(d.geom) <> 1 -- descarta linhas (encostos de divisa); o ST_Dump achata coleções
         group by p.${src.stable}
         ) s`,
