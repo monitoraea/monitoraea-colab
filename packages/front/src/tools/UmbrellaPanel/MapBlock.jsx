@@ -244,13 +244,7 @@ export default function MapBlock({ territorialId, panel, reloadKey, selected, on
                 return (
                   <div key={`${i.categoria}:${i.id}`}>
                     <span className={styles.dot} style={{ background: cat.color }} />
-                    {i.community_id ? (
-                      <a href={`/colabora/${cat.route}/${i.community_id}`} target="_blank" rel="noreferrer">
-                        {i.nome || `#${i.id}`}
-                      </a>
-                    ) : (
-                      i.nome || `#${i.id}`
-                    )}
+                    {i.nome || `#${i.id}`}
                   </div>
                 );
               })}
