@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import axios from 'axios';
+import L from 'leaflet';
 import { Map, TileLayer, WMSTileLayer, GeoJSON, Popup } from 'react-leaflet';
 import { useDorothy } from 'dorothy-dna-react';
 
 import 'leaflet/dist/leaflet.css';
 
-import { CATEGORIAS, CATEGORIA_BY_KEY } from './categorias';
+import { CATEGORIAS, CATEGORIA_BY_KEY, TERRITORIO_COLOR } from './categorias';
+import Legend from './Legend';
 import styles from './styles.module.scss';
 
 // acima disso a lista de códigos estoura o tamanho da URL do WMS (GET): mostra todos os municípios, sem filtro
@@ -45,7 +47,7 @@ function containsPoint(geom, x, y) {
  * "Recorte no mapa": contorno do território (tracejado), municípios do recorte (WMS), iniciativas recortadas pelo
  * território, coloridas por categoria, com camadas ligáveis. Clique no mapa: popup com TODAS as iniciativas no ponto.
  */
-export default function MapBlock({ territorialId, panel, reloadKey }) {
+export default function MapBlock({ territorialId, panel, reloadKey, selected, onSelect, zoomRequest }) {
   const { server } = useDorothy();
   const mapRef = useRef();
 
@@ -66,7 +68,7 @@ export default function MapBlock({ territorialId, panel, reloadKey }) {
   }, [territorialId, server, reloadKey]);
 
   const fitAll = () => {
-    if (data?.bbox && mapRef.current) mapRef.current.leafletElement.fitBounds(data.bbox);
+    if (data?.bbox && mapRef.current) mapRef.current.leafletElement.fitBounds(data.bbox, { padding: [8, 8] });
   };
 
   useEffect(fitAll, [data]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -111,12 +113,28 @@ export default function MapBlock({ territorialId, panel, reloadKey }) {
       .map(f => names[`${f.properties.categoria}:${f.properties.id}`] || f.properties);
 
     _popup(items.length ? { latlng: e.latlng, items } : null);
+    // seleciona TODAS as iniciativas sob o clique (clique fora de qualquer uma limpa a seleção)
+    onSelect(items.map(i => `${i.categoria}:${i.id}`));
   };
+
+  // pedido de zoom vindo da lista: enquadra a geometria da iniciativa escolhida
+  useEffect(() => {
+    if (!zoomRequest || !mapRef.current) return;
+    const [categoria, id] = zoomRequest.key.split(':');
+    const f = (featuresByCategoria[categoria] || []).find(f => String(f.properties.id) === id);
+    if (!f) return;
+    const bounds = L.geoJSON(f).getBounds();
+    if (bounds.isValid()) mapRef.current.leafletElement.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+    _popup(null);
+  }, [zoomRequest]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={styles.mapBlock}>
       <div className={styles.mapHeader}>
-        <b>Recorte no mapa</b>
+        <div>
+          <b>Recorte no mapa</b>
+          <span className={styles.sub}>cada polígono é a abrangência de um cadastro</span>
+        </div>
         <button className="button-outline" onClick={fitAll} disabled={!data?.bbox}>
           Recorte inteiro
         </button>
@@ -130,6 +148,7 @@ export default function MapBlock({ territorialId, panel, reloadKey }) {
         minZoom={3}
         maxZoom={18}
         scrollWheelZoom={false}
+        zoomSnap={0.25}
         onClick={handleClick}
       >
         <TileLayer
@@ -152,7 +171,7 @@ export default function MapBlock({ territorialId, panel, reloadKey }) {
           <GeoJSON
             key={`t-${reloadKey}-${data.bbox}`}
             data={data.territorio}
-            style={{ color: '#333', weight: 2, dashArray: '6 4', fill: false }}
+            style={{ color: TERRITORIO_COLOR, weight: 4, dashArray: '10 7', fill: false }}
             interactive={false}
           />
         )}
@@ -161,7 +180,15 @@ export default function MapBlock({ territorialId, panel, reloadKey }) {
           <GeoJSON
             key={`${c.key}-${reloadKey}-${featuresByCategoria[c.key].length}`}
             data={featuresByCategoria[c.key]}
-            style={{ color: c.color, weight: 1.5, fillColor: c.color, fillOpacity: 0.35 }}
+            style={f => {
+              const isSel = selected.includes(`${f.properties.categoria}:${f.properties.id}`);
+              return {
+                color: isSel ? '#111' : c.color,
+                weight: isSel ? 3 : 1.5,
+                fillColor: c.color,
+                fillOpacity: isSel ? 0.7 : selected.length ? 0.15 : 0.35,
+              };
+            }}
           />
         ))}
 
@@ -189,21 +216,7 @@ export default function MapBlock({ territorialId, panel, reloadKey }) {
       </Map>
       <div className={styles.hint}>Ctrl + rolagem para aproximar · arraste para mover</div>
 
-      <div className={styles.legend}>
-        <div className={styles.legendTitle}>Camadas — marque as que deseja ver</div>
-        {CATEGORIAS.map(c => (
-          <label key={c.key}>
-            <input
-              type="checkbox"
-              checked={visible[c.key]}
-              onChange={e => _visible(v => ({ ...v, [c.key]: e.target.checked }))}
-            />
-            <span className={styles.dot} style={{ background: c.color }} />
-            {c.label}
-            <b>{panel ? panel.porCategoria[c.key] : ''}</b>
-          </label>
-        ))}
-      </div>
+      <Legend visible={visible} counts={panel?.porCategoria} onChange={_visible} />
     </div>
   );
 }

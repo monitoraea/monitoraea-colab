@@ -7,3 +7,6 @@ export const CATEGORIAS = [
 ];
 
 export const CATEGORIA_BY_KEY = Object.fromEntries(CATEGORIAS.map(c => [c.key, c]));
+
+/* Linha do limite do território (tracejada, marrom) — usada no mapa e na legenda */
+export const TERRITORIO_COLOR = '#8a5a2b';

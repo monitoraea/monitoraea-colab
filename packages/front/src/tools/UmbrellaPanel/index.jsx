@@ -7,6 +7,7 @@ import { useSnackbar } from 'notistack';
 import { PageTitle } from '../../components/PageTitle/PageTitle';
 
 import MapBlock from './MapBlock';
+import InitiativesList from './InitiativesList';
 import styles from './styles.module.scss';
 
 /* Painel guarda-chuva: cruza a atuação territorial do GT com as iniciativas cadastradas. */
@@ -19,6 +20,8 @@ const Tool = () => {
   const [id, _id] = useState(null);
   const [panel, _panel] = useState(null);
   const [loading, _loading] = useState(false);
+  const [selected, _selected] = useState([]); // chaves "categoria:id" selecionadas (mapa e lista)
+  const [zoomRequest, _zoomRequest] = useState(null);
   const [reloadKey, _reloadKey] = useState(0); // muda a cada "Recarregar": os blocos refazem suas buscas
 
   // administradores da plataforma (comunidade 1) podem recarregar o cache
@@ -40,7 +43,10 @@ const Tool = () => {
         const url = `${server}territorial/${id}/painel`;
         const { data } = reload ? await axios.post(`${url}/reload`) : await axios.get(url);
         _panel(data);
-        if (reload) _reloadKey(k => k + 1);
+        if (reload) {
+          _reloadKey(k => k + 1);
+          _selected([]);
+        }
       } catch (e) {
         enqueueSnackbar('Erro ao carregar o painel territorial.', {
           variant: 'error',
@@ -79,7 +85,22 @@ const Tool = () => {
             <div className={styles.label}>Municípios</div>
             <div className={styles.value}>{panel ? panel.municipios.length : '–'}</div>
           </div>
-          <MapBlock territorialId={id} panel={panel} reloadKey={reloadKey} />
+          <div className={styles.columns}>
+            <MapBlock
+              territorialId={id}
+              panel={panel}
+              reloadKey={reloadKey}
+              selected={selected}
+              onSelect={_selected}
+              zoomRequest={zoomRequest}
+            />
+            <InitiativesList
+              panel={panel}
+              selected={selected}
+              onSelect={_selected}
+              onZoom={key => _zoomRequest({ key, n: Date.now() })}
+            />
+          </div>
         </div>
       </div>
     </div>
