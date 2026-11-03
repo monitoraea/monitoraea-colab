@@ -6,6 +6,7 @@ $color_3: #2d8bba;
 $color_4: #5ce1e6;
 $color_5: #f9ad23;
 $color_7: #ccc;
+$color_8: #a36a3b;
 
 .home {
     display: flex;
@@ -50,6 +51,7 @@ $color_7: #ccc;
             &.color_4 { background-color: $color_4; }
             &.color_5 { background-color: $color_5; }
             &.color_7 { background-color: $color_7; }
+            &.color_8 { background-color: $color_8; }
         }
 
         .tag {
@@ -67,6 +69,7 @@ $color_7: #ccc;
             &.color_4 { border-color: $color_4; }
             &.color_5 { border-color: $color_5; }
             &.color_7 { border-color: $color_7; }
+            &.color_8 { border-color: $color_8; }
         }
 
         .title {

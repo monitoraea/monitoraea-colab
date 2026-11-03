@@ -21,6 +21,7 @@ const tools = {
   MenuManager: lazy(() => import('./MenuManager')),
   DashboardADM: lazy(() => import('./DashboardADM')),
   DashboardParticipation: lazy(() => import('./DashboardParticipation')),
+  UmbrellaPanel: lazy(() => import('./UmbrellaPanel')),
 
   HelpNotification: lazy(() => import('./notifications/HelpNotification')),
   NewOrganizationNotification: lazy(() => import('./notifications/NewOrganizationNotification')),
