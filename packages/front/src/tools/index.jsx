@@ -22,6 +22,7 @@ const tools = {
   DashboardADM: lazy(() => import('./DashboardADM')),
   DashboardParticipation: lazy(() => import('./DashboardParticipation')),
   UmbrellaPanel: lazy(() => import('./UmbrellaPanel')),
+  Atuacao: lazy(() => import('./Atuacao')),
 
   HelpNotification: lazy(() => import('./notifications/HelpNotification')),
   NewOrganizationNotification: lazy(() => import('./notifications/NewOrganizationNotification')),

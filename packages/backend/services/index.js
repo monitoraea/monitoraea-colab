@@ -47,4 +47,5 @@ module.exports = [
   'area_interesse',
   'entity',
   'risco',
+  'territorial',
 ];
