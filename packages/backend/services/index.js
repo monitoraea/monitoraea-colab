@@ -48,4 +48,5 @@ module.exports = [
   'entity',
   'risco',
   'territorial',
+  'formacoes',
 ];
